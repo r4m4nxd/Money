@@ -391,8 +391,9 @@ table.t th.r,table.t td.r{text-align:right}
 /* Calendar heatmap */
 .cal-grid-hd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
 .cal-hd-cell{font-size:10px;text-align:center;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:4px 0}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.cal-day{aspect-ratio:auto;min-height:74px;border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:9px 11px;cursor:pointer;border:1px solid transparent;transition:all .12s;-webkit-tap-highlight-color:transparent}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:74px;gap:5px}
+.cal-empty{border-radius:10px}
+.cal-day{aspect-ratio:auto;min-height:0;height:100%;border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:9px 11px;cursor:pointer;border:1px solid transparent;transition:all .12s;-webkit-tap-highlight-color:transparent}
 .cal-day:hover{border-color:var(--border2)}
 .cal-day.cal-today{border:2px solid var(--brand)}
 .cal-day.cal-future{opacity:0.4;cursor:default}
@@ -584,7 +585,8 @@ table.t th.r,table.t td.r{text-align:right}
   .cal-day{font-size:9px}
   .cal-num{font-size:14px}
   .cal-spent{font-size:11px}
-  .cal-day{min-height:58px;padding:7px 8px}
+  .cal-day{padding:7px 8px}
+  .cal-grid{grid-auto-rows:58px}
   .rule-grid{grid-template-columns:1fr;gap:10px}
   .rule-block{padding:14px}
   .rule-amt{font-size:19px}
@@ -795,6 +797,16 @@ body{letter-spacing:-0.006em}
 .ai-suggest{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
 .ai-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);font-size:12px;font-family:'Figtree',sans-serif;cursor:pointer}
 .ai-chip:hover{border-color:var(--brand);color:var(--brand)}
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.trend-block{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px}
+.trend-head{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px}
+.trend-cell{padding:7px 0;border-top:1px solid var(--border)}
+.trend-cell:first-of-type{border-top:none}
+.trend-lbl{font-size:11px;color:var(--muted);font-weight:500}
+.trend-now{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin:1px 0}
+.trend-delta{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.trend-base{font-size:11px;color:var(--muted)}
+@media(max-width:760px){.trend-grid{grid-template-columns:1fr}}
 .txn-search-inp:focus{border-color:var(--brand)}
 .filter-btn{width:42px;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:all .15s}
 .filter-btn:hover{background:var(--surface3);border-color:var(--border2)}
@@ -1156,6 +1168,7 @@ body{letter-spacing:-0.006em}
       <div class="ph-r"><div class="month-nav"><button class="m-arrow" onclick="changeMonth(-1)">‹</button><span class="m-label" id="cf-month-lbl"></span><button class="m-arrow" onclick="changeMonth(1)">›</button></div></div>
     </div>
     <div class="cf-summary" id="cf-summary"></div>
+    <div class="card" id="cf-trends-card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Trends</div><div class="card-sub">Month-over-month · year-over-year</div></div></div><div id="cf-trends"></div></div>
     <div class="row row-2">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">50 / 30 / 20 Rule</div><div class="card-sub">Needs · Wants · Savings</div></div></div><div id="cf-503020"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Monthly Cash Flow</div><div class="card-sub">12-month history — tap a bar</div></div></div><div id="cf-bars"></div></div>
@@ -1187,8 +1200,10 @@ body{letter-spacing:-0.006em}
   <!-- ========= RECURRING ========= -->
   <div class="page" id="page-recurring">
     <div class="ph"><div class="ph-l"><div class="ph-title">Recurrings</div></div></div>
-    <div class="card"><div id="rec-donut-card"></div></div>
-    <div class="card"><div class="cat-coltitle"><span class="cat-coltitle-l">▾ This month</span></div><div id="rec-thismonth"></div></div>
+    <div class="row row-2" style="align-items:start">
+      <div class="card"><div id="rec-donut-card"></div></div>
+      <div class="card"><div class="cat-coltitle"><span class="cat-coltitle-l">▾ This month</span></div><div id="rec-thismonth"></div></div>
+    </div>
     <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">All recurring charges</div><div class="card-sub" id="rec-sub">—</div></div></div><div class="rec-grid" id="rec-grid"></div></div>
   </div>
 
@@ -1201,7 +1216,10 @@ body{letter-spacing:-0.006em}
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Asset Allocation</div><div class="card-sub">By market value</div></div></div><div id="inv-allocation"></div></div>
     </div>
     <div class="card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Holdings</div><div class="card-sub">All positions · cost basis vs market value</div></div></div><div id="inv-holdings"></div></div>
-    <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Contributions</div><div class="card-sub">Money transferred in (12-month view)</div></div></div><div id="inv-contrib"></div></div>
+    <div class="row row-2">
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Portfolio Value</div><div class="card-sub">Across imported statements</div></div></div><div id="inv-contrib"></div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Investment Activity</div><div class="card-sub">Buys · sells · dividends · contributions</div></div></div><div id="inv-activity"></div></div>
+    </div>
   </div>
 
   <!-- ========= CATEGORY RULES ========= -->
@@ -1210,24 +1228,30 @@ body{letter-spacing:-0.006em}
       <div class="ph-l"><div class="ph-title">Categories</div></div>
       <div class="ph-r"><div class="month-nav"><button class="m-arrow" onclick="changeMonth(-1)">‹</button><span class="m-label" id="cat-month-lbl"></span><button class="m-arrow" onclick="changeMonth(1)">›</button></div></div>
     </div>
-    <div class="card"><div id="cat-donut-card"></div></div>
-    <div class="card">
-      <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-regular')">▾ Regular categories</span><span class="cat-cols"><span>SPENT</span><span>BUDGET</span></span></div>
-      <div id="cat-regular"></div>
-    </div>
-    <div class="card">
-      <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-excluded')">▾ Excluded categories</span></div>
-      <div id="cat-excluded"></div>
-    </div>
-    <div class="card">
-      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll()">Re-categorize all →</div></div>
-      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-        <div style="flex:1;min-width:200px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
-        <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
-        <button class="btn btn-brand btn-sm" onclick="addRule()">+ Add</button>
+    <div class="row row-2" style="align-items:start">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card"><div id="cat-donut-card"></div></div>
+        <div class="card">
+          <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-regular')">▾ Regular categories</span><span class="cat-cols"><span>SPENT</span><span>BUDGET</span></span></div>
+          <div id="cat-regular"></div>
+        </div>
       </div>
-      <div id="rule-preview" style="margin-bottom:10px;font-size:12px;color:var(--muted2)"></div>
-      <div class="cat-lib-grid" id="cat-lib-grid"></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-excluded')">▾ Excluded categories</span></div>
+          <div id="cat-excluded"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll()">Re-categorize all →</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+            <div style="flex:1;min-width:160px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
+            <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
+            <button class="btn btn-brand btn-sm" onclick="addRule()">+ Add</button>
+          </div>
+          <div id="rule-preview" style="margin-bottom:10px;font-size:12px;color:var(--muted2)"></div>
+          <div class="cat-lib-grid" id="cat-lib-grid"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1354,6 +1378,15 @@ let ACCOUNTS = [
 ];
 let ACCT_BY_NAME = Object.fromEntries(ACCOUNTS.map(a=>[a.name,a]));
 function rebuildAccountIndex(){ ACCT_BY_NAME = Object.fromEntries(ACCOUNTS.map(a=>[a.name,a])); }
+const ALWAYS_SHOW=new Set(['td','scotia','momplus','mom','scene']);
+function accountVisible(a){
+  if(ALWAYS_SHOW.has(a.id)) return true;
+  if(a.manual) return true;
+  if(TXNS.some(t=>t.account===a.name)) return true;
+  if(typeof SETTINGS.balances[a.name]==='number') return true;
+  if(a.type==='invest' && wsSnapshotForAccount(a.name)) return true;
+  return false;
+}
 function loadCustomAccounts(){
   (SETTINGS.customAccounts||[]).forEach(ca=>{ if(!ACCT_BY_NAME[ca.name]){ ACCOUNTS.push({...ca, manual:true}); } });
   rebuildAccountIndex();
@@ -2132,7 +2165,7 @@ function renderSidebar() {
     {key:'invest', label:'Investments', accts:ACCOUNTS.filter(a=>a.type==='invest')},
   ];
   el.innerHTML = groups.map(g=>{
-    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia'||(a.type==='invest'&&wsSnapshotForAccount(a.name))).map(a=>{
+    const rows=g.accts.filter(accountVisible).map(a=>{
       const bal = a.type==='credit' ? getCreditOutstanding(a.name) : getBal(a.name);
       const v = bal==null ? '—' : fmtS(bal);
       return `<div class="sf-acct" onclick="${a.type==='invest'?"nav('investments')":"acctFilter='"+a.name.replace(/'/g,"\\'")+"';nav('transactions')"}"><div class="sf-l"><span class="sf-pip" style="background:${a.color}"></span><span class="sf-name">${a.short}</span></div><span class="sf-v">${v}</span></div>`;
@@ -2185,6 +2218,7 @@ function renderMonthlySpending() {
   const lastP = pts[pts.length-1] || {d:1,cum:0};
   const lx=X(lastP.d), ly=Y(lastP.cum);
   const lineCol = underOver>=0 ? 'var(--green)' : 'var(--red)';
+  registerChart('ms', W, pts.map(p=>({x:X(p.d), y:Y(p.cum), lbl:'Day '+p.d, txt:'Spent '+fmt(p.cum), val:p.cum})));
   host.innerHTML = `
     <div class="ms-hero">
       <div class="ms-big">${fmt(Math.abs(left))} <span class="ms-big-sub">${left>=0?'left':'over'}</span></div>
@@ -2193,12 +2227,12 @@ function renderMonthlySpending() {
     <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:8px">
       <path d="${pacePath}" fill="none" stroke="var(--border2)" stroke-width="1.5" stroke-dasharray="4 5" stroke-linecap="round"/>
       <path d="${spendPath}" fill="none" stroke="${lineCol}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      ${pts.filter((p,i)=>i%2===0||i===pts.length-1).map(p=>`<circle cx="${X(p.d).toFixed(1)}" cy="${Y(p.cum).toFixed(1)}" r="8" fill="transparent" style="cursor:pointer" onmousemove="showTip('Day ${p.d}<br>Spent ${fmt(p.cum)}',event)" onmouseleave="hideTip()"/>`).join('')}
       <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="5.5" fill="var(--surface)" stroke="${lineCol}" stroke-width="3"/>
       <g transform="translate(${(lx+12).toFixed(1)},${(ly-6).toFixed(1)})">
         <rect x="0" y="-15" rx="9" width="118" height="26" fill="${lineCol}"/>
         <text x="59" y="3" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="Figtree,sans-serif">${fmt(Math.abs(underOver))} ${underOver>=0?'under':'over'}</text>
       </g>
+      ${crosshairLayer('ms',W,H,padT,padB)}
     </svg>`;
 }
 
@@ -2523,7 +2557,7 @@ function renderAccounts() {
     {key:'invest', label:'Investments', accts:ACCOUNTS.filter(a=>a.type==='invest')},
   ];
   document.getElementById('acct-groups').innerHTML = groups.map(g=>{
-    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia'||(a.type==='invest'&&wsSnapshotForAccount(a.name)));
+    const rows=g.accts.filter(accountVisible);
     if(!rows.length) return '';
     const sumv=rows.reduce((s,a)=>{ const v=a.type==='credit'?getCreditOutstanding(a.name):getBal(a.name); return s+(v||0); },0);
     return `<div class="card acct-group-card">
@@ -2586,11 +2620,12 @@ function renderAcctNWChart(){
       <path d="${area('debts')}" fill="url(#addgrad)"/><path d="${area('assets')}" fill="url(#aagrad)"/>
       <path d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      ${data.map((d,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(d.assets).toFixed(1)}" r="10" fill="transparent" style="cursor:pointer" onmousemove="acctNWHover('${d.lbl}',${d.assets},${d.debts},event)" onmouseleave="document.getElementById('acct-nw-hover').textContent=''"/>`).join('')}
       <circle cx="${X(data.length-1).toFixed(1)}" cy="${Y(last.assets).toFixed(1)}" r="5.5" fill="var(--surface)" stroke="var(--blue)" stroke-width="3"/>
       <circle cx="${X(data.length-1).toFixed(1)}" cy="${Y(last.debts).toFixed(1)}" r="5.5" fill="var(--surface)" stroke="var(--orange)" stroke-width="3"/>
+      ${crosshairLayer('acctnw',W,H,padTop,padBot)}
     </svg>
     <div class="nw-tabs">${tabs}</div>`;
+  registerChart('acctnw', W, data.map((d,i)=>({x:X(i), y:Y(d.assets), lbl:d.lbl, txt:'Assets '+fmt(d.assets)+' · Debts '+fmt(d.debts)+' · Net '+fmt(d.assets-d.debts), val:d.assets-d.debts})));
 }
 function setAcctNWRange(r,el){ ACCT_NW_RANGE=r; document.querySelectorAll('#acct-nw .nw-tab').forEach(t=>t.classList.remove('active')); el&&el.classList.add('active'); renderAcctNWChart(); }
 function acctNWHover(lbl,assets,debts,e){ const h=document.getElementById('acct-nw-hover'); if(h) h.innerHTML=`<b>${lbl}</b> · Assets ${fmt(assets)} · Debts ${fmt(debts)} · Net ${fmt(assets-debts)}`; }
@@ -2598,14 +2633,20 @@ function acctNWHover(lbl,assets,debts,e){ const h=document.getElementById('acct-
 // per-account balance series
 function getAccountSeries(name, range){
   const a=ACCT_BY_NAME[name]; if(!a) return [];
+  if(a.type==='invest'){
+    // portfolio value over time from parsed statement snapshots
+    const want=(a.short==='WS Cash')?'CASH':(a.short||'TFSA').toUpperCase();
+    const pts=[];
+    Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.entries(byP).forEach(([p,s])=>{ if((s.acctType||'TFSA').toUpperCase()===want) pts.push({date:p+'-28', val:s.totalMV||0}); }));
+    pts.sort((x,y)=>x.date.localeCompare(y.date));
+    return pts.length?pts:[];
+  }
   const tx=TXNS.filter(t=>t.account===name).sort((x,y)=>x.date.localeCompare(y.date));
   if(!tx.length) return [];
   const cur = a.type==='credit' ? (getCreditOutstanding(name)||0) : (getBal(name)||0);
-  // cumulative
   let cum=0; const raw=tx.map(t=>{ cum += a.type==='credit' ? -t.amount : t.amount; return {date:t.date, c:cum}; });
   const end=raw[raw.length-1].c; const shift=cur-end;
   let series=raw.map(p=>({date:p.date, val:p.c+shift}));
-  // range filter
   const now=new Date(); let cutoff=null;
   if(range==='1W')cutoff=new Date(now-7*864e5); else if(range==='1M')cutoff=new Date(now.getFullYear(),now.getMonth()-1,now.getDate());
   else if(range==='3M')cutoff=new Date(now.getFullYear(),now.getMonth()-3,now.getDate()); else if(range==='YTD')cutoff=new Date(now.getFullYear(),0,1);
@@ -2623,7 +2664,7 @@ function showAccountDetail(name){
 function renderAccountDetailBody(){
   const name=ACCT_DETAIL_NAME; const a=ACCT_BY_NAME[name]; if(!a)return;
   const v=a.type==='credit'?getCreditOutstanding(name):getBal(name);
-  const limit=a.limit||(a.type==='credit'?40000:null);
+  const limit=(SETTINGS.limits||{})[name]||a.limit||(a.type==='credit'?40000:null);
   const series=getAccountSeries(name, ACCT_DETAIL_RANGE);
   const W=1000,H=180,padX=8,padT=18,padB=14;
   const vals=series.map(p=>p.val); const mn=Math.min(...vals,0),mx=Math.max(...vals,1),rg=Math.max(1,mx-mn);
@@ -2633,11 +2674,26 @@ function renderAccountDetailBody(){
   const ap=lp+` L${X(series.length-1).toFixed(1)} ${H-padB} L${X(0).toFixed(1)} ${H-padB} Z`;
   const col=a.type==='credit'?'var(--red)':'var(--green)';
   const tabs=['1W','1M','3M','YTD','1Y','ALL'].map(r=>`<button class="nw-tab ${r===ACCT_DETAIL_RANGE?'active':''}" onclick="setAcctDetailRange('${r}',this)">${r}</button>`).join('');
-  // transactions grouped
-  const tx=TXNS.filter(t=>t.account===name).sort((x,y)=>y.date.localeCompare(x.date));
+  // transactions: WS investment accounts use parsed statement activity + holdings; others use TXNS
+  const snap = a.type==='invest' ? wsSnapshotForAccount(name) : null;
+  let tx;
+  if(snap){
+    const all=[]; const seen=new Set();
+    Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.values(byP).forEach(s=>{ if((s.acctType||'TFSA').toUpperCase()===(a.short||'').toUpperCase()||(a.short==='WS Cash'&&(s.acctType||'').toUpperCase()==='CASH')) (s.activity||[]).forEach(r=>{ const k=r.date+'|'+r.code+'|'+r.amount; if(!seen.has(k)){seen.add(k); all.push({date:r.date, description:(r.code+' · '+r.description), amount:r.amount, account:name, id:'x'});} }); }));
+    tx=all.sort((x,y)=>y.date.localeCompare(x.date));
+  } else {
+    tx=TXNS.filter(t=>t.account===name).sort((x,y)=>y.date.localeCompare(x.date));
+  }
   const byMonth={};
   tx.forEach(t=>{const ym=t.date.slice(0,7);(byMonth[ym]=byMonth[ym]||[]).push(t);});
   let txHtml='';
+  if(snap){
+    txHtml += `<div class="txn-monthhd" style="margin-top:4px"><span>Holdings</span><span>${fmt(snap.totalMV||0)}</span></div>`;
+    txHtml += (snap.holdings||[]).map(h=>{ const ret=h.marketValueCAD-h.bookCost; const col=ret>=0?'var(--green)':'var(--red)';
+      return `<div class="txn-item"><span class="tag" style="background:var(--brand-soft);color:var(--brand);font-weight:700;min-width:50px;text-align:center">${h.symbol}</span><div class="txn-mid"><div class="txn-name">${h.name||h.symbol}</div><div class="txn-meta">${h.qty} @ ${h.currency==='USD'?'US$':''}${fmt(h.price)}</div></div><div class="txn-amt">${fmt(h.marketValueCAD)}<div style="font-size:11px;color:${col};font-weight:600">${ret>=0?'+':''}${fmt(ret)}</div></div></div>`;
+    }).join('');
+    txHtml += `<div class="txn-monthhd" style="margin-top:14px"><span>Activity</span><span></span></div>`;
+  }
   Object.keys(byMonth).sort((a,b)=>b.localeCompare(a)).forEach(ym=>{
     const tot=byMonth[ym].reduce((s,t)=>s+t.amount,0);
     txHtml+=`<div class="txn-monthhd"><span>${ymLabel(ym,{month:'long',year:'numeric'})}</span><span class="${tot>=0?'pos':''}">${tot>=0?'+':''}${fmt(tot)}</span></div>`;
@@ -2647,6 +2703,7 @@ function renderAccountDetailBody(){
       byDate[date].forEach(t=>{ const m=CAT_MAP[t.cat]||CAT_MAP.Other; txHtml+=`<div class="txn-item" onclick="showTxnDetail('${t.id}')"><div class="merch-ic" style="background:${m.color}1f;color:${m.color}">${m.icon}</div><div class="txn-mid"><div class="txn-name">${merchantName(t.description)}</div></div><div class="txn-amt ${t.amount>0?'pos':''}">${t.amount>0?'+':''}${fmt(t.amount)}</div></div>`; });
     });
   });
+  if(series.length) registerChart('acctdetail', W, series.map((p,i)=>({x:X(i), y:Y(p.val), lbl:p.date, txt:fmt(p.val), val:p.val})));
   document.getElementById('txd-body').innerHTML=`
     <div class="ad-sticky">
       <div class="ad-hd"><div><div class="ad-type">${a.type==='credit'?'Credit Card':a.type==='invest'?'Investment':'Depository'}</div><div class="ad-name">${a.short}</div></div><div class="ad-bal">${v!=null?fmt(v):'—'}${a.type==='credit'&&limit?`<div class="ad-limit">${fmt(limit)} limit</div>`:''}</div></div>
@@ -2655,8 +2712,8 @@ function renderAccountDetailBody(){
         <defs><linearGradient id="adgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".22"/><stop offset="100%" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
         <path d="${ap}" fill="url(#adgrad)"/>
         <path d="${lp}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-        ${series.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.val).toFixed(1)}" r="8" fill="transparent" style="cursor:pointer" onmousemove="document.getElementById('ad-hover').innerHTML='<b>'+'${p.date}'+'</b> · '+'${fmt(p.val)}'" onmouseleave="document.getElementById('ad-hover').textContent=''"/>`).join('')}
         <circle cx="${X(series.length-1).toFixed(1)}" cy="${Y(series[series.length-1]?.val||0).toFixed(1)}" r="5" fill="var(--surface)" stroke="${col}" stroke-width="2.6"/>
+        ${series.length?crosshairLayer('acctdetail',W,H,padT,padB):''}
       </svg>
       <div class="nw-tabs">${tabs}</div>
     </div>
@@ -2941,8 +2998,31 @@ const NEEDS_CATS = ['Housing','Utilities','Insurance','Transport','Fuel','Grocer
 const WANTS_CATS = ['Dining','Fast Food','Coffee','Shopping','Home Goods','Entertainment','Subscriptions','Fitness'];
 const INCOME_CATS = ['Payroll','Income','Tax Refund','Govt Benefits','Interest'];
 
+function renderTrends(){
+  const host=document.getElementById('cf-trends'); if(!host)return;
+  const excl=['WS TFSA','WS Cash','WS RRSP'];
+  const sumFor=(ym)=>{ const t=TXNS.filter(x=>x.date.startsWith(ym)&&!excl.includes(x.account));
+    const spend=Math.abs(t.filter(x=>x.amount<0&&!['Transfers','Investment','Returns'].includes(x.cat)).reduce((s,x)=>s+x.amount,0));
+    const inc=t.filter(x=>x.amount>0&&INCOME_CATS.includes(x.cat)).reduce((s,x)=>s+x.amount,0);
+    return {spend,inc,net:inc-spend}; };
+  const [y,m]=currentMonth.split('-').map(Number);
+  const prevYM=new Date(y,m-2,1); const prevKey=prevYM.getFullYear()+'-'+String(prevYM.getMonth()+1).padStart(2,'0');
+  const yoyKey=(y-1)+'-'+String(m).padStart(2,'0');
+  const cur=sumFor(currentMonth), prev=sumFor(prevKey), yoy=sumFor(yoyKey);
+  const cell=(label,a,b)=>{ const dv=a-b, dp=b?dv/Math.abs(b)*100:0; const pos=dv>=0;
+    return `<div class="trend-cell"><div class="trend-lbl">${label}</div><div class="trend-now">${fmt(a)}</div><div class="trend-delta" style="color:${pos?'var(--green)':'var(--red)'}">${pos?'▲':'▼'} ${fmt(Math.abs(dv))} <span style="opacity:.8">(${dp>=0?'+':''}${dp.toFixed(1)}%)</span></div><div class="trend-base">vs ${fmt(b)}</div></div>`; };
+  // for spending, lower is better → invert color
+  const cellSpend=(label,a,b)=>{ const dv=a-b, dp=b?dv/Math.abs(b)*100:0; const good=dv<=0;
+    return `<div class="trend-cell"><div class="trend-lbl">${label}</div><div class="trend-now">${fmt(a)}</div><div class="trend-delta" style="color:${good?'var(--green)':'var(--red)'}">${dv>=0?'▲':'▼'} ${fmt(Math.abs(dv))} <span style="opacity:.8">(${dp>=0?'+':''}${dp.toFixed(1)}%)</span></div><div class="trend-base">vs ${fmt(b)}</div></div>`; };
+  host.innerHTML=`<div class="trend-grid">
+    <div class="trend-block"><div class="trend-head">Spending</div>${cellSpend('vs last month',cur.spend,prev.spend)}${cellSpend('vs '+ymLabel(yoyKey,{month:'short',year:'numeric'}),cur.spend,yoy.spend)}</div>
+    <div class="trend-block"><div class="trend-head">Income</div>${cell('vs last month',cur.inc,prev.inc)}${cell('vs '+ymLabel(yoyKey,{month:'short',year:'numeric'}),cur.inc,yoy.inc)}</div>
+    <div class="trend-block"><div class="trend-head">Net cash flow</div>${cell('vs last month',cur.net,prev.net)}${cell('vs '+ymLabel(yoyKey,{month:'short',year:'numeric'}),cur.net,yoy.net)}</div>
+  </div>`;
+}
 function renderCashflow() {
   updateMonthLabels();
+  renderTrends();
   const ym = currentMonth;
   const txns = TXNS.filter(t=>t.date.startsWith(ym) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
   const income = txns.filter(t=>t.amount>0 && INCOME_CATS.includes(t.cat)).reduce((s,t)=>s+t.amount,0);
@@ -3515,6 +3595,20 @@ function renderInvFromSnapshots(snaps){
   } else {
     document.getElementById('inv-contrib').innerHTML=`<div class="empty" style="padding:20px">Import statements from 2+ months to chart portfolio value over time.</div>`;
   }
+  // investment activity (all buys/sells/divs/contributions across snapshots), newest first, de-duped
+  const actEl=document.getElementById('inv-activity');
+  if(actEl){
+    const all=[]; const seen=new Set();
+    Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.values(byP).forEach(s=>(s.activity||[]).forEach(r=>{ const k=r.date+'|'+r.code+'|'+r.amount+'|'+r.description.slice(0,20); if(!seen.has(k)){seen.add(k); all.push(r);} })));
+    all.sort((a,b)=>b.date.localeCompare(a.date));
+    const codeCol={BUY:'var(--red)',SELL:'var(--green)',DIV:'var(--blue)',CONT:'var(--brand)',DEP:'var(--brand)',WD:'var(--orange)',GIVEAWAY:'var(--purple)',FEE:'var(--muted)'};
+    actEl.innerHTML = all.length ? `<div class="txn-list">${all.slice(0,60).map(r=>{
+      const tk=(r.description.match(/^([A-Z]{1,5}(?:\.[A-Z]{1,3})?)\b/)||[])[1]||'';
+      return `<div class="txn-item"><span class="tag" style="background:${(codeCol[r.code]||'var(--muted)')}1f;color:${codeCol[r.code]||'var(--muted)'};font-weight:700;min-width:46px;text-align:center">${r.code}</span>
+        <div class="txn-mid"><div class="txn-name">${tk?'<b>'+tk+'</b> · ':''}${r.description.replace(/^[A-Z.]+\s*-\s*/,'')}</div><div class="txn-meta">${r.date}</div></div>
+        <div class="txn-amt ${r.amount>=0?'pos':''}">${r.amount>=0?'+':''}${fmt(r.amount)}</div></div>`;
+    }).join('')}</div>` : '<div class="empty">No activity parsed</div>';
+  }
 }
 function renderInvestmentsLegacy() {
   // Compute holdings from settings + cost basis from transactions
@@ -3794,7 +3888,28 @@ function parseWSStatement(lines, fileName){
     let nm=h[1].replace(/^(?:CAD|USD)\s+/,'').replace(/^[^A-Za-z]+/,'').trim(); if(nm.length>46) nm=nm.slice(-46).replace(/^\S*\s/,'');
     out.holdings.push({name:nm, symbol:sym, qty:num(h[3]), price:num(h[5]), currency:h[6]||'CAD', marketValueCAD:num(h[7]), bookCost:num(h[8])});
   }
+  out.activity=parseWSActivity(flat);
   return out;
+}
+function parseWSActivity(flat){
+  const rows=[];
+  let s=flat.search(/Activity - Current period/); if(s<0) return rows;
+  let seg=flat.slice(s);
+  const e=seg.search(/LEVERAGE DISCLOSURE|Designation of Beneficiary|Information about Statement Codes|STATEMENT NOTES/);
+  if(e>0) seg=seg.slice(0,e);
+  const re=/(\d{4}-\d{2}-\d{2})\s+([A-Z]{2,12})\s+([\s\S]*?)(?=(?:\d{4}-\d{2}-\d{2}\s+[A-Z]{2,12}\s)|$)/g;
+  let m;
+  while((m=re.exec(seg))){
+    const date=m[1], code=m[2]; let rest=m[3];
+    if(/^(LOAN|RECALL|FPLINT)$/.test(code)) continue;
+    const amts=[...rest.matchAll(/\$(-?[\d,]+\.\d{2})/g)].map(x=>parseFloat(x[1].replace(/,/g,'')));
+    if(amts.length<3) continue;
+    const debit=amts[amts.length-3], credit=amts[amts.length-2];
+    const amount=+(credit-debit).toFixed(2);
+    let desc=rest.replace(/\d\/\d+\s*Activity[\s\S]*$/,'').replace(/\$-?[\d,]+\.\d{2}/g,'').replace(/,?\s*FX Rate:\s*[\d.]+/g,'').replace(/\(executed[^)]*\)/g,'').replace(/,?\s*record date of \d{4}-\d{2}-\d{2}/g,'').replace(/,?\s*received on \d{4}-\d{2}-\d{2}/g,'').replace(/\s+/g,' ').trim();
+    rows.push({date, code, description:desc||code, amount});
+  }
+  return rows;
 }
 async function handleWSPdf(files){
   if(!files||!files.length) return;
@@ -3886,7 +4001,7 @@ async function handleFiles(files,account,srcId) {
     } catch (e) { log(`  ✗ ${e.message}`,'err'); }
   }
   log(`Done — ${total} total added`,'ok');
-  recatAll(); renderAll();
+  saveSettings(); recatAll(); renderAll();
 }
 async function parseFile(file,account,parser) {
   let rows=[];
@@ -3926,7 +4041,7 @@ function parseMomentumPlusXLSX(rows, account){
   const out=[]; let bal=null;
   for(let i=0;i<flat.length;i++){
     const c=flat[i];
-    if(typeof c==='string' && /current balance/i.test(c)){ for(let k=i+1;k<i+4 && k<flat.length;k++){ if(typeof flat[k]==='number'){bal=flat[k];break;} } }
+    if(typeof c==='string' && /current balance/i.test(c)){ for(let k=i+1;k<i+6 && k<flat.length;k++){ if(typeof flat[k]==='number'){bal=flat[k];break;} const n=typeof flat[k]==='string'?parseFloat(flat[k].replace(/[$,]/g,'')):NaN; if(!isNaN(n)){bal=n;break;} } }
     if(typeof c!=='string') continue;
     const dm=c.match(/^\w{3}\.\s*(\w{3})\.\s*(\d{1,2})\s+(\d{4})$/);
     if(!dm) continue; const mo=_MP_MON[dm[1]]; if(mo==null) continue;
@@ -4059,6 +4174,25 @@ function showTip(html, e) {
 }
 function hideTip() { if (_tooltip) _tooltip.style.opacity = '0'; }
 let _tipTimer=null;
+const _CROSS={};
+function registerChart(key, W, pts){ _CROSS[key]={W, pts}; }
+function chartCrosshair(key, e, rect){
+  const g=_CROSS[key]; if(!g||!g.pts.length) return;
+  const svg=rect.ownerSVGElement||rect.closest('svg'); if(!svg)return; const br=svg.getBoundingClientRect();
+  const vx=(e.clientX-br.left)/br.width*g.W;
+  let bi=0,bd=1e9; g.pts.forEach((p,i)=>{const d=Math.abs(p.x-vx); if(d<bd){bd=d;bi=i;}});
+  const p=g.pts[bi], prev=g.pts[bi-1];
+  const cl=svg.querySelector('.xcross'), cd=svg.querySelector('.xcdot');
+  if(cl){cl.setAttribute('x1',p.x);cl.setAttribute('x2',p.x);cl.style.opacity=1;}
+  if(cd){cd.setAttribute('cx',p.x);cd.setAttribute('cy',p.y);cd.style.opacity=1;}
+  let tip='<b>'+p.lbl+'</b><br>'+p.txt;
+  if(prev){ const dv=p.val-prev.val, dp=prev.val?dv/Math.abs(prev.val)*100:0; const col=dv>=0?'#3FD77F':'#F0655A';
+    tip+='<br><span style=color:'+col+'>'+(dv>=0?'+':'')+fmt(dv)+' ('+(dp>=0?'+':'')+dp.toFixed(1)+'%) vs prev</span>'; }
+  showTip(tip, e);
+}
+function crosshairLayer(key, W, H, padTop, padBot){
+  return `<line class="xcross" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="var(--border2)" stroke-width="1" stroke-dasharray="4 4" opacity="0"/><circle class="xcdot" r="5" fill="var(--brand)" opacity="0"/><rect class="xchit" x="0" y="0" width="${W}" height="${H}" fill="transparent" style="cursor:crosshair" onmousemove="chartCrosshair('${key}',event,this)" onmouseleave="hideTip();var s=this.ownerSVGElement;if(s){s.querySelector('.xcross').style.opacity=0;s.querySelector('.xcdot').style.opacity=0;}"/>`;
+}
 if (typeof document!=='undefined') {
   document.addEventListener('touchstart', e=>{ if(!e.target.closest('svg')) hideTip(); }, {passive:true});
   document.addEventListener('click', e=>{ if(!e.target.closest('svg')) hideTip(); }, true);
@@ -4394,20 +4528,20 @@ function renderWealthTrajectory(avgMonthly) {
 // SETTINGS PAGE
 // ═══════════════════════════════════════════════════════
 function renderSettings() {
-  const acctOrder = ['TD Chequing','Scotia Basic Chequing','WS TFSA','WS Cash','WS RRSP','Momentum Visa Infinite','Scene+ Visa'];
-  const balRows = acctOrder.map(name => {
-    const a = ACCT_BY_NAME[name];
-    if (!a) return '';
+  const balRows = ACCOUNTS.map(a => {
+    const name = a.name;
     const calc = a.type==='credit' ? getCreditOutstanding(name) : getBal(name);
     const ov = SETTINGS.balances[name];
     const hasOverride = typeof ov === 'number' && !isNaN(ov);
     const isCredit = a.type==='credit';
+    const lim = (SETTINGS.limits||{})[name];
     return '<tr class="tr">'
-      +'<td><div style="display:flex;align-items:center;gap:9px"><span class="sf-pip" style="background:'+a.color+';width:10px;height:10px"></span><b>'+name+'</b><span class="tag" style="background:'+a.color+'1f;color:'+a.color+';font-size:10px">'+a.type+'</span></div></td>'
+      +'<td><div style="display:flex;align-items:center;gap:9px"><span class="sf-pip" style="background:'+a.color+';width:10px;height:10px"></span><b>'+name+'</b><span class="tag" style="background:'+a.color+'1f;color:'+a.color+';font-size:10px">'+a.type+'</span>'+(a.manual?'<button class="acct-del" style="width:20px;height:20px" onclick="if(confirm(\'Remove '+a.short+'?\'))deleteManualAccount(\''+name.replace(/'/g,"\\'")+'\')">✕</button>':'')+'</div></td>'
       +'<td class="td-amt" style="color:var(--muted)">'+(calc!=null?fmt(calc):'—')+'</td>'
-      +'<td><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">'
+      +'<td><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap">'
       +'<span style="color:var(--muted);font-size:11px">'+(isCredit?'Owed':'Balance')+'</span>'
-      +'<input type="number" step="0.01" min="0" value="'+(hasOverride?ov:'')+'" placeholder="auto" id="bal-'+a.id+'" style="width:120px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;text-align:right;outline:none" onblur="setBalance(\''+name+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()">'
+      +'<input type="number" step="0.01" value="'+(hasOverride?ov:'')+'" placeholder="auto" style="width:110px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;text-align:right;outline:none" onblur="setBalance(\''+name.replace(/'/g,"\\'")+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()">'
+      +(isCredit?'<span style="color:var(--muted);font-size:11px;margin-left:6px">Limit</span><input type="number" step="100" value="'+(lim||'')+'" placeholder="—" style="width:100px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;text-align:right;outline:none" onblur="setLimit(\''+name.replace(/'/g,"\\'")+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()">':'')
       +'</div></td></tr>';
   }).join('');
 
@@ -4506,6 +4640,13 @@ function setBalance(acctName, val) {
   saveSettings();
   toast(acctName + ' balance updated');
   renderAll();
+}
+function setLimit(acctName, val){
+  SETTINGS.limits = SETTINGS.limits || {};
+  const n = parseFloat(val);
+  if (val==='' || isNaN(n)) delete SETTINGS.limits[acctName];
+  else SETTINGS.limits[acctName] = n;
+  saveSettings(); toast(acctName+' limit updated');
 }
 function setGoal(key, val) {
   const n = parseFloat(val);
