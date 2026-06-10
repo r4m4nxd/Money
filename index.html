@@ -86,6 +86,13 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 /* ── MAIN ── */
 .main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;max-width:100%}
 .page{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding:32px 38px 48px;min-width:0;max-width:100%}
+/* center + cap content width on large screens (RamanFX-style column) */
+.page > *{width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
+/* keep big charts compact instead of full-screen-tall on PC */
+#nw-card > svg, #acct-nw > svg, #dash-spending > svg{height:190px}
+#chart-cashflow > svg, #cf-cat-trend > svg, #chart-networth > svg{height:200px;max-height:200px}
+.nw-val{font-size:30px}
+.ms-big{font-size:38px}
 .page.active{display:flex}
 .card{min-width:0;max-width:100%}
 svg{max-width:100%}
@@ -722,7 +729,9 @@ body{letter-spacing:-0.006em}
 .txd-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;backdrop-filter:blur(3px)}
 .txd-bg.hidden{display:none}
 .txd-modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:460px;padding:24px;position:relative;box-shadow:var(--shadow-lg);animation:scaleIn .3s cubic-bezier(.34,1.4,.5,1)}
-.txd-close{position:absolute;top:18px;right:18px;width:30px;height:30px;border-radius:8px;border:none;background:var(--surface2);color:var(--muted2);cursor:pointer;font-size:14px}
+.txd-close{position:absolute;top:18px;right:18px;width:30px;height:30px;border-radius:8px;border:none;background:var(--surface2);color:var(--muted2);cursor:pointer;font-size:14px;z-index:20}
+.txd-head{padding-right:42px}
+.rd-top{padding-right:42px}
 .txd-close:hover{background:var(--surface3);color:var(--text)}
 .txd-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .txd-date{font-size:13px;color:var(--muted2);font-weight:600}
@@ -799,6 +808,8 @@ body{letter-spacing:-0.006em}
 .rd-metrics td{padding:7px 0;font-size:14px;color:var(--text);font-variant-numeric:tabular-nums;border-top:1px solid var(--border);font-weight:600}
 .rd-metrics .r{text-align:right}
 .rd-toggle-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);margin-top:10px}
+.signin-box{display:grid;gap:9px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:11px}
+.signin-status{font-size:13.5px;color:var(--green);font-weight:600}
 
 /* ── FILTER MENU ICONS + SUBLISTS ── */
 .fm-ic{display:inline-flex;width:18px;height:18px;color:var(--brand);flex-shrink:0;margin-right:2px}
@@ -1691,10 +1702,13 @@ const SB = {
   key:     localStorage.getItem('sb_key') || '',
   syncKey: localStorage.getItem('sb_synckey') || 'raman-money',
   lastSync: localStorage.getItem('sb_lastsync') || null,
+  email:   localStorage.getItem('sb_email') || '',
+  userId:  localStorage.getItem('sb_userid') || '',
   client:  null,
   syncing: false,
 };
 function sbConfigured() { return !!(SB.url && SB.key); }
+function sbSignedIn() { return !!SB.userId; }
 function sbSaveConfig(url, key, syncKey) {
   SB.url = (url||'').trim().replace(/\/$/,'');
   SB.key = (key||'').trim();
@@ -1703,6 +1717,24 @@ function sbSaveConfig(url, key, syncKey) {
   localStorage.setItem('sb_url', SB.url);
   localStorage.setItem('sb_key', SB.key);
   localStorage.setItem('sb_synckey', SB.syncKey);
+}
+async function sbSignIn(email, password){
+  if(!sbConfigured()){ toast('Enter Project URL + anon key first'); return; }
+  if(!email||!password){ toast('Enter email and password'); return; }
+  try{
+    const c=await sbClient();
+    const {data,error}=await c.auth.signInWithPassword({email:email.trim(),password});
+    if(error) throw error;
+    SB.email=data.user.email; SB.userId=data.user.id; SB.syncKey='user-'+data.user.id;
+    localStorage.setItem('sb_email',SB.email); localStorage.setItem('sb_userid',SB.userId); localStorage.setItem('sb_synckey',SB.syncKey);
+    toast('Signed in as '+SB.email);
+    await syncPull(true); renderAll(); if(document.getElementById('settings-content'))renderSettings();
+  }catch(e){ toast('Sign-in failed: '+(e.message||e)); }
+}
+async function sbSignOut(){
+  try{ const c=await sbClient(); if(c) await c.auth.signOut(); }catch(e){}
+  SB.email=''; SB.userId=''; localStorage.removeItem('sb_email'); localStorage.removeItem('sb_userid');
+  toast('Signed out'); if(document.getElementById('settings-content'))renderSettings(); updateSyncUI();
 }
 async function ensureSupabaseLib() {
   if (window.supabase?.createClient) return;
@@ -1887,10 +1919,12 @@ function drillCategory(cat) {
   }, 100);
 }
 function updateMonthLabels() {
-  const dt = new Date(currentMonth+'-01');
-  const lbl = dt.toLocaleString('en',{month:'long',year:'numeric'});
+  const lbl = ymLabel(currentMonth,{month:'long',year:'numeric'});
   ['dash-month-lbl','budget-month-lbl','cf-month-lbl'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=lbl;});
 }
+// timezone-safe: build date in LOCAL time so date-only strings never roll back a day
+function ymDate(ym){ const p=String(ym).split('-'); return new Date(+p[0], (+p[1]||1)-1, 1); }
+function ymLabel(ym, opts){ return ymDate(ym).toLocaleString('en', opts||{month:'long',year:'numeric'}); }
 
 // ═══════════════════════════════════════════════════════
 // BALANCES
@@ -2098,7 +2132,7 @@ function showTxnDetail(id){
   let histHtml='';
   Object.keys(byMonth).sort((a,b)=>b.localeCompare(a)).slice(0,6).forEach(ym=>{
     const tot=byMonth[ym].reduce((s,x)=>s+Math.abs(x.amount),0);
-    histHtml+=`<div class="td-month-hd"><span>${new Date(ym+'-01').toLocaleString('en',{month:'long',year:'numeric'})}</span><span>${fmt(tot)}</span></div>`;
+    histHtml+=`<div class="td-month-hd"><span>${ymLabel(ym,{month:'long',year:'numeric'})}</span><span>${fmt(tot)}</span></div>`;
     byMonth[ym].forEach(x=>{ histHtml+=`<div class="txn-item"><div class="merch-ic" style="background:${m.color}1f;color:${m.color}">${m.icon}</div><div class="txn-mid"><div class="txn-name">${merchantName(x.description)}</div><div class="txn-meta">${x.date}</div></div><div class="txn-amt ${x.amount>0?'pos':''}">${x.amount>0?'+':''}${fmt(x.amount)}</div></div>`; });
   });
   const body=document.getElementById('txd-body');
@@ -2258,7 +2292,7 @@ function renderCashflowMini() {
     const t = TXNS.filter(x=>x.date.startsWith(ym) && !['WS TFSA','WS Cash','WS RRSP'].includes(x.account));
     const inc = t.filter(x=>x.amount>0 && ['Payroll','Income','Tax Refund','Govt Benefits'].includes(x.cat)).reduce((s,x)=>s+x.amount,0);
     const exp = t.filter(x=>x.amount<0 && !['Transfers','Investment','Returns'].includes(x.cat)).reduce((s,x)=>s+Math.abs(x.amount),0);
-    return {inc, exp, lbl:new Date(ym+'-01').toLocaleString('en',{month:'short'})};
+    return {inc, exp, lbl:ymLabel(ym,{month:'short'})};
   });
   const maxV = Math.max(...data.map(d=>Math.max(d.inc,d.exp)),1);
   document.getElementById('chart-cashflow').innerHTML = `<div class="bar-chart">${data.map(d=>`<div class="bc-col">
@@ -2277,7 +2311,7 @@ function renderDonut() {
   txns.forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+Math.abs(t.amount);});
   const entries = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const total = entries.reduce((s,[,v])=>s+v,0);
-  document.getElementById('donut-sub').textContent = total ? fmt(total)+' spent in '+new Date(currentMonth+'-01').toLocaleString('en',{month:'short'}) : '';
+  document.getElementById('donut-sub').textContent = total ? fmt(total)+' spent in '+ymLabel(currentMonth,{month:'short'}) : '';
   if (!total) { document.getElementById('chart-donut').innerHTML='<div class="empty">No spending data this month</div>'; return; }
   document.getElementById('chart-donut').innerHTML = entries.map(([cat,val])=>{
     const m=CAT_MAP[cat]||CAT_MAP['Other'];
@@ -2424,7 +2458,7 @@ function renderAccountDetailBody(){
   let txHtml='';
   Object.keys(byMonth).sort((a,b)=>b.localeCompare(a)).forEach(ym=>{
     const tot=byMonth[ym].reduce((s,t)=>s+t.amount,0);
-    txHtml+=`<div class="txn-monthhd"><span>${new Date(ym+'-01').toLocaleString('en',{month:'long',year:'numeric'})}</span><span class="${tot>=0?'pos':''}">${tot>=0?'+':''}${fmt(tot)}</span></div>`;
+    txHtml+=`<div class="txn-monthhd"><span>${ymLabel(ym,{month:'long',year:'numeric'})}</span><span class="${tot>=0?'pos':''}">${tot>=0?'+':''}${fmt(tot)}</span></div>`;
     const byDate={}; byMonth[ym].forEach(t=>{(byDate[t.date]=byDate[t.date]||[]).push(t);});
     Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
       txHtml+=`<div class="txn-daterow">${fmtDayLabel(date)}</div>`;
@@ -2598,7 +2632,7 @@ function renderTxnPage() {
     if(ym!==lastMonth){
       // month subtotal across the full filtered set
       const monthTot=filteredTxns.filter(x=>x.date.startsWith(ym)).reduce((s,x)=>s+x.amount,0);
-      html+=`<div class="txn-monthhd"><span>${new Date(ym+'-01').toLocaleString('en',{month:'long',year:'numeric'})}</span><span class="${monthTot>=0?'pos':''}">${monthTot>=0?'+':''}${fmt(monthTot)}</span></div>`;
+      html+=`<div class="txn-monthhd"><span>${ymLabel(ym,{month:'long',year:'numeric'})}</span><span class="${monthTot>=0?'pos':''}">${monthTot>=0?'+':''}${fmt(monthTot)}</span></div>`;
       lastMonth=ym;
     }
     html+=`<div class="txn-daterow">${fmtDayLabel(date)}</div>`;
@@ -2761,7 +2795,7 @@ function renderCashflow() {
     const t = TXNS.filter(x=>x.date.startsWith(ymm) && !['WS TFSA','WS Cash','WS RRSP'].includes(x.account));
     const inc = t.filter(x=>x.amount>0 && INCOME_CATS.includes(x.cat)).reduce((s,x)=>s+x.amount,0);
     const exp = Math.abs(t.filter(x=>x.amount<0 && !['Transfers','Investment','Returns'].includes(x.cat)).reduce((s,x)=>s+x.amount,0));
-    return {inc, exp, net:inc-exp, lbl:new Date(ymm+'-01').toLocaleString('en',{month:'short'}), ym:ymm};
+    return {inc, exp, net:inc-exp, lbl:ymLabel(ymm,{month:'short'}), ym:ymm};
   });
   const maxV = Math.max(...data.map(d=>Math.max(d.inc,d.exp)),1);
   document.getElementById('cf-bars').innerHTML = `<div class="bar-chart" style="height:200px">${data.map(d=>`<div class="bc-col" style="cursor:pointer" onclick="currentMonth='${d.ym}';renderCashflow();updateMonthLabels()">
@@ -2851,10 +2885,10 @@ function renderCashflow() {
   const lines=catList.map(c=>{
     const m=CAT_MAP[c.cat]||CAT_MAP.Other;
     const path=c.monthly.map((v,i)=>(i?'L':'M')+cftX(i).toFixed(1)+' '+cftY(v).toFixed(1)).join(' ');
-    const dots=c.monthly.map((v,i)=>`<circle cx="${cftX(i).toFixed(1)}" cy="${cftY(v).toFixed(1)}" r="3.5" fill="var(--surface)" stroke="${m.color}" stroke-width="2" style="cursor:pointer" onmousemove="showTip('<b>${c.cat}</b><br>${new Date(recentMonths[i]+'-01').toLocaleString('en',{month:'long'})}: ${fmt(v)}',event)" onmouseleave="hideTip()"/>`).join('');
+    const dots=c.monthly.map((v,i)=>`<circle cx="${cftX(i).toFixed(1)}" cy="${cftY(v).toFixed(1)}" r="3.5" fill="var(--surface)" stroke="${m.color}" stroke-width="2" style="cursor:pointer" onmousemove="showTip('<b>${c.cat}</b><br>${ymLabel(recentMonths[i],{month:'long'})}: ${fmt(v)}',event)" onmouseleave="hideTip()"/>`).join('');
     return `<path d="${path}" fill="none" stroke="${m.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>${dots}`;
   }).join('');
-  const xlabels=recentMonths.map((ymm,i)=>`<text x="${cftX(i).toFixed(1)}" y="${cftH-8}" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="Figtree,sans-serif">${new Date(ymm+'-01').toLocaleString('en',{month:'short'})}</text>`).join('');
+  const xlabels=recentMonths.map((ymm,i)=>`<text x="${cftX(i).toFixed(1)}" y="${cftH-8}" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="Figtree,sans-serif">${ymLabel(ymm,{month:'short'})}</text>`).join('');
   const legend=catList.map(c=>{const m=CAT_MAP[c.cat]||CAT_MAP.Other;return `<span class="cft-leg"><span class="dot" style="background:${m.color}"></span>${c.cat} <b>${fmt(c.total)}</b></span>`;}).join('');
   document.getElementById('cf-cat-trend').innerHTML = catList.length ? `
     <svg width="100%" viewBox="0 0 ${cftW} ${cftH}" style="overflow:visible" preserveAspectRatio="none">${lines}${xlabels}</svg>
@@ -2909,7 +2943,7 @@ function renderBudget() {
   document.getElementById('budget-today').innerHTML = `
     <div class="today-hero">
       <div class="today-l">
-        <div class="today-lbl">${isCurrentMonth ? 'Today — '+today.toLocaleDateString('en',{weekday:'long',month:'short',day:'numeric'}) : 'Daily allowance · '+new Date(ym+'-01').toLocaleString('en',{month:'long',year:'numeric'})}</div>
+        <div class="today-lbl">${isCurrentMonth ? 'Today — '+today.toLocaleDateString('en',{weekday:'long',month:'short',day:'numeric'}) : 'Daily allowance · '+ymLabel(ym,{month:'long',year:'numeric'})}</div>
         <div class="today-amt" style="color:${tColor}">${fmt(Math.abs(todayLeft))}</div>
         <div class="today-sub">${tHeroLabel} · daily allowance ${fmt(todayAllowance)}</div>
         <div class="today-bar"><div class="today-bar-fill" style="width:${todayPct}%;background:${tColor}"></div></div>
@@ -2991,7 +3025,7 @@ function renderBudgetTrend() {
   for (let i=5;i>=0;i--){const d=new Date(cy,cm-1-i,1);months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
   const data = months.map(ym=>{
     const t = TXNS.filter(x=>x.date.startsWith(ym) && x.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(x.account) && !['Transfers','Investment','Returns'].includes(x.cat));
-    return {lbl:new Date(ym+'-01').toLocaleString('en',{month:'short'}), val:t.reduce((s,x)=>s+Math.abs(x.amount),0)};
+    return {lbl:ymLabel(ym,{month:'short'}), val:t.reduce((s,x)=>s+Math.abs(x.amount),0)};
   });
   const maxV = Math.max(...data.map(d=>d.val),1);
   const W=360, H=180, pad=32;
@@ -3303,7 +3337,7 @@ function renderInvestments() {
   // Contribution history bars
   const contribMonths = []; const [cy,cm] = currentMonth.split('-').map(Number);
   for (let i=11;i>=0;i--) { const d=new Date(cy,cm-1-i,1); contribMonths.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')); }
-  const contribData = contribMonths.map(ym => ({lbl:new Date(ym+'-01').toLocaleString('en',{month:'short'}), val:contribsByMonth[ym]||0}));
+  const contribData = contribMonths.map(ym => ({lbl:ymLabel(ym,{month:'short'}), val:contribsByMonth[ym]||0}));
   const maxC = Math.max(...contribData.map(d=>d.val), SETTINGS.monthlyInvestTarget||800, 1);
   document.getElementById('inv-contrib').innerHTML = `<div class="bar-chart" style="height:160px">${contribData.map(d=>{
     const h = Math.round(d.val/maxC*120);
@@ -3319,14 +3353,14 @@ function renderInvestments() {
 // ═══════════════════════════════════════════════════════
 const EXCLUDED_CATS = ['Transfers','Investment','Returns','Payroll','Income','Tax Refund','Govt Benefits','Interest'];
 function renderCategories() {
-  const lbl=document.getElementById('cat-month-lbl'); if(lbl) lbl.textContent=new Date(currentMonth+'-01').toLocaleString('en',{month:'long',year:'numeric'});
+  const lbl=document.getElementById('cat-month-lbl'); if(lbl) lbl.textContent=ymLabel(currentMonth,{month:'long',year:'numeric'});
   const mt = TXNS.filter(t=>t.date.startsWith(currentMonth) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
   const spentByCat={};
   mt.filter(t=>t.amount<0).forEach(t=>{spentByCat[t.cat]=(spentByCat[t.cat]||0)+Math.abs(t.amount);});
   const totalSpent = CAT_NAMES.filter(c=>!EXCLUDED_CATS.includes(c)).reduce((s,c)=>s+(spentByCat[c]||0),0);
   const totalBudget = Object.values(BUDGET_TARGETS).reduce((s,v)=>s+v,0);
   // donut card
-  const monShort=new Date(currentMonth+'-01').toLocaleString('en',{month:'short'});
+  const monShort=ymLabel(currentMonth,{month:'short'});
   const reg = CAT_META.filter(m=>!EXCLUDED_CATS.includes(m.cat)).map(m=>({...m, spent:spentByCat[m.cat]||0, budget:BUDGET_TARGETS[m.cat]||0}))
     .sort((a,b)=> (b.spent-a.spent) || (b.budget-a.budget));
   // donut arcs by budget share
@@ -3727,7 +3761,7 @@ function projectInvestment(monthly, years, rate=0.07) {
 
 function generateStory(h) {
   // Personalized narrative
-  const monthName = new Date(currentMonth+'-01').toLocaleString('en',{month:'long'});
+  const monthName = ymLabel(currentMonth,{month:'long'});
   const surplusDeficit = h.avgInc - h.avgExp;
   let story = '';
   if (h.savingsRate > 0.15) {
@@ -3960,9 +3994,14 @@ function renderSettings() {
     +'<div style="display:grid;gap:12px">'
     +'<div><div class="sf-lbl">Supabase Project URL</div><input id="sb-url" placeholder="https://xxxx.supabase.co" value="'+(SB.url||'')+'" class="sf-inp"></div>'
     +'<div><div class="sf-lbl">Supabase anon public key</div><input id="sb-key" placeholder="eyJhbGci..." value="'+(SB.key||'')+'" class="sf-inp" style="font-family:JetBrains Mono,monospace;font-size:11.5px"></div>'
-    +'<div><div class="sf-lbl">Sync key (same on all your devices)</div><input id="sb-synckey" placeholder="raman-money" value="'+(SB.syncKey||'')+'" class="sf-inp"></div>'
+    +'<button class="btn btn-sm" onclick="saveSbConfig()" style="justify-self:start">Save connection</button>'
+    +(sbSignedIn()
+        ? '<div class="signin-box"><div class="signin-status">✓ Signed in as <b>'+SB.email+'</b></div><button class="btn btn-sm" onclick="sbSignOut()">Sign out</button></div>'
+        : '<div class="signin-box"><div class="sf-lbl">Sign in with your Supabase email &amp; password</div>'
+          +'<input id="sb-email" type="email" placeholder="you@email.com" value="'+(SB.email||'')+'" class="sf-inp">'
+          +'<input id="sb-pass" type="password" placeholder="password" class="sf-inp">'
+          +'<button class="btn btn-brand btn-sm" onclick="sbSignIn(document.getElementById(\'sb-email\').value,document.getElementById(\'sb-pass\').value)">Sign in &amp; sync</button></div>')
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
-    +'<button class="btn btn-brand btn-sm" onclick="saveSbConfig()">Save connection</button>'
     +'<button class="btn btn-sm" onclick="syncPush()">↑ Push to cloud</button>'
     +'<button class="btn btn-sm" onclick="syncPull()">↓ Pull from cloud</button>'
     +'<span id="sync-status" style="color:var(--muted);font-size:12px;margin-left:4px">'+(SB.lastSync?'Synced '+timeAgo(new Date(SB.lastSync)):(sbConfigured()?'Connected':'Not connected'))+'</span>'
@@ -4029,11 +4068,12 @@ function removeHolding(tick) {
 function saveSbConfig() {
   const url = document.getElementById('sb-url').value;
   const key = document.getElementById('sb-key').value;
-  const sk = document.getElementById('sb-synckey').value;
+  const sk = document.getElementById('sb-synckey')?.value || SB.syncKey;
   if (!url || !key) { toast('Enter both URL and anon key'); return; }
   sbSaveConfig(url, key, sk);
   updateSyncUI();
-  toast('Connection saved — tap Push to upload');
+  toast('Connection saved — now sign in with your email & password');
+  if(document.getElementById('settings-content')) renderSettings();
 }
 function resetSettings() {
   openModal('Reset Settings','This restores all balances, holdings, and goals to defaults. Cannot be undone.', function(){
