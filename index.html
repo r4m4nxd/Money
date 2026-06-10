@@ -812,6 +812,19 @@ body{letter-spacing:-0.006em}
 .rd-toggle-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);margin-top:10px}
 .signin-box{display:grid;gap:9px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:11px}
 .signin-status{font-size:13.5px;color:var(--green);font-weight:600}
+.lightbox{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:30px;animation:fadeIn .15s}
+.lightbox.hidden{display:none}
+.lightbox img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:22px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:18px;cursor:pointer}
+.catrow2{display:grid;grid-template-columns:34px 1fr auto minmax(110px,200px) auto;align-items:center;gap:12px;padding:11px 4px;border-top:1px solid var(--border);cursor:pointer}
+.catrow2:hover{background:var(--surface2)}
+.catrow2-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.catrow2-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catrow2-spent{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;text-align:right;min-width:62px}
+.catrow2-track{height:7px;border-radius:6px;background:var(--surface3);overflow:hidden}
+.catrow2-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.catrow2-budget{font-weight:600;font-size:13.5px;color:var(--muted2);font-variant-numeric:tabular-nums;text-align:right;min-width:56px}
+@media(max-width:640px){.catrow2{grid-template-columns:30px 1fr auto;row-gap:6px}.catrow2-track{grid-column:1/-1;order:5}.catrow2-budget{order:4}}
 .ccy-toggle{display:inline-flex;gap:0;border:1px solid var(--border2);border-radius:9px;overflow:hidden;margin-bottom:12px}
 .ccy-toggle button{padding:6px 16px;border:none;background:var(--surface);color:var(--muted2);font-family:'Figtree',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
 .ccy-toggle button.on{background:var(--brand);color:#fff}
@@ -1959,7 +1972,18 @@ function ymLabel(ym, opts){ return ymDate(ym).toLocaleString('en', opts||{month:
 // ═══════════════════════════════════════════════════════
 // BALANCES
 // ═══════════════════════════════════════════════════════
+function wsSnapshotForAccount(acctName){
+  // map a money account (WS TFSA / WS RRSP / WS Cash) to its latest parsed statement snapshot
+  const a=ACCT_BY_NAME[acctName]; if(!a||a.type!=='invest') return null;
+  const snaps=latestWSSnapshots(); const want=(a.short==='WS Cash')?'Cash':a.short; // TFSA / RRSP / Cash
+  let found=null;
+  Object.values(snaps).forEach(s=>{ const ty=(s.acctType||'').toUpperCase(); if(ty===want.toUpperCase()||(want==='Cash'&&ty==='CASH')) found=s; });
+  return found;
+}
 function getBal(acct) {
+  // investment accounts: a parsed statement snapshot is the authoritative market value
+  const snap=(typeof wsSnapshotForAccount==='function')?wsSnapshotForAccount(acct):null;
+  if (snap && typeof snap.totalMV==='number') return snap.totalMV;
   const ov = SETTINGS.balances[acct];
   if (typeof ov === 'number' && !isNaN(ov)) return ov;
   const t = TXNS.filter(x=>x.account===acct && x.balance!=null).sort((a,b)=>b.date.localeCompare(a.date))[0];
@@ -2020,10 +2044,10 @@ function renderSidebar() {
     {key:'invest', label:'Investments', accts:ACCOUNTS.filter(a=>a.type==='invest')},
   ];
   el.innerHTML = groups.map(g=>{
-    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia').map(a=>{
+    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia'||(a.type==='invest'&&wsSnapshotForAccount(a.name))).map(a=>{
       const bal = a.type==='credit' ? getCreditOutstanding(a.name) : getBal(a.name);
-      const v = bal==null ? '—' : (a.type==='credit' ? fmtS(bal) : fmtS(bal));
-      return `<div class="sf-acct" onclick="acctFilter='${a.name.replace(/'/g,"\\'")}';nav('transactions')"><div class="sf-l"><span class="sf-pip" style="background:var(--brand)"></span><span class="sf-name">${a.short}</span></div><span class="sf-v">${v}</span></div>`;
+      const v = bal==null ? '—' : fmtS(bal);
+      return `<div class="sf-acct" onclick="${a.type==='invest'?"nav('investments')":"acctFilter='"+a.name.replace(/'/g,"\\'")+"';nav('transactions')"}"><div class="sf-l"><span class="sf-pip" style="background:${a.color}"></span><span class="sf-name">${a.short}</span></div><span class="sf-v">${v}</span></div>`;
     }).join('');
     return rows ? `<div class="sf-group-lbl">${g.label}</div>${rows}` : '';
   }).join('');
@@ -2188,7 +2212,7 @@ function showTxnDetail(id){
     </div>
     <div class="txd-receipt-wrap">
       <span class="txd-k">Receipt</span>
-      <div id="txd-receipt">${receipt?`<img src="${receipt}" class="txd-receipt-img" onclick="window.open('${receipt}','_blank')"><button class="txd-receipt-del" onclick="removeReceipt('${id}')">Remove receipt</button>`:`<label class="txd-receipt-add">${icon('bag')}<span>Add receipt photo</span><input type="file" accept="image/*" style="display:none" onchange="uploadReceipt('${id}',this)"></label>`}</div>
+      <div id="txd-receipt">${receipt?`<img src="${receipt}" class="txd-receipt-img" onclick="showLightbox('${receipt}')"><button class="txd-receipt-del" onclick="removeReceipt('${id}')">Remove receipt</button>`:`<label class="txd-receipt-add">${icon('bag')}<span>Add receipt photo</span><input type="file" accept="image/*" style="display:none" onchange="uploadReceipt('${id}',this)"></label>`}</div>
       <div class="txd-receipt-status" id="txd-receipt-status"></div>
     </div>
     ${histHtml?`<div class="txd-hist-hd">History</div>${histHtml}`:''}
@@ -2200,6 +2224,12 @@ function closeTxnDetail(){ document.getElementById('txd-bg').classList.add('hidd
 function saveNote(id,val){ const t=TXNS.find(x=>x.id===id); if(!t)return; SETTINGS.notes=SETTINGS.notes||{}; const sig=txnSig(t); if(val.trim()) SETTINGS.notes[sig]=val.trim(); else delete SETTINGS.notes[sig]; saveSettings(); }
 function addTag(id,val){ const t=TXNS.find(x=>x.id===id); if(!t)return; const tag=val.trim().replace(/^#/,''); if(!tag)return; SETTINGS.tags=SETTINGS.tags||{}; const sig=txnSig(t); SETTINGS.tags[sig]=SETTINGS.tags[sig]||[]; if(!SETTINGS.tags[sig].includes(tag))SETTINGS.tags[sig].push(tag); saveSettings(); showTxnDetail(id); }
 function removeTag(id,tag){ const t=TXNS.find(x=>x.id===id); if(!t)return; const sig=txnSig(t); if(SETTINGS.tags&&SETTINGS.tags[sig]){ SETTINGS.tags[sig]=SETTINGS.tags[sig].filter(x=>x!==tag); if(!SETTINGS.tags[sig].length)delete SETTINGS.tags[sig]; } saveSettings(); showTxnDetail(id); }
+function showLightbox(url){
+  let lb=document.getElementById('img-lightbox');
+  if(!lb){ lb=document.createElement('div'); lb.id='img-lightbox'; lb.className='lightbox hidden'; lb.onclick=()=>lb.classList.add('hidden'); lb.innerHTML='<img id="lightbox-img"><button class="lightbox-close">✕</button>'; document.body.appendChild(lb); }
+  document.getElementById('lightbox-img').src=url;
+  lb.classList.remove('hidden');
+}
 function removeReceipt(id){ const t=TXNS.find(x=>x.id===id); if(!t)return; const sig=txnSig(t); if(SETTINGS.receipts)delete SETTINGS.receipts[sig]; saveSettings(); showTxnDetail(id); }
 async function uploadReceipt(id,input){
   const file=input.files&&input.files[0]; if(!file)return;
@@ -2306,12 +2336,29 @@ function renderNetWorthCard() {
       <path d="${area('assets')}" fill="url(#agrad)"/>
       <path d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      ${data.map((d,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(d.assets).toFixed(1)}" r="9" fill="transparent" style="cursor:pointer" onmousemove="showTip('<b>${d.lbl}</b><br>Assets ${fmt(d.assets)}<br>Debts ${fmt(d.debts)}<br>Net ${fmt(d.assets-d.debts)}',event)" onmouseleave="hideTip()"/>`).join('')}
+      <line id="nw-cross" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="var(--border2)" stroke-width="1" stroke-dasharray="4 4" opacity="0"/>
+      <circle id="nw-ca" r="5" fill="var(--blue)" opacity="0"/><circle id="nw-cd" r="5" fill="var(--orange)" opacity="0"/>
       ${dots(aY,'var(--blue)')}${dots(dY,'var(--orange)')}
       <circle cx="${projX}" cy="${aY.toFixed(1)}" r="6" fill="var(--surface)" stroke="var(--blue)" stroke-width="3"/>
       <circle cx="${projX}" cy="${dY.toFixed(1)}" r="6" fill="var(--surface)" stroke="var(--orange)" stroke-width="3"/>
+      <rect x="0" y="0" width="${W}" height="${H}" fill="transparent" style="cursor:crosshair"
+        onmousemove="nwCrosshair(event,this)" onmouseleave="hideTip();['nw-cross','nw-ca','nw-cd'].forEach(id=>{var e=document.getElementById(id);if(e)e.style.opacity=0})"/>
     </svg>
     <div class="nw-tabs">${tabs}</div>`;
+  // expose geometry for crosshair
+  window._nwGeo={data,X:Array.from({length:data.length},(_,i)=>X(i)),Ya:data.map(d=>Y(d.assets)),Yd:data.map(d=>Y(d.debts)),W};
+}
+function nwCrosshair(e, rect){
+  const g=window._nwGeo; if(!g)return;
+  const svg=rect.ownerSVGElement||rect.closest('svg'); const br=svg.getBoundingClientRect();
+  const vx=(e.clientX-br.left)/br.width*g.W;
+  let bi=0,bd=1e9; g.X.forEach((x,i)=>{const dd=Math.abs(x-vx);if(dd<bd){bd=dd;bi=i;}});
+  const d=g.data[bi];
+  const cross=document.getElementById('nw-cross'),ca=document.getElementById('nw-ca'),cd=document.getElementById('nw-cd');
+  if(cross){cross.setAttribute('x1',g.X[bi]);cross.setAttribute('x2',g.X[bi]);cross.style.opacity=1;}
+  if(ca){ca.setAttribute('cx',g.X[bi]);ca.setAttribute('cy',g.Ya[bi]);ca.style.opacity=1;}
+  if(cd){cd.setAttribute('cx',g.X[bi]);cd.setAttribute('cy',g.Yd[bi]);cd.style.opacity=1;}
+  showTip('<b>'+d.lbl+'</b><br>Assets '+fmt(d.assets)+'<br>Debts '+fmt(d.debts)+'<br>Net '+fmt(d.assets-d.debts), e);
 }
 function renderNetWorthChart(){ renderNetWorthCard(); }
 
@@ -2387,7 +2434,7 @@ function renderAccounts() {
     {key:'invest', label:'Investments', accts:ACCOUNTS.filter(a=>a.type==='invest')},
   ];
   document.getElementById('acct-groups').innerHTML = groups.map(g=>{
-    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia');
+    const rows=g.accts.filter(a=>TXNS.some(t=>t.account===a.name)||a.id==='td'||a.id==='scotia'||(a.type==='invest'&&wsSnapshotForAccount(a.name)));
     if(!rows.length) return '';
     const sumv=rows.reduce((s,a)=>{ const v=a.type==='credit'?getCreditOutstanding(a.name):getBal(a.name); return s+(v||0); },0);
     return `<div class="card acct-group-card">
@@ -3473,15 +3520,18 @@ function renderCategories() {
     <svg width="132" height="132" viewBox="0 0 132 132" style="flex-shrink:0"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="${sw}"/>${slices}</svg>
     <div class="cat-donut-side cat-donut-r"><div class="cat-donut-big">${fmt(totalBudget)}</div><div class="cat-donut-lbl">total budget</div></div>
   </div>`;
-  // regular rows
+  // regular rows — Copilot style: spent · progress bar · budget
   document.getElementById('cat-regular').innerHTML = reg.map(c=>{
-    const under = c.budget>0 && c.spent<=c.budget;
-    return `<div class="catrow" onclick="drillCategory('${c.cat}')" style="cursor:pointer">
-      <span class="dot" style="background:${c.color}"></span>
-      <div class="catrow-ic" style="background:${c.color}1f;color:${c.color}">${c.icon}</div>
-      <span class="catrow-name">${c.cat}</span>
-      <span class="catrow-spent ${under&&c.spent>0?'under':''}">${fmt(c.spent)}</span>
-      <span class="catrow-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">${c.budget?fmt(c.budget):'Set'}</span>
+    const pct = c.budget>0 ? Math.min(100, c.spent/c.budget*100) : (c.spent>0?100:0);
+    const over = c.budget>0 && c.spent>c.budget;
+    const barCol = over?'var(--red)':(c.budget>0?'var(--green)':'var(--muted)');
+    const fillStyle = over?`background:var(--red)`:(c.spent>=c.budget&&c.budget>0?`background:var(--green)`:`background:transparent;border:1.5px solid ${c.color}`);
+    return `<div class="catrow2" onclick="drillCategory('${c.cat}')">
+      <div class="catrow2-ic" style="background:${c.color}1f;color:${c.color}">${c.icon}</div>
+      <span class="catrow2-name">${c.cat}</span>
+      <span class="catrow2-spent">${fmt(c.spent)}</span>
+      <div class="catrow2-track"><div class="catrow2-fill" style="width:${pct}%;${fillStyle}"></div></div>
+      <span class="catrow2-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">${c.budget?fmt(c.budget):'Set'}</span>
     </div>`;
   }).join('');
   // excluded rows
@@ -3577,21 +3627,40 @@ async function pdfToLines(file){
   }
   return lines;
 }
-function parseWSStatement(lines){
+function parseWSStatement(lines, fileName){
   const num=s=>parseFloat(String(s).replace(/[$,]/g,''));
   const out={holdings:[]};
   const text=lines.join('\n');
   let m;
-  if(m=text.match(/Account No\.[^\n]*\n\s*([A-Z0-9]{6,})\s+.*?(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/s)){ out.account=m[1]; out.periodStart=m[2]; out.periodEnd=m[3]; out.period=m[3].slice(0,7); }
-  if(!out.account && (m=text.match(/([A-Z0-9]{8,})CAD|([A-Z0-9]{8,})/))){ /* fallback later */ }
+  // account + period: prefer filename (e.g. HQ1K7V4K7CAD_2026-05_BROKERAGE.pdf) — most reliable
+  if(fileName){
+    const fm=fileName.match(/([A-Z0-9]{8,})[_\s-]+(\d{4}-\d{2})/i);
+    if(fm){ out.account=fm[1].toUpperCase(); out.period=fm[2]; }
+  }
+  if(!out.account && (m=text.match(/Account No\.[^\n]*\n\s*([A-Z0-9]{6,})/s))) out.account=m[1];
+  if(!out.account && (m=text.match(/\b([A-Z0-9]{8,}CAD|[A-Z]{2}[A-Z0-9]{6,})\b/))) out.account=m[1];
   if(!out.period && (m=text.match(/(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/))){ out.periodStart=m[1]; out.periodEnd=m[2]; out.period=m[2].slice(0,7); }
+  if(!out.period && (m=text.match(/(\d{4})-(\d{2})-\d{2}\s*-\s*(\d{4})-(\d{2})/))){ out.period=m[3]+'-'+m[4]; }
   if(m=text.match(/Self-directed (\w+)/)) out.acctType=m[1];
-  if(m=text.match(/(?:^|\n)\s*Cash\s+\$([\d,]+\.\d{2})/)) out.cash=num(m[1]);
-  if(m=text.match(/Total Portfolio\s+\$([\d,]+\.\d{2})\s+[\d.]+\s+\$([\d,]+\.\d{2})/)){ out.totalMV=num(m[1]); out.totalBook=num(m[2]); }
+  if(!out.acctType && fileName && /tfsa/i.test(fileName)) out.acctType='TFSA';
+  if(!out.acctType) out.acctType='TFSA';
+  if(m=text.match(/(?:^|\n)\s*Cash\s+\$?([\d,]+\.\d{2})/)) out.cash=num(m[1]);
+  if(m=text.match(/Total Portfolio\s+\$?([\d,]+\.\d{2})\s+[\d.]+\s+\$?([\d,]+\.\d{2})/)){ out.totalMV=num(m[1]); out.totalBook=num(m[2]); }
   if(m=text.match(/\$?1\s*USD\s*=\s*\$?([\d.]+)\s*CAD/)) out.fx=num(m[1]);
-  if(m=text.match(/Contributions \(year to date\):\s*\$([\d,]+\.\d{2})/)) out.contribYTD=num(m[1]);
-  const hre=/^(.+?)\s+([A-Z]{1,5})\s+([\d,]+\.\d+)\s+[\d,]+\.\d+\s+[\d,]+\.\d+\s+\$([\d,]+\.\d+)\s+(CAD|USD)\s+\$([\d,]+\.\d+)\s+\$([\d,]+\.\d+)$/;
-  lines.forEach(l=>{ const h=l.match(hre); if(h){ out.holdings.push({name:h[1].trim(),symbol:h[2],qty:num(h[3]),price:num(h[4]),currency:h[5],marketValueCAD:num(h[6]),bookCost:num(h[7])}); } });
+  if(m=text.match(/Contributions \(year to date\):\s*\$?([\d,]+\.\d{2})/)) out.contribYTD=num(m[1]);
+  // Holdings: scan the Portfolio Assets section over the FULL text (line breaks vary by PDF renderer)
+  let section=text;
+  const si=text.search(/Portfolio Assets|Symbol\s+Total/i);
+  const ei=text.search(/Stock Lending|Activity\s*-\s*Current|Activity - Current period/i);
+  if(si>=0) section=text.slice(si, ei>si?ei:undefined);
+  // pattern: NAME  SYMBOL  qty  seg  loan  $price  CUR  $marketValue  $bookCost
+  const hre=/([A-Za-z][A-Za-z0-9 .,'&()\/-]{1,55}?)\s+([A-Z]{1,5})\s+([\d,]+\.\d{2,4})\s+[\d,]+\.\d{2,4}\s+[\d,]+\.\d{2,4}\s+\$?([\d,]+\.\d+)\s*(CAD|USD)\s+\$?([\d,]+\.\d+)\s+\$?([\d,]+\.\d+)/g;
+  const seen=new Set(); let h;
+  while((h=hre.exec(section))){
+    const sym=h[2]; if(seen.has(sym)) continue; seen.add(sym);
+    let nm=h[1].replace(/^[^A-Za-z]+/,'').trim(); if(nm.length>46) nm=nm.slice(-46).replace(/^\S*\s/,'');
+    out.holdings.push({name:nm, symbol:sym, qty:num(h[3]), price:num(h[4]), currency:h[5], marketValueCAD:num(h[6]), bookCost:num(h[7])});
+  }
   return out;
 }
 async function handleWSPdf(files){
@@ -3602,7 +3671,7 @@ async function handleWSPdf(files){
     try{
       log('Reading '+f.name+' ...','info');
       const lines=await pdfToLines(f);
-      const snap=parseWSStatement(lines);
+      const snap=parseWSStatement(lines, f.name);
       if(!snap.period || !snap.holdings.length){ log('  ✗ Could not parse '+f.name+' (no holdings/period found)','err'); errs++; continue; }
       const acct=snap.account||'WS-'+(snap.acctType||'TFSA');
       SETTINGS.wsStatements=SETTINGS.wsStatements||{};
@@ -4197,7 +4266,7 @@ function renderSettings() {
     +'<span id="sync-status" style="color:var(--muted);font-size:12px;margin-left:4px">'+(SB.lastSync?'Synced '+timeAgo(new Date(SB.lastSync)):(sbConfigured()?'Connected':'Not connected'))+'</span>'
     +'</div></div>'
     +'<details style="margin-top:14px"><summary style="cursor:pointer;font-size:12.5px;color:var(--brand);font-weight:600">First-time setup → run this SQL in Supabase</summary>'
-    +'<pre style="margin-top:10px;padding:13px 15px;background:var(--surface2);border-radius:9px;font-family:JetBrains Mono,monospace;font-size:11px;line-height:1.6;color:var(--text-2);overflow-x:auto;white-space:pre">create table if not exists money_state (\n  id text primary key,\n  data jsonb,\n  updated_at timestamptz default now()\n);\nalter table money_state enable row level security;\ncreate policy "allow all" on money_state\n  for all using (true) with check (true);\n\n-- receipts bucket: allow your signed-in user to upload/read\ncreate policy "receipts read" on storage.objects\n  for select using (bucket_id = \'money-receipts\');\ncreate policy "receipts write" on storage.objects\n  for insert to authenticated with check (bucket_id = \'money-receipts\');\ncreate policy "receipts update" on storage.objects\n  for update to authenticated using (bucket_id = \'money-receipts\');</pre>'
+    +'<pre style="margin-top:10px;padding:13px 15px;background:var(--surface2);border-radius:9px;font-family:JetBrains Mono,monospace;font-size:11px;line-height:1.6;color:var(--text-2);overflow-x:auto;white-space:pre">create table if not exists money_state (\n  id text primary key,\n  data jsonb,\n  updated_at timestamptz default now()\n);\nalter table money_state enable row level security;\ndrop policy if exists "allow all" on money_state;\ncreate policy "allow all" on money_state\n  for all using (true) with check (true);\n\n-- receipts bucket: allow your signed-in user to upload/read\ndrop policy if exists "receipts read" on storage.objects;\ncreate policy "receipts read" on storage.objects\n  for select using (bucket_id = \'money-receipts\');\ndrop policy if exists "receipts write" on storage.objects;\ncreate policy "receipts write" on storage.objects\n  for insert to authenticated with check (bucket_id = \'money-receipts\');\ndrop policy if exists "receipts update" on storage.objects;\ncreate policy "receipts update" on storage.objects\n  for update to authenticated using (bucket_id = \'money-receipts\');</pre>'
     +'<div style="font-size:11.5px;color:var(--muted2);line-height:1.6;margin-top:8px">1. Create a free project at supabase.com<br>2. SQL Editor → paste the above → Run<br>3. <b>Authentication → Providers → Email → turn OFF "Confirm email"</b> (so sign-in works instantly on a static site)<br>4. Settings → API → copy Project URL + anon public key into the fields above<br>5. Sign in with your email + password<br><br><b>Receipt photos:</b> Storage → New bucket → name it exactly <b>money-receipts</b> → toggle <b>Public</b> ON → Create. The SQL above adds the upload policy. Then: add a receipt on any transaction → it uploads, the link saves to your synced settings, and after a Pull it shows on every device.</div>'
     +'</details>'
     +'</div>'
