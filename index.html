@@ -88,9 +88,9 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .page{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding:32px 38px 48px;min-width:0;max-width:100%}
 /* center + cap content width on large screens (RamanFX-style column) */
 .page > *{width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
-/* keep big charts compact instead of full-screen-tall on PC */
-#nw-card > svg, #acct-nw > svg, #dash-spending > svg{height:190px}
-#chart-cashflow > svg, #cf-cat-trend > svg, #chart-networth > svg{height:200px;max-height:200px}
+/* charts: uniform scale, compact height, never stretched */
+.card svg{width:100%;height:auto;display:block}
+#nw-card > svg, #acct-nw > svg, #dash-spending > svg, #cf-cat-trend > svg, #chart-cashflow > svg, #chart-networth > svg{max-height:230px}
 .nw-val{font-size:30px}
 .ms-big{font-size:38px}
 .page.active{display:flex}
@@ -364,14 +364,14 @@ table.t th.r,table.t td.r{text-align:right}
 .cal-grid-hd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
 .cal-hd-cell{font-size:10px;text-align:center;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:4px 0}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.cal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;cursor:pointer;border:1px solid transparent;transition:all .12s;-webkit-tap-highlight-color:transparent}
-.cal-day:hover{transform:scale(1.05);border-color:var(--border2)}
-.cal-day.cal-today{border:2px solid var(--brand);font-weight:700}
+.cal-day{aspect-ratio:auto;min-height:74px;border-radius:10px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:9px 11px;cursor:pointer;border:1px solid transparent;transition:all .12s;-webkit-tap-highlight-color:transparent}
+.cal-day:hover{border-color:var(--border2)}
+.cal-day.cal-today{border:2px solid var(--brand)}
 .cal-day.cal-future{opacity:0.4;cursor:default}
 .cal-day.cal-future:hover{transform:none;border-color:transparent}
 .cal-empty{aspect-ratio:1}
-.cal-num{font-family:'Figtree',sans-serif;font-size:11.5px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
-.cal-spent{font-family:'Figtree',sans-serif;font-size:9.5px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1}
+.cal-num{font-family:'Figtree',sans-serif;font-size:17px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
+.cal-spent{font-family:'Figtree',sans-serif;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 .cal-legend{display:flex;gap:14px;margin-top:14px;font-size:11px;color:var(--muted2);flex-wrap:wrap;justify-content:center}
 .cal-leg-item{display:inline-flex;align-items:center;gap:6px}
 .cal-leg-item i{width:11px;height:11px;border-radius:3px;display:inline-block}
@@ -554,8 +554,9 @@ table.t th.r,table.t td.r{text-align:right}
   .legend{width:100%}
   /* Calendar */
   .cal-day{font-size:9px}
-  .cal-num{font-size:10px}
-  .cal-spent{font-size:8px}
+  .cal-num{font-size:14px}
+  .cal-spent{font-size:11px}
+  .cal-day{min-height:58px;padding:7px 8px}
   .rule-grid{grid-template-columns:1fr;gap:10px}
   .rule-block{padding:14px}
   .rule-amt{font-size:19px}
@@ -1719,17 +1720,33 @@ function sbSaveConfig(url, key, syncKey) {
   localStorage.setItem('sb_synckey', SB.syncKey);
 }
 async function sbSignIn(email, password){
-  if(!sbConfigured()){ toast('Enter Project URL + anon key first'); return; }
-  if(!email||!password){ toast('Enter email and password'); return; }
+  // pull URL+key straight from the inputs and save, so user needn't click Save first
+  const urlEl=document.getElementById('sb-url'), keyEl=document.getElementById('sb-key');
+  let url=(urlEl?urlEl.value:SB.url||'').trim();
+  let key=(keyEl?keyEl.value:SB.key||'').trim();
+  if(url && !/^https?:\/\//i.test(url)) url='https://'+url;
+  url=url.replace(/\/+$/,'');
+  if(!url || !key){ toast('Enter your Project URL + anon key first'); return; }
+  sbSaveConfig(url, key, SB.syncKey);
+  if(!email||!password){ toast('Enter your Supabase email and password'); return; }
   try{
-    const c=await sbClient();
-    const {data,error}=await c.auth.signInWithPassword({email:email.trim(),password});
+    await ensureSupabaseLib();
+    if(!window.supabase?.createClient){ toast('Could not load Supabase library — check your connection'); return; }
+    SB.client = window.supabase.createClient(SB.url, SB.key);
+    const {data,error}=await SB.client.auth.signInWithPassword({email:email.trim(),password});
     if(error) throw error;
     SB.email=data.user.email; SB.userId=data.user.id; SB.syncKey='user-'+data.user.id;
     localStorage.setItem('sb_email',SB.email); localStorage.setItem('sb_userid',SB.userId); localStorage.setItem('sb_synckey',SB.syncKey);
     toast('Signed in as '+SB.email);
-    await syncPull(true); renderAll(); if(document.getElementById('settings-content'))renderSettings();
-  }catch(e){ toast('Sign-in failed: '+(e.message||e)); }
+    try{ await syncPull(true); }catch(e){}
+    renderAll(); if(document.getElementById('settings-content'))renderSettings();
+  }catch(e){
+    const msg=(e&&e.message)||String(e);
+    if(/failed to fetch|networkerror|load failed/i.test(msg)) toast('Can\u2019t reach Supabase. Check the Project URL is exactly https://xxxx.supabase.co and the project isn\u2019t paused.');
+    else if(/invalid login|credentials/i.test(msg)) toast('Wrong email or password.');
+    else if(/email not confirmed/i.test(msg)) toast('Confirm your email in Supabase first (Authentication → Users).');
+    else toast('Sign-in failed: '+msg);
+  }
 }
 async function sbSignOut(){
   try{ const c=await sbClient(); if(c) await c.auth.signOut(); }catch(e){}
@@ -2033,7 +2050,7 @@ function renderMonthlySpending() {
   const paceAtToday = budgeted * (today/daysInMonth);
   const underOver = paceAtToday - spent; // positive = under budget
   // chart geometry
-  const W=560,H=190,padL=6,padR=70,padT=24,padB=14;
+  const W=1040,H=210,padL=10,padR=150,padT=30,padB=18;
   const maxY = Math.max(budgeted, spent, paceAtToday, 1);
   const X = d => padL + ((d-1)/Math.max(1,daysInMonth-1))*(W-padL-padR);
   const Y = v => padT + (1-v/maxY)*(H-padT-padB);
@@ -2048,7 +2065,7 @@ function renderMonthlySpending() {
       <div class="ms-big">${fmt(Math.abs(left))} <span class="ms-big-sub">${left>=0?'left':'over'}</span></div>
       <div class="ms-budg">${fmt(budgeted)} budgeted</div>
     </div>
-    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:8px" preserveAspectRatio="none">
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:8px">
       <path d="${pacePath}" fill="none" stroke="var(--border2)" stroke-width="1.5" stroke-dasharray="4 5" stroke-linecap="round"/>
       <path d="${spendPath}" fill="none" stroke="${lineCol}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       ${pts.filter((p,i)=>i%2===0||i===pts.length-1).map(p=>`<circle cx="${X(p.d).toFixed(1)}" cy="${Y(p.cum).toFixed(1)}" r="8" fill="transparent" style="cursor:pointer" onmousemove="showTip('Day ${p.d}<br>Spent ${fmt(p.cum)}',event)" onmouseleave="hideTip()"/>`).join('')}
@@ -2251,7 +2268,7 @@ function renderNetWorthCard() {
   const dPct = first.debts? ((last.debts-first.debts)/first.debts*100):0;
   const tabs = ['1W','1M','3M','YTD','1Y','ALL'].map(r=>`<button class="nw-tab ${r===NW_RANGE?'active':''}" onclick="setNWRange('${r}',this)">${r}</button>`).join('');
   // chart geometry
-  const W=560,H=200,padX=8,padTop=18,padBot=20;
+  const W=1040,H=215,padX=12,padTop=22,padBot=24;
   const allv=[...data.map(d=>d.assets),...data.map(d=>d.debts)];
   const maxV=Math.max(...allv,1), minV=Math.min(...allv,0), range=Math.max(1,maxV-minV);
   const X=i=>padX+(i/Math.max(1,data.length-1))*(W-padX*2-70);
@@ -2267,7 +2284,7 @@ function renderNetWorthCard() {
       <div class="nw-col"><div class="nw-lbl"><span class="dot" style="background:var(--blue)"></span>Assets</div><div class="nw-val">${fmtS(last.assets)}</div><div class="nw-pill ${aPct>=0?'up':'down'}">${aPct>=0?'▲':'▼'} ${Math.abs(aPct).toFixed(2)}%</div></div>
       <div class="nw-col nw-col-r"><div class="nw-lbl"><span class="dot" style="background:var(--orange)"></span>Debts</div><div class="nw-val">${fmtS(last.debts)}</div><div class="nw-pill ${dPct<=0?'up':'down'}">${dPct<=0?'▼':'▲'} ${Math.abs(dPct).toFixed(2)}%</div></div>
     </div>
-    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:6px" preserveAspectRatio="none">
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:6px">
       <defs>
         <linearGradient id="agrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--blue)" stop-opacity=".22"/><stop offset="100%" stop-color="var(--blue)" stop-opacity="0"/></linearGradient>
         <linearGradient id="dgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--orange)" stop-opacity=".16"/><stop offset="100%" stop-color="var(--orange)" stop-opacity="0"/></linearGradient>
@@ -2383,7 +2400,7 @@ function renderAcctNWChart(){
   const aPct=first.assets?((last.assets-first.assets)/first.assets*100):0;
   const dPct=first.debts?((last.debts-first.debts)/first.debts*100):0;
   const tabs=['1W','1M','3M','YTD','1Y','ALL'].map(r=>`<button class="nw-tab ${r===ACCT_NW_RANGE?'active':''}" onclick="setAcctNWRange('${r}',this)">${r}</button>`).join('');
-  const W=560,H=200,padX=8,padTop=18,padBot=20;
+  const W=1040,H=215,padX=12,padTop=22,padBot=24;
   const allv=[...data.map(d=>d.assets),...data.map(d=>d.debts)];
   const maxV=Math.max(...allv,1),minV=Math.min(...allv,0),range=Math.max(1,maxV-minV);
   const X=i=>padX+(i/Math.max(1,data.length-1))*(W-padX*2-12);
@@ -2396,7 +2413,7 @@ function renderAcctNWChart(){
       <div class="nw-col nw-col-r"><div class="nw-lbl"><span class="dot" style="background:var(--orange)"></span>Debts</div><div class="nw-val">${fmtS(last.debts)}</div><div class="nw-pill ${dPct<=0?'up':'down'}">${dPct<=0?'▼':'▲'} ${Math.abs(dPct).toFixed(2)}%</div></div>
     </div>
     <div class="acct-nw-hover" id="acct-nw-hover"></div>
-    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:4px" preserveAspectRatio="none">
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:4px">
       <defs>
         <linearGradient id="aagrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--blue)" stop-opacity=".22"/><stop offset="100%" stop-color="var(--blue)" stop-opacity="0"/></linearGradient>
         <linearGradient id="addgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--orange)" stop-opacity=".16"/><stop offset="100%" stop-color="var(--orange)" stop-opacity="0"/></linearGradient>
@@ -2443,7 +2460,7 @@ function renderAccountDetailBody(){
   const v=a.type==='credit'?getCreditOutstanding(name):getBal(name);
   const limit=a.limit||(a.type==='credit'?40000:null);
   const series=getAccountSeries(name, ACCT_DETAIL_RANGE);
-  const W=520,H=150,padX=4,padT=14,padB=10;
+  const W=1000,H=180,padX=8,padT=18,padB=14;
   const vals=series.map(p=>p.val); const mn=Math.min(...vals,0),mx=Math.max(...vals,1),rg=Math.max(1,mx-mn);
   const X=i=>padX+(i/Math.max(1,series.length-1))*(W-padX*2-8);
   const Y=val=>padT+(1-(val-mn)/rg)*(H-padT-padB);
@@ -2469,7 +2486,7 @@ function renderAccountDetailBody(){
     <div class="ad-sticky">
       <div class="ad-hd"><div><div class="ad-type">${a.type==='credit'?'Credit Card':a.type==='invest'?'Investment':'Depository'}</div><div class="ad-name">${a.short}</div></div><div class="ad-bal">${v!=null?fmt(v):'—'}${a.type==='credit'&&limit?`<div class="ad-limit">${fmt(limit)} limit</div>`:''}</div></div>
       <div class="ad-hover" id="ad-hover"></div>
-      <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible" preserveAspectRatio="none">
+      <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
         <defs><linearGradient id="adgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".22"/><stop offset="100%" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
         <path d="${ap}" fill="url(#adgrad)"/>
         <path d="${lp}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2878,7 +2895,7 @@ function renderCashflow() {
     const monthly = recentMonths.map(ymm => Math.abs(TXNS.filter(x=>x.date.startsWith(ymm) && x.cat===cat && x.amount<0).reduce((s,x)=>s+x.amount,0)));
     return {cat, monthly, total: monthly.reduce((s,v)=>s+v,0)};
   }).sort((a,b)=>b.total-a.total).slice(0,6);
-  const cftW=560,cftH=240,cpadL=8,cpadR=8,cpadT=16,cpadB=28;
+  const cftW=1040,cftH=230,cpadL=14,cpadR=14,cpadT=22,cpadB=34;
   const cftMax=Math.max(1,...catList.flatMap(c=>c.monthly));
   const cftX=i=>cpadL+(i/Math.max(1,recentMonths.length-1))*(cftW-cpadL-cpadR);
   const cftY=v=>cpadT+(1-v/cftMax)*(cftH-cpadT-cpadB);
@@ -2891,7 +2908,7 @@ function renderCashflow() {
   const xlabels=recentMonths.map((ymm,i)=>`<text x="${cftX(i).toFixed(1)}" y="${cftH-8}" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="Figtree,sans-serif">${ymLabel(ymm,{month:'short'})}</text>`).join('');
   const legend=catList.map(c=>{const m=CAT_MAP[c.cat]||CAT_MAP.Other;return `<span class="cft-leg"><span class="dot" style="background:${m.color}"></span>${c.cat} <b>${fmt(c.total)}</b></span>`;}).join('');
   document.getElementById('cf-cat-trend').innerHTML = catList.length ? `
-    <svg width="100%" viewBox="0 0 ${cftW} ${cftH}" style="overflow:visible" preserveAspectRatio="none">${lines}${xlabels}</svg>
+    <svg width="100%" viewBox="0 0 ${cftW} ${cftH}" style="overflow:visible">${lines}${xlabels}</svg>
     <div class="cft-legend">${legend}</div>` : '<div class="empty">No spending data</div>';
 }
 
@@ -3032,7 +3049,7 @@ function renderBudgetTrend() {
   const pts = data.map((d,i)=>({x:pad+(i/(data.length-1))*(W-pad*2), y:H-pad-(d.val/maxV*(H-pad*2-10)), ...d}));
   const pD = pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
   const aD = pD + ` L${pts[pts.length-1].x.toFixed(1)} ${H-pad} L${pts[0].x.toFixed(1)} ${H-pad} Z`;
-  document.getElementById('budget-trend').innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible" preserveAspectRatio="none">
+  document.getElementById('budget-trend').innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
     <defs><linearGradient id="btg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--brand)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--brand)" stop-opacity="0"/></linearGradient></defs>
     <path d="${aD}" fill="url(#btg)"/>
     <path d="${pD}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -3179,7 +3196,7 @@ function showRecurringDetail(merchant){
   const nd=next?new Date(next+'T00:00:00'):null;
   // last 12 months sparkline
   const last12=all.slice(-12);
-  const W=520,H=120,padX=14,padY=20;
+  const W=1000,H=150,padX=20,padY=26;
   const sv=last12.map(t=>Math.abs(t.amount)); const smin=Math.min(...sv),smax=Math.max(...sv),sr=Math.max(1,smax-smin);
   const X=i=>padX+(i/Math.max(1,last12.length-1))*(W-padX*2-30);
   const Y=v=>padY+(1-(v-smin)/sr)*(H-padY*2);
@@ -3206,7 +3223,7 @@ function showRecurringDetail(merchant){
       <span class="rd-chip">from <b>${fmt(min)}</b> to <b>${fmt(max)}</b></span>
       <span class="rd-chip">every <b>${rec?rec.cadence:'month'}</b></span>
     </div>
-    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin:10px 0" preserveAspectRatio="none">
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin:10px 0">
       <path d="${sp}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       ${last12.map((t,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(Math.abs(t.amount)).toFixed(1)}" r="6" fill="var(--surface)" stroke="var(--orange)" stroke-width="2" style="cursor:pointer" onmousemove="showTip('<b>${t.date}</b><br>${fmt(Math.abs(t.amount))}',event)" onmouseleave="hideTip()"/>`).join('')}
       <path d="M${lastX.toFixed(1)} ${lastY.toFixed(1)} L${projX.toFixed(1)} ${lastY.toFixed(1)}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="3 3"/>
