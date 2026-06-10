@@ -88,9 +88,10 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .page{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding:32px 38px 48px;min-width:0;max-width:100%}
 /* center + cap content width on large screens (RamanFX-style column) */
 .page > *{width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
-/* charts: uniform scale, compact height, never stretched */
-.card svg{width:100%;height:auto;display:block}
-#nw-card > svg, #acct-nw > svg, #dash-spending > svg, #cf-cat-trend > svg, #chart-cashflow > svg, #chart-networth > svg{max-height:230px}
+/* charts: only the wide line/area charts fill width; donuts stay fixed size */
+#nw-card > svg, #acct-nw > svg, #dash-spending > svg, #cf-cat-trend > svg, #chart-cashflow > svg, #chart-networth > svg, .ad-sticky > svg{width:100%;height:auto;display:block;max-height:230px}
+.cat-donut-wrap svg{width:128px;height:128px;flex:none}
+#txd-body svg{max-width:100%}
 .nw-val{font-size:30px}
 .ms-big{font-size:38px}
 .page.active{display:flex}
@@ -811,6 +812,9 @@ body{letter-spacing:-0.006em}
 .rd-toggle-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border);margin-top:10px}
 .signin-box{display:grid;gap:9px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:11px}
 .signin-status{font-size:13.5px;color:var(--green);font-weight:600}
+.ccy-toggle{display:inline-flex;gap:0;border:1px solid var(--border2);border-radius:9px;overflow:hidden;margin-bottom:12px}
+.ccy-toggle button{padding:6px 16px;border:none;background:var(--surface);color:var(--muted2);font-family:'Figtree',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
+.ccy-toggle button.on{background:var(--brand);color:#fff}
 
 /* ── FILTER MENU ICONS + SUBLISTS ── */
 .fm-ic{display:inline-flex;width:18px;height:18px;color:var(--brand);flex-shrink:0;margin-right:2px}
@@ -1733,8 +1737,17 @@ async function sbSignIn(email, password){
     await ensureSupabaseLib();
     if(!window.supabase?.createClient){ toast('Could not load Supabase library — check your connection'); return; }
     SB.client = window.supabase.createClient(SB.url, SB.key);
-    const {data,error}=await SB.client.auth.signInWithPassword({email:email.trim(),password});
-    if(error) throw error;
+    let {data,error}=await SB.client.auth.signInWithPassword({email:email.trim(),password});
+    if(error && /invalid login|credentials/i.test(error.message||'')){
+      const su=await SB.client.auth.signUp({email:email.trim(),password});
+      if(su.error) throw error;
+      if(su.data && su.data.session){ data=su.data; error=null; toast('Account created'); }
+      else {
+        const retry=await SB.client.auth.signInWithPassword({email:email.trim(),password});
+        if(retry.error){ toast('Account created — confirm your email, or turn off Authentication → Providers → "Confirm email" in Supabase, then sign in.'); return; }
+        data=retry.data; error=null;
+      }
+    } else if(error) throw error;
     SB.email=data.user.email; SB.userId=data.user.id; SB.syncKey='user-'+data.user.id;
     localStorage.setItem('sb_email',SB.email); localStorage.setItem('sb_userid',SB.userId); localStorage.setItem('sb_synckey',SB.syncKey);
     toast('Signed in as '+SB.email);
@@ -3250,7 +3263,79 @@ function drillMerchant(name) {
 // ═══════════════════════════════════════════════════════
 // INVESTMENTS (Wealthsimple-style)
 // ═══════════════════════════════════════════════════════
+let INV_CCY='CAD';
+function setInvCcy(c){ INV_CCY=c; renderInvestments(); }
 function renderInvestments() {
+  const snaps=latestWSSnapshots();
+  if(Object.keys(snaps).length){ renderInvFromSnapshots(snaps); return; }
+  renderInvestmentsLegacy();
+}
+function renderInvFromSnapshots(snaps){
+  const fx = Object.values(snaps).find(s=>s.fx)?.fx || 1.38;
+  const conv = v => INV_CCY==='USD' ? v/fx : v;
+  const cm = INV_CCY==='USD' ? 'US$' : '';
+  const fcur = v => cm + fmt(conv(v));
+  // aggregate holdings + totals across accounts
+  let holdings=[], cash=0, totalMV=0, totalBook=0, contribYTD=0;
+  Object.values(snaps).forEach(s=>{ holdings=holdings.concat((s.holdings||[]).map(h=>({...h, acctType:s.acctType}))); cash+=s.cash||0; totalMV+=s.totalMV||0; totalBook+=s.totalBook||0; contribYTD+=s.contribYTD||0; });
+  holdings.sort((a,b)=>b.marketValueCAD-a.marketValueCAD);
+  const ret=totalMV-totalBook, retPct=totalBook?ret/totalBook*100:0;
+  // KPIs
+  document.getElementById('inv-kpis').innerHTML=[
+    {lbl:'Market Value', val:fcur(totalMV), sub:'Cash + holdings', col:'var(--brand)'},
+    {lbl:'Book Cost', val:fcur(totalBook), sub:'Total invested', col:'var(--purple)'},
+    {lbl:'Total Return', val:(ret>=0?'+':'')+fcur(ret), sub:retPct.toFixed(2)+'%', col:ret>=0?'var(--green)':'var(--red)'},
+    {lbl:'Contributions YTD', val:fcur(contribYTD), sub:'This year', col:'var(--green)'},
+  ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val" style="color:${k.col}">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+  // accounts list
+  document.getElementById('inv-accounts').innerHTML = Object.entries(snaps).map(([acct,s])=>`
+    <div class="acct-row" style="cursor:default">
+      <span class="merch-ic acct-ic" style="background:var(--brand-soft);color:var(--brand)">${icon('invest')}</span>
+      <div class="acct-row-mid"><div class="acct-row-name">${s.acctType||'Investment'} <span style="color:var(--muted);font-weight:500;font-size:12px">· ${s.period}</span></div><div class="acct-row-ago">Cash ${fcur(s.cash||0)} · ${(s.holdings||[]).length} holdings</div></div>
+      <span class="acct-row-bal">${fcur(s.totalMV||0)}</span>
+    </div>`).join('');
+  // allocation donut (cash + each holding)
+  const segs=[{name:'Cash',val:cash,col:'#69748A'}].concat(holdings.map((h,i)=>({name:h.symbol,val:h.marketValueCAD,col:['#5B8DEF','#3FD77F','#EC8B52','#9B7FF0','#EC7BA8','#2DD4BF','#E8B43E','#7BA5F4'][i%8]}))).filter(s=>s.val>0);
+  const r=58,cx=72,cy=72,sw=20,circ=2*Math.PI*r; let off=0;
+  const slices=segs.map(s=>{ const dash=s.val/totalMV*circ; const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.col}" stroke-width="${sw}" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" style="cursor:pointer;transition:opacity .15s" onmousemove="showTip('<b>${s.name}</b><br>${fcur(s.val)}<br>${(s.val/totalMV*100).toFixed(1)}%',event)" onmouseleave="hideTip()"/>`; off+=dash; return el; }).join('');
+  document.getElementById('inv-allocation').innerHTML=`<div class="cat-donut-wrap">
+    <svg width="144" height="144" viewBox="0 0 144 144"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="${sw}"/>${slices}
+      <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="var(--text)" font-size="14" font-family="Figtree,sans-serif" font-weight="700">${cm}${fmtS(conv(totalMV))}</text>
+      <text x="${cx}" y="${cy+14}" text-anchor="middle" fill="var(--muted)" font-size="10">market val</text></svg>
+    <div class="legend" style="flex:1">${segs.map(s=>`<div class="leg-row"><div class="leg-dot" style="background:${s.col}"></div><span class="leg-name">${s.name}</span><span class="leg-amt">${fcur(s.val)}</span></div>`).join('')}</div>
+  </div>`;
+  // holdings table with USD/CAD toggle
+  const toggle=`<div class="ccy-toggle"><button class="${INV_CCY==='CAD'?'on':''}" onclick="setInvCcy('CAD')">CAD</button><button class="${INV_CCY==='USD'?'on':''}" onclick="setInvCcy('USD')">USD</button></div>`;
+  document.getElementById('inv-holdings').innerHTML=toggle+`<table class="t"><thead><tr><th>Symbol</th><th>Name</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Mkt Value</th><th class="r">Book</th><th class="r">Return</th></tr></thead><tbody>${holdings.map(h=>{
+    const ret=h.marketValueCAD-h.bookCost, col=ret>=0?'var(--green)':'var(--red)', pct=h.bookCost?ret/h.bookCost*100:0;
+    return `<tr class="tr"><td><span class="tag" style="background:var(--brand-soft);color:var(--brand);font-weight:700">${h.symbol}</span></td>
+      <td style="font-size:12px;color:var(--muted2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</td>
+      <td class="td-amt" style="color:var(--muted2)">${h.qty.toFixed(4)}</td>
+      <td class="td-amt" style="color:var(--muted2)">${h.currency==='USD'?'US$':''}${fmt(h.price)} <span style="font-size:10px;color:var(--muted)">${h.currency}</span></td>
+      <td class="td-amt">${fcur(h.marketValueCAD)}</td>
+      <td class="td-amt" style="color:var(--muted2)">${fcur(h.bookCost)}</td>
+      <td class="td-amt" style="color:${col}">${ret>=0?'+':''}${fcur(ret)} (${pct.toFixed(1)}%)</td></tr>`;
+  }).join('')}</tbody></table>`;
+  // value-over-time across all snapshot periods
+  const periodTotals={};
+  Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.entries(byP).forEach(([p,s])=>{ periodTotals[p]=(periodTotals[p]||0)+(s.totalMV||0); }));
+  const pers=Object.keys(periodTotals).sort();
+  if(pers.length>=2){
+    const W=1000,H=160,padX=10,padT=18,padB=22; const vals=pers.map(p=>periodTotals[p]);
+    const mn=Math.min(...vals)*0.98,mx=Math.max(...vals)*1.02,rg=Math.max(1,mx-mn);
+    const X=i=>padX+(i/(pers.length-1))*(W-padX*2); const Y=v=>padT+(1-(conv(v)*(INV_CCY==='USD'?fx:1)-mn)/rg)*(H-padT-padB);
+    const lp=pers.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(periodTotals[p]).toFixed(1)).join(' ');
+    document.getElementById('inv-contrib').innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible"><defs><linearGradient id="ivg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--brand)" stop-opacity=".2"/><stop offset="100%" stop-color="var(--brand)" stop-opacity="0"/></linearGradient></defs>
+      <path d="${lp} L${X(pers.length-1).toFixed(1)} ${H-padB} L${X(0).toFixed(1)} ${H-padB} Z" fill="url(#ivg)"/>
+      <path d="${lp}" fill="none" stroke="var(--brand)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      ${pers.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(periodTotals[p]).toFixed(1)}" r="6" fill="transparent" style="cursor:pointer" onmousemove="showTip('<b>'+'${p}'+'</b><br>'+'${cm}'+fmt(${conv(periodTotals[p])}),event)" onmouseleave="hideTip()"/><circle cx="${X(i).toFixed(1)}" cy="${Y(periodTotals[p]).toFixed(1)}" r="3.5" fill="var(--surface)" stroke="var(--brand)" stroke-width="2"/>`).join('')}
+      ${pers.map((p,i)=>`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="middle" fill="var(--muted)" font-size="11" font-family="Figtree,sans-serif">${ymLabel(p,{month:'short'})}</text>`).join('')}
+    </svg>`;
+  } else {
+    document.getElementById('inv-contrib').innerHTML=`<div class="empty" style="padding:20px">Import statements from 2+ months to chart portfolio value over time.</div>`;
+  }
+}
+function renderInvestmentsLegacy() {
   // Compute holdings from settings + cost basis from transactions
   const tfsaTxns = TXNS.filter(t=>t.account==='WS TFSA' && t.amount<0);
   const costMap = {};
@@ -3467,8 +3552,91 @@ function previewRule() {
 // ═══════════════════════════════════════════════════════
 // IMPORT PAGE
 // ═══════════════════════════════════════════════════════
+// ── WEALTHSIMPLE STATEMENT PDF PARSER ──
+async function ensurePdfLib(){
+  if (window.pdfjsLib) return window.pdfjsLib;
+  await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=res; s.onerror=()=>rej(new Error('Could not load PDF library')); document.head.appendChild(s); });
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  return window.pdfjsLib;
+}
+async function pdfToLines(file){
+  const lib=await ensurePdfLib();
+  const buf=await file.arrayBuffer();
+  const pdf=await lib.getDocument({data:buf}).promise;
+  const lines=[];
+  for(let p=1;p<=pdf.numPages;p++){
+    const page=await pdf.getPage(p);
+    const tc=await page.getTextContent();
+    // group items into lines by y-position
+    const rows={};
+    tc.items.forEach(it=>{ const y=Math.round(it.transform[5]); (rows[y]=rows[y]||[]).push({x:it.transform[4],s:it.str}); });
+    Object.keys(rows).map(Number).sort((a,b)=>b-a).forEach(y=>{
+      const line=rows[y].sort((a,b)=>a.x-b.x).map(o=>o.s).join(' ').replace(/\s+/g,' ').trim();
+      if(line) lines.push(line);
+    });
+  }
+  return lines;
+}
+function parseWSStatement(lines){
+  const num=s=>parseFloat(String(s).replace(/[$,]/g,''));
+  const out={holdings:[]};
+  const text=lines.join('\n');
+  let m;
+  if(m=text.match(/Account No\.[^\n]*\n\s*([A-Z0-9]{6,})\s+.*?(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/s)){ out.account=m[1]; out.periodStart=m[2]; out.periodEnd=m[3]; out.period=m[3].slice(0,7); }
+  if(!out.account && (m=text.match(/([A-Z0-9]{8,})CAD|([A-Z0-9]{8,})/))){ /* fallback later */ }
+  if(!out.period && (m=text.match(/(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/))){ out.periodStart=m[1]; out.periodEnd=m[2]; out.period=m[2].slice(0,7); }
+  if(m=text.match(/Self-directed (\w+)/)) out.acctType=m[1];
+  if(m=text.match(/(?:^|\n)\s*Cash\s+\$([\d,]+\.\d{2})/)) out.cash=num(m[1]);
+  if(m=text.match(/Total Portfolio\s+\$([\d,]+\.\d{2})\s+[\d.]+\s+\$([\d,]+\.\d{2})/)){ out.totalMV=num(m[1]); out.totalBook=num(m[2]); }
+  if(m=text.match(/\$?1\s*USD\s*=\s*\$?([\d.]+)\s*CAD/)) out.fx=num(m[1]);
+  if(m=text.match(/Contributions \(year to date\):\s*\$([\d,]+\.\d{2})/)) out.contribYTD=num(m[1]);
+  const hre=/^(.+?)\s+([A-Z]{1,5})\s+([\d,]+\.\d+)\s+[\d,]+\.\d+\s+[\d,]+\.\d+\s+\$([\d,]+\.\d+)\s+(CAD|USD)\s+\$([\d,]+\.\d+)\s+\$([\d,]+\.\d+)$/;
+  lines.forEach(l=>{ const h=l.match(hre); if(h){ out.holdings.push({name:h[1].trim(),symbol:h[2],qty:num(h[3]),price:num(h[4]),currency:h[5],marketValueCAD:num(h[6]),bookCost:num(h[7])}); } });
+  return out;
+}
+async function handleWSPdf(files){
+  if(!files||!files.length) return;
+  document.getElementById('parse-log').innerHTML='';
+  let added=0, dup=0, errs=0;
+  for(const f of files){
+    try{
+      log('Reading '+f.name+' ...','info');
+      const lines=await pdfToLines(f);
+      const snap=parseWSStatement(lines);
+      if(!snap.period || !snap.holdings.length){ log('  ✗ Could not parse '+f.name+' (no holdings/period found)','err'); errs++; continue; }
+      const acct=snap.account||'WS-'+(snap.acctType||'TFSA');
+      SETTINGS.wsStatements=SETTINGS.wsStatements||{};
+      SETTINGS.wsStatements[acct]=SETTINGS.wsStatements[acct]||{};
+      const existed=!!SETTINGS.wsStatements[acct][snap.period];
+      SETTINGS.wsStatements[acct][snap.period]={...snap, file:f.name, importedAt:new Date().toISOString()};
+      if(existed){ log('  ↺ Updated '+(snap.acctType||'')+' '+snap.period+' ('+snap.holdings.length+' holdings, '+fmt(snap.totalMV)+')','ok'); dup++; }
+      else { log('  ✓ Added '+(snap.acctType||'')+' '+snap.period+' ('+snap.holdings.length+' holdings, '+fmt(snap.totalMV)+')','ok'); added++; }
+    }catch(e){ log('  ✗ '+f.name+': '+(e.message||e),'err'); errs++; }
+  }
+  saveSettings();
+  log('Done — '+added+' new, '+dup+' updated, '+errs+' errors','info');
+  renderInvestments(); renderSidebar();
+  if(added||dup) toast('Statement imported');
+}
+function latestWSSnapshots(){
+  const res={};
+  const ws=SETTINGS.wsStatements||{};
+  Object.keys(ws).forEach(acct=>{ const periods=Object.keys(ws[acct]).sort(); if(periods.length) res[acct]=ws[acct][periods[periods.length-1]]; });
+  return res;
+}
+
 function renderImport() {
-  document.getElementById('upload-grid').innerHTML = ACCOUNTS.map(a=>{
+  const ws=SETTINGS.wsStatements||{};
+  const stmtCount=Object.values(ws).reduce((s,o)=>s+Object.keys(o).length,0);
+  const wsCard=`<div class="upload-card" style="border-color:var(--brand-soft)">
+    <div class="uc-head"><div><div class="uc-name" style="color:var(--brand)">Wealthsimple statement (PDF)</div><div class="uc-count">${stmtCount?stmtCount+' statement'+(stmtCount>1?'s':'')+' loaded':'No statements'}</div></div><span class="uc-badge ${stmtCount?'on':'off'}">${stmtCount?'✓':'PDF'}</span></div>
+    <div class="dropzone" id="dz-wspdf" ondragover="dzOver(event,'wspdf')" ondragleave="dzOut('wspdf')" ondrop="event.preventDefault();dzOut('wspdf');handleWSPdf(event.dataTransfer.files)">
+      <input type="file" accept=".pdf" multiple onchange="handleWSPdf(this.files)">
+      ↑ Drop TFSA/RRSP PDFs<div class="dropzone-hint">monthly · multi-file · auto-dedupe</div>
+    </div>
+    ${stmtCount?`<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="if(confirm('Clear all imported statements?')){SETTINGS.wsStatements={};saveSettings();renderImport();renderInvestments();}">Clear statements</button>`:''}
+  </div>`;
+  document.getElementById('upload-grid').innerHTML = wsCard + ACCOUNTS.map(a=>{
     const count = TXNS.filter(t=>t.account===a.name).length;
     return `<div class="upload-card">
       <div class="uc-head"><div><div class="uc-name" style="color:${a.color}">${a.name}</div><div class="uc-count">${count?count+' transactions':'No data'}</div></div><span class="uc-badge ${count?'on':'off'}">${count?'✓':'empty'}</span></div>
