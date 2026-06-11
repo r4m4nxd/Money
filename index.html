@@ -143,7 +143,7 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .nw-val{font-size:30px}
 .ms-big{font-size:38px}
 .page.active{display:flex;animation:pageIn .34s cubic-bezier(.23,1,.32,1) both}
-@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pageIn{from{transform:translateY(8px)}to{transform:translateY(0)}}
 /* button press feedback (Emil: interfaces must feel responsive to press) */
 .btn,.sync2-btn,.date-btn,.m-arrow,.nav-item,.inv-fchip,.pg-btn,.filter-btn,.sort-pill,.cat-chip,.ai-chip,.theme-tog{transition:transform .12s cubic-bezier(.23,1,.32,1),background .14s ease,border-color .14s ease,color .14s ease,box-shadow .14s ease}
 .btn:active,.sync2-btn:active,.date-btn:active,.m-arrow:active,.inv-fchip:active,.pg-btn:active,.filter-btn:active,.cat-chip:active,.ai-chip:active,.theme-tog:active{transform:scale(.96)}
@@ -153,9 +153,12 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .acct-row:active,.txn-item:active{transform:scale(.992)}
 @media(prefers-reduced-motion:reduce){.page.active{animation:none}.btn,.sync2-btn,.nav-item,.acct-row,.txn-item,.catrow2{transition:none!important}}
 /* ── chart entrance animations on page open ── */
-@keyframes chartRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes donutIn{from{opacity:0;transform:scale(.84)}to{opacity:1;transform:scale(1)}}
-@keyframes barGrow{from{opacity:0;transform:scaleY(.4)}to{opacity:1;transform:scaleY(1)}}
+@keyframes chartRise{from{transform:translateY(12px)}to{transform:translateY(0)}}
+@keyframes donutIn{from{transform:scale(.9)}to{transform:scale(1)}}
+@keyframes barGrow{from{transform:scaleY(.55)}to{transform:scaleY(1)}}
+@keyframes drawLine{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.page.active .drawline{stroke-dasharray:1;animation:drawLine .9s cubic-bezier(.33,1,.68,1)}
+@media(prefers-reduced-motion:reduce){.page.active .drawline{animation:none;stroke-dasharray:none}}
 .page.active #dash-spending svg,.page.active #nw-card svg,.page.active #acct-nw svg,.page.active #txn-chart svg,
 .page.active #cf-cat-trend svg,.page.active #inv-contrib svg,.page.active #cf-weekly,.page.active #cf-bars,
 .page.active #budget-trend svg,.page.active #cf-503020,.page.active .ad-sticky svg,.page.active #coach-trajectory svg,
@@ -449,18 +452,18 @@ table.t th.r,table.t td.r{text-align:right}
 
 /* ── 50/30/20 RULE (Cash Flow) ── */
 .rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
-.rule-block{padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);min-width:0;overflow:hidden}
+.rule-block{padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);min-width:0}
 .rule-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:600}
 .rule-target{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.9px;font-weight:600}
 .rule-amt{font-family:'Figtree',sans-serif;font-size:21px;font-weight:700;letter-spacing:-0.024em;font-variant-numeric:tabular-nums slashed-zero;font-feature-settings:'tnum','zero';margin-bottom:3px;white-space:nowrap}
-/* overflow guards: nothing escapes its card */
-.card{overflow:hidden}
+/* overflow guards: components self-constrain horizontally; cards never clip content */
+.card{overflow:visible}
 .cat-donut-wrap{flex-wrap:wrap}
 .cat-donut-side{min-width:0}
 .bar-chart{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 #coach-leaks,.wins-grid{max-width:100%}
 #coach-leaks{overflow-x:auto}
-.legend{min-width:0;overflow:hidden}
+.legend{min-width:0}
 .leg-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rule-pct{font-family:'Figtree',sans-serif;font-size:12px;font-weight:600;margin-bottom:10px;font-variant-numeric:tabular-nums}
 .rule-bar{position:relative;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:8px}
@@ -716,10 +719,11 @@ table.t th.r,table.t td.r{text-align:right}
 .sf-ic svg{width:24px;height:24px}
 
 /* ── MOTION SYSTEM (Framer-style, pure CSS/JS) ── */
-@keyframes pageIn{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
-@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pageIn{from{transform:translateY(10px) scale(.997)}to{transform:none}}
+@keyframes riseIn{from{transform:translateY(16px)}to{transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes popIn{from{transform:scale(.92)}to{transform:scale(1)}}
 .page.active{animation:pageIn .42s cubic-bezier(.22,.61,.36,1)}
 /* staggered children reveal on the active page */
 .page.active > *{animation:riseIn .5s cubic-bezier(.22,.61,.36,1) backwards}
@@ -731,10 +735,10 @@ table.t th.r,table.t td.r{text-align:right}
 .page.active > *:nth-child(6){animation-delay:.27s}
 .page.active > *:nth-child(n+7){animation-delay:.3s}
 /* reveal-on-scroll utility */
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.22,.61,.36,1),transform .6s cubic-bezier(.22,.61,.36,1)}
-.reveal.in{opacity:1;transform:none}
+.reveal{transform:translateY(18px);transition:transform .6s cubic-bezier(.22,.61,.36,1)}
+.reveal.in{transform:none}
 /* kpi numbers pop */
-.kpi-val{animation:scaleIn .55s cubic-bezier(.34,1.4,.5,1) backwards}
+.kpi-val{animation:popIn .55s cubic-bezier(.34,1.4,.5,1) backwards}
 /* nav item slide indicator */
 .nav-item{position:relative;transition:color .15s,background .15s}
 .nav-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%) scaleY(0);width:3px;height:62%;background:var(--brand);border-radius:0 3px 3px 0;transition:transform .22s cubic-bezier(.34,1.3,.5,1)}
@@ -2304,11 +2308,12 @@ function renderMonthlySpending() {
     <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible;margin-top:8px">
       <path d="${pacePath}" fill="none" stroke="var(--border2)" stroke-width="1.5" stroke-dasharray="4 5" stroke-linecap="round"/>
       <path d="${spendPath}" fill="none" stroke="${lineCol}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="5.5" fill="var(--surface)" stroke="${lineCol}" stroke-width="3"/>
-      <g transform="translate(${(lx+12).toFixed(1)},${(ly-6).toFixed(1)})">
-        <rect x="0" y="-15" rx="9" width="118" height="26" fill="${lineCol}"/>
-        <text x="59" y="3" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="Figtree,sans-serif">${fmt(Math.abs(underOver))} ${underOver>=0?'under':'over'}</text>
-      </g>
+      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="6" fill="var(--surface)" stroke="${lineCol}" stroke-width="3.5"/>
+      ${(()=>{ const bw=190, bh=40, leftSide=(lx+18+bw)>W; const bx=leftSide?(lx-18-bw):(lx+18); const by=Math.max(bh/2+2, Math.min(H-bh/2-2, ly));
+        return `<g transform="translate(${bx.toFixed(1)},${by.toFixed(1)})">
+          <rect x="0" y="${(-bh/2).toFixed(1)}" rx="11" width="${bw}" height="${bh}" fill="${lineCol}"/>
+          <text x="${(bw/2).toFixed(1)}" y="6" text-anchor="middle" fill="#fff" font-size="22" font-weight="700" font-family="Figtree,sans-serif">${fmt(Math.abs(underOver))} ${underOver>=0?'under':'over'}</text>
+        </g>`; })()}
       ${crosshairLayer('ms',W,H,padT,padB)}
     </svg>`;
 }
@@ -2534,8 +2539,8 @@ function renderNetWorthCard() {
       </defs>
       <path d="${area('debts')}" fill="url(#dgrad)"/>
       <path d="${area('assets')}" fill="url(#agrad)"/>
-      <path d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="drawline" pathLength="1" d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="drawline" pathLength="1" d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <line id="nw-cross" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="var(--border2)" stroke-width="1" stroke-dasharray="4 4" opacity="0"/>
       <circle id="nw-ca" r="5" fill="var(--blue)" opacity="0"/><circle id="nw-cd" r="5" fill="var(--orange)" opacity="0"/>
       ${dots(aY,'var(--blue)')}${dots(dY,'var(--orange)')}
@@ -2695,8 +2700,8 @@ function renderAcctNWChart(){
         <linearGradient id="addgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--orange)" stop-opacity=".16"/><stop offset="100%" stop-color="var(--orange)" stop-opacity="0"/></linearGradient>
       </defs>
       <path d="${area('debts')}" fill="url(#addgrad)"/><path d="${area('assets')}" fill="url(#aagrad)"/>
-      <path d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="drawline" pathLength="1" d="${line('debts')}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="drawline" pathLength="1" d="${line('assets')}" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="${X(data.length-1).toFixed(1)}" cy="${Y(last.assets).toFixed(1)}" r="5.5" fill="var(--surface)" stroke="var(--blue)" stroke-width="3"/>
       <circle cx="${X(data.length-1).toFixed(1)}" cy="${Y(last.debts).toFixed(1)}" r="5.5" fill="var(--surface)" stroke="var(--orange)" stroke-width="3"/>
       ${crosshairLayer('acctnw',W,H,padTop,padBot)}
