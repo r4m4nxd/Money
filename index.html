@@ -3804,6 +3804,19 @@ document.getElementById('budedit-bg').addEventListener('click', e=>{if(e.target=
 // ═══════════════════════════════════════════════════════
 // RECURRING DETECTION
 // ═══════════════════════════════════════════════════════
+function splitGroup(g){
+  const tx=g.txns;
+  const byDate={}; tx.forEach(t=>{byDate[t.date]=(byDate[t.date]||0)+1;});
+  const dates=Object.keys(byDate); const dupes=dates.filter(d=>byDate[d]>1).length;
+  if(tx.length<4 || dupes < dates.length*0.4) return [g];      // not consistently multi-charge
+  const amts=tx.map(t=>Math.abs(t.amount)).sort((a,b)=>a-b);
+  let gi=-1,gv=0; for(let i=1;i<amts.length;i++){const rel=amts[i-1]>0?(amts[i]-amts[i-1])/amts[i-1]:0; if(rel>gv){gv=rel;gi=i;}}
+  if(gv<0.05||gi<1) return [g];                                 // amounts too similar to be two bills
+  const thresh=(amts[gi-1]+amts[gi])/2;
+  const high=tx.filter(t=>Math.abs(t.amount)>=thresh), low=tx.filter(t=>Math.abs(t.amount)<thresh);
+  if(low.length<2||high.length<2) return [g];
+  return [{...g, txns:high}, {...g, txns:low}];                 // two separate recurring streams
+}
 function detectRecurring() {
   // Group by normalized merchant key, expenses only, last 12 months
   const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-13);
@@ -3818,7 +3831,7 @@ function detectRecurring() {
 
   const recurring = [];
   const ov = SETTINGS.recurringOverrides || {};
-  Object.values(groups).forEach(g=>{
+  Object.values(groups).forEach(grp=>splitGroup(grp).forEach(g=>{
     const ovObj = recOverride(g.merchant);
     const forced = ovObj ? (ovObj.on!==false) : undefined;       // true=on, false=off, undefined=auto
     const forcedCad = ovObj && ovObj.cadence ? ovObj.cadence : null;
@@ -3856,7 +3869,7 @@ function detectRecurring() {
     else if (cadence==='semi-monthly'){ nextDate.setDate(nextDate.getDate()+15); }
     else { nextDate.setDate(nextDate.getDate() + (forcedCad?cadenceGapDays(cadence):Math.round(avgGap))); }
     recurring.push({...g, cadence, avgAmt, avgGap, count:sorted.length, lastDate:lastTxn.date, nextDate:nextDate.toISOString().slice(0,10), monthlyEq:cadenceMonthly(cadence,avgAmt), forced:forced===true});
-  });
+  }));
   return recurring.sort((a,b)=>b.monthlyEq-a.monthlyEq);
 }
 function toggleRecurring(merchant, makeRecurring){
