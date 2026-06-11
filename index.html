@@ -981,7 +981,8 @@ body{letter-spacing:-0.006em}
 /* ── Financial OS: Today's Brief ── */
 .coach-brief-card{background:linear-gradient(150deg,var(--surface) 0%,var(--brand-soft) 160%);border:1px solid var(--border);overflow:hidden;position:relative}
 .coach-brief-card::after{content:'';position:absolute;inset:0;background:radial-gradient(120% 80% at 100% 0%,var(--glow),transparent 60%);pointer-events:none;opacity:.6}
-.brief-hd{margin-bottom:16px;position:relative;z-index:1}
+.brief-hd{margin-bottom:16px;position:relative;z-index:2}
+.coach-brief-card{padding-top:22px}
 .brief-greet{font-family:'Figtree',sans-serif;font-size:clamp(24px,5vw,32px);font-weight:700;letter-spacing:-0.03em;color:var(--text);line-height:1.1}
 .brief-day{font-size:13px;color:var(--muted2);margin-top:3px}
 .brief-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:1}
@@ -1009,6 +1010,73 @@ body{letter-spacing:-0.006em}
 .insight-info{background:linear-gradient(90deg,var(--glow),var(--surface2) 45%);border-left:3px solid var(--brand)}
 .feed-good .feed-ic{background:rgba(60,160,120,.16)}
 .feed-risk .feed-ic{background:rgba(210,90,90,.15)}
+
+/* AI chat avatar */
+.ai-av{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--brand-soft);color:var(--brand);margin-right:7px;vertical-align:-5px}
+.ai-av svg{width:13px;height:13px}
+
+/* Subscription Center */
+.sub-summary-card{background:linear-gradient(150deg,var(--surface),var(--brand-soft) 170%)}
+.sub-row{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid var(--border)}
+.sub-row:last-child{border-bottom:none}
+.sub-flagged{opacity:.55}
+.sub-mid{flex:1;min-width:0}
+.sub-name{font-weight:650;font-size:14.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-meta{font-size:12px;color:var(--muted2);margin-top:1px}
+.sub-cost{text-align:right;flex-shrink:0}
+.sub-mo{font-family:'Figtree';font-weight:700;font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
+.sub-mo span{font-size:11px;color:var(--muted);font-weight:500}
+.sub-yr{font-size:11.5px;color:var(--muted2)}
+.sub-cancel{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--muted2);cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:all .14s}
+.sub-cancel:hover{color:var(--red);border-color:var(--red)}
+.sub-cancel.on{background:rgba(60,160,120,.16);color:#3FCB8E;border-color:transparent}
+.sub-cancel svg{width:17px;height:17px}
+
+/* Calendar */
+.cal-nav{display:flex;align-items:center;gap:12px;font-weight:600}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
+.cal-cell{aspect-ratio:1;border-radius:10px;background:var(--surface2);padding:6px;display:flex;flex-direction:column;justify-content:space-between;min-height:46px}
+.cal-empty{background:transparent}
+.cal-num{font-size:12.5px;color:var(--muted2);font-weight:600}
+.cal-has{cursor:pointer;border:1px solid var(--border)}
+.cal-has:hover{border-color:var(--brand)}
+.cal-today{outline:2px solid var(--brand);outline-offset:-2px}
+.cal-today .cal-num{color:var(--brand)}
+.cal-dots{display:flex;gap:3px;flex-wrap:wrap}
+.cal-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.cal-pay{background:#3FCB8E}.cal-bill{background:#E07A7A}.cal-due{background:var(--orange,#D4763A)}
+.cal-legend{display:flex;gap:16px;margin-top:14px;font-size:12px;color:var(--muted2)}
+.cal-legend span{display:inline-flex;align-items:center;gap:6px}
+.cal-legend i{width:8px;height:8px;border-radius:50%}
+
+/* Goals */
+.goals-list{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.goal-row{display:flex;gap:12px;align-items:flex-start}
+.goal-ic{width:38px;height:38px;border-radius:11px;background:var(--surface3);color:var(--brand);display:grid;place-items:center;flex-shrink:0}
+.goal-ic svg{width:18px;height:18px}
+.goal-body{flex:1;min-width:0}
+.goal-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.goal-name{font-weight:650;font-size:14px;color:var(--text)}
+.goal-eta{font-size:11.5px;color:var(--muted2);white-space:nowrap}
+.goal-bar{height:8px;border-radius:5px;background:var(--surface3);overflow:hidden;margin:6px 0 4px}
+.goal-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.22,.61,.36,1)}
+.goal-sub{font-size:12px;color:var(--muted2);font-variant-numeric:tabular-nums}
+
+/* Personality */
+.pers-hero{display:flex;gap:13px;align-items:flex-start;margin-bottom:14px}
+.pers-ic{width:46px;height:46px;border-radius:13px;background:linear-gradient(140deg,var(--brand),var(--brand-2,#16B8A6));color:var(--on-brand);display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 16px var(--glow)}
+.pers-ic svg{width:22px;height:22px}
+.pers-type{font-family:'Figtree';font-weight:700;font-size:20px;letter-spacing:-0.02em;color:var(--text)}
+.pers-desc{font-size:13px;color:var(--muted2);line-height:1.5;margin-top:2px}
+.pers-tags{display:flex;flex-wrap:wrap;gap:8px}
+.pers-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:9px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted2)}
+.pers-tag svg{width:13px;height:13px}
+.pers-good{background:rgba(60,160,120,.14);color:#3FCB8E}
+.pers-bad{background:rgba(210,90,90,.13);color:#E07A7A}
+
+/* Celebration */
+.toast-celebrate{background:linear-gradient(120deg,var(--brand),#3FCB8E)!important;color:var(--on-brand)!important;box-shadow:0 8px 30px var(--glow)!important}
 .rd-chip b{color:var(--text);font-weight:700}
 .rd-metrics{width:100%;border-collapse:collapse}
 .rd-metrics th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:6px 0}
@@ -1152,6 +1220,14 @@ body{letter-spacing:-0.006em}
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7l3 2.7"/><path d="M21 12a9 9 0 0 1-15 6.7l-3-2.7"/><polyline points="21 3 21 8 16 8"/><polyline points="3 21 3 16 8 16"/></svg>
       Recurring
     </div>
+    <div class="nav-item" data-pg="subscriptions" onclick="nav('subscriptions')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
+      Subscriptions
+    </div>
+    <div class="nav-item" data-pg="calendar" onclick="nav('calendar')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      Calendar
+    </div>
     <div class="nav-item" data-pg="investments" onclick="nav('investments')">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Investments
@@ -1246,6 +1322,10 @@ body{letter-spacing:-0.006em}
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">AI insights</div><div class="card-sub">Proactive observations from your money</div></div></div><div id="coach-insights" class="insights-list"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Your financial feed</div><div class="card-sub">Recent events &amp; wins</div></div></div><div id="coach-feed" class="feed-list"></div></div>
     </div>
+    <div class="row row-2" style="align-items:start">
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Goals</div><div class="card-sub">Progress &amp; forecast completion</div></div><div class="card-link" onclick="nav('settings')">Set targets &rarr;</div></div><div id="coach-goals" class="goals-list"></div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Your money personality</div><div class="card-sub">How you tend to spend &amp; save</div></div></div><div id="coach-personality"></div></div>
+    </div>
     <div class="row row-1">
       <div class="card" id="coach-ai-card">
         <div class="card-hd"><div class="card-hd-l"><div class="card-title">Ask your AI coach</div><div class="card-sub">Powered by OpenAI · your data stays in your browser</div></div></div>
@@ -1263,7 +1343,20 @@ body{letter-spacing:-0.006em}
     </div>
   </div>
 
-  <!-- ========= ACCOUNTS ========= -->
+  <!-- ========= SUBSCRIPTIONS ========= -->
+  <div class="page" id="page-subscriptions">
+    <div class="ph"><div class="ph-l"><div class="ph-title">Subscription Center</div><div class="ph-sub">Every recurring charge, what it costs you, and what you could cut</div></div></div>
+    <div class="card sub-summary-card" id="sub-summary"></div>
+    <div class="row row-1"><div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Your subscriptions</div><div class="card-sub">Flag anything you want to cancel to see the savings</div></div></div><div id="sub-list"></div></div></div>
+  </div>
+
+  <!-- ========= CALENDAR ========= -->
+  <div class="page" id="page-calendar">
+    <div class="ph"><div class="ph-l"><div class="ph-title">Financial Calendar</div><div class="ph-sub" id="cal-sub">Paydays, bills &amp; due dates</div></div><div class="cal-nav"><button class="m-arrow" onclick="calMonth(-1)" aria-label="Previous month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="cal-month-lbl"></span><button class="m-arrow" onclick="calMonth(1)" aria-label="Next month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div></div>
+    <div class="card" id="cal-grid-card"><div id="cal-grid"></div></div>
+    <div class="row row-1"><div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">This month's flow</div><div class="card-sub">Expected money in &amp; out</div></div></div><div id="cal-flow"></div></div></div>
+  </div>
+
   <div class="page" id="page-accounts">
     <div class="ph"><div class="ph-l"><div class="ph-title">Accounts</div></div><div class="ph-r"><button class="btn btn-sm" onclick="promptAddAccount()">+ Add account</button></div></div>
     <div class="acct-split">
@@ -1639,6 +1732,21 @@ const ICONS = {
   alert:      _P('<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/>'),
   bulb:       _P('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.3 1 2.5h6c0-1.2.3-1.8 1-2.5A6 6 0 0 0 12 3z"/>'),
   wallet:     _P('<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/>'),
+  trendup:    _P('<path d="M3 17l6-6 4 4 8-8"/><path d="M16 7h5v5"/>'),
+  trenddown:  _P('<path d="M3 7l6 6 4-4 8 8"/><path d="M16 17h5v-5"/>'),
+  search:     _P('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>'),
+  trophy:     _P('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>'),
+  check:      _P('<path d="M4 12l5 5L20 6"/>'),
+  scissors:   _P('<circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 8l12 11M8 16L20 5"/>'),
+  calendar:   _P('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>'),
+  brain:      _P('<path d="M9.5 4a2.5 2.5 0 0 0-2.5 2.5A2.5 2.5 0 0 0 5 11a2.5 2.5 0 0 0 2 4 2.5 2.5 0 0 0 2.5 2V4z"/><path d="M14.5 4a2.5 2.5 0 0 1 2.5 2.5A2.5 2.5 0 0 1 19 11a2.5 2.5 0 0 1-2 4 2.5 2.5 0 0 1-2.5 2V4z"/>'),
+  star:       _P('<path d="M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 18.8 6.2 21.4l1.1-6.5L2.6 9.8l6.5-.9z"/>'),
+  spark:      _P('<path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/><path d="M5 16l.9 2.6L8 19l-2.1.4L5 22l-.9-2.6L2 19l2.1-.4z"/>'),
+  flame:      _P('<path d="M12 3c1.2 3-1 4.2-1 6.2a3 3 0 0 0 6 .3c0-1-.2-2-1-3 2 1.6 3.2 4 3.2 6.8a7.2 7.2 0 0 1-14.4 0c0-4.3 4-6.4 7.2-10.3z"/>'),
+  plane:      _P('<path d="M2 12l20-7-7 20-3-8-8-3z"/>'),
+  rocket:     _P('<path d="M5 15c-1.5 1-2 5-2 5s4-.5 5-2M9 15a9 9 0 0 1 9-10c1 6-3 9-4 10a6 6 0 0 1-5 0z"/><circle cx="14.5" cy="9" r="1.4"/>'),
+  drop:       _P('<path d="M12 3s6.5 6.5 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.5 12 3 12 3z"/>'),
+  receipt:    _P('<path d="M5 3h14v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>'),
 };
 function icon(name){ return ICONS[name] || ICONS.pin; }
 
@@ -2256,6 +2364,7 @@ const PAGE_RENDERERS = {
   cashflow:renderCashflow, budget:renderBudget, recurring:renderRecurring,
   investments:renderInvestments, categories:renderCategories, import:renderImport,
   coach:renderCoach, settings:renderSettings,
+  subscriptions:renderSubscriptions, calendar:renderCalendar,
 };
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2283,6 +2392,7 @@ function changeMonth(d) {
   if(document.getElementById('rec-donut-card')) renderRecurring();
   if(document.getElementById('budget-bars')) renderBudget();
   if(document.getElementById('cf-bars')||document.querySelector('#page-cashflow')) { try{renderCashflow();}catch(e){} }
+  if(document.getElementById('cal-grid')) { calCursor=currentMonth; try{renderCalendar();}catch(e){} }
 }
 
 // Drill into a category: nav to transactions, filter by search
@@ -4717,10 +4827,10 @@ function renderBrief(){
     <div class="brief-grid">
       ${tile(icon('bank'),'Cash available',fmtS(b.cash),`across ${ACCOUNTS.filter(a=>a.type==='chequing').length} accounts`,'n')}
       ${tile(icon('target'),'Safe to spend',fmtS(b.sts.left),`of ${fmt(b.sts.budgeted)} budget`, b.sts.left>=0?'good':'risk')}
-      ${tile('🧾','Bills (14 days)',fmt(b.bills.total),`${b.bills.list.length} upcoming`, b.bills.total>b.cash?'risk':'n')}
-      ${tile(icon('chart'),'Net worth',(nwUp?'+':'')+fmtS(b.nwChange),'vs last month', nwUp?'good':'risk')}
-      ${tile('⚠️','Top risk',b.topRisk.label,b.topRisk.detail,'risk')}
-      ${tile('💡','Top opportunity',b.topOpp.label,b.topOpp.detail,'good')}
+      ${tile(icon('receipt'),'Bills (14 days)',fmt(b.bills.total),`${b.bills.list.length} upcoming`, b.bills.total>b.cash?'risk':'n')}
+      ${tile(icon(nwUp?'trendup':'trenddown'),'Net worth',(nwUp?'+':'')+fmtS(b.nwChange),'vs last month', nwUp?'good':'risk')}
+      ${tile(icon('alert'),'Top risk',b.topRisk.label,b.topRisk.detail,'risk')}
+      ${tile(icon('bulb'),'Top opportunity',b.topOpp.label,b.topOpp.detail,'good')}
     </div>`;
 }
 function buildInsights(){
@@ -4734,50 +4844,222 @@ function buildInsights(){
     if(diff>=1&&diff<=3){past[t.cat]=past[t.cat]||0; past[t.cat]+=a;}
   });
   Object.keys(cur).forEach(c=>{ const avg=(past[c]||0)/3; if(avg>20 && cur[c]>avg*1.5 && cur[c]-avg>60){
-    out.push({tone:'risk',icon:'⚡',title:`${c} spending is up`,detail:`${fmt(cur[c])} this month vs ${fmt(avg)} typical — ${Math.round((cur[c]/avg-1)*100)}% higher`});
+    out.push({tone:'risk',icon:'bolt',title:`${c} spending is up`,detail:`${fmt(cur[c])} this month vs ${fmt(avg)} typical — ${Math.round((cur[c]/avg-1)*100)}% higher`});
   }});
   // 2) subscription increase: recurring whose latest charge jumped
   detectRecurring().forEach(r=>{ const ts=TXNS.filter(t=>merchKey(t.description)===r.merchant&&t.amount<0).sort((a,b)=>a.date.localeCompare(b.date));
     if(ts.length>=3){ const last=Math.abs(ts[ts.length-1].amount); if(last>r.avgAmt*1.12 && last-r.avgAmt>1.5){
-      out.push({tone:'risk',icon:'📈',title:`${r.name} went up`,detail:`now ${fmt(last)}, was averaging ${fmt(r.avgAmt)}`}); } }});
+      out.push({tone:'risk',icon:'trendup',title:`${r.name} went up`,detail:`now ${fmt(last)}, was averaging ${fmt(r.avgAmt)}`}); } }});
   // 3) savings opportunity (top quick win)
-  if(wins.length) out.push({tone:'good',icon:'💰',title:wins[0].title,detail:`${wins[0].detail} · ${wins[0].annual}`});
+  if(wins.length) out.push({tone:'good',icon:'wallet',title:wins[0].title,detail:`${wins[0].detail} · ${wins[0].annual}`});
   // 4) cash-flow warning
   const cash=getCashAvailable(), bills=getUpcomingBills(14);
-  if(bills.total>cash*0.8 && bills.total>0) out.push({tone:'risk',icon:'🌊',title:'Cash flow watch',detail:`${fmt(bills.total)} of bills due in 14 days against ${fmt(cash)} cash`});
+  if(bills.total>cash*0.8 && bills.total>0) out.push({tone:'risk',icon:'drop',title:'Cash flow watch',detail:`${fmt(bills.total)} of bills due in 14 days against ${fmt(cash)} cash`});
   // 5) investment observation (TFSA contribution pace)
-  const h=calcHealthScore(); if(h.invest&&h.invest.detail) out.push({tone:h.invest.score>=18?'good':'info',icon:'📊',title:'Investing',detail:h.invest.detail});
+  const h=calcHealthScore(); if(h.invest&&h.invest.detail) out.push({tone:h.invest.score>=18?'good':'info',icon:'invest',title:'Investing',detail:h.invest.detail});
   // 6) biggest money leak as an observation if not already a win
-  if(leaks.length&&!wins.length) out.push({tone:'info',icon:'🔍',title:`Frequent buys at ${leaks[0].name}`,detail:`${leaks[0].count}× last 30 days · ${fmt(leaks[0].annualized)}/yr if it continues`});
+  if(leaks.length&&!wins.length) out.push({tone:'info',icon:'search',title:`Frequent buys at ${leaks[0].name}`,detail:`${leaks[0].count}× last 30 days · ${fmt(leaks[0].annualized)}/yr if it continues`});
   return out.slice(0,6);
 }
 function buildFeed(){
   const ev=[]; const today=new Date();
   // recent large expenses (this month, top 3)
   const big=TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).sort((a,b)=>a.amount-b.amount).slice(0,3);
-  big.forEach(t=>ev.push({tone:'info',icon:'💳',title:`${merchantName(t.description)} · ${fmt(Math.abs(t.amount))}`,detail:`${t.cat} · ${new Date(t.date+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}`,date:t.date}));
+  big.forEach(t=>ev.push({tone:'info',icon:'card',title:`${merchantName(t.description)} · ${fmt(Math.abs(t.amount))}`,detail:`${t.cat} · ${new Date(t.date+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}`,date:t.date}));
   // net-worth milestone (new high vs trailing series)
   const series=getMonthlyNetWorth(6); if(series.length){ const cur=series[series.length-1].val; const prevMax=Math.max(...series.slice(0,-1).map(s=>s.val),0);
-    if(cur>prevMax && cur>0) ev.push({tone:'good',icon:'🏆',title:'New net-worth high',detail:`${fmtS(cur)} — your highest in 6 months`,date:currentMonth+'-28'}); }
+    if(cur>prevMax && cur>0) ev.push({tone:'good',icon:'trophy',title:'New net-worth high',detail:`${fmtS(cur)} — your highest in 6 months`,date:currentMonth+'-28'}); }
   // bills just paid this month (achievement)
   const paid=detectRecurring().filter(r=>TXNS.some(t=>merchKey(t.description)===r.merchant&&t.date.startsWith(currentMonth))).length;
-  if(paid) ev.push({tone:'good',icon:'✓',title:`${paid} recurring bills handled`,detail:'this month — nicely on top of it',date:currentMonth+'-15'});
+  if(paid) ev.push({tone:'good',icon:'check',title:`${paid} recurring bills handled`,detail:'this month — nicely on top of it',date:currentMonth+'-15'});
   return ev.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
 }
 function renderInsights(){
   const fh=document.getElementById('coach-insights');
   if(fh){ const ins=buildInsights();
-    fh.innerHTML = ins.length ? ins.map(i=>`<div class="insight-card insight-${i.tone}"><div class="insight-ic">${i.icon}</div><div class="insight-body"><div class="insight-title">${i.title}</div><div class="insight-det">${i.detail}</div></div></div>`).join('')
+    fh.innerHTML = ins.length ? ins.map(i=>`<div class="insight-card insight-${i.tone}"><div class="insight-ic">${icon(i.icon)}</div><div class="insight-body"><div class="insight-title">${i.title}</div><div class="insight-det">${i.detail}</div></div></div>`).join('')
       : '<div class="empty">Import or sync transactions to unlock AI insights.</div>'; }
   const feedHost=document.getElementById('coach-feed');
   if(feedHost){ const feed=buildFeed();
-    feedHost.innerHTML = feed.length ? feed.map(f=>`<div class="feed-row feed-${f.tone}"><div class="feed-ic">${f.icon}</div><div class="feed-body"><div class="feed-title">${f.title}</div><div class="feed-det">${f.detail}</div></div></div>`).join('')
+    feedHost.innerHTML = feed.length ? feed.map(f=>`<div class="feed-row feed-${f.tone}"><div class="feed-ic">${icon(f.icon)}</div><div class="feed-body"><div class="feed-title">${f.title}</div><div class="feed-det">${f.detail}</div></div></div>`).join('')
       : '<div class="empty">Your financial events will appear here.</div>'; }
 }
+// ── Subscription detection (recurring charges that look like services) ──
+const SUB_CATS=['Subscriptions','Streaming','Software','Memberships','Phone','Utilities','Insurance'];
+const SUB_BLOCK=['Groceries','Dining','Coffee','Gas','Fuel','Transport','Transportation','Shopping','Retail','Health','Pharmacy','Transfers','Cash','ATM','Payroll','Income','Returns','Investment'];
+function getSubscriptions(){
+  return detectRecurring().filter(r=>{
+    if(['weekly','bi-weekly','monthly','quarterly','semi-annual','annual'].indexOf(r.cadence)<0) return false;
+    if(SUB_CATS.includes(r.cat)) return true;
+    return r.avgAmt<=100 && ['monthly','quarterly','annual'].includes(r.cadence) && !SUB_BLOCK.includes(r.cat);
+  }).map(r=>({...r, monthly:cadenceMonthly(r.cadence,r.avgAmt), annual:cadenceMonthly(r.cadence,r.avgAmt)*12}));
+}
+function toggleCancelFlag(merchant){
+  SETTINGS.cancelFlags=SETTINGS.cancelFlags||{};
+  SETTINGS.cancelFlags[merchant]=!SETTINGS.cancelFlags[merchant];
+  saveSettings(); renderSubscriptions();
+}
+function renderSubscriptions(){
+  renderSidebar();
+  const subs=getSubscriptions().sort((a,b)=>b.monthly-a.monthly);
+  const flags=SETTINGS.cancelFlags||{};
+  const totalMo=subs.reduce((s,r)=>s+r.monthly,0);
+  const totalYr=totalMo*12;
+  const cutMo=subs.filter(r=>flags[r.merchant]).reduce((s,r)=>s+r.monthly,0);
+  const sc=document.getElementById('sub-summary');
+  if(sc){ const tile=(ic,l,v,sub,tone)=>`<div class="brief-tile brief-${tone||'n'}"><div class="brief-ic">${ic}</div><div class="brief-lbl">${l}</div><div class="brief-val">${v}</div><div class="brief-sub">${sub}</div></div>`;
+    sc.innerHTML=`<div class="brief-hd"><div class="brief-greet" style="font-size:24px">${subs.length} subscriptions</div><div class="brief-day">costing you ${fmt(totalMo)}/mo · ${fmt(totalYr)}/yr</div></div>
+    <div class="brief-grid">
+      ${tile(icon('card'),'Monthly',fmt(totalMo),'all active subscriptions','n')}
+      ${tile(icon('calendar'),'Annual',fmt(totalYr),'projected over 12 months','n')}
+      ${tile(icon('scissors'),'Flagged to cancel',fmt(cutMo)+'/mo',cutMo>0?`saves ${fmt(cutMo*12)}/yr`:'flag some below','good')}
+    </div>`; }
+  const list=document.getElementById('sub-list');
+  if(list){ list.innerHTML = subs.length ? subs.map(r=>{
+    const m=CAT_MAP[r.cat]||CAT_MAP.Other; const flagged=!!flags[r.merchant]; const safe=r.merchant.replace(/'/g,"\\'");
+    return `<div class="sub-row${flagged?' sub-flagged':''}">
+      <div class="merch-ic" style="background:${m.color}1f;color:${m.color};width:40px;height:40px;font-size:18px">${m.icon}</div>
+      <div class="sub-mid"><div class="sub-name">${r.name}</div><div class="sub-meta">${r.cadence} · ${r.cat} · next ${r.nextDate}</div></div>
+      <div class="sub-cost"><div class="sub-mo">${fmt(r.monthly)}<span>/mo</span></div><div class="sub-yr">${fmt(r.annual)}/yr</div></div>
+      <button class="sub-cancel${flagged?' on':''}" onclick="toggleCancelFlag('${safe}')" title="Flag to cancel">${flagged?icon('check'):icon('scissors')}</button>
+    </div>`;
+  }).join('') : '<div class="empty">No subscriptions detected yet — import a few months of transactions.</div>'; }
+}
+
+// ── Financial Calendar ──
+let calCursor=null;
+function calMonth(d){ const [y,m]=(calCursor||currentMonth).split('-').map(Number); const dt=new Date(y,m-1+d,1); calCursor=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'); renderCalendar(); }
+function getCalEvents(ym){
+  const ev={}; const add=(day,e)=>{(ev[day]=ev[day]||[]).push(e);};
+  const [y,m]=ym.split('-').map(Number);
+  // bills from recurring (next occurrence within month)
+  detectRecurring().forEach(r=>{ const nd=new Date(r.nextDate+'T00:00:00'); if(nd.getFullYear()===y&&nd.getMonth()+1===m) add(nd.getDate(),{type:'bill',name:r.name,amt:r.avgAmt}); });
+  // paydays: income txns this month (and projected from prior pattern)
+  TXNS.filter(t=>t.date.startsWith(ym)&&t.amount>0&&['Payroll','Income'].includes(t.cat)).forEach(t=>add(+t.date.slice(8,10),{type:'pay',name:merchantName(t.description),amt:t.amount}));
+  // credit due dates
+  ACCOUNTS.filter(a=>a.type==='credit').forEach(a=>{ const due=(SETTINGS.dueDays||{})[a.name]; if(due) add(due,{type:'due',name:a.short+' due',amt:getCreditOutstanding(a.name)||0}); });
+  return ev;
+}
+function renderCalendar(){
+  renderSidebar();
+  const ym=calCursor||currentMonth; calCursor=ym;
+  const [y,m]=ym.split('-').map(Number);
+  document.getElementById('cal-month-lbl').textContent=new Date(y,m-1,1).toLocaleString('en',{month:'long',year:'numeric'});
+  const first=new Date(y,m-1,1).getDay(); const days=new Date(y,m,0).getDate();
+  const ev=getCalEvents(ym); const todayStr=new Date().toISOString().slice(0,10);
+  let cells='';
+  ['S','M','T','W','T','F','S'].forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
+  for(let i=0;i<first;i++) cells+='<div class="cal-cell cal-empty"></div>';
+  for(let d=1;d<=days;d++){ const ds=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const list=ev[d]||[];
+    const dots=list.slice(0,3).map(e=>`<span class="cal-dot cal-${e.type}"></span>`).join('');
+    cells+=`<div class="cal-cell${ds===todayStr?' cal-today':''}${list.length?' cal-has':''}" ${list.length?`onclick="calDay('${ds}')"`:''}><span class="cal-num">${d}</span><div class="cal-dots">${dots}</div></div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=`<div class="cal-grid">${cells}</div>
+    <div class="cal-legend"><span><i class="cal-dot cal-pay"></i>Payday</span><span><i class="cal-dot cal-bill"></i>Bill</span><span><i class="cal-dot cal-due"></i>Card due</span></div>`;
+  // flow summary
+  let inc=0,out=0; Object.values(ev).flat().forEach(e=>{ if(e.type==='pay')inc+=e.amt; else out+=e.amt; });
+  const fl=document.getElementById('cal-flow');
+  if(fl){ const tile=(ic,l,v,tone)=>`<div class="brief-tile brief-${tone}"><div class="brief-ic">${ic}</div><div class="brief-lbl">${l}</div><div class="brief-val">${v}</div></div>`;
+    fl.innerHTML=`<div class="brief-grid">
+      ${tile(icon('income'),'Expected in',fmt(inc),'good')}
+      ${tile(icon('receipt'),'Expected out',fmt(out),'risk')}
+      ${tile(icon('wallet'),'Net',(inc-out>=0?'+':'')+fmt(inc-out),inc-out>=0?'good':'risk')}
+    </div>`; }
+}
+function calDay(ds){ const [y,m]=ds.split('-').map(Number); const ev=getCalEvents(ds.slice(0,7))[+ds.slice(8,10)]||[];
+  const lines=ev.map(e=>`${e.type==='pay'?'+':'−'}${fmt(Math.abs(e.amt))} · ${e.name}`).join('\n');
+  toast(new Date(y,m-1,+ds.slice(8,10)).toLocaleDateString('en',{month:'short',day:'numeric'})+': '+(lines||'nothing scheduled')); }
+
+// ── Goals + forecast (uses projectInvestment) ──
+function getGoals(){
+  const g=SETTINGS.goals||{};
+  const avgExp=(()=>{const months={};TXNS.filter(t=>t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).forEach(t=>{const k=t.date.slice(0,7);months[k]=(months[k]||0)+Math.abs(t.amount);});const v=Object.values(months);return v.length?v.reduce((a,b)=>a+b,0)/v.length:3000;})();
+  const cash=getCashAvailable();
+  const out=[];
+  // Emergency fund
+  const emoTarget=avgExp*(SETTINGS.emergencyMonths||3);
+  out.push({key:'emergency',icon:'flame',label:'Emergency fund',target:emoTarget,current:Math.min(cash,emoTarget),monthly:g.emergencyMonthly||300});
+  if(g.housePrice) out.push({key:'house',icon:'home',label:'House down payment',target:g.housePrice*0.2,current:g.houseSaved||0,monthly:g.houseMonthly||500});
+  if(g.vacationTarget) out.push({key:'vacation',icon:'plane',label:'Vacation',target:g.vacationTarget,current:g.vacationSaved||0,monthly:g.vacationMonthly||200});
+  // Retirement (TFSA/RRSP balance vs target)
+  const invBal=ACCOUNTS.filter(a=>a.type==='invest').reduce((s,a)=>s+(getBal(a.name)||0),0);
+  out.push({key:'retire',icon:'rocket',label:'Retirement runway',target:g.retireTarget||1000000,current:invBal,monthly:g.retireMonthly||800,rate:0.06});
+  return out.map(go=>{
+    const remain=Math.max(0,go.target-go.current);
+    const pct=go.target>0?Math.min(100,go.current/go.target*100):0;
+    let months=null;
+    if(go.monthly>0 && remain>0){
+      if(go.rate){ // solve for months with compounding: future value of current + contributions
+        let bal=go.current,mo=0,r=go.rate/12; while(bal<go.target&&mo<1200){bal=bal*(1+r)+go.monthly;mo++;} months=mo;
+      } else months=Math.ceil(remain/go.monthly);
+    }
+    const eta = months!=null && months<1200 ? new Date(Date.now()+months*2629800000) : null;
+    return {...go,remain,pct,months,eta};
+  });
+}
+function renderGoalsCard(){
+  const host=document.getElementById('coach-goals'); if(!host)return;
+  const goals=getGoals();
+  host.innerHTML=goals.map(g=>{
+    const etaTxt = g.pct>=100 ? 'Complete' : g.eta ? 'by '+g.eta.toLocaleDateString('en',{month:'short',year:'numeric'}) : 'set a monthly amount';
+    const col = g.pct>=100?'#3FCB8E':'var(--brand)';
+    return `<div class="goal-row">
+      <div class="goal-ic">${icon(g.icon)}</div>
+      <div class="goal-body">
+        <div class="goal-top"><span class="goal-name">${g.label}</span><span class="goal-eta">${etaTxt}</span></div>
+        <div class="goal-bar"><div class="goal-fill" style="width:${g.pct.toFixed(0)}%;background:${col}"></div></div>
+        <div class="goal-sub">${fmtS(g.current)} of ${fmtS(g.target)} · ${g.pct.toFixed(0)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Behavioral finance: spending personality + strengths/weaknesses ──
+function renderPersonality(){
+  const host=document.getElementById('coach-personality'); if(!host)return;
+  const h=calcHealthScore();
+  // top spending category share + savings rate -> personality archetype
+  const by={}; let tot=0;
+  TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).forEach(t=>{by[t.cat]=(by[t.cat]||0)+Math.abs(t.amount);tot+=Math.abs(t.amount);});
+  const topCat=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];
+  const saveRate = h.avgInc>0 ? (h.avgInc-h.avgExp)/h.avgInc : 0;
+  let type,desc,ic;
+  if(saveRate>=0.2){type='The Builder';desc='You consistently keep a healthy slice of income — wealth compounds quietly in your favour.';ic='trendup';}
+  else if(saveRate>=0.05){type='The Balancer';desc='You live comfortably and still set money aside. Small tweaks could accelerate your goals.';ic='target';}
+  else if(topCat&&topCat[1]/Math.max(tot,1)>0.35){type='The Enthusiast';desc=`A big share of spending goes to ${topCat[0]}. Worth a look if it crowds out savings.`;ic='spark';}
+  else {type='The Spender';desc='Most of what comes in goes back out. A simple safe-to-spend habit could change the trajectory.';ic='wallet';}
+  const strengths=[],weak=[];
+  [['savings','Savings rate'],['debt','Debt control'],['budget','Budget discipline'],['invest','Investing']].forEach(([k,l])=>{
+    const p=h[k]?h[k].score/h[k].max:0; if(p>=0.7)strengths.push(l); else if(p<0.4)weak.push(l);
+  });
+  host.innerHTML=`
+    <div class="pers-hero"><div class="pers-ic">${icon(ic)}</div><div><div class="pers-type">${type}</div><div class="pers-desc">${desc}</div></div></div>
+    <div class="pers-tags">
+      ${strengths.map(s=>`<span class="pers-tag pers-good">${icon('check')}${s}</span>`).join('')}
+      ${weak.map(s=>`<span class="pers-tag pers-bad">${icon('alert')}${s}</span>`).join('')}
+      ${!strengths.length&&!weak.length?'<span class="pers-tag">Import more data for a read</span>':''}
+    </div>`;
+}
+
+// ── Celebrations: fire once per milestone per session ──
+let _celebrated=new Set();
+function checkCelebrations(){
+  try{
+    const series=getMonthlyNetWorth(6); if(series.length>=2){ const cur=series[series.length-1].val; const prevMax=Math.max(...series.slice(0,-1).map(s=>s.val),0);
+      if(cur>prevMax&&cur>0&&!_celebrated.has('nwhigh')){ _celebrated.add('nwhigh'); celebrate('New net-worth high — '+fmtS(cur)); } }
+    getGoals().forEach(g=>{ if(g.pct>=100&&!_celebrated.has('goal-'+g.key)){ _celebrated.add('goal-'+g.key); celebrate(g.label+' goal reached!'); } });
+  }catch(e){}
+}
+function celebrate(msg){ toast(msg); const el=document.getElementById('toast'); if(el)el.classList.add('toast-celebrate'); setTimeout(()=>el&&el.classList.remove('toast-celebrate'),2200); }
+
 function renderCoach() {
   renderSidebar();
   renderBrief();
   renderInsights();
+  renderGoalsCard();
+  renderPersonality();
+  checkCelebrations();
   const h = calcHealthScore();
   const leaks = findMoneyLeaks();
   const wins = findQuickWins(leaks);
@@ -4878,11 +5160,7 @@ function renderCoachAI(){
   const host=document.getElementById('coach-ai-body'); if(!host)return;
   const hasKey=!!SETTINGS.openaiKey;
   host.innerHTML=`
-    <div class="ai-keyrow">
-      <input id="coach-key" type="password" class="sf-inp" placeholder="OpenAI API key (sk-...)" value="${SETTINGS.openaiKey||''}" style="flex:1">
-      <button class="btn btn-sm" onclick="saveCoachKey()">Save</button>
-    </div>
-    <div class="ai-chat" id="coach-chat">${COACH_MSGS.length?COACH_MSGS.map(m=>`<div class="ai-msg ai-${m.role}">${m.role==='user'?'':'🤖 '}${m.content.replace(/</g,'&lt;')}</div>`).join(''):`<div class="ai-empty">${hasKey?'Ask anything — e.g. \u201cWhere can I cut $200/month?\u201d or \u201cAm I on track to save for a house?\u201d':'Add your OpenAI key above to chat with a coach that knows your numbers.'}</div>`}</div>
+    <div class="ai-chat" id="coach-chat">${COACH_MSGS.length?COACH_MSGS.map(m=>`<div class="ai-msg ai-${m.role}">${m.role==='user'?'':`<span class="ai-av">${icon('spark')}</span>`}${m.content.replace(/</g,'&lt;')}</div>`).join(''):`<div class="ai-empty">${hasKey?'Ask anything — e.g. \u201cWhere can I cut $200/month?\u201d or \u201cAm I on track to save for a house?\u201d':'Add your OpenAI key in Settings &rarr; AI Coach to chat with a coach that knows your numbers.'}</div>`}</div>
     <div class="ai-inputrow">
       <input id="coach-q" class="sf-inp" placeholder="Ask about your finances..." style="flex:1" onkeydown="if(event.key==='Enter')askCoach()">
       <button class="btn btn-brand btn-sm" onclick="askCoach()">Ask</button>
@@ -4890,7 +5168,7 @@ function renderCoachAI(){
     <div class="ai-suggest">${['Where am I overspending?','How much could I save monthly?','Summarize my recurring bills','Am I on track for retirement?'].map(s=>`<button class="ai-chip" onclick="document.getElementById('coach-q').value='${s}';askCoach()">${s}</button>`).join('')}</div>`;
   const c=document.getElementById('coach-chat'); if(c)c.scrollTop=c.scrollHeight;
 }
-function saveCoachKey(){ const k=document.getElementById('coach-key').value.trim(); SETTINGS.openaiKey=k; saveSettings(); toast(k?'Key saved':'Key cleared'); renderCoachAI(); }
+function saveCoachKey(){ const k=document.getElementById('coach-key').value.trim(); SETTINGS.openaiKey=k; saveSettings(); toast(k?'Key saved':'Key cleared'); renderCoachAI(); if(document.getElementById('settings-content'))renderSettings(); }
 function coachContext(){
   // compact financial snapshot for the model
   const ym=new Date().toISOString().slice(0,7);
@@ -5034,6 +5312,14 @@ function renderSettings() {
     +'<button class="btn btn-brand btn-sm" onclick="addHolding()">+ Add holding</button>'
     +'<span style="color:var(--muted);font-size:12px;margin-left:8px">Total: <b style="color:var(--text);font-variant-numeric:tabular-nums">'+fmt(calcInvestBal)+'</b></span>'
     +'</div></div>'
+    +'<div class="card" style="margin-bottom:14px">'
+    +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">AI Coach</div><div class="card-sub">Your OpenAI key powers the chat on your Home page. Stored only in this browser &amp; your private sync.</div></div></div>'
+    +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+    +'<input id="coach-key" type="password" class="sf-inp" placeholder="OpenAI API key (sk-...)" value="'+(SETTINGS.openaiKey||'')+'" style="flex:1;min-width:200px;font-family:JetBrains Mono,monospace;font-size:12px">'
+    +'<button class="btn btn-brand btn-sm" onclick="saveCoachKey()">Save key</button>'
+    +'</div>'
+    +'<div style="font-size:11.5px;color:var(--muted2);margin-top:9px">Get a key at platform.openai.com → API keys. Uses gpt-4o-mini. '+(SETTINGS.openaiKey?'<span style="color:var(--brand)">Key set.</span>':'No key yet.')+'</div>'
+    +'</div>'
     +'<div class="card" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Cloud Sync</div><div class="card-sub">Sync across PC + mobile with just your email &amp; password. Database wins on load; tap Sync to push local changes up.</div></div></div>'
     +'<div style="display:grid;gap:12px">'
