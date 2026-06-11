@@ -977,6 +977,38 @@ body{letter-spacing:-0.006em}
 .rd-chip-edit{display:inline-flex;align-items:center;gap:5px;padding-right:8px}
 .rd-freq{background:var(--surface3);border:1px solid var(--brand);color:var(--brand);font-weight:700;font-size:13px;border-radius:8px;padding:3px 6px;cursor:pointer;font-family:inherit}
 .rd-freq:focus{outline:none;box-shadow:0 0 0 3px var(--glow)}
+
+/* ── Financial OS: Today's Brief ── */
+.coach-brief-card{background:linear-gradient(150deg,var(--surface) 0%,var(--brand-soft) 160%);border:1px solid var(--border);overflow:hidden;position:relative}
+.coach-brief-card::after{content:'';position:absolute;inset:0;background:radial-gradient(120% 80% at 100% 0%,var(--glow),transparent 60%);pointer-events:none;opacity:.6}
+.brief-hd{margin-bottom:16px;position:relative;z-index:1}
+.brief-greet{font-family:'Figtree',sans-serif;font-size:clamp(24px,5vw,32px);font-weight:700;letter-spacing:-0.03em;color:var(--text);line-height:1.1}
+.brief-day{font-size:13px;color:var(--muted2);margin-top:3px}
+.brief-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:1}
+.brief-tile{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px 15px;display:flex;flex-direction:column;gap:2px;min-width:0;transition:transform .18s cubic-bezier(.23,1,.32,1)}
+@media(hover:hover){.brief-tile:hover{transform:translateY(-2px)}}
+.brief-ic{font-size:16px;width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:var(--surface3);color:var(--muted2);margin-bottom:6px}
+.brief-ic svg{width:15px;height:15px}
+.brief-lbl{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.brief-val{font-family:'Figtree',sans-serif;font-size:21px;font-weight:700;letter-spacing:-0.02em;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brief-sub{font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brief-good .brief-ic{background:rgba(60,160,120,.16);color:#3FCB8E}
+.brief-good .brief-val{color:#3FCB8E}
+.brief-risk .brief-ic{background:rgba(210,90,90,.15);color:#E07A7A}
+@media(max-width:640px){.brief-grid{grid-template-columns:repeat(2,1fr)}.brief-val{font-size:19px}}
+
+/* ── AI insights ── */
+.insights-list,.feed-list{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.insight-card,.feed-row{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:13px;background:var(--surface2);border:1px solid transparent;transition:transform .16s cubic-bezier(.23,1,.32,1)}
+@media(hover:hover){.insight-card:hover,.feed-row:hover{transform:translateX(3px)}}
+.insight-ic,.feed-ic{font-size:16px;width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:var(--surface3);flex-shrink:0}
+.insight-title,.feed-title{font-weight:650;font-size:14px;color:var(--text);letter-spacing:-0.01em}
+.insight-det,.feed-det{font-size:12.5px;color:var(--muted2);margin-top:1px;line-height:1.4}
+.insight-risk{background:linear-gradient(90deg,rgba(210,90,90,.10),var(--surface2) 40%);border-left:3px solid #D25A5A}
+.insight-good{background:linear-gradient(90deg,rgba(60,160,120,.10),var(--surface2) 40%);border-left:3px solid #3FCB8E}
+.insight-info{background:linear-gradient(90deg,var(--glow),var(--surface2) 45%);border-left:3px solid var(--brand)}
+.feed-good .feed-ic{background:rgba(60,160,120,.16)}
+.feed-risk .feed-ic{background:rgba(210,90,90,.15)}
 .rd-chip b{color:var(--text);font-weight:700}
 .rd-metrics{width:100%;border-collapse:collapse}
 .rd-metrics th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:6px 0}
@@ -1092,13 +1124,13 @@ body{letter-spacing:-0.006em}
   </div>
   <div class="nav-group">
     <div class="nav-label">Overview</div>
-    <div class="nav-item active" data-pg="dashboard" onclick="nav('dashboard')">
+    <div class="nav-item active" data-pg="coach" onclick="nav('coach')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4 4 4 0 0 0 4-4v0a4 4 0 0 0-4-4z"/><path d="M5 22v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 13.5l1.5 2 4-4.5"/></svg>
+      Home
+    </div>
+    <div class="nav-item" data-pg="dashboard" onclick="nav('dashboard')">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
       Dashboard
-    </div>
-    <div class="nav-item" data-pg="coach" onclick="nav('coach')">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4 4 4 0 0 0 4-4v0a4 4 0 0 0-4-4z"/><path d="M5 22v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M9 13.5l1.5 2 4-4.5"/></svg>
-      Coach
     </div>
     <div class="nav-item" data-pg="accounts" onclick="nav('accounts')">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h2"/></svg>
@@ -1189,7 +1221,7 @@ body{letter-spacing:-0.006em}
   </div>
 
   <!-- ========= DASHBOARD ========= -->
-  <div class="page active" id="page-dashboard">
+  <div class="page" id="page-dashboard">
     <div class="ph">
       <div class="ph-l"><div class="ph-title">Dashboard</div></div>
       <div class="ph-r"><div class="month-nav"><button class="m-arrow" onclick="changeMonth(-1)">‹</button><span class="m-label" id="dash-month-lbl"></span><button class="m-arrow" onclick="changeMonth(1)">›</button></div></div>
@@ -1208,9 +1240,17 @@ body{letter-spacing:-0.006em}
   </div>
 
   <!-- ========= COACH ========= -->
-  <div class="page" id="page-coach">
-    <div class="ph">
-      <div class="ph-l"><div class="ph-title">Financial Coach</div><div class="ph-sub">Your personalized money guide — clarity, not prescriptions</div></div>
+  <div class="page active" id="page-coach">
+    <div class="card coach-brief-card" id="coach-brief"></div>
+    <div class="row row-2" style="align-items:start">
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">AI insights</div><div class="card-sub">Proactive observations from your money</div></div></div><div id="coach-insights" class="insights-list"></div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Your financial feed</div><div class="card-sub">Recent events &amp; wins</div></div></div><div id="coach-feed" class="feed-list"></div></div>
+    </div>
+    <div class="row row-1">
+      <div class="card" id="coach-ai-card">
+        <div class="card-hd"><div class="card-hd-l"><div class="card-title">Ask your AI coach</div><div class="card-sub">Powered by OpenAI · your data stays in your browser</div></div></div>
+        <div id="coach-ai-body"></div>
+      </div>
     </div>
     <div class="card coach-hero-card" id="coach-hero"></div>
     <div class="row row-2" style="align-items:start">
@@ -1220,12 +1260,6 @@ body{letter-spacing:-0.006em}
     <div class="row row-2" style="align-items:start">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Quick Wins</div><div class="card-sub">High-impact, low-effort</div></div></div><div id="coach-wins" class="wins-grid"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Money Leaks</div><div class="card-sub">Small recurring purchases — last 30 days</div></div></div><div id="coach-leaks"></div></div>
-    </div>
-    <div class="row row-1">
-      <div class="card" id="coach-ai-card">
-        <div class="card-hd"><div class="card-hd-l"><div class="card-title">Ask your AI coach</div><div class="card-sub">Powered by OpenAI · your data stays in your browser</div></div></div>
-        <div id="coach-ai-body"></div>
-      </div>
     </div>
   </div>
 
@@ -4636,7 +4670,114 @@ function generateStory(h) {
   return story;
 }
 
+// ═══════════════════════════════════════════════════════
+// FINANCIAL OS — Today's Brief · Proactive Insights · Feed
+// (reuses existing engine: detectRecurring, findMoneyLeaks,
+//  findQuickWins, getMonthlyNetWorth, getBal, BUDGET_TARGETS)
+// ═══════════════════════════════════════════════════════
+function getCashAvailable(){
+  return ACCOUNTS.filter(a=>a.type==='chequing').reduce((s,a)=>{const b=getBal(a.name); return s+(b||0);},0);
+}
+function getUpcomingBills(days=14){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const end=new Date(today); end.setDate(end.getDate()+days);
+  let total=0; const list=[];
+  detectRecurring().forEach(r=>{
+    const nd=new Date(r.nextDate+'T00:00:00');
+    if(nd>=today && nd<=end){ total+=r.avgAmt; list.push({name:r.name,date:r.nextDate,amt:r.avgAmt,cat:r.cat}); }
+  });
+  return {total, list:list.sort((a,b)=>a.date.localeCompare(b.date))};
+}
+function getSafeToSpend(){
+  const budgeted = Object.values(BUDGET_TARGETS).reduce((s,v)=>s+v,0) || SETTINGS.monthlyBudgetTotal || 0;
+  const spent = TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).reduce((s,t)=>s+Math.abs(t.amount),0);
+  return {budgeted, spent, left:budgeted-spent};
+}
+function buildBrief(){
+  const cash=getCashAvailable();
+  const bills=getUpcomingBills(14);
+  const sts=getSafeToSpend();
+  const nwSeries=getMonthlyNetWorth(2);
+  const nwChange=nwSeries.length>=2 ? nwSeries[nwSeries.length-1].val-nwSeries[0].val : 0;
+  const leaks=findMoneyLeaks(); const wins=findQuickWins(leaks);
+  const topRisk = leaks.length ? {label:leaks[0].name, detail:`${fmt(leaks[0].annualized)}/yr · ${leaks[0].count} small buys`}
+    : (bills.total>cash ? {label:'Cash is tight', detail:`${fmt(bills.total)} bills vs ${fmt(cash)} cash`} : {label:'No major risks', detail:'Spending under control'});
+  const topOpp = wins.length ? {label:wins[0].title, detail:wins[0].detail} : {label:'Keep it up', detail:'No quick wins to flag'};
+  return {cash, bills, sts, nwChange, topRisk, topOpp};
+}
+function greeting(){ const h=new Date().getHours(); return h<12?'Good morning':h<18?'Good afternoon':'Good evening'; }
+function renderBrief(){
+  const host=document.getElementById('coach-brief'); if(!host) return;
+  const b=buildBrief();
+  const nm=(SETTINGS.email||SB.email||'').split('@')[0]; const who=nm?', '+nm.charAt(0).toUpperCase()+nm.slice(1):'';
+  const nwUp=b.nwChange>=0;
+  const tile=(icn,lbl,val,sub,tone)=>`<div class="brief-tile brief-${tone||'n'}"><div class="brief-ic">${icn}</div><div class="brief-lbl">${lbl}</div><div class="brief-val">${val}</div><div class="brief-sub">${sub}</div></div>`;
+  host.innerHTML=`
+    <div class="brief-hd"><div class="brief-greet">${greeting()}${who}</div><div class="brief-day">${new Date().toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'})} · here's your money today</div></div>
+    <div class="brief-grid">
+      ${tile(icon('bank'),'Cash available',fmtS(b.cash),`across ${ACCOUNTS.filter(a=>a.type==='chequing').length} accounts`,'n')}
+      ${tile(icon('target'),'Safe to spend',fmtS(b.sts.left),`of ${fmt(b.sts.budgeted)} budget`, b.sts.left>=0?'good':'risk')}
+      ${tile('🧾','Bills (14 days)',fmt(b.bills.total),`${b.bills.list.length} upcoming`, b.bills.total>b.cash?'risk':'n')}
+      ${tile(icon('chart'),'Net worth',(nwUp?'+':'')+fmtS(b.nwChange),'vs last month', nwUp?'good':'risk')}
+      ${tile('⚠️','Top risk',b.topRisk.label,b.topRisk.detail,'risk')}
+      ${tile('💡','Top opportunity',b.topOpp.label,b.topOpp.detail,'good')}
+    </div>`;
+}
+function buildInsights(){
+  const out=[]; const leaks=findMoneyLeaks(); const wins=findQuickWins(leaks);
+  const [cy,cm]=currentMonth.split('-').map(Number); const monIdx=cy*12+cm;
+  // 1) spending anomaly: this-month category vs trailing-3-mo average
+  const cur={}, past={};
+  TXNS.forEach(t=>{ if(t.amount>=0||['Transfers','Investment','Returns','Investment'].includes(t.cat))return;
+    const a=Math.abs(t.amount); if(t.date.startsWith(currentMonth)){cur[t.cat]=(cur[t.cat]||0)+a;return;}
+    const d=new Date(t.date+'T00:00:00'); const diff=monIdx-(d.getFullYear()*12+d.getMonth()+1);
+    if(diff>=1&&diff<=3){past[t.cat]=past[t.cat]||0; past[t.cat]+=a;}
+  });
+  Object.keys(cur).forEach(c=>{ const avg=(past[c]||0)/3; if(avg>20 && cur[c]>avg*1.5 && cur[c]-avg>60){
+    out.push({tone:'risk',icon:'⚡',title:`${c} spending is up`,detail:`${fmt(cur[c])} this month vs ${fmt(avg)} typical — ${Math.round((cur[c]/avg-1)*100)}% higher`});
+  }});
+  // 2) subscription increase: recurring whose latest charge jumped
+  detectRecurring().forEach(r=>{ const ts=TXNS.filter(t=>merchKey(t.description)===r.merchant&&t.amount<0).sort((a,b)=>a.date.localeCompare(b.date));
+    if(ts.length>=3){ const last=Math.abs(ts[ts.length-1].amount); if(last>r.avgAmt*1.12 && last-r.avgAmt>1.5){
+      out.push({tone:'risk',icon:'📈',title:`${r.name} went up`,detail:`now ${fmt(last)}, was averaging ${fmt(r.avgAmt)}`}); } }});
+  // 3) savings opportunity (top quick win)
+  if(wins.length) out.push({tone:'good',icon:'💰',title:wins[0].title,detail:`${wins[0].detail} · ${wins[0].annual}`});
+  // 4) cash-flow warning
+  const cash=getCashAvailable(), bills=getUpcomingBills(14);
+  if(bills.total>cash*0.8 && bills.total>0) out.push({tone:'risk',icon:'🌊',title:'Cash flow watch',detail:`${fmt(bills.total)} of bills due in 14 days against ${fmt(cash)} cash`});
+  // 5) investment observation (TFSA contribution pace)
+  const h=calcHealthScore(); if(h.invest&&h.invest.detail) out.push({tone:h.invest.score>=18?'good':'info',icon:'📊',title:'Investing',detail:h.invest.detail});
+  // 6) biggest money leak as an observation if not already a win
+  if(leaks.length&&!wins.length) out.push({tone:'info',icon:'🔍',title:`Frequent buys at ${leaks[0].name}`,detail:`${leaks[0].count}× last 30 days · ${fmt(leaks[0].annualized)}/yr if it continues`});
+  return out.slice(0,6);
+}
+function buildFeed(){
+  const ev=[]; const today=new Date();
+  // recent large expenses (this month, top 3)
+  const big=TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).sort((a,b)=>a.amount-b.amount).slice(0,3);
+  big.forEach(t=>ev.push({tone:'info',icon:'💳',title:`${merchantName(t.description)} · ${fmt(Math.abs(t.amount))}`,detail:`${t.cat} · ${new Date(t.date+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}`,date:t.date}));
+  // net-worth milestone (new high vs trailing series)
+  const series=getMonthlyNetWorth(6); if(series.length){ const cur=series[series.length-1].val; const prevMax=Math.max(...series.slice(0,-1).map(s=>s.val),0);
+    if(cur>prevMax && cur>0) ev.push({tone:'good',icon:'🏆',title:'New net-worth high',detail:`${fmtS(cur)} — your highest in 6 months`,date:currentMonth+'-28'}); }
+  // bills just paid this month (achievement)
+  const paid=detectRecurring().filter(r=>TXNS.some(t=>merchKey(t.description)===r.merchant&&t.date.startsWith(currentMonth))).length;
+  if(paid) ev.push({tone:'good',icon:'✓',title:`${paid} recurring bills handled`,detail:'this month — nicely on top of it',date:currentMonth+'-15'});
+  return ev.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+}
+function renderInsights(){
+  const fh=document.getElementById('coach-insights');
+  if(fh){ const ins=buildInsights();
+    fh.innerHTML = ins.length ? ins.map(i=>`<div class="insight-card insight-${i.tone}"><div class="insight-ic">${i.icon}</div><div class="insight-body"><div class="insight-title">${i.title}</div><div class="insight-det">${i.detail}</div></div></div>`).join('')
+      : '<div class="empty">Import or sync transactions to unlock AI insights.</div>'; }
+  const feedHost=document.getElementById('coach-feed');
+  if(feedHost){ const feed=buildFeed();
+    feedHost.innerHTML = feed.length ? feed.map(f=>`<div class="feed-row feed-${f.tone}"><div class="feed-ic">${f.icon}</div><div class="feed-body"><div class="feed-title">${f.title}</div><div class="feed-det">${f.detail}</div></div></div>`).join('')
+      : '<div class="empty">Your financial events will appear here.</div>'; }
+}
 function renderCoach() {
+  renderSidebar();
+  renderBrief();
+  renderInsights();
   const h = calcHealthScore();
   const leaks = findMoneyLeaks();
   const wins = findQuickWins(leaks);
@@ -5040,7 +5181,9 @@ async function init() {
   updateMonthLabels();
   initDateFilterUI();
   updateSyncUI();
-  renderDashboard();
+  renderSidebar();
+  const _act=document.querySelector('.page.active'); const _id=_act?_act.id.replace('page-',''):'coach';
+  (PAGE_RENDERERS[_id]||renderCoach)();
   // dismiss loading splash (min visible time so the animation reads)
   setTimeout(()=>{ const sp=document.getElementById('splash'); if(sp) sp.classList.add('gone'); setTimeout(()=>sp&&sp.remove(),600); }, 1100);
 }
