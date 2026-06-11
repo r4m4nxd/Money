@@ -110,9 +110,16 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 
 /* ── MAIN ── */
 .main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;max-width:100%}
-.page{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding:32px 38px 48px;min-width:0;max-width:100%}
-/* center + cap content width on large screens (RamanFX-style column) */
-.page > *{width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
+.page{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding:30px 44px 56px;min-width:0;max-width:100%}
+/* content fills the full available width, left-aligned */
+.page > *{width:100%;max-width:100%;margin:0}
+.page > * + *{margin-top:14px}
+/* dashboard / generic two-column grids */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;flex:1;min-height:0}
+.dash-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.dash-grow{flex:1}
+.acct-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:1100px){.dash-grid,.acct-split{grid-template-columns:1fr}}
 /* charts: only the wide line/area charts fill width; donuts stay fixed size */
 #nw-card > svg, #acct-nw > svg, #dash-spending > svg, #cf-cat-trend > svg, #chart-cashflow > svg, #chart-networth > svg, .ad-sticky > svg, #inv-contrib > svg{width:100%;height:auto;display:block;max-height:230px}
 #txn-chart > svg{width:100%;height:auto;display:block;max-height:120px}
@@ -124,9 +131,9 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .page.active{display:flex}
 .card{min-width:0;max-width:100%}
 svg{max-width:100%}
-.ph{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-shrink:0;gap:20px;flex-wrap:wrap}
-.ph-l{}
-.ph-title{font-family:'Figtree',sans-serif;font-size:30px;font-weight:700;letter-spacing:-0.03em;color:var(--text)}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-shrink:0;gap:20px;flex-wrap:wrap}
+.ph-l{text-align:left}
+.ph-title{font-family:'Figtree',sans-serif;font-size:30px;font-weight:700;letter-spacing:-0.03em;color:var(--text);text-align:left}
 .ph-sub{font-size:13.5px;color:var(--muted2);margin-top:3px;font-weight:400}
 .ph-r{display:flex;gap:10px;align-items:center;flex-shrink:0;flex-wrap:wrap}
 
@@ -303,7 +310,7 @@ table.t th.r,table.t td.r{text-align:right}
 .log-warn{color:var(--orange)}
 
 /* ── CATEGORY LIB ── */
-.cat-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.cat-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;max-height:440px;overflow-y:auto;padding-right:4px}
 .cat-lib-group{background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);min-width:0;overflow:hidden}
 .clg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .clg-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
@@ -807,6 +814,13 @@ body{letter-spacing:-0.006em}
 .trend-delta{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
 .trend-base{font-size:11px;color:var(--muted)}
 @media(max-width:760px){.trend-grid{grid-template-columns:1fr}}
+.inv-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.inv-fsel{padding:7px 11px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:12.5px;outline:none;cursor:pointer}
+.inv-fchips{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.inv-fchip{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted2);font-size:12px;font-family:Figtree,sans-serif;cursor:pointer}
+.inv-fchip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.pg-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:14px}
+.pg-btn:disabled{opacity:.4;cursor:default}
 .txn-search-inp:focus{border-color:var(--brand)}
 .filter-btn{width:42px;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:all .15s}
 .filter-btn:hover{background:var(--surface3);border-color:var(--border2)}
@@ -867,10 +881,17 @@ body{letter-spacing:-0.006em}
 .lightbox.hidden{display:none}
 .lightbox img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain}
 .lightbox-close{position:absolute;top:20px;right:22px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:18px;cursor:pointer}
-.catrow2{display:grid;grid-template-columns:34px 1fr auto minmax(110px,200px) auto;align-items:center;gap:12px;padding:11px 4px;border-top:1px solid var(--border);cursor:pointer}
+.cat-list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0 26px}
+.catrow2{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:12px;padding:10px 4px;border-top:1px solid var(--border);cursor:pointer}
 .catrow2:hover{background:var(--surface2)}
 .catrow2-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.catrow2-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catrow2-main{min-width:0;display:flex;flex-direction:column;gap:7px}
+.catrow2-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.catrow2-name{font-weight:600;font-size:14.5px;color:var(--text)}
+.catrow2-nums{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.catrow2-budget{color:var(--muted2);font-weight:500}
+.catrow2-track{height:6px;border-radius:4px;background:var(--surface3);overflow:hidden}
+.catrow2-fill{height:100%;border-radius:4px;transition:width .3s}
 .catrow2-spent{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;text-align:right;min-width:62px}
 .catrow2-track{height:7px;border-radius:6px;background:var(--surface3);overflow:hidden}
 .catrow2-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1)}
@@ -1059,11 +1080,17 @@ body{letter-spacing:-0.006em}
       <div class="ph-l"><div class="ph-title">Dashboard</div></div>
       <div class="ph-r"><div class="month-nav"><button class="m-arrow" onclick="changeMonth(-1)">‹</button><span class="m-label" id="dash-month-lbl"></span><button class="m-arrow" onclick="changeMonth(1)">›</button></div></div>
     </div>
-    <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Monthly spending</div></div></div><div id="dash-spending"></div></div>
-    <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Transactions to review</div></div></div><div id="dash-review"></div></div>
-    <div class="card nw-card-wrap"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div></div></div><div id="nw-card"></div></div>
-    <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Top categories</div><div class="card-sub" id="donut-sub">—</div></div><div class="card-link" onclick="nav('categories')">View all →</div></div><div id="chart-donut"></div></div>
-    <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Next two weeks</div><div class="card-sub">Upcoming recurring</div></div><div class="card-link" onclick="nav('recurring')">View all →</div></div><div id="dash-upcoming"></div></div>
+    <div class="dash-grid">
+      <div class="dash-col">
+        <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Monthly spending</div></div></div><div id="dash-spending"></div></div>
+        <div class="card dash-grow"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Transactions to review</div></div></div><div id="dash-review"></div></div>
+      </div>
+      <div class="dash-col">
+        <div class="card nw-card-wrap"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div></div></div><div id="nw-card"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Top categories</div><div class="card-sub" id="donut-sub">—</div></div><div class="card-link" onclick="nav('categories')">View all →</div></div><div id="chart-donut"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Next two weeks</div><div class="card-sub">Upcoming recurring</div></div><div class="card-link" onclick="nav('recurring')">View all →</div></div><div id="dash-upcoming"></div></div>
+      </div>
+    </div>
   </div>
 
   <!-- ========= COACH ========= -->
@@ -1072,17 +1099,13 @@ body{letter-spacing:-0.006em}
       <div class="ph-l"><div class="ph-title">Financial Coach</div><div class="ph-sub">Your personalized money guide — clarity, not prescriptions</div></div>
     </div>
     <div class="card coach-hero-card" id="coach-hero"></div>
-    <div class="row row-1">
+    <div class="row row-2" style="align-items:start">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">This Month's Story</div><div class="card-sub">A clear look at where you stand</div></div></div><div id="coach-story"></div></div>
-    </div>
-    <div class="row row-1">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Wealth Trajectory</div><div class="card-sub">If you stay the course</div></div></div><div id="coach-trajectory"></div></div>
     </div>
-    <div class="row row-1">
-      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Quick Wins</div><div class="card-sub">High-impact, low-effort opportunities</div></div></div><div id="coach-wins" class="wins-grid"></div></div>
-    </div>
-    <div class="row row-1">
-      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Money Leaks</div><div class="card-sub">Small recurring purchases that add up — last 30 days</div></div></div><div id="coach-leaks"></div></div>
+    <div class="row row-2" style="align-items:start">
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Quick Wins</div><div class="card-sub">High-impact, low-effort</div></div></div><div id="coach-wins" class="wins-grid"></div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Money Leaks</div><div class="card-sub">Small recurring purchases — last 30 days</div></div></div><div id="coach-leaks"></div></div>
     </div>
     <div class="row row-1">
       <div class="card" id="coach-ai-card">
@@ -1094,9 +1117,11 @@ body{letter-spacing:-0.006em}
 
   <!-- ========= ACCOUNTS ========= -->
   <div class="page" id="page-accounts">
-    <div class="ph"><div class="ph-l"><div class="ph-title">Accounts</div></div></div>
-    <div class="card nw-card-wrap"><div id="acct-nw"></div></div>
-    <div id="acct-groups"></div>
+    <div class="ph"><div class="ph-l"><div class="ph-title">Accounts</div></div><div class="ph-r"><button class="btn btn-sm" onclick="promptAddAccount()">+ Add account</button></div></div>
+    <div class="acct-split">
+      <div class="card nw-card-wrap" style="margin:0"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div><div class="card-sub">Assets vs debts over time</div></div></div><div id="acct-nw"></div></div>
+      <div id="acct-groups" style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
   </div>
 
   <!-- ========= TRANSACTIONS ========= -->
@@ -1215,7 +1240,6 @@ body{letter-spacing:-0.006em}
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Accounts</div><div class="card-sub">All investment accounts</div></div></div><div id="inv-accounts"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Asset Allocation</div><div class="card-sub">By market value</div></div></div><div id="inv-allocation"></div></div>
     </div>
-    <div class="card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Holdings</div><div class="card-sub">All positions · cost basis vs market value</div></div></div><div id="inv-holdings"></div></div>
     <div class="row row-2">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Portfolio Value</div><div class="card-sub">Across imported statements</div></div></div><div id="inv-contrib"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Investment Activity</div><div class="card-sub">Buys · sells · dividends · contributions</div></div></div><div id="inv-activity"></div></div>
@@ -1229,29 +1253,25 @@ body{letter-spacing:-0.006em}
       <div class="ph-r"><div class="month-nav"><button class="m-arrow" onclick="changeMonth(-1)">‹</button><span class="m-label" id="cat-month-lbl"></span><button class="m-arrow" onclick="changeMonth(1)">›</button></div></div>
     </div>
     <div class="row row-2" style="align-items:start">
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="card"><div id="cat-donut-card"></div></div>
-        <div class="card">
-          <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-regular')">▾ Regular categories</span><span class="cat-cols"><span>SPENT</span><span>BUDGET</span></span></div>
-          <div id="cat-regular"></div>
-        </div>
+      <div class="card"><div id="cat-donut-card"></div></div>
+      <div class="card">
+        <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-excluded')">▾ Excluded categories</span></div>
+        <div id="cat-excluded"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="card">
-          <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-excluded')">▾ Excluded categories</span></div>
-          <div id="cat-excluded"></div>
-        </div>
-        <div class="card">
-          <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll()">Re-categorize all →</div></div>
-          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-            <div style="flex:1;min-width:160px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
-            <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
-            <button class="btn btn-brand btn-sm" onclick="addRule()">+ Add</button>
-          </div>
-          <div id="rule-preview" style="margin-bottom:10px;font-size:12px;color:var(--muted2)"></div>
-          <div class="cat-lib-grid" id="cat-lib-grid"></div>
-        </div>
+    </div>
+    <div class="card">
+      <div class="cat-coltitle"><span class="cat-coltitle-l" onclick="toggleCatSec('cat-regular')">▾ Regular categories</span><span class="cat-cols"><span>SPENT / BUDGET</span></span></div>
+      <div id="cat-regular"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll()">Re-categorize all →</div></div>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+        <div style="flex:1;min-width:180px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
+        <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
+        <button class="btn btn-brand btn-sm" onclick="addRule()">+ Add</button>
       </div>
+      <div id="rule-preview" style="margin-bottom:10px;font-size:12px;color:var(--muted2)"></div>
+      <div class="cat-lib-grid" id="cat-lib-grid"></div>
     </div>
   </div>
 
@@ -3567,7 +3587,8 @@ function renderInvFromSnapshots(snaps){
   </div>`;
   // holdings table with USD/CAD toggle
   const toggle=`<div class="ccy-toggle"><button class="${INV_CCY==='CAD'?'on':''}" onclick="setInvCcy('CAD')">CAD</button><button class="${INV_CCY==='USD'?'on':''}" onclick="setInvCcy('USD')">USD</button></div>`;
-  document.getElementById('inv-holdings').innerHTML=toggle+`<table class="t"><thead><tr><th>Symbol</th><th>Name</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Mkt Value</th><th class="r">Book</th><th class="r">Return</th></tr></thead><tbody>${holdings.map(h=>{
+  const _holdEl=document.getElementById('inv-holdings');
+  if(_holdEl) _holdEl.innerHTML=toggle+`<table class="t"><thead><tr><th>Symbol</th><th>Name</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Mkt Value</th><th class="r">Book</th><th class="r">Return</th></tr></thead><tbody>${holdings.map(h=>{
     const ret=h.marketValueCAD-h.bookCost, col=ret>=0?'var(--green)':'var(--red)', pct=h.bookCost?ret/h.bookCost*100:0;
     return `<tr class="tr"><td><span class="tag" style="background:var(--brand-soft);color:var(--brand);font-weight:700">${h.symbol}</span></td>
       <td style="font-size:12px;color:var(--muted2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</td>
@@ -3595,20 +3616,43 @@ function renderInvFromSnapshots(snaps){
   } else {
     document.getElementById('inv-contrib').innerHTML=`<div class="empty" style="padding:20px">Import statements from 2+ months to chart portfolio value over time.</div>`;
   }
-  // investment activity (all buys/sells/divs/contributions across snapshots), newest first, de-duped
-  const actEl=document.getElementById('inv-activity');
-  if(actEl){
-    const all=[]; const seen=new Set();
-    Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.values(byP).forEach(s=>(s.activity||[]).forEach(r=>{ const k=r.date+'|'+r.code+'|'+r.amount+'|'+r.description.slice(0,20); if(!seen.has(k)){seen.add(k); all.push(r);} })));
-    all.sort((a,b)=>b.date.localeCompare(a.date));
-    const codeCol={BUY:'var(--red)',SELL:'var(--green)',DIV:'var(--blue)',CONT:'var(--brand)',DEP:'var(--brand)',WD:'var(--orange)',GIVEAWAY:'var(--purple)',FEE:'var(--muted)'};
-    actEl.innerHTML = all.length ? `<div class="txn-list">${all.slice(0,60).map(r=>{
-      const tk=(r.description.match(/^([A-Z]{1,5}(?:\.[A-Z]{1,3})?)\b/)||[])[1]||'';
-      return `<div class="txn-item"><span class="tag" style="background:${(codeCol[r.code]||'var(--muted)')}1f;color:${codeCol[r.code]||'var(--muted)'};font-weight:700;min-width:46px;text-align:center">${r.code}</span>
-        <div class="txn-mid"><div class="txn-name">${tk?'<b>'+tk+'</b> · ':''}${r.description.replace(/^[A-Z.]+\s*-\s*/,'')}</div><div class="txn-meta">${r.date}</div></div>
-        <div class="txn-amt ${r.amount>=0?'pos':''}">${r.amount>=0?'+':''}${fmt(r.amount)}</div></div>`;
-    }).join('')}</div>` : '<div class="empty">No activity parsed</div>';
-  }
+  // investment activity — paginated + filterable
+  renderInvActivity();
+}
+let INV_ACT={page:1, month:'all', ticker:'all', code:'all'};
+function getInvActivityAll(){
+  const all=[]; const seen=new Set();
+  Object.values(SETTINGS.wsStatements||{}).forEach(byP=>Object.values(byP).forEach(s=>(s.activity||[]).forEach(r=>{ const k=r.date+'|'+r.code+'|'+r.amount+'|'+r.description.slice(0,20); if(!seen.has(k)){seen.add(k); const tk=(r.description.match(/^([A-Z]{1,5}(?:\.[A-Z]{1,3})?)\b/)||[])[1]||''; all.push({...r, ticker:tk}); } })));
+  all.sort((a,b)=>b.date.localeCompare(a.date));
+  return all;
+}
+function setInvAct(key,val){ INV_ACT[key]=val; if(key!=='page') INV_ACT.page=1; renderInvActivity(); }
+function renderInvActivity(){
+  const actEl=document.getElementById('inv-activity'); if(!actEl) return;
+  const all=getInvActivityAll();
+  if(!all.length){ actEl.innerHTML='<div class="empty" style="padding:20px">No activity yet — import TFSA statements.</div>'; return; }
+  const months=[...new Set(all.map(r=>r.date.slice(0,7)))].sort().reverse();
+  const tickers=[...new Set(all.map(r=>r.ticker).filter(Boolean))].sort();
+  let rows=all.filter(r=>(INV_ACT.month==='all'||r.date.startsWith(INV_ACT.month))&&(INV_ACT.ticker==='all'||r.ticker===INV_ACT.ticker)&&(INV_ACT.code==='all'||r.code===INV_ACT.code));
+  const per=20, pages=Math.max(1,Math.ceil(rows.length/per)); if(INV_ACT.page>pages) INV_ACT.page=pages;
+  const slice=rows.slice((INV_ACT.page-1)*per, INV_ACT.page*per);
+  const codeCol={BUY:'var(--red)',SELL:'var(--green)',DIV:'var(--blue)',CONT:'var(--brand)',DEP:'var(--brand)',WD:'var(--orange)',GIVEAWAY:'var(--purple)',FEE:'var(--muted)'};
+  const codeChip=(c,lbl)=>`<button class="inv-fchip ${INV_ACT.code===c?'on':''}" onclick="setInvAct('code','${c}')">${lbl}</button>`;
+  const monthOpts=`<option value="all">All months</option>`+months.map(m=>`<option value="${m}" ${INV_ACT.month===m?'selected':''}>${ymLabel(m,{month:'short',year:'numeric'})}</option>`).join('');
+  const tickOpts=`<option value="all">All tickers</option>`+tickers.map(t=>`<option value="${t}" ${INV_ACT.ticker===t?'selected':''}>${t}</option>`).join('');
+  actEl.innerHTML=`
+    <div class="inv-filters">
+      <select class="inv-fsel" onchange="setInvAct('month',this.value)">${monthOpts}</select>
+      <select class="inv-fsel" onchange="setInvAct('ticker',this.value)">${tickOpts}</select>
+      <div class="inv-fchips">${codeChip('all','All')}${codeChip('BUY','Buy')}${codeChip('SELL','Sell')}${codeChip('DIV','Div')}${codeChip('CONT','Contrib')}</div>
+    </div>
+    <div class="txn-list">${slice.map(r=>`<div class="txn-item"><span class="tag" style="background:${(codeCol[r.code]||'var(--muted)')}1f;color:${codeCol[r.code]||'var(--muted)'};font-weight:700;min-width:46px;text-align:center">${r.code}</span>
+      <div class="txn-mid"><div class="txn-name">${r.ticker?'<b>'+r.ticker+'</b> · ':''}${r.description.replace(/^[A-Z.]+\s*-\s*/,'')}</div><div class="txn-meta">${r.date}</div></div>
+      <div class="txn-amt ${r.amount>=0?'pos':''}">${r.amount>=0?'+':''}${fmt(r.amount)}</div></div>`).join('')}</div>
+    <div class="pager"><span id="">${rows.length} txns · page ${INV_ACT.page}/${pages}</span><div class="pg-btns">
+      <button class="pg-btn" ${INV_ACT.page<=1?'disabled':''} onclick="setInvAct('page',${INV_ACT.page-1})">‹</button>
+      <button class="pg-btn" ${INV_ACT.page>=pages?'disabled':''} onclick="setInvAct('page',${INV_ACT.page+1})">›</button>
+    </div></div>`;
 }
 function renderInvestmentsLegacy() {
   // Compute holdings from settings + cost basis from transactions
@@ -3694,7 +3738,8 @@ function renderInvestmentsLegacy() {
   }
 
   // Holdings table (Wealthsimple-style)
-  document.getElementById('inv-holdings').innerHTML = merged.length
+  const _legHold=document.getElementById('inv-holdings');
+  if(_legHold) _legHold.innerHTML = merged.length
     ? `<table class="t"><thead><tr><th>Ticker</th><th>Name</th><th class="r">Shares</th><th class="r">Avg Cost</th><th class="r">Mkt Price</th><th class="r">Market Value</th><th class="r">Cost Basis</th><th class="r">Return</th></tr></thead><tbody>${merged.map(h=>{
       const retCol = h.unrealized>=0?'var(--green)':'var(--red)';
       const noMarket = !h.marketPrice;
@@ -3749,19 +3794,18 @@ function renderCategories() {
     <div class="cat-donut-side cat-donut-r"><div class="cat-donut-big">${fmt(totalBudget)}</div><div class="cat-donut-lbl">total budget</div></div>
   </div>`;
   // regular rows — Copilot style: spent · progress bar · budget
-  document.getElementById('cat-regular').innerHTML = reg.map(c=>{
+  document.getElementById('cat-regular').innerHTML = '<div class="cat-list-grid">'+reg.map(c=>{
     const pct = c.budget>0 ? Math.min(100, c.spent/c.budget*100) : (c.spent>0?100:0);
     const over = c.budget>0 && c.spent>c.budget;
-    const barCol = over?'var(--red)':(c.budget>0?'var(--green)':'var(--muted)');
     const fillStyle = over?`background:var(--red)`:(c.spent>=c.budget&&c.budget>0?`background:var(--green)`:`background:transparent;border:1.5px solid ${c.color}`);
     return `<div class="catrow2" onclick="drillCategory('${c.cat}')">
       <div class="catrow2-ic" style="background:${c.color}1f;color:${c.color}">${c.icon}</div>
-      <span class="catrow2-name">${c.cat}</span>
-      <span class="catrow2-spent">${fmt(c.spent)}</span>
-      <div class="catrow2-track"><div class="catrow2-fill" style="width:${pct}%;${fillStyle}"></div></div>
-      <span class="catrow2-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">${c.budget?fmt(c.budget):'Set'}</span>
+      <div class="catrow2-main">
+        <div class="catrow2-top"><span class="catrow2-name">${c.cat}</span><span class="catrow2-nums"><b>${fmt(c.spent)}</b> <span class="catrow2-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">/ ${c.budget?fmt(c.budget):'Set'}</span></span></div>
+        <div class="catrow2-track"><div class="catrow2-fill" style="width:${pct}%;${fillStyle}"></div></div>
+      </div>
     </div>`;
-  }).join('');
+  }).join('')+'</div>';
   // excluded rows
   const exc = CAT_META.filter(m=>EXCLUDED_CATS.includes(m.cat)).map(m=>({...m, spent:spentByCat[m.cat]||0, inc:mt.filter(t=>t.cat===m.cat&&t.amount>0).reduce((s,t)=>s+t.amount,0)}));
   document.getElementById('cat-excluded').innerHTML = exc.map(c=>{
