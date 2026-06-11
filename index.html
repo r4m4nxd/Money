@@ -129,6 +129,18 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .nw-val{font-size:30px}
 .ms-big{font-size:38px}
 .page.active{display:flex}
+/* ── chart entrance animations on page open ── */
+@keyframes chartRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes donutIn{from{opacity:0;transform:scale(.84)}to{opacity:1;transform:scale(1)}}
+@keyframes barGrow{from{opacity:0;transform:scaleY(.4)}to{opacity:1;transform:scaleY(1)}}
+.page.active #dash-spending svg,.page.active #nw-card svg,.page.active #acct-nw svg,.page.active #txn-chart svg,
+.page.active #cf-cat-trend svg,.page.active #inv-contrib svg,.page.active #cf-weekly,.page.active #cf-bars,
+.page.active #budget-trend svg,.page.active #cf-503020,.page.active .ad-sticky svg,.page.active #coach-trajectory svg,
+.page.active #cf-trends,.page.active #budget-calendar{animation:chartRise .6s cubic-bezier(.16,1,.3,1) both}
+.page.active #chart-donut svg,.page.active #cat-donut-card svg,.page.active #inv-allocation svg,
+.page.active #rec-donut-card svg,.page.active .coach-gauge svg{animation:donutIn .65s cubic-bezier(.16,1,.3,1) both;transform-origin:center}
+.page.active #cf-bars .bar,.page.active #cf-weekly .bar{animation:barGrow .55s cubic-bezier(.16,1,.3,1) both;transform-origin:bottom}
+@media(prefers-reduced-motion:reduce){.page.active #dash-spending svg,.page.active #nw-card svg,.page.active #acct-nw svg,.page.active #txn-chart svg,.page.active #cf-cat-trend svg,.page.active #inv-contrib svg,.page.active #chart-donut svg,.page.active #cat-donut-card svg,.page.active #inv-allocation svg,.page.active #rec-donut-card svg,.page.active .coach-gauge svg,.page.active #cf-bars .bar,.page.active #cf-weekly .bar,.page.active .ad-sticky svg{animation:none!important}}
 .card{min-width:0;max-width:100%}
 svg{max-width:100%}
 .ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-shrink:0;gap:20px;flex-wrap:wrap}
@@ -440,7 +452,7 @@ table.t th.r,table.t td.r{text-align:right}
 .spark{display:block}
 
 /* ── MOBILE BAR + DRAWER ── */
-.mobile-bar{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mobile-bar{display:flex;align-items:center;gap:12px;padding:11px 18px;padding-top:calc(11px + env(safe-area-inset-top, 0px));border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .hamburger{width:38px;height:38px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:none;place-items:center;color:var(--text);flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background .12s}
 .hamburger:active{background:var(--surface3)}
 .mobile-brand{font-family:'Figtree',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.025em;color:var(--text);display:none}
@@ -567,7 +579,7 @@ table.t th.r,table.t td.r{text-align:right}
   .date-menu{right:10px;left:10px;top:58px;min-width:auto}
   .date-btn{padding:6px 10px;font-size:11.5px;gap:5px}
   .date-btn svg{width:11px;height:11px}
-  .mobile-bar{padding:9px 12px;gap:8px}
+  .mobile-bar{padding:9px 12px;padding-top:calc(9px + env(safe-area-inset-top, 0px));gap:8px}
   .mobile-brand{font-size:18px}
   .hamburger{width:36px;height:36px}
   /* Settings page rows */
