@@ -1035,9 +1035,16 @@ body{letter-spacing:-0.006em}
 
 /* Calendar */
 .cal-nav{display:flex;align-items:center;gap:12px;font-weight:600}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;grid-auto-rows:92px}
+.cal-pop.hidden{display:none}
+.filter-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 2px}
+.flt-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 11px;border-radius:9px;font-size:12px;font-weight:600;background:var(--brand-soft);color:var(--brand);border:1px solid transparent}
+.flt-chip button{width:18px;height:18px;border:none;background:transparent;color:var(--brand);cursor:pointer;font-size:15px;line-height:1;border-radius:5px;display:grid;place-items:center}
+.flt-chip button:hover{background:rgba(45,212,191,.18)}
+.flt-clear{border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:12px;font-weight:600;padding:5px 11px;border-radius:9px;cursor:pointer}
+.flt-clear:hover{color:var(--text)}
 .cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
-.cal-cell{min-height:84px;border-radius:10px;background:var(--surface2);padding:7px 8px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px}
+.cal-cell{min-height:0;height:100%;border-radius:10px;background:var(--surface2);padding:7px 8px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px}
 .cal-empty{background:transparent}
 .cal-num{font-size:12.5px;color:var(--muted2);font-weight:600}
 .cal-has{cursor:pointer;border:1px solid var(--border)}
@@ -3186,8 +3193,39 @@ function filterTxns() {
   txnPage = 1;
   const sub = document.getElementById('txn-subtitle');
   if (sub) sub.textContent = filteredTxns.length.toLocaleString()+' transactions';
+  renderFilterLegend();
   renderTxnChart(filteredTxns);
   renderTxnPage();
+}
+function activeFilterChips(){
+  const c=[]; const q=(document.getElementById('txn-search')?.value||'').trim();
+  if(acctFilter!=='all') c.push(['acct','Account · '+acctFilter]);
+  if(catFilter!=='all') c.push(['cat','Category · '+catFilter]);
+  if(typeof revFilter!=='undefined'&&revFilter!=='all') c.push(['rev','Review · '+(revFilter==='unreviewed'?'unreviewed':'reviewed')]);
+  if(typeof typeF!=='undefined'&&typeF!=='all') c.push(['type','Type · '+typeF]);
+  if(typeof recF!=='undefined'&&recF!=='all') c.push(['rec',recF==='recurring'?'Recurring only':'One-time only']);
+  if(typeof tagF!=='undefined'&&tagF!=='all') c.push(['tag','Tag · '+tagF]);
+  if(typeof dateF!=='undefined'&&dateF!=='all') c.push(['date','Date · '+dateF]);
+  if(q) c.push(['q','Search · "'+q+'"']);
+  return c;
+}
+function clearFilter(which){
+  if(which==='acct')acctFilter='all'; else if(which==='cat')catFilter='all';
+  else if(which==='rev')revFilter='all'; else if(which==='type')typeF='all';
+  else if(which==='rec')recF='all'; else if(which==='tag')tagF='all';
+  else if(which==='date')dateF='all'; else if(which==='q'){const i=document.getElementById('txn-search');if(i)i.value='';}
+  else if(which==='all'){acctFilter='all';catFilter='all';if(typeof revFilter!=='undefined')revFilter='all';if(typeof typeF!=='undefined')typeF='all';if(typeof recF!=='undefined')recF='all';if(typeof tagF!=='undefined')tagF='all';if(typeof dateF!=='undefined')dateF='all';const i=document.getElementById('txn-search');if(i)i.value='';const s=document.getElementById('txn-subtitle');if(s&&s.textContent.startsWith('Filtered'))s.textContent='';}
+  filterTxns();
+}
+function renderFilterLegend(){
+  const sub=document.getElementById('txn-subtitle'); if(!sub) return;
+  let host=document.getElementById('txn-filter-legend');
+  if(!host){ host=document.createElement('div'); host.id='txn-filter-legend'; host.className='filter-legend'; sub.parentNode.insertBefore(host, sub.nextSibling); }
+  const chips=activeFilterChips();
+  host.innerHTML = chips.length
+    ? chips.map(([k,l])=>`<span class="flt-chip">${l}<button onclick="clearFilter('${k}')" aria-label="clear">${'\u00d7'}</button></span>`).join('')
+      + `<button class="flt-clear" onclick="clearFilter('all')">Clear all</button>`
+    : '';
 }
 function toggleTxnChart(){
   const card=document.getElementById('txn-chart-card'); if(!card) return;
@@ -4011,7 +4049,13 @@ function renderInvFromSnapshots(snaps){
       <span class="merch-ic acct-ic" style="background:var(--brand-soft);color:var(--brand)">${icon('invest')}</span>
       <div class="acct-row-mid"><div class="acct-row-name">${s.acctType||'Investment'} <span style="color:var(--muted);font-weight:500;font-size:12px">· ${s.period}</span></div><div class="acct-row-ago">Cash ${fcur(s.cash||0)} · ${(s.holdings||[]).length} holdings</div></div>
       <span class="acct-row-bal">${fcur(s.totalMV||0)}</span>
-    </div>`).join('');
+    </div>`).join('')
+    + ACCOUNTS.filter(a=>a.type==='invest').filter(a=>{const b=getBal(a.name); return b!=null && b>0 && !Object.values(snaps).some(s=>(s.acctType||'')===a.short);}).map(a=>{const b=getBal(a.name)||0;return `
+    <div class="acct-row" style="cursor:default">
+      <span class="merch-ic acct-ic" style="background:var(--brand-soft);color:var(--brand)">${icon('invest')}</span>
+      <div class="acct-row-mid"><div class="acct-row-name">${a.short} <span style="color:var(--muted);font-weight:500;font-size:12px">· balance</span></div><div class="acct-row-ago">No statement imported yet</div></div>
+      <span class="acct-row-bal">${fcur(b)}</span>
+    </div>`;}).join('');
   // allocation donut (cash + each holding)
   const segs=[{name:'Cash',val:cash,col:'#69748A'}].concat(holdings.map((h,i)=>({name:h.symbol,val:h.marketValueCAD,col:['#5B8DEF','#3FD77F','#EC8B52','#9B7FF0','#EC7BA8','#2DD4BF','#E8B43E','#7BA5F4'][i%8]}))).filter(s=>s.val>0);
   const r=58,cx=72,cy=72,sw=20,circ=2*Math.PI*r; let off=0;
