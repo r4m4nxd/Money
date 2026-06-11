@@ -507,15 +507,15 @@ table.t th.r,table.t td.r{text-align:right}
 .spark{display:block}
 
 /* ── MOBILE BAR + DRAWER ── */
-.mobile-bar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-top:calc(11px + env(safe-area-inset-top, 0px));border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mobile-bar{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;padding:11px 18px;padding-top:calc(11px + env(safe-area-inset-top, 0px));border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .sync2-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Figtree',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;transition:transform .12s cubic-bezier(.23,1,.32,1),background .12s;white-space:nowrap}
 .sync2-btn:hover{background:var(--surface3)}
 .sync2-btn:active{transform:scale(.96)}
 @media(min-width:1025px){.mobile-bar .mobile-brand{display:none}}
-@media(max-width:520px){.sync2-btn span{display:none}.sync2-btn{padding:7px 9px}}
+@media(max-width:520px){.sync2-btn span{display:none}.sync2-btn{padding:7px 9px}#account-btn-lbl{display:none}#date-btn-lbl-mobile{max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mobile-bar{gap:7px}}
 .hamburger{width:38px;height:38px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:none;place-items:center;color:var(--text);flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background .12s}
 .hamburger:active{background:var(--surface3)}
-.mobile-brand{font-family:'Figtree',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.025em;color:var(--text);display:none}
+.mobile-brand{font-family:'Figtree',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.025em;color:var(--text);display:none;white-space:nowrap;align-items:center;flex-shrink:0}
 .mobile-brand i{font-style:italic;color:var(--brand);font-weight:500}
 .date-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;transition:all .12s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .date-btn:hover{background:var(--surface3);border-color:var(--border2)}
@@ -547,7 +547,7 @@ table.t th.r,table.t td.r{text-align:right}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:264px;z-index:100;transform:translateX(-105%);transition:transform .26s cubic-bezier(.4,0,.2,1);box-shadow:6px 0 32px rgba(0,0,0,.45);border-right:1px solid var(--border)}
   .sidebar.open{transform:translateX(0)}
   .hamburger{display:grid}
-  .mobile-brand{display:block}
+  .mobile-brand{display:inline-flex}
   .drawer-overlay{display:block}
   .page{padding:18px 22px 36px}
   .ph-title{font-size:28px}
@@ -1163,19 +1163,6 @@ body{letter-spacing:-0.006em}
   </div>
 
   <!-- Sign-in modal -->
-  <div class="catpick-bg hidden" id="signin-bg">
-    <div class="catpick" style="max-width:380px">
-      <div class="catpick-title" style="margin-bottom:4px">Sign in to sync</div>
-      <div style="font-size:12.5px;color:var(--muted2);margin-bottom:14px">Your data syncs across devices with just your email &amp; password.</div>
-      <input id="si-email" type="email" placeholder="you@email.com" class="sf-inp" style="margin-bottom:8px" autocomplete="email">
-      <input id="si-pass" type="password" placeholder="password" class="sf-inp" style="margin-bottom:12px" autocomplete="current-password" onkeydown="if(event.key==='Enter')sbSignIn(document.getElementById('si-email').value,document.getElementById('si-pass').value)">
-      <button class="btn btn-brand" style="width:100%" onclick="sbSignIn(document.getElementById('si-email').value,document.getElementById('si-pass').value)">Sign in &amp; sync</button>
-      <details id="si-advanced" style="margin-top:12px"><summary style="cursor:pointer;font-size:12px;color:var(--muted2)">Connection (advanced)</summary>
-        <input id="sb-url" placeholder="https://xxxx.supabase.co" class="sf-inp" style="margin-top:8px"><input id="sb-key" placeholder="anon public key" class="sf-inp" style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px">
-      </details>
-      <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="closeSignin()">Cancel</button>
-    </div>
-  </div>
   <div class="date-menu hidden" id="date-menu" onclick="event.stopPropagation()">
     <div class="date-menu-title">Date Range</div>
     <div class="date-presets" id="date-presets"></div>
@@ -1447,6 +1434,20 @@ body{letter-spacing:-0.006em}
     <div class="cat-picker-title" id="catpick-title">Reassign category</div>
     <div class="cat-options" id="catpick-opts"></div>
     <div style="margin-top:14px;text-align:right"><button class="btn btn-sm" onclick="closeCatPick()">Cancel</button></div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="signin-bg">
+  <div class="cat-picker" style="min-width:300px;max-width:380px">
+    <div class="cat-picker-title">Sign in to sync</div>
+    <div style="font-size:12.5px;color:var(--muted2);margin:4px 0 16px">Your data syncs across devices with just your email &amp; password.</div>
+    <input id="si-email" type="email" placeholder="you@email.com" class="sf-inp" style="margin-bottom:9px" autocomplete="email">
+    <input id="si-pass" type="password" placeholder="password" class="sf-inp" style="margin-bottom:13px" autocomplete="current-password" onkeydown="if(event.key==='Enter')sbSignIn(document.getElementById('si-email').value,document.getElementById('si-pass').value)">
+    <button class="btn btn-brand" style="width:100%" onclick="sbSignIn(document.getElementById('si-email').value,document.getElementById('si-pass').value)">Sign in &amp; sync</button>
+    <details id="si-advanced" style="margin-top:12px"><summary style="cursor:pointer;font-size:12px;color:var(--muted2)">Connection (advanced)</summary>
+      <input id="sb-url" placeholder="https://xxxx.supabase.co" class="sf-inp" style="margin-top:8px"><input id="sb-key" placeholder="anon public key" class="sf-inp" style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px">
+    </details>
+    <button class="btn btn-sm" style="width:100%;margin-top:10px" onclick="closeSignin()">Cancel</button>
   </div>
 </div>
 
