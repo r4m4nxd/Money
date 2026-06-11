@@ -3815,7 +3815,11 @@ function splitGroup(g){
   const thresh=(amts[gi-1]+amts[gi])/2;
   const high=tx.filter(t=>Math.abs(t.amount)>=thresh), low=tx.filter(t=>Math.abs(t.amount)<thresh);
   if(low.length<2||high.length<2) return [g];
-  return [{...g, txns:high}, {...g, txns:low}];                 // two separate recurring streams
+  // home+auto policies bill twice/day: lower ≈ home, higher ≈ car
+  const isHomeAuto=/home.*(auto|car)|(auto|car).*home/i.test(g.name);
+  const hiName = isHomeAuto ? g.name.replace(/\s*(ins(urance)?)?\s*$/i,'').trim()+' (Car)' : g.name;
+  const loName = isHomeAuto ? g.name.replace(/\s*(ins(urance)?)?\s*$/i,'').trim()+' (Home)' : g.name;
+  return [{...g, txns:high, name:hiName}, {...g, txns:low, name:loName}]; // two separate recurring streams
 }
 function detectRecurring() {
   // Group by normalized merchant key, expenses only, last 12 months
