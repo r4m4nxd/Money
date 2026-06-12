@@ -2045,11 +2045,13 @@ function prettifyDesc(desc) {
 
 const LOC_WORDS = /^(calgary|airdrie|edmonton|toronto|vancouver|montreal|ottawa|mississauga|brampton|surrey|burnaby|winnipeg|hamilton|halifax|saskatoon|regina|kelowna|delhi|amritsar|ab|on|bc|qc|sk|mb|ns|nb|nl|pe|yt|nt|nu)$/i;
 function isLocKw(kw){ const parts=String(kw||'').trim().split(/\s+/); return parts.length>0 && parts.every(w=>LOC_WORDS.test(w)); }
-// strip auto-generated rules whose keyword is only a city/province (they mass-mislabel unrelated merchants)
+const GEN_WORDS = /^(misc|miscellaneous|payment|payments|deposit|withdrawal|transfer|transfers|purchase|pos|pre|auth|authorized|debit|credit|memo|item|service|charge|charges|fee|fees|online|mobile|bill|payee|from|to|the|inc|ltd|corp|co|and|of)$/i;
+function isJunkKw(kw){ const parts=String(kw||'').trim().split(/\s+/); return parts.length>0 && parts.every(w=>LOC_WORDS.test(w)||GEN_WORDS.test(w)); }
+// strip auto-generated rules whose keyword is only generic/location words (they mass-mislabel)
 function sanitizeRules(){
   if(!Array.isArray(CAT_RULES)) return;
   const before=CAT_RULES.length;
-  CAT_RULES = CAT_RULES.filter(r=> r && r.kw && r.kw.length>=3 && !isLocKw(r.kw));
+  CAT_RULES = CAT_RULES.filter(r=> r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw));
   if(CAT_RULES.length!==before) saveSettings();
 }
 // Merchant resolver: returns {name, cat} — picks the MOST SPECIFIC (longest) matching keyword
@@ -2058,11 +2060,41 @@ function resolveMerchant(desc) {
   const d = desc.toLowerCase();
   let best=null;
   for (const r of CAT_RULES){
-    if (r && r.kw && r.kw.length>=3 && !isLocKw(r.kw) && d.includes(r.kw)){
+    if (r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw) && d.includes(r.kw)){
       if (!best || r.kw.length>best.kw.length) best=r;
     }
   }
-  return best ? {name:best.name, cat:best.cat} : {name: prettifyDesc(desc), cat:'Other'};
+  let name = best ? best.name : prettifyDesc(desc);
+  let cat  = best ? best.cat  : 'Other';
+  const ec = (SETTINGS.enrichCache||{})[desc];     // AI cleanup, keyed by EXACT raw descriptor — cannot collide
+  if (ec){ if(ec.name) name=ec.name; if(ec.cat) cat=ec.cat; }
+  return {name, cat};
+}
+async function enrichNames(){
+  if(!SETTINGS.openaiKey){ toast('Add your OpenAI key in Settings → AI Coach first'); nav('settings'); return; }
+  SETTINGS.enrichCache = SETTINGS.enrichCache || {};
+  const seen=new Set(), list=[];
+  TXNS.forEach(t=>{ const d=t.description; if(!d||SETTINGS.enrichCache[d]||seen.has(d)) return;
+    const r=resolveMerchant(d);
+    if(r.name===prettifyDesc(d) || r.cat==='Other'){ seen.add(d); list.push(d); } });
+  if(!list.length){ toast('All merchant names already clean ✓'); return; }
+  const batch=list.slice(0,40);
+  toast('Cleaning '+batch.length+' name'+(batch.length>1?'s':'')+'…');
+  try{
+    const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
+      model:'gpt-4o-mini', temperature:0, max_tokens:1600,
+      messages:[
+        {role:'system',content:'You clean Canadian bank and credit-card transaction descriptors. For each raw string, return the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and the single best category from this exact list: '+CAT_NAMES.join(', ')+'. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<category>}. No prose, no code fences.'},
+        {role:'user',content:JSON.stringify(batch)}]
+    })});
+    const j=await res.json();
+    let txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').replace(/```json|```/g,'').trim();
+    const arr=JSON.parse(txt); let n=0;
+    arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:CAT_NAMES.includes(o.cat)?o.cat:undefined}; n++; } });
+    saveSettings(); recatAll(); renderAll();
+    const more=list.length-batch.length;
+    toast('Cleaned '+n+' name'+(n!==1?'s':'')+(more>0?' · run again for '+more+' more':' ✓'));
+  }catch(e){ toast('Cleanup failed: '+String(e.message||e).slice(0,50)); }
 }
 
 function categorize(desc) { return resolveMerchant(desc).cat; }
@@ -3440,7 +3472,7 @@ function pickCat(id) {
 function closeCatPick(){document.getElementById('catpick-bg').classList.add('hidden');catPickId=null;}
 function deriveKw(desc){
   let d=String(desc||'').toLowerCase().replace(/\([^)]*\)/g,' ').replace(/[*#]/g,' ').replace(/\d{2,}/g,' ').replace(/\s+/g,' ').trim();
-  const words=d.split(' ').filter(w=>w.length>2 && !/^(ab|on|bc|qc|sk|mb|the|inc|ltd|pos|pur|payment|deposit)$/.test(w) && !LOC_WORDS.test(w));
+  const words=d.split(' ').filter(w=>w.length>2 && !/^(ab|on|bc|qc|sk|mb|the|inc|ltd|pos|pur|payment|deposit)$/.test(w) && !LOC_WORDS.test(w) && !GEN_WORDS.test(w));
   let kw=words.slice(0,2).join(' ').trim();
   if(kw && kw.length>=3 && desc.toLowerCase().includes(kw)) return kw;
   const w0=words[0]||''; return w0.length>=3?w0:'';
@@ -4545,7 +4577,11 @@ function renderImport() {
     </div>
     ${stmtCount?`<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="if(confirm('Clear all imported statements?')){SETTINGS.wsStatements={};saveSettings();renderImport();renderInvestments();}">Clear statements</button>`:''}
   </div>`;
-  document.getElementById('upload-grid').innerHTML = wsCard + ACCOUNTS.map(a=>{
+  const enrichCard=`<div class="upload-card" style="border-color:var(--brand-soft);grid-column:1/-1">
+    <div class="uc-head"><div><div class="uc-name" style="color:var(--brand)">Clean up merchant names (AI)</div><div class="uc-count">Fixes messy/unknown descriptors using your OpenAI key · exact-match, no rule collisions</div></div><span class="uc-badge ${SETTINGS.openaiKey?'on':'off'}">${SETTINGS.openaiKey?'ready':'key?'}</span></div>
+    <button class="btn btn-brand btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="enrichNames()">Clean unknown names</button>
+  </div>`;
+  document.getElementById('upload-grid').innerHTML = enrichCard + wsCard + ACCOUNTS.map(a=>{
     const count = TXNS.filter(t=>t.account===a.name).length;
     return `<div class="upload-card">
       <div class="uc-head"><div><div class="uc-name" style="color:${a.color}">${a.name}</div><div class="uc-count">${count?count+' transactions':'No data'}</div></div><span class="uc-badge ${count?'on':'off'}">${count?'✓':'empty'}</span></div>
