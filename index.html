@@ -2105,6 +2105,20 @@ function mapCat(c){
   return r && CAT_NAMES.includes(r) ? r : undefined;
 }
 const ENRICH_SYS='You clean Canadian bank and credit-card transaction descriptors. For each raw string, return (1) the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and (2) the SINGLE closest-fitting category chosen ONLY from this exact list: __CATS__. You MUST pick the nearest category from that list — never invent a new one and never leave it blank. Use "Other" only when the merchant is genuinely unidentifiable. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<one category from the list>}. No prose, no code fences.';
+function isBadName(s){
+  const v=String(s||'').trim();
+  if(!v || v.length<2) return true;
+  if(!/[a-z]/i.test(v)) return true;                                  // no letters
+  if(/^(other|unknown|n\/?a|none|null|merchant|unidentified|misc|miscellaneous|payment|transaction|purchase|charge|debit|credit|unnamed)$/i.test(v)) return true;
+  if(CAT_NAMES.some(c=>c.toLowerCase()===v.toLowerCase())) return true; // a category name, not a merchant
+  return false;
+}
+// drop junk names left in cache by older runs (keep their category)
+function sanitizeEnrichCache(){
+  const ec=SETTINGS.enrichCache; if(!ec) return; let changed=false;
+  for(const k in ec){ const e=ec[k]; if(e && e.name && isBadName(e.name)){ delete e.name; changed=true; } if(e && !e.name && !e.cat){ delete ec[k]; changed=true; } }
+  if(changed) saveSettings();
+}
 async function enrichBatch(batch){
   const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
     model:'gpt-4o-mini', temperature:0, max_tokens:1600,
@@ -2113,7 +2127,12 @@ async function enrichBatch(batch){
   const j=await res.json();
   let txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').replace(/```json|```/g,'').trim();
   const arr=JSON.parse(txt); let n=0;
-  arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:mapCat(o.cat)}; n++; } });
+  arr.forEach(o=>{ if(o&&o.d){
+    const ent={}; const nm=String(o.name||'').trim();
+    if(!isBadName(nm)) ent.name=nm.slice(0,40);   // never store Other/Unknown as a name → prettifyDesc stays
+    const c=mapCat(o.cat); if(c) ent.cat=c;
+    if(ent.name||ent.cat){ SETTINGS.enrichCache[o.d]=ent; n++; }
+  } });
   return n;
 }
 async function enrichNames(){
@@ -2426,6 +2445,7 @@ function applySyncBlob(blob) {
   loadCustomAccounts();
   if (Array.isArray(SETTINGS.deletedSigs) && SETTINGS.deletedSigs.length){ const del=new Set(SETTINGS.deletedSigs); TXNS = TXNS.filter(t=>!del.has(txnSig(t))); }
   applyCatOverrides();
+  sanitizeEnrichCache();
   return true;
 }
 async function syncPush() {
@@ -5808,6 +5828,7 @@ function applyCustomDate() {
 async function init() {
   loadCustomAccounts();
   sanitizeRules();
+  sanitizeEnrichCache();
   applyCatOverrides();
   if (SETTINGS.userName === undefined) SETTINGS.userName = 'Raman';
   if (Array.isArray(SETTINGS.deletedSigs) && SETTINGS.deletedSigs.length){
