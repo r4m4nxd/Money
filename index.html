@@ -2070,7 +2070,41 @@ function resolveMerchant(desc) {
   if (ec){ if(ec.name) name=ec.name; if(ec.cat) cat=ec.cat; }
   return {name, cat};
 }
-const ENRICH_SYS='You clean Canadian bank and credit-card transaction descriptors. For each raw string, return the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and the single best category from this exact list: __CATS__. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<category>}. No prose, no code fences.';
+function mapCat(c){
+  if(!c) return undefined;
+  const s=String(c).toLowerCase().trim();
+  const exact=CAT_NAMES.find(n=>n.toLowerCase()===s); if(exact) return exact;
+  const A={food:'Dining',restaurant:'Dining',restaurants:'Dining','food & dining':'Dining','food and drink':'Dining',meal:'Dining',
+    gas:'Fuel',gasoline:'Fuel',petrol:'Fuel',
+    grocery:'Groceries',supermarket:'Groceries',
+    phone:'Telecom',mobile:'Telecom',internet:'Telecom',telecommunications:'Telecom',wireless:'Telecom',cell:'Telecom',
+    rent:'Housing',mortgage:'Housing',
+    utility:'Utilities',hydro:'Utilities',electricity:'Utilities',water:'Utilities',power:'Utilities',
+    transport:'Transport',transit:'Transport',transportation:'Transport',rideshare:'Transport',uber:'Transport',lyft:'Transport',taxi:'Transport',parking:'Transport',auto:'Transport',car:'Transport',
+    pharmacy:'Pharmacy',drugstore:'Pharmacy',health:'Pharmacy',medical:'Pharmacy',drug:'Pharmacy',
+    gym:'Fitness',
+    subscription:'Subscriptions',streaming:'Subscriptions',software:'Subscriptions',saas:'Subscriptions',
+    shopping:'Shopping',retail:'Shopping',merchandise:'Shopping',clothing:'Shopping',apparel:'Shopping',amazon:'Shopping',electronics:'Shopping',
+    coffee:'Coffee',cafe:'Coffee',
+    'fast food':'Fast Food',fastfood:'Fast Food',takeout:'Fast Food','quick service':'Fast Food',
+    entertainment:'Entertainment',movies:'Entertainment',cinema:'Entertainment',games:'Entertainment',gaming:'Entertainment',
+    'home goods':'Home Goods',furniture:'Home Goods',hardware:'Home Goods','home improvement':'Home Goods',homeware:'Home Goods',
+    insurance:'Insurance',
+    'bank fee':'Banking Fees','banking fee':'Banking Fees','service charge':'Banking Fees',fee:'Banking Fees',fees:'Banking Fees','bank charges':'Banking Fees',
+    government:'Government',gov:'Government',tax:'Government',taxes:'Government',
+    'tax refund':'Tax Refund',
+    benefits:'Govt Benefits','government benefits':'Govt Benefits','child benefit':'Govt Benefits',
+    interest:'Interest',
+    salary:'Payroll',payroll:'Payroll',wages:'Payroll',paycheck:'Payroll',
+    income:'Income',deposit:'Income',
+    investment:'Investment',investing:'Investment',brokerage:'Investment',questrade:'Investment',wealthsimple:'Investment',
+    transfer:'Transfers',
+    refund:'Returns',return:'Returns',
+    misc:'Other',miscellaneous:'Other',uncategorized:'Other',unknown:'Other'};
+  let r=A[s]; if(!r){ for(const k in A){ if(s.includes(k)){ r=A[k]; break; } } }
+  return r && CAT_NAMES.includes(r) ? r : undefined;
+}
+const ENRICH_SYS='You clean Canadian bank and credit-card transaction descriptors. For each raw string, return (1) the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and (2) the SINGLE closest-fitting category chosen ONLY from this exact list: __CATS__. You MUST pick the nearest category from that list — never invent a new one and never leave it blank. Use "Other" only when the merchant is genuinely unidentifiable. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<one category from the list>}. No prose, no code fences.';
 async function enrichBatch(batch){
   const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
     model:'gpt-4o-mini', temperature:0, max_tokens:1600,
@@ -2079,7 +2113,7 @@ async function enrichBatch(batch){
   const j=await res.json();
   let txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').replace(/```json|```/g,'').trim();
   const arr=JSON.parse(txt); let n=0;
-  arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:CAT_NAMES.includes(o.cat)?o.cat:undefined}; n++; } });
+  arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:mapCat(o.cat)}; n++; } });
   return n;
 }
 async function enrichNames(){
@@ -2104,7 +2138,9 @@ async function aiRecatAll(){
   if(!SETTINGS.openaiKey){ recatAll(); renderAll(); toast('Re-categorized (add OpenAI key for AI cleanup)'); return; }
   SETTINGS.enrichCache = SETTINGS.enrichCache || {};
   const seen=new Set(), list=[];
-  TXNS.forEach(t=>{ const d=t.description; if(!d||seen.has(d)) return; seen.add(d); if(!SETTINGS.enrichCache[d]) list.push(d); });
+  TXNS.forEach(t=>{ const d=t.description; if(!d||seen.has(d)) return; seen.add(d);
+    const c=SETTINGS.enrichCache[d];
+    if(!c || !c.cat) list.push(d); });   // new, or previously cleaned but missing a category → retry
   if(!list.length){ recatAll(); renderAll(); toast('All merchants already AI-cleaned ✓ (no tokens used)'); return; }
   if(!confirm('Send '+list.length+' new merchant'+(list.length>1?'s':'')+' to ChatGPT?\nAlready-cleaned ones are skipped (free). ~'+Math.ceil(list.length/40*1700/1000)+'K tokens, well under a cent.')) return;
   const CH=40, total=list.length; let done=0, n=0, failed=0;
