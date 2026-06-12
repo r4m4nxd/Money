@@ -1043,6 +1043,10 @@ body{letter-spacing:-0.006em}
 .flt-chip button:hover{background:rgba(45,212,191,.18)}
 .flt-clear{border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:12px;font-weight:600;padding:5px 11px;border-radius:9px;cursor:pointer}
 .flt-clear:hover{color:var(--text)}
+.fm-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);padding:2px 2px 8px;margin:-2px -2px 2px;border-bottom:1px solid var(--border);z-index:2}
+.fm-head-title{font-weight:700;font-size:14px;color:var(--text)}
+.fm-close{width:30px;height:30px;border:none;background:var(--surface2);color:var(--muted2);border-radius:9px;cursor:pointer;display:grid;place-items:center}
+.fm-close:hover{background:var(--surface3);color:var(--text)}
 .cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
 .cal-cell{min-height:0;height:100%;border-radius:10px;background:var(--surface2);padding:7px 8px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px}
 .cal-empty{background:transparent}
@@ -1439,6 +1443,7 @@ body{letter-spacing:-0.006em}
         </button>
       </div>
       <div class="filter-menu hidden" id="filter-menu" onclick="event.stopPropagation()">
+        <div class="fm-head"><span class="fm-head-title">Filters</span><button class="fm-close" onclick="toggleFilterMenu(event)" aria-label="Close filters"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
         <div class="fm-sec">Filter by</div>
         <div class="fm-item" onclick="fmToggle('fm-acct-list')"><span class="fm-ic" data-icon="card"></span>Account<span class="fm-val" id="fm-acct-val">All</span><span class="fm-chev">›</span></div>
         <div class="fm-sublist hidden" id="fm-acct-list"></div>
