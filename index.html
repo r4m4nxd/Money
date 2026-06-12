@@ -1047,6 +1047,9 @@ body{letter-spacing:-0.006em}
 .fm-head-title{font-weight:700;font-size:14px;color:var(--text)}
 .fm-close{width:30px;height:30px;border:none;background:var(--surface2);color:var(--muted2);border-radius:9px;cursor:pointer;display:grid;place-items:center}
 .fm-close:hover{background:var(--surface3);color:var(--text)}
+.cps-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.cps-pill{flex:1;min-width:120px;padding:9px 12px;border-radius:11px;border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:12.5px;font-weight:600;cursor:pointer;text-align:center}
+.cps-pill.on{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
 .cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
 .cal-cell{min-height:0;height:100%;border-radius:10px;background:var(--surface2);padding:7px 8px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px}
 .cal-empty{background:transparent}
@@ -2066,8 +2069,13 @@ function categorize(desc) { return resolveMerchant(desc).cat; }
 function merchantName(desc) { return resolveMerchant(desc).name; }
 
 function recatAll() {
-  TXNS.forEach(t => { t.cat = categorize(t.description); });
+  TXNS.forEach(t => { if(t.catLocked) return; t.cat = categorize(t.description); });
+  applyCatOverrides();
   toast('Re-categorized all transactions');
+}
+function applyCatOverrides(){
+  const o=SETTINGS.catOverrides||{};
+  TXNS.forEach(t=>{ const c=o[txnSig(t)]; if(c){ t.cat=c; t.catLocked=true; } });
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2327,6 +2335,7 @@ function applySyncBlob(blob) {
   ACCOUNTS = ACCOUNTS.filter(a=>!a.manual); rebuildAccountIndex();
   loadCustomAccounts();
   if (Array.isArray(SETTINGS.deletedSigs) && SETTINGS.deletedSigs.length){ const del=new Set(SETTINGS.deletedSigs); TXNS = TXNS.filter(t=>!del.has(txnSig(t))); }
+  applyCatOverrides();
   return true;
 }
 async function syncPush() {
@@ -3410,12 +3419,18 @@ function confirmResetAll() {
 
 // CAT PICKER
 let catPickId=null;
+let catPickScope='all';
+function setCatScope(s){ catPickScope=s; document.querySelectorAll('.cps-pill').forEach(p=>p.classList.toggle('on', p.dataset.s===s)); }
 function pickCat(id) {
   catPickId = id;
   const t = TXNS.find(x=>x.id===id);
   const mn = merchantName(t.description);
   const n = TXNS.filter(x=>merchantName(x.description)===mn).length;
-  document.getElementById('catpick-title').innerHTML = 'Recategorize <b>'+mn+'</b>'+(n>1?` · applies to all ${n} transactions`:'');
+  catPickScope = n>1 ? 'all' : 'one';
+  const scopeUI = n>1
+    ? `<div class="cps-row"><button class="cps-pill on" data-s="all" onclick="setCatScope('all')">All ${n} ${mn} · saves rule</button><button class="cps-pill" data-s="one" onclick="setCatScope('one')">Just this one</button></div>`
+    : '';
+  document.getElementById('catpick-title').innerHTML = 'Recategorize <b>'+mn+'</b>'+scopeUI;
   document.getElementById('catpick-opts').innerHTML = CAT_NAMES.map(cat=>{
     const m=CAT_MAP[cat];
     return `<button class="cat-opt${t.cat===cat?' selected':''}" onclick="assignCat('${cat}')">${m.icon} ${cat}</button>`;
@@ -3435,8 +3450,19 @@ function assignCat(cat) {
   const t = TXNS.find(x=>x.id===catPickId);
   if (!t) { closeCatPick(); return; }
   const mn = merchantName(t.description);
+  // PER-TRANSACTION override: only this one, lock it, persist by signature — never touches the rule or siblings
+  if (catPickScope==='one'){
+    t.cat = cat; t.catLocked = true;
+    SETTINGS.catOverrides = SETTINGS.catOverrides || {};
+    SETTINGS.catOverrides[txnSig(t)] = cat;
+    saveSettings(); closeCatPick();
+    if(document.getElementById('txn-body')) renderTxnPage(); else renderAll();
+    renderSidebar();
+    toast(`This transaction set to ${cat}`);
+    return;
+  }
   // 1) apply to every transaction under the same merchant name (global, not one-by-one)
-  const matches = TXNS.filter(x=>merchantName(x.description)===mn);
+  const matches = TXNS.filter(x=>merchantName(x.description)===mn && !x.catLocked);
   matches.forEach(x=>x.cat=cat);
   // 2) make it stick for future imports: update the matched rule, or add a new one
   const dl = t.description.toLowerCase();
@@ -5688,6 +5714,7 @@ function applyCustomDate() {
 async function init() {
   loadCustomAccounts();
   sanitizeRules();
+  applyCatOverrides();
   if (SETTINGS.userName === undefined) SETTINGS.userName = 'Raman';
   if (Array.isArray(SETTINGS.deletedSigs) && SETTINGS.deletedSigs.length){
     const del=new Set(SETTINGS.deletedSigs); TXNS = TXNS.filter(t=>!del.has(txnSig(t)));
@@ -5714,4 +5741,3 @@ init();
 </script>
 </body>
 </html>
-
