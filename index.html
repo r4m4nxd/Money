@@ -1567,7 +1567,7 @@ body{letter-spacing:-0.006em}
       <div id="cat-regular"></div>
     </div>
     <div class="card">
-      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll()">Re-categorize all →</div></div>
+      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="aiRecatAll()">Re-categorize all (AI) →</div></div>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
         <div style="flex:1;min-width:180px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
         <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
@@ -2070,6 +2070,18 @@ function resolveMerchant(desc) {
   if (ec){ if(ec.name) name=ec.name; if(ec.cat) cat=ec.cat; }
   return {name, cat};
 }
+const ENRICH_SYS='You clean Canadian bank and credit-card transaction descriptors. For each raw string, return the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and the single best category from this exact list: __CATS__. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<category>}. No prose, no code fences.';
+async function enrichBatch(batch){
+  const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
+    model:'gpt-4o-mini', temperature:0, max_tokens:1600,
+    messages:[{role:'system',content:ENRICH_SYS.replace('__CATS__',CAT_NAMES.join(', '))},{role:'user',content:JSON.stringify(batch)}]
+  })});
+  const j=await res.json();
+  let txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').replace(/```json|```/g,'').trim();
+  const arr=JSON.parse(txt); let n=0;
+  arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:CAT_NAMES.includes(o.cat)?o.cat:undefined}; n++; } });
+  return n;
+}
 async function enrichNames(){
   if(!SETTINGS.openaiKey){ toast('Add your OpenAI key in Settings → AI Coach first'); nav('settings'); return; }
   SETTINGS.enrichCache = SETTINGS.enrichCache || {};
@@ -2081,20 +2093,30 @@ async function enrichNames(){
   const batch=list.slice(0,40);
   toast('Cleaning '+batch.length+' name'+(batch.length>1?'s':'')+'…');
   try{
-    const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
-      model:'gpt-4o-mini', temperature:0, max_tokens:1600,
-      messages:[
-        {role:'system',content:'You clean Canadian bank and credit-card transaction descriptors. For each raw string, return the real merchant brand name in Title Case (drop store numbers, city, province, and processor noise like SQ*, TST*, POS, MISCELLANEOUS PAYMENT) and the single best category from this exact list: '+CAT_NAMES.join(', ')+'. Respond ONLY with a JSON array of objects {"d":<the raw string unchanged>,"name":<clean name>,"cat":<category>}. No prose, no code fences.'},
-        {role:'user',content:JSON.stringify(batch)}]
-    })});
-    const j=await res.json();
-    let txt=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').replace(/```json|```/g,'').trim();
-    const arr=JSON.parse(txt); let n=0;
-    arr.forEach(o=>{ if(o&&o.d&&o.name){ SETTINGS.enrichCache[o.d]={name:String(o.name).slice(0,40), cat:CAT_NAMES.includes(o.cat)?o.cat:undefined}; n++; } });
+    const n=await enrichBatch(batch);
     saveSettings(); recatAll(); renderAll();
     const more=list.length-batch.length;
     toast('Cleaned '+n+' name'+(n!==1?'s':'')+(more>0?' · run again for '+more+' more':' ✓'));
   }catch(e){ toast('Cleanup failed: '+String(e.message||e).slice(0,50)); }
+}
+// AI-powered "Re-categorize all": cleans EVERY merchant name + category via ChatGPT, then re-applies. Manual sync after.
+async function aiRecatAll(){
+  if(!SETTINGS.openaiKey){ recatAll(); renderAll(); toast('Re-categorized (add OpenAI key for AI cleanup)'); return; }
+  SETTINGS.enrichCache = SETTINGS.enrichCache || {};
+  const seen=new Set(), list=[];
+  TXNS.forEach(t=>{ const d=t.description; if(!d||seen.has(d)) return; seen.add(d); if(!SETTINGS.enrichCache[d]) list.push(d); });
+  if(!list.length){ recatAll(); renderAll(); toast('All merchants already AI-cleaned ✓ (no tokens used)'); return; }
+  if(!confirm('Send '+list.length+' new merchant'+(list.length>1?'s':'')+' to ChatGPT?\nAlready-cleaned ones are skipped (free). ~'+Math.ceil(list.length/40*1700/1000)+'K tokens, well under a cent.')) return;
+  const CH=40, total=list.length; let done=0, n=0, failed=0;
+  toast('AI cleaning '+total+' merchant'+(total>1?'s':'')+'… keep app open');
+  for(let i=0;i<list.length;i+=CH){
+    try{ n+=await enrichBatch(list.slice(i,i+CH)); }
+    catch(e){ failed++; }
+    done=Math.min(total,i+CH);
+    if(total>CH) toast('AI cleaning… '+done+'/'+total);
+  }
+  saveSettings(); recatAll(); renderAll();
+  toast('AI re-categorized '+n+' merchant'+(n!==1?'s':'')+(failed?' · '+failed+' batch(es) failed':'')+' ✓ — tap To DB to sync');
 }
 
 function categorize(desc) { return resolveMerchant(desc).cat; }
