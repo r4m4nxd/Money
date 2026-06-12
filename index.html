@@ -2035,12 +2035,26 @@ function prettifyDesc(desc) {
   return words.map(w => w.length <= 2 ? w.toUpperCase() : w[0].toUpperCase()+w.slice(1)).join(' ').slice(0, 35) || 'Unknown';
 }
 
-// Merchant resolver: returns {name, cat} from raw description
+const LOC_WORDS = /^(calgary|airdrie|edmonton|toronto|vancouver|montreal|ottawa|mississauga|brampton|surrey|burnaby|winnipeg|hamilton|halifax|saskatoon|regina|kelowna|delhi|amritsar|ab|on|bc|qc|sk|mb|ns|nb|nl|pe|yt|nt|nu)$/i;
+function isLocKw(kw){ const parts=String(kw||'').trim().split(/\s+/); return parts.length>0 && parts.every(w=>LOC_WORDS.test(w)); }
+// strip auto-generated rules whose keyword is only a city/province (they mass-mislabel unrelated merchants)
+function sanitizeRules(){
+  if(!Array.isArray(CAT_RULES)) return;
+  const before=CAT_RULES.length;
+  CAT_RULES = CAT_RULES.filter(r=> r && r.kw && r.kw.length>=3 && !isLocKw(r.kw));
+  if(CAT_RULES.length!==before) saveSettings();
+}
+// Merchant resolver: returns {name, cat} — picks the MOST SPECIFIC (longest) matching keyword
 function resolveMerchant(desc) {
   if (!desc) return {name:'Unknown', cat:'Other'};
   const d = desc.toLowerCase();
-  for (const r of CAT_RULES) if (d.includes(r.kw)) return {name:r.name, cat:r.cat};
-  return {name: prettifyDesc(desc), cat:'Other'};
+  let best=null;
+  for (const r of CAT_RULES){
+    if (r && r.kw && r.kw.length>=3 && !isLocKw(r.kw) && d.includes(r.kw)){
+      if (!best || r.kw.length>best.kw.length) best=r;
+    }
+  }
+  return best ? {name:best.name, cat:best.cat} : {name: prettifyDesc(desc), cat:'Other'};
 }
 
 function categorize(desc) { return resolveMerchant(desc).cat; }
@@ -2301,6 +2315,7 @@ function applySyncBlob(blob) {
   if (Array.isArray(blob.txns)) TXNS = blob.txns.map(t => ({...t, id: Math.random().toString(36).slice(2)}));
   if (blob.settings) SETTINGS = {...DEFAULT_SETTINGS, ...blob.settings, balances:{...DEFAULT_SETTINGS.balances, ...(blob.settings.balances||{})}, holdings:{...(blob.settings.holdings||{})}};
   if (Array.isArray(blob.catRules) && blob.catRules.length) CAT_RULES = blob.catRules;
+  sanitizeRules();
   if (blob.budgets) BUDGET_TARGETS = blob.budgets;
   if (blob.dateFilter) DATE_FILTER = blob.dateFilter;
   // rebuild manual/custom accounts from the synced settings, then drop any deleted txns
@@ -3405,10 +3420,10 @@ function pickCat(id) {
 function closeCatPick(){document.getElementById('catpick-bg').classList.add('hidden');catPickId=null;}
 function deriveKw(desc){
   let d=String(desc||'').toLowerCase().replace(/\([^)]*\)/g,' ').replace(/[*#]/g,' ').replace(/\d{2,}/g,' ').replace(/\s+/g,' ').trim();
-  const words=d.split(' ').filter(w=>w.length>2 && !/^(ab|on|bc|qc|sk|mb|the|inc|ltd|pos|pur|payment|deposit)$/.test(w));
+  const words=d.split(' ').filter(w=>w.length>2 && !/^(ab|on|bc|qc|sk|mb|the|inc|ltd|pos|pur|payment|deposit)$/.test(w) && !LOC_WORDS.test(w));
   let kw=words.slice(0,2).join(' ').trim();
-  if(kw && desc.toLowerCase().includes(kw)) return kw;
-  return (words[0]||d.slice(0,8)).trim();
+  if(kw && kw.length>=3 && desc.toLowerCase().includes(kw)) return kw;
+  const w0=words[0]||''; return w0.length>=3?w0:'';
 }
 function assignCat(cat) {
   if (!catPickId) return;
@@ -5667,6 +5682,7 @@ function applyCustomDate() {
 
 async function init() {
   loadCustomAccounts();
+  sanitizeRules();
   if (SETTINGS.userName === undefined) SETTINGS.userName = 'Raman';
   if (Array.isArray(SETTINGS.deletedSigs) && SETTINGS.deletedSigs.length){
     const del=new Set(SETTINGS.deletedSigs); TXNS = TXNS.filter(t=>!del.has(txnSig(t)));
