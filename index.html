@@ -1050,6 +1050,40 @@ body{letter-spacing:-0.006em}
 .cps-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .cps-pill{flex:1;min-width:120px;padding:9px 12px;border-radius:11px;border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:12.5px;font-weight:600;cursor:pointer;text-align:center}
 .cps-pill.on{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+/* Budget day popup */
+.bud-day-card{max-width:440px;width:92%;max-height:80vh;overflow-y:auto;padding:18px}
+.bdp-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.bdp-date{font-weight:700;font-size:16px;color:var(--text)}
+.bdp-sub{font-size:12.5px;color:var(--muted2);font-variant-numeric:tabular-nums}
+.bdp-donut{display:flex;align-items:center;gap:16px;padding:6px 0 14px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.bdp-legend{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.bdp-leg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted2)}
+.bdp-leg-nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdp-leg-amt{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.bdp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.bdp-list{display:flex;flex-direction:column}
+.bdp-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--border);cursor:pointer}
+.bdp-row:last-child{border-bottom:none}
+.bdp-row:hover{background:var(--surface2)}
+.bdp-nm{flex:1;min-width:0;font-size:13.5px;color:var(--text)}
+.bdp-nm>div:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdp-cat{font-size:11px;color:var(--muted2)}
+.bdp-amt{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+/* Budget trend header + active row */
+.bt-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.bt-title{font-size:12.5px;font-weight:600;color:var(--text)}
+.bt-hint{font-size:11px;color:var(--muted2)}
+.bt-reset{border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:8px;cursor:pointer}
+.bt-reset:hover{color:var(--text)}
+.budget-item.bi-active{background:var(--surface2);border-radius:10px;box-shadow:inset 0 0 0 1px var(--brand)}
+/* Multi receipts */
+.txd-rc-grid{display:flex;flex-wrap:wrap;gap:8px}
+.txd-rc-thumb{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.txd-rc-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer;display:block}
+.txd-rc-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border:none;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;cursor:pointer;display:grid;place-items:center;line-height:1}
+.txd-rc-add{width:72px;height:72px;border-radius:10px;border:1.5px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--muted2);font-size:10.5px;text-align:center}
+.txd-rc-add svg{width:18px;height:18px}
+.txd-rc-add:hover{border-color:var(--brand);color:var(--brand)}
 .cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
 #page-calendar .cal-cell{min-height:0;height:100%;border-radius:10px;background:var(--surface2);padding:7px 8px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px}
 .cal-empty{background:transparent}
@@ -1522,9 +1556,10 @@ body{letter-spacing:-0.006em}
     <div class="card" style="margin-bottom:14px"><div id="budget-today"></div></div>
     <div class="card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Daily Spending Calendar</div><div class="card-sub">Each day vs daily allowance — tap a day to see transactions</div></div></div><div id="budget-calendar"></div></div>
     <div class="row row-2">
-      <div class="card" style="overflow-y:auto"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Categories</div><div class="card-sub">Tap to edit per-category target</div></div></div><div id="budget-bars"></div></div>
+      <div class="card" style="overflow-y:auto"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Categories</div><div class="card-sub">Tap a category for its trend · tap the amount to set a budget</div></div></div><div id="budget-bars"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">6-Month Trend</div></div></div><div id="budget-trend"></div></div>
     </div>
+    <div class="modal-bg hidden" id="bud-day-bg" onclick="if(event.target===this)closeBudDayPop()"><div class="modal bud-day-card" id="bud-day-pop" onclick="event.stopPropagation()"></div></div>
   </div>
 
   <!-- ========= RECURRING ========= -->
@@ -2987,8 +3022,8 @@ function showTxnDetail(id){
       <textarea class="txd-note" id="txd-note" placeholder="Add a note..." onblur="saveNote('${id}',this.value)">${note.replace(/</g,'&lt;')}</textarea>
     </div>
     <div class="txd-receipt-wrap">
-      <span class="txd-k">Receipt</span>
-      <div id="txd-receipt">${receipt?`<img src="${receipt}" class="txd-receipt-img" onclick="showLightbox('${receipt}')"><button class="txd-receipt-del" onclick="removeReceipt('${id}')">Remove receipt</button>`:`<label class="txd-receipt-add">${icon('bag')}<span>Add receipt photo</span><input type="file" accept="image/*" style="display:none" onchange="uploadReceipt('${id}',this)"></label>`}</div>
+      <span class="txd-k">Receipts</span>
+      <div id="txd-receipt">${renderReceiptsHTML(id, sig)}</div>
       <div class="txd-receipt-status" id="txd-receipt-status"></div>
     </div>
     ${histHtml?`<div class="txd-hist-hd">History</div>${histHtml}`:''}
@@ -3006,35 +3041,45 @@ function showLightbox(url){
   document.getElementById('lightbox-img').src=url;
   lb.classList.remove('hidden');
 }
-function removeReceipt(id){ const t=TXNS.find(x=>x.id===id); if(!t)return; const sig=txnSig(t); if(SETTINGS.receipts)delete SETTINGS.receipts[sig]; saveSettings(); showTxnDetail(id); }
+function getReceipts(sig){ const v=(SETTINGS.receipts||{})[sig]; return Array.isArray(v)?v.slice():(v?[v]:[]); }
+function renderReceiptsHTML(id,sig){
+  const arr=getReceipts(sig);
+  const thumbs=arr.map((u,i)=>`<div class="txd-rc-thumb"><img src="${u}" onclick="showLightbox('${String(u).replace(/'/g,"\\'")}')"><button class="txd-rc-del" onclick="event.stopPropagation();removeReceipt('${id}',${i})">✕</button></div>`).join('');
+  return `<div class="txd-rc-grid">${thumbs}<label class="txd-rc-add">${icon('bag')}<span>${arr.length?'Add more':'Add photo'}</span><input type="file" accept="image/*" multiple style="display:none" onchange="uploadReceipt('${id}',this)"></label></div>`;
+}
+function removeReceipt(id,idx){ const t=TXNS.find(x=>x.id===id); if(!t)return; const sig=txnSig(t); let arr=getReceipts(sig);
+  if(typeof idx==='number') arr.splice(idx,1); else arr=[];
+  SETTINGS.receipts=SETTINGS.receipts||{};
+  if(arr.length) SETTINGS.receipts[sig]=arr; else delete SETTINGS.receipts[sig];
+  saveSettings(); showTxnDetail(id); }
 async function uploadReceipt(id,input){
-  const file=input.files&&input.files[0]; if(!file)return;
+  const files=[...(input.files||[])]; if(!files.length)return;
   const t=TXNS.find(x=>x.id===id); if(!t)return;
   const sig=txnSig(t);
   const status=document.getElementById('txd-receipt-status');
-  // compress to dataURL for local preview + offline fallback
-  const dataUrl=await fileToCompressedDataURL(file,1200,0.8);
-  if(sbConfigured()){
-    status.textContent='Uploading to cloud...';
-    try{
-      const c=await sbClient();
-      const path='receipts/'+encodeURIComponent(SB.syncKey)+'/'+hashSig(sig)+'.jpg';
-      const blob=dataURLtoBlob(dataUrl);
-      const {error}=await c.storage.from('money-receipts').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
-      if(error)throw error;
-      const {data}=c.storage.from('money-receipts').getPublicUrl(path);
-      const url=data.publicUrl;
-      SETTINGS.receipts=SETTINGS.receipts||{}; SETTINGS.receipts[sig]=url; saveSettings();
-      status.textContent='Synced to cloud ✓'; showTxnDetail(id); syncPush();
-    }catch(e){
-      // fallback: store dataURL locally
-      SETTINGS.receipts=SETTINGS.receipts||{}; SETTINGS.receipts[sig]=dataUrl; saveSettings();
-      status.textContent='Saved locally (cloud upload failed: '+(e.message||e)+')'; showTxnDetail(id);
+  SETTINGS.receipts=SETTINGS.receipts||{};
+  const arr=getReceipts(sig);
+  const cloud=sbConfigured();
+  let added=0;
+  for(const file of files){
+    if(status) status.textContent=cloud?`Uploading ${added+1}/${files.length}…`:`Saving ${added+1}/${files.length}…`;
+    const dataUrl=await fileToCompressedDataURL(file,1200,0.8);
+    let stored=dataUrl;
+    if(cloud){
+      try{
+        const c=await sbClient();
+        const path='receipts/'+encodeURIComponent(SB.syncKey)+'/'+hashSig(sig)+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)+'.jpg';
+        const blob=dataURLtoBlob(dataUrl);
+        const {error}=await c.storage.from('money-receipts').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
+        if(error)throw error;
+        stored=c.storage.from('money-receipts').getPublicUrl(path).data.publicUrl;
+      }catch(e){ /* keep local dataURL fallback */ }
     }
-  } else {
-    SETTINGS.receipts=SETTINGS.receipts||{}; SETTINGS.receipts[sig]=dataUrl; saveSettings();
-    status.textContent='Saved locally — connect Supabase in Settings to sync across devices'; showTxnDetail(id);
+    arr.push(stored); added++;
   }
+  SETTINGS.receipts[sig]=arr; saveSettings();
+  if(status) status.textContent = cloud ? 'Synced ✓' : 'Saved locally — connect Supabase to sync';
+  showTxnDetail(id); if(cloud) syncPush();
 }
 function hashSig(s){ let h=0; for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i);h|=0;} return 'r'+Math.abs(h).toString(36); }
 function dataURLtoBlob(d){ const [hd,b64]=d.split(','); const mime=hd.match(/:(.*?);/)[1]; const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:mime}); }
@@ -4022,7 +4067,7 @@ function renderBudget() {
     } else if (isPast) {
       color = 'rgba(60,133,105,0.2)'; textCol = 'var(--green)'; // no spend = saved
     }
-    calCells += `<div class="cal-day ${isToday?'cal-today':''} ${isFuture?'cal-future':''}" style="background:${color}" onmousemove="showTip('<b>${d.ds}</b><br>Spent: ${fmt(d.spent)}<br>${d.count} txn${d.count!==1?'s':''}<br>vs allowance ${fmt(dailyAllowance)}',event)" onmouseleave="hideTip()" onclick="filterByDate('${d.ds}')">
+    calCells += `<div class="cal-day ${isToday?'cal-today':''} ${isFuture?'cal-future':''}" style="background:${color}" onclick="budgetDayPop('${d.ds}',event)">
       <div class="cal-num">${d.day}</div>
       <div class="cal-spent" style="color:${textCol}">${d.spent>0?fmtS(d.spent):''}</div>
     </div>`;
@@ -4044,8 +4089,8 @@ function renderBudget() {
       const pct = r.bud>0 ? Math.min(r.spent/r.bud*100,100) : 0;
       const col = r.bud===0 ? 'var(--border2)' : pct>=100 ? 'var(--red)' : pct>=80 ? 'var(--orange)' : pct>=60 ? 'var(--yellow)' : 'var(--green)';
       const vals = r.bud>0 ? `${fmt(r.spent)} / ${fmt(r.bud)}` : `${fmt(r.spent)} · <span style="color:var(--brand)">set budget</span>`;
-      return `<div class="budget-item" onclick="editBudget('${r.cat}')" style="cursor:pointer">
-        <div class="bi-row"><div class="bi-name"><span class="ic">${r.icon||'•'}</span>${r.cat}</div><div class="bi-vals">${vals}</div></div>
+      return `<div class="budget-item${budgetTrendCat===r.cat?' bi-active':''}" onclick="selectBudgetCat('${r.cat}',event)" style="cursor:pointer">
+        <div class="bi-row"><div class="bi-name"><span class="ic">${r.icon||'•'}</span>${r.cat}</div><div class="bi-vals" onclick="event.stopPropagation();editBudget('${r.cat}')" style="cursor:pointer">${vals}</div></div>
         <div class="bbar"><div class="bfill" style="width:${pct}%;background:${col}"></div></div>
       </div>`;
     }).join('');
@@ -4059,23 +4104,54 @@ function filterByDate(ds) {
     if (inp) { inp.value = ds; filterTxns(); }
   }, 100);
 }
+function budgetDayPop(ds, ev){
+  if(ev) ev.stopPropagation();
+  const bg=document.getElementById('bud-day-bg'), pop=document.getElementById('bud-day-pop'); if(!bg||!pop) return;
+  const tx = TXNS.filter(t=>t.date===ds && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).sort((a,b)=>Math.abs(b.amount)-Math.abs(a.amount));
+  const total = tx.reduce((s,t)=>s+Math.abs(t.amount),0);
+  const byCat={}; tx.forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+Math.abs(t.amount);});
+  const cats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const dlabel=new Date(ds+'T00:00:00').toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'});
+  let donut='';
+  if(total>0){
+    const R=38,C=2*Math.PI*R; let off=0;
+    const segs=cats.map(([c,v])=>{ const m=CAT_MAP[c]||CAT_MAP['Other']; const len=(v/total)*C; const s=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${m.color}" stroke-width="13" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)"/>`; off+=len; return s; }).join('');
+    donut=`<svg viewBox="0 0 100 100" width="108" height="108">${segs}<text x="50" y="47" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="700" font-family="Figtree">${fmtS(total)}</text><text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="7">${tx.length} txn${tx.length!==1?'s':''}</text></svg>`;
+  }
+  const list = tx.length ? tx.map(t=>{const m=CAT_MAP[t.cat]||CAT_MAP['Other'];return `<div class="bdp-row" onclick="closeBudDayPop();showTxnDetail('${t.id}')"><span class="bdp-dot" style="background:${m.color}"></span><div class="bdp-nm"><div>${merchantName(t.description)}</div><div class="bdp-cat">${t.cat}</div></div><span class="bdp-amt">${fmt(Math.abs(t.amount))}</span></div>`;}).join('') : '<div class="empty" style="padding:18px">No spending this day</div>';
+  pop.innerHTML=`<div class="bdp-hd"><div><div class="bdp-date">${dlabel}</div><div class="bdp-sub">${fmt(total)} spent</div></div><button class="fm-close" onclick="closeBudDayPop()">✕</button></div>
+    ${total>0?`<div class="bdp-donut">${donut}<div class="bdp-legend">${cats.slice(0,6).map(([c,v])=>{const m=CAT_MAP[c]||CAT_MAP['Other'];return `<div class="bdp-leg"><span class="bdp-dot" style="background:${m.color}"></span><span class="bdp-leg-nm">${c}</span><span class="bdp-leg-amt">${fmt(v)}</span></div>`;}).join('')}</div></div>`:''}
+    <div class="bdp-list">${list}</div>`;
+  bg.classList.remove('hidden');
+}
+function closeBudDayPop(){ const bg=document.getElementById('bud-day-bg'); if(bg)bg.classList.add('hidden'); }
+let budgetTrendCat=null;
+function selectBudgetCat(cat, ev){
+  budgetTrendCat = (budgetTrendCat===cat) ? null : cat;
+  document.querySelectorAll('#budget-bars .budget-item').forEach(el=>el.classList.remove('bi-active'));
+  if(budgetTrendCat && ev && ev.currentTarget) ev.currentTarget.classList.add('bi-active');
+  renderBudgetTrend();
+}
 function renderBudgetTrend() {
   const months=[]; const [cy,cm]=currentMonth.split('-').map(Number);
   for (let i=5;i>=0;i--){const d=new Date(cy,cm-1-i,1);months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+  const cat=budgetTrendCat;
   const data = months.map(ym=>{
-    const t = TXNS.filter(x=>x.date.startsWith(ym) && x.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(x.account) && !['Transfers','Investment','Returns'].includes(x.cat));
+    const t = TXNS.filter(x=>x.date.startsWith(ym) && x.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(x.account) && !['Transfers','Investment','Returns'].includes(x.cat) && (!cat||x.cat===cat));
     return {lbl:ymLabel(ym,{month:'short'}), val:t.reduce((s,x)=>s+Math.abs(x.amount),0)};
   });
   const maxV = Math.max(...data.map(d=>d.val),1);
+  const stroke = cat ? (CAT_MAP[cat]?.color||'var(--brand)') : 'var(--brand)';
   const W=360, H=180, pad=32;
   const pts = data.map((d,i)=>({x:pad+(i/(data.length-1))*(W-pad*2), y:H-pad-(d.val/maxV*(H-pad*2-10)), ...d}));
   const pD = pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
   const aD = pD + ` L${pts[pts.length-1].x.toFixed(1)} ${H-pad} L${pts[0].x.toFixed(1)} ${H-pad} Z`;
-  document.getElementById('budget-trend').innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
-    <defs><linearGradient id="btg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--brand)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--brand)" stop-opacity="0"/></linearGradient></defs>
+  const hd = `<div class="bt-hd"><span class="bt-title">${cat?cat:'All spending'} · 6 months</span>${cat?`<button class="bt-reset" onclick="selectBudgetCat(null)">Reset</button>`:'<span class="bt-hint">tap a category</span>'}</div>`;
+  document.getElementById('budget-trend').innerHTML = hd + `<svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
+    <defs><linearGradient id="btg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${stroke}" stop-opacity=".25"/><stop offset="100%" stop-color="${stroke}" stop-opacity="0"/></linearGradient></defs>
     <path d="${aD}" fill="url(#btg)"/>
-    <path d="${pD}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    ${pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="var(--surface)" stroke="var(--brand)" stroke-width="1.6"/>`).join('')}
+    <path d="${pD}" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="var(--surface)" stroke="${stroke}" stroke-width="1.6"/>`).join('')}
     ${pts.map(p=>`<text x="${p.x.toFixed(1)}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">${p.lbl}</text>`).join('')}
     ${pts.map(p=>`<text x="${p.x.toFixed(1)}" y="${(p.y-9).toFixed(1)}" text-anchor="middle" fill="var(--text)" font-size="10.5" font-family="JetBrains Mono" font-weight="600">${fmtS(p.val)}</text>`).join('')}
   </svg>`;
