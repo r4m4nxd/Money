@@ -1567,7 +1567,7 @@ body{letter-spacing:-0.006em}
       <div id="cat-regular"></div>
     </div>
     <div class="card">
-      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="aiRecatAll()">Re-categorize all (AI) →</div></div>
+      <div class="card-hd"><div class="card-hd-l"><div class="card-title">Category rules</div><div class="card-sub"><span id="rules-count">—</span> rules · <span id="cats-count">—</span> categories</div></div><div class="card-link" onclick="recatAll();renderAll();toast('Re-categorized using merchant library')">Re-categorize all →</div></div>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
         <div style="flex:1;min-width:180px"><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Keyword (lowercase)</div><input id="new-rule-kw" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;outline:none" placeholder="e.g. tim hortons" oninput="previewRule()"></div>
         <div><div style="font-size:11.5px;color:var(--muted2);margin-bottom:5px;font-weight:600">Category</div><select id="new-rule-cat" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none;font-family:Figtree,sans-serif"></select></div>
@@ -2052,23 +2052,147 @@ function sanitizeRules(){
   if(!Array.isArray(CAT_RULES)) return;
   const before=CAT_RULES.length;
   CAT_RULES = CAT_RULES.filter(r=> r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw));
-  if(CAT_RULES.length!==before) saveSettings();
+  if(CAT_RULES.length!==before){ invalidateResolve(); saveSettings(); }
 }
 // Merchant resolver: returns {name, cat} — picks the MOST SPECIFIC (longest) matching keyword
+// ── Built-in merchant library: raw descriptor → clean name + category. Applied automatically on import. No API, no tokens. ──
+const MERCHANT_DB = [
+  // Groceries
+  {re:/walmart|wal-mart|wal mart/,name:'Walmart',cat:'Groceries'},
+  {re:/superstore|real cdn|real canadian|rcss/,name:'Real Canadian Superstore',cat:'Groceries'},
+  {re:/\bsobeys\b/,name:'Sobeys',cat:'Groceries'},
+  {re:/safeway/,name:'Safeway',cat:'Groceries'},
+  {re:/costco/,name:'Costco',cat:'Groceries'},
+  {re:/save[- ]?on[- ]?foods/,name:'Save-On-Foods',cat:'Groceries'},
+  {re:/\bno frills\b|nofrills/,name:'No Frills',cat:'Groceries'},
+  {re:/loblaw/,name:'Loblaws',cat:'Groceries'},
+  {re:/freshco/,name:'FreshCo',cat:'Groceries'},
+  {re:/t&t|t and t supermarket/,name:'T&T Supermarket',cat:'Groceries'},
+  {re:/longo'?s/,name:"Longo's",cat:'Groceries'},
+  {re:/metro\b/,name:'Metro',cat:'Groceries'},
+  {re:/farm boy/,name:'Farm Boy',cat:'Groceries'},
+  {re:/\bcalgary co-?op|calgary coop/,name:'Calgary Co-op',cat:'Groceries'},
+  // Fuel
+  {re:/petro[- ]?canada|petrocan/,name:'Petro-Canada',cat:'Fuel'},
+  {re:/\besso\b/,name:'Esso',cat:'Fuel'},
+  {re:/\bshell\b/,name:'Shell',cat:'Fuel'},
+  {re:/\bhusky\b/,name:'Husky',cat:'Fuel'},
+  {re:/\bchevron\b/,name:'Chevron',cat:'Fuel'},
+  {re:/\bmobil\b/,name:'Mobil',cat:'Fuel'},
+  {re:/\bcanadian tire gas|ctgas/,name:'Canadian Tire Gas',cat:'Fuel'},
+  {re:/\bcostco gas|costco fuel/,name:'Costco Gas',cat:'Fuel'},
+  {re:/\bcenex\b|\bfasgas\b|\bdomo\b/,name:'Gas Station',cat:'Fuel'},
+  // Coffee
+  {re:/tim hortons|tim horton|tims #/,name:'Tim Hortons',cat:'Coffee'},
+  {re:/starbucks/,name:'Starbucks',cat:'Coffee'},
+  {re:/second cup/,name:'Second Cup',cat:'Coffee'},
+  {re:/\bcobs\b|cobs bread/,name:'COBS Bread',cat:'Coffee'},
+  {re:/good earth coffee/,name:'Good Earth Coffee',cat:'Coffee'},
+  // Fast food
+  {re:/mcdonald|mcdonalds|mc donalds/,name:"McDonald's",cat:'Fast Food'},
+  {re:/\ba&w\b|a and w/,name:'A&W',cat:'Fast Food'},
+  {re:/subway\b/,name:'Subway',cat:'Fast Food'},
+  {re:/\bkfc\b|kentucky fried/,name:'KFC',cat:'Fast Food'},
+  {re:/burger king/,name:'Burger King',cat:'Fast Food'},
+  {re:/\bwendy'?s\b/,name:"Wendy's",cat:'Fast Food'},
+  {re:/taco bell/,name:'Taco Bell',cat:'Fast Food'},
+  {re:/popeyes/,name:'Popeyes',cat:'Fast Food'},
+  {re:/\bdairy queen|\bdq #/,name:'Dairy Queen',cat:'Fast Food'},
+  {re:/pizza hut/,name:'Pizza Hut',cat:'Fast Food'},
+  {re:/domino'?s/,name:"Domino's",cat:'Fast Food'},
+  {re:/\bedo japan/,name:'Edo Japan',cat:'Fast Food'},
+  // Dining / delivery
+  {re:/\bskip|skipthedishes/,name:'SkipTheDishes',cat:'Dining'},
+  {re:/uber\s*eats|ubereats/,name:'Uber Eats',cat:'Dining'},
+  {re:/doordash/,name:'DoorDash',cat:'Dining'},
+  {re:/\bkathi roll/,name:'Kathi Roll',cat:'Dining'},
+  // Transport
+  {re:/\buber\b(?!\s*eats)/,name:'Uber',cat:'Transport'},
+  {re:/\blyft\b/,name:'Lyft',cat:'Transport'},
+  {re:/calgary transit|c-train|ctrain/,name:'Calgary Transit',cat:'Transport'},
+  {re:/\bimpark\b|indigo park|\bpark plus|parkplus/,name:'Parking',cat:'Transport'},
+  // Telecom / utilities
+  {re:/\btelus\b/,name:'TELUS',cat:'Telecom'},
+  {re:/\brogers\b/,name:'Rogers',cat:'Telecom'},
+  {re:/\bbell\b|bell canada|bell mobility/,name:'Bell',cat:'Telecom'},
+  {re:/\bkoodo\b/,name:'Koodo Mobile',cat:'Telecom'},
+  {re:/\bfido\b/,name:'Fido',cat:'Telecom'},
+  {re:/\bfreedom mobile/,name:'Freedom Mobile',cat:'Telecom'},
+  {re:/\bshaw\b/,name:'Shaw',cat:'Telecom'},
+  {re:/\bvirgin (plus|mobile)/,name:'Virgin Plus',cat:'Telecom'},
+  {re:/\batco\b|atco gas|atco energy/,name:'ATCO Energy',cat:'Utilities'},
+  {re:/\benmax\b/,name:'ENMAX',cat:'Utilities'},
+  {re:/\bepcor\b/,name:'EPCOR',cat:'Utilities'},
+  {re:/\bdirect energy/,name:'Direct Energy',cat:'Utilities'},
+  {re:/city of airdrie/,name:'City of Airdrie',cat:'Utilities'},
+  {re:/city of calgary/,name:'City of Calgary',cat:'Utilities'},
+  // Insurance / loans
+  {re:/scotia.*(home|auto|insur)/,name:'Scotia Home & Auto',cat:'Insurance'},
+  {re:/\btd insurance|td ins/,name:'TD Insurance',cat:'Insurance'},
+  {re:/intact insur|\bintact\b/,name:'Intact Insurance',cat:'Insurance'},
+  {re:/\bsgi\b|\bbcaa\b|\bcaa\b insur/,name:'Insurance',cat:'Insurance'},
+  {re:/hyundai capital|hyundai motor finance|hyundai cap/,name:'Hyundai Capital',cat:'Transport'},
+  {re:/toyota financial|toyota credit/,name:'Toyota Financial',cat:'Transport'},
+  {re:/honda financial|honda fin/,name:'Honda Financial',cat:'Transport'},
+  // Subscriptions / streaming
+  {re:/netflix/,name:'Netflix',cat:'Subscriptions'},
+  {re:/spotify/,name:'Spotify',cat:'Subscriptions'},
+  {re:/disney\s*\+|disney plus|disneyplus/,name:'Disney+',cat:'Subscriptions'},
+  {re:/amazon prime|prime video/,name:'Amazon Prime',cat:'Subscriptions'},
+  {re:/\bcrave\b/,name:'Crave',cat:'Subscriptions'},
+  {re:/youtube premium|google.*youtubepremium/,name:'YouTube Premium',cat:'Subscriptions'},
+  {re:/apple\.com\/bill|apple bill|itunes/,name:'Apple',cat:'Subscriptions'},
+  {re:/google\s*(one|storage)|google\*/,name:'Google',cat:'Subscriptions'},
+  {re:/openai|chatgpt/,name:'OpenAI',cat:'Subscriptions'},
+  {re:/audible/,name:'Audible',cat:'Subscriptions'},
+  {re:/\bicloud\b/,name:'iCloud',cat:'Subscriptions'},
+  // Fitness / entertainment
+  {re:/goodlife|good life fitness/,name:'GoodLife Fitness',cat:'Fitness'},
+  {re:/\borangetheory/,name:'Orangetheory',cat:'Fitness'},
+  {re:/\banytime fitness/,name:'Anytime Fitness',cat:'Fitness'},
+  {re:/cineplex|scotiabank theatre|cineplex odeon/,name:'Cineplex',cat:'Entertainment'},
+  {re:/landmark cinem/,name:'Landmark Cinemas',cat:'Entertainment'},
+  {re:/\bsteam games|steampowered|valve/,name:'Steam',cat:'Entertainment'},
+  // Retail / shopping
+  {re:/\bamazon\b|amzn|amazon\.ca/,name:'Amazon',cat:'Shopping'},
+  {re:/canadian tire(?! gas)/,name:'Canadian Tire',cat:'Shopping'},
+  {re:/\bbest buy/,name:'Best Buy',cat:'Shopping'},
+  {re:/\bhome depot/,name:'Home Depot',cat:'Home Goods'},
+  {re:/\brona\b|\blowe'?s\b/,name:'Rona',cat:'Home Goods'},
+  {re:/\bikea\b/,name:'IKEA',cat:'Home Goods'},
+  {re:/\bdollarama\b/,name:'Dollarama',cat:'Shopping'},
+  {re:/winners|homesense|marshalls/,name:'Winners',cat:'Shopping'},
+  {re:/\bhudson'?s bay|\bthe bay\b/,name:'Hudson’s Bay',cat:'Shopping'},
+  {re:/sport chek|sportchek/,name:'Sport Chek',cat:'Shopping'},
+  {re:/\bmark'?s\b|marks work/,name:"Mark's",cat:'Shopping'},
+  {re:/indigo|chapters|coles books/,name:'Indigo',cat:'Shopping'},
+  {re:/\bstaples\b/,name:'Staples',cat:'Shopping'},
+  {re:/\blululemon/,name:'Lululemon',cat:'Shopping'},
+  // Pharmacy / health
+  {re:/shoppers drug|shoppers drug mart|sdm #/,name:'Shoppers Drug Mart',cat:'Pharmacy'},
+  {re:/\blondon drugs/,name:'London Drugs',cat:'Pharmacy'},
+  {re:/rexall/,name:'Rexall',cat:'Pharmacy'},
+  // Investment / banking
+  {re:/questrade/,name:'Questrade',cat:'Investment'},
+  {re:/wealthsimple|wealth simple/,name:'Wealthsimple',cat:'Investment'},
+  {re:/\brbc direct|rbc invest/,name:'RBC Direct Investing',cat:'Investment'},
+  {re:/service charge|monthly fee|overdraft|nsf fee|account fee/,name:'Service Charge',cat:'Banking Fees'},
+  {re:/\binterac e-?transfer|e-?transfer/,name:'Interac e-Transfer',cat:'Transfers'},
+];
+let _resCache = {};
+function invalidateResolve(){ _resCache={}; }
 function resolveMerchant(desc) {
   if (!desc) return {name:'Unknown', cat:'Other'};
+  if (_resCache[desc]) return _resCache[desc];
   const d = desc.toLowerCase();
-  let best=null;
-  for (const r of CAT_RULES){
-    if (r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw) && d.includes(r.kw)){
-      if (!best || r.kw.length>best.kw.length) best=r;
-    }
-  }
-  let name = best ? best.name : prettifyDesc(desc);
-  let cat  = best ? best.cat  : 'Other';
-  const ec = (SETTINGS.enrichCache||{})[desc];     // AI cleanup, keyed by EXACT raw descriptor — cannot collide
+  let name = prettifyDesc(desc), cat = 'Other';
+  for (const e of MERCHANT_DB){ if (e.re.test(d)){ name=e.name; cat=e.cat; break; } }   // built-in library
+  let best=null;                                                                          // user rules override library (most-specific kw)
+  for (const r of CAT_RULES){ if (r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw) && d.includes(r.kw)){ if(!best||r.kw.length>best.kw.length) best=r; } }
+  if (best){ name=best.name; cat=best.cat; }
+  const ec=(SETTINGS.enrichCache||{})[desc];                                              // exact-descriptor override wins
   if (ec){ if(ec.name) name=ec.name; if(ec.cat) cat=ec.cat; }
-  return {name, cat};
+  const out={name, cat}; _resCache[desc]=out; return out;
 }
 function mapCat(c){
   if(!c) return undefined;
@@ -2123,7 +2247,7 @@ function isBadName(s){
 function sanitizeEnrichCache(){
   const ec=SETTINGS.enrichCache; if(!ec) return; let changed=false;
   for(const k in ec){ const e=ec[k]; if(e && e.name && isBadName(e.name)){ delete e.name; changed=true; } if(e && !e.name && !e.cat){ delete ec[k]; changed=true; } }
-  if(changed) saveSettings();
+  if(changed){ invalidateResolve(); saveSettings(); }
 }
 async function enrichBatch(batch){
   const res=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SETTINGS.openaiKey},body:JSON.stringify({
@@ -2184,6 +2308,7 @@ function categorize(desc) { return resolveMerchant(desc).cat; }
 function merchantName(desc) { return resolveMerchant(desc).name; }
 
 function recatAll() {
+  invalidateResolve(); _recCache=null; recurringMerchants=null;
   TXNS.forEach(t => { if(t.catLocked) return; t.cat = categorize(t.description); });
   applyCatOverrides();
   toast('Re-categorized all transactions');
@@ -2798,8 +2923,12 @@ function txnSig(t){ return t.date+'|'+t.description+'|'+t.amount+'|'+t.account; 
 
 function renderUpcoming() {
   const host = document.getElementById('dash-upcoming'); if(!host) return;
-  const rec = detectRecurring().filter(r=>r.cadence==='monthly'||r.cadence==='bi-weekly').slice(0,6);
-  if(!rec.length){ host.innerHTML='<div class="empty">No recurring charges detected</div>'; return; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const horizon=new Date(today.getTime()+14*86400000);
+  const rec = detectRecurring()
+    .filter(r=>{ const nd=new Date(r.nextDate+'T00:00:00'); return nd>=today && nd<=horizon; })
+    .sort((a,b)=>a.nextDate.localeCompare(b.nextDate));
+  if(!rec.length){ host.innerHTML='<div class="empty">Nothing due in the next two weeks</div>'; return; }
   host.innerHTML = rec.map(r=>{
     const m=CAT_MAP[r.cat]||CAT_MAP['Other'];
     const nd=new Date(r.nextDate+'T00:00:00');
@@ -3586,6 +3715,7 @@ function assignCat(cat) {
   let ruleMsg='';
   if (hit) { if(hit.cat!==cat){ hit.cat=cat; ruleMsg=' · rule updated'; } }
   else { const kw=deriveKw(t.description); if(kw && !CAT_RULES.some(r=>r.kw===kw)){ CAT_RULES.unshift({kw, name:mn, cat}); ruleMsg=' · rule added'; } }
+  invalidateRecurring();
   saveSettings();
   closeCatPick();
   if(document.getElementById('txn-body')) renderTxnPage(); else renderAll();
@@ -3962,9 +4092,11 @@ function editBudget(cat) {
 function closeBudEdit(){document.getElementById('budedit-bg').classList.add('hidden');budEditCat=null;}
 function saveBudEdit() {
   const v = parseFloat(document.getElementById('budedit-input').value)||0;
-  if (budEditCat) BUDGET_TARGETS[budEditCat]=v;
+  if (budEditCat){ if(v>0) BUDGET_TARGETS[budEditCat]=v; else delete BUDGET_TARGETS[budEditCat]; }
+  SETTINGS.budgetTargets = BUDGET_TARGETS;      // persist locally so it survives reloads
+  saveSettings();
   closeBudEdit(); renderBudget();
-  toast('Budget updated');
+  toast(v>0?'Budget set to '+fmt(v):'Budget cleared');
 }
 document.getElementById('budedit-bg').addEventListener('click', e=>{if(e.target===e.currentTarget)closeBudEdit();});
 
@@ -3988,10 +4120,16 @@ function splitGroup(g){
   const loName = isHomeAuto ? g.name.replace(/\s*(ins(urance)?)?\s*$/i,'').trim()+' (Home)' : g.name;
   return [{...g, txns:high, name:hiName}, {...g, txns:low, name:loName}]; // two separate recurring streams
 }
+let _recCache=null, _recSig='';
+function recSig(){ return TXNS.length+'|'+(TXNS.length?TXNS[TXNS.length-1].date:'')+'|'+(TXNS.length?TXNS[0].date:'')+'|'+JSON.stringify(SETTINGS.recurringOverrides||{}).length; }
+function invalidateRecurring(){ _recCache=null; recurringMerchants=null; invalidateResolve(); }
 function detectRecurring() {
-  // Group by normalized merchant key, expenses only, last 12 months
+  const sig=recSig(); if(_recCache && _recSig===sig) return _recCache;     // memoized — big speedup for home/recurring/calendar
+  // Group by normalized merchant key, expenses only, last 13 months (for cadence reliability)
   const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth()-13);
   const cutoffStr = cutoff.toISOString().slice(0,10);
+  const sixMo = new Date(); sixMo.setMonth(sixMo.getMonth()-6);
+  const sixMoStr = sixMo.toISOString().slice(0,10);
   const groups = {};
   TXNS.filter(t=>t.amount<0 && t.date>=cutoffStr && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account) && !['Transfers','Investment','Returns'].includes(t.cat)).forEach(t=>{
     const k = merchKey(t.description);
@@ -4008,16 +4146,23 @@ function detectRecurring() {
     const forcedCad = ovObj && ovObj.cadence ? ovObj.cadence : null;
     if (ovObj && ovObj.on===false) return; // user removed it
     const sorted = g.txns.slice().sort((a,b)=>a.date.localeCompare(b.date));
+    // DROP STALE: not seen in the last 6 months → no longer an active recurring (changed provider / cancelled)
+    if (sorted[sorted.length-1].date < sixMoStr && forced!==true) return;
     const gaps = [];
     for (let i=1;i<sorted.length;i++) {
       const d1=new Date(sorted[i-1].date), d2=new Date(sorted[i].date);
       gaps.push(Math.round((d2-d1)/86400000));
     }
     const avgGap = gaps.length ? gaps.reduce((a,b)=>a+b,0)/gaps.length : 30;
-    const amounts = sorted.map(t=>Math.abs(t.amount));
+    // AVERAGE ONLY THE LAST 6 MONTHS so the figure reflects what you'll actually pay now
+    const recent = sorted.filter(t=>t.date>=sixMoStr);
+    const useAmt = recent.length ? recent : sorted;
+    const amounts = useAmt.map(t=>Math.abs(t.amount));
     const avgAmt = amounts.reduce((a,b)=>a+b,0)/amounts.length;
-    const stdAmt = Math.sqrt(amounts.reduce((s,a)=>s+(a-avgAmt)**2,0)/amounts.length);
-    const consistency = avgAmt>0 ? stdAmt/avgAmt : 1;
+    const allAmts = sorted.map(t=>Math.abs(t.amount));
+    const meanAll = allAmts.reduce((a,b)=>a+b,0)/allAmts.length;
+    const stdAmt = Math.sqrt(allAmts.reduce((s,a)=>s+(a-meanAll)**2,0)/allAmts.length);
+    const consistency = meanAll>0 ? stdAmt/meanAll : 1;
     let cadence = null;
     if (avgGap>=6 && avgGap<=9) cadence='weekly';
     else if (avgGap>=12 && avgGap<=18) cadence='bi-weekly';
@@ -4030,7 +4175,6 @@ function detectRecurring() {
     else if (!autoMatch) return;
     if (forcedCad) cadence = forcedCad;                          // user override wins
     const lastTxn = sorted[sorted.length-1];
-    // next expected date: honour a forced cadence (calendar-accurate for monthly/specific)
     let nextDate = new Date(lastTxn.date);
     if (forcedCad==='specific' && ovObj.day){
       const t=new Date(); let n=new Date(t.getFullYear(),t.getMonth(),ovObj.day);
@@ -4039,15 +4183,16 @@ function detectRecurring() {
     } else if (cadence==='monthly'){ nextDate.setMonth(nextDate.getMonth()+1); }
     else if (cadence==='semi-monthly'){ nextDate.setDate(nextDate.getDate()+15); }
     else { nextDate.setDate(nextDate.getDate() + (forcedCad?cadenceGapDays(cadence):Math.round(avgGap))); }
-    recurring.push({...g, cadence, avgAmt, avgGap, count:sorted.length, lastDate:lastTxn.date, nextDate:nextDate.toISOString().slice(0,10), monthlyEq:cadenceMonthly(cadence,avgAmt), forced:forced===true});
+    recurring.push({...g, cadence, avgAmt, avgGap, count:useAmt.length, lastDate:lastTxn.date, nextDate:nextDate.toISOString().slice(0,10), monthlyEq:cadenceMonthly(cadence,avgAmt), forced:forced===true});
   }));
-  return recurring.sort((a,b)=>b.monthlyEq-a.monthlyEq);
+  _recCache = recurring.sort((a,b)=>b.monthlyEq-a.monthlyEq); _recSig=sig;
+  return _recCache;
 }
 function toggleRecurring(merchant, makeRecurring){
   SETTINGS.recurringOverrides = SETTINGS.recurringOverrides || {};
   const cur = recOverride(merchant) || {};
   SETTINGS.recurringOverrides[merchant] = {...cur, on:!!makeRecurring};
-  saveSettings(); recurringMerchants=null;
+  saveSettings(); invalidateRecurring();
   if(document.getElementById('rec-donut-card')) renderRecurring();
   toast(makeRecurring?'Marked as recurring':'Removed from recurring');
 }
@@ -4063,7 +4208,7 @@ function setRecurringCadence(merchant, cadence){
     ovNew.day = day;
   } else { delete ovNew.day; }
   SETTINGS.recurringOverrides[merchant] = ovNew;
-  saveSettings(); recurringMerchants=null;
+  saveSettings(); invalidateRecurring();
   if(document.getElementById('rec-donut-card')) renderRecurring();
   // refresh the open detail modal
   closeTxnDetail(); showRecurringDetail(merchant);
@@ -4504,12 +4649,6 @@ function renderCategories() {
   }).join('');
 }
 function toggleCatSec(id){ const el=document.getElementById(id); if(el) el.style.display = el.style.display==='none'?'':'none'; }
-function editBudget(cat){
-  const cur=BUDGET_TARGETS[cat]||0;
-  const v=prompt('Monthly budget for '+cat,cur);
-  if(v===null)return; const n=parseFloat(v);
-  if(!isNaN(n)&&n>=0){ BUDGET_TARGETS[cat]=n; saveSettings&&saveSettings(); renderCategories(); }
-}
 function deleteRule(kw,cat) {
   CAT_RULES = CAT_RULES.filter(r=>!(r.kw===kw && r.cat===cat));
   toast('Rule removed');
@@ -4668,7 +4807,7 @@ function renderImport() {
   </div>`;
   const enrichCard=`<div class="upload-card" style="border-color:var(--brand-soft);grid-column:1/-1">
     <div class="uc-head"><div><div class="uc-name" style="color:var(--brand)">Clean up merchant names (AI)</div><div class="uc-count">Fixes messy/unknown descriptors using your OpenAI key · exact-match, no rule collisions</div></div><span class="uc-badge ${SETTINGS.openaiKey?'on':'off'}">${SETTINGS.openaiKey?'ready':'key?'}</span></div>
-    <button class="btn btn-brand btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="enrichNames()">Clean unknown names</button>
+    <button class="btn btn-brand btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="recatAll();renderAll();toast('Cleaned with merchant library')">Clean names (free)</button>
   </div>`;
   document.getElementById('upload-grid').innerHTML = enrichCard + wsCard + ACCOUNTS.map(a=>{
     const count = TXNS.filter(t=>t.account===a.name).length;
@@ -5838,6 +5977,7 @@ function applyCustomDate() {
 
 async function init() {
   loadCustomAccounts();
+  if (SETTINGS.budgetTargets) BUDGET_TARGETS = {...BUDGET_TARGETS, ...SETTINGS.budgetTargets};
   sanitizeRules();
   sanitizeEnrichCache();
   applyCatOverrides();
