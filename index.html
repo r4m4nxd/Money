@@ -2496,6 +2496,7 @@ function saveSettings() {
 }
 loadSettings();
 try{ invalidateResolve(); }catch(_){}  // seed resolved before SETTINGS existed; refresh cache now that it's loaded
+if(Array.isArray(SETTINGS.userRules)){ CAT_RULES=[...SETTINGS.userRules, ...CAT_RULES.filter(c=>!SETTINGS.userRules.some(u=>u.kw===c.kw))]; invalidateResolve(); } // userRules merged at load
 
 // ═══════════════════════════════════════════════════════
 // SUPABASE CLOUD SYNC (multi-device PC + mobile)
@@ -3022,6 +3023,7 @@ function showTxnDetail(id){
   const note=(SETTINGS.notes||{})[sig]||'';
   const tags=(SETTINGS.tags||{})[sig]||[];
   const receipt=(SETTINGS.receipts||{})[sig]||'';
+  const approvedNames=[...new Set(TXNS.map(x=>merchantName(x.description)).concat(CAT_RULES.map(r=>r.name)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   // history: same merchant grouped by month
   const key=merchKey(t.description);
   const hist=TXNS.filter(x=>merchKey(x.description)===key).sort((a,b)=>b.date.localeCompare(a.date));
@@ -3042,6 +3044,7 @@ function showTxnDetail(id){
     <div class="txd-main"><div class="txd-merchant">${merchantName(t.description)}</div><div class="txd-amt ${t.amount>0?'pos':''}">${t.amount>0?'+':''}${fmt(t.amount)}</div></div>
     <div class="txd-acct"><span class="merch-ic" style="width:24px;height:24px;background:var(--surface3);color:var(--muted2)">${icon('bank')}</span>${t.account}</div>
     <div class="txd-rows">
+      <div class="txd-row"><span class="txd-k">Display name</span><input class="txd-name-inp" list="txd-name-list" value="${merchantName(t.description).replace(/"/g,'&quot;')}" placeholder="Merchant name" onkeydown="if(event.key==='Enter')this.blur()" onchange="saveDisplayName('${t.id}',this.value)" style="flex:1;max-width:230px;text-align:right;padding:7px 11px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;font-weight:600;outline:none"><datalist id="txd-name-list">${approvedNames.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">`).join('')}</datalist></div>
       <div class="txd-row"><span class="txd-k">Category</span><button class="cat-chip" onclick="pickCat('${t.id}');closeTxnDetail()"><span class="catrow-ic" style="width:22px;height:22px;font-size:12px;background:${m.color}1f;color:${m.color}">${m.icon}</span>${t.cat}</button></div>
       <div class="txd-row"><span class="txd-k">Reviewed</span><div class="txn-check ${t.reviewed?'on':''}" onclick="toggleReviewed('${t.id}');showTxnDetail('${t.id}')"></div></div>
       <div class="txd-row"><span class="txd-k">Recurring</span><button class="cat-chip" onclick="toggleRecurring('${merchKey(t.description).replace(/'/g,"\\'")}',${!getRecurringMerchants().has(merchKey(t.description))});showTxnDetail('${t.id}')">${getRecurringMerchants().has(merchKey(t.description))?'✓ Recurring · tap to remove':'+ Mark recurring'}</button></div>
@@ -4594,13 +4597,15 @@ function renderInvestmentsLegacy() {
   const allTicks = new Set([...Object.keys(costMap), ...Object.keys(SETTINGS.holdings||{})]);
   const merged = [...allTicks].map(tick => {
     const cb = costMap[tick] || {tick, name:tick, sharesBought:0, costBasis:0};
-    const live = (SETTINGS.holdings||{})[tick] || {shares:0, marketPrice:0};
+    const live = (SETTINGS.holdings||{})[tick] || {shares:0, marketPrice:0, avgCost:0};
     const currentShares = live.shares || cb.sharesBought;
     const marketValue = (currentShares||0) * (live.marketPrice||0);
-    const avgCost = cb.sharesBought>0 ? cb.costBasis / cb.sharesBought : 0;
-    const unrealized = marketValue - cb.costBasis;
-    const unrealizedPct = cb.costBasis>0 ? (unrealized/cb.costBasis)*100 : 0;
-    return {...cb, ...live, currentShares, marketValue, avgCost, unrealized, unrealizedPct};
+    let costBasis = cb.costBasis;
+    if ((!costBasis || costBasis===0) && live.avgCost) costBasis = (currentShares||0) * live.avgCost;   // manual avg-cost book
+    const avgCost = currentShares>0 ? costBasis/currentShares : (live.avgCost||0);
+    const unrealized = marketValue - costBasis;
+    const unrealizedPct = costBasis>0 ? (unrealized/costBasis)*100 : 0;
+    return {...cb, ...live, currentShares, marketValue, costBasis, avgCost, unrealized, unrealizedPct};
   }).sort((a,b) => b.marketValue - a.marketValue || b.costBasis - a.costBasis);
 
   const totalMV = merged.reduce((s,h) => s+(h.marketValue||0), 0);
@@ -5912,13 +5917,19 @@ function renderSettings() {
   const holdingsList = Object.entries(SETTINGS.holdings||{});
   const holdingsRows = holdingsList.length ? holdingsList.map(function(pair){
     const tick = pair[0], h = pair[1];
+    const inp='width:92px;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:12.5px;text-align:right;outline:none';
+    const sh=h.shares||0, mp=h.marketPrice||0, ac=h.avgCost||0;
+    const mkt=sh*mp, book=sh*ac, ret=mkt-book, rc=ret>=0?'var(--green)':'var(--red)';
     return '<tr class="tr">'
       +'<td><span class="tag" style="background:rgba(122,107,168,.15);color:var(--purple);font-weight:700">'+tick+'</span></td>'
-      +'<td><input type="number" step="0.0001" value="'+(h.shares||'')+'" style="width:100px;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:12.5px;text-align:right;outline:none" onblur="setHolding(\''+tick+'\',\'shares\',this.value)"></td>'
-      +'<td><input type="number" step="0.01" value="'+(h.marketPrice||'')+'" style="width:100px;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:12.5px;text-align:right;outline:none" onblur="setHolding(\''+tick+'\',\'marketPrice\',this.value)"></td>'
-      +'<td class="td-amt">'+(h.shares&&h.marketPrice?fmt(h.shares*h.marketPrice):'—')+'</td>'
+      +'<td><input type="number" step="0.0001" value="'+(h.shares||'')+'" style="'+inp+'" onblur="setHolding(\''+tick+'\',\'shares\',this.value)"></td>'
+      +'<td><input type="number" step="0.01" value="'+(h.avgCost||'')+'" placeholder="—" style="'+inp+'" onblur="setHolding(\''+tick+'\',\'avgCost\',this.value)"></td>'
+      +'<td><input type="number" step="0.01" value="'+(h.marketPrice||'')+'" style="'+inp+'" onblur="setHolding(\''+tick+'\',\'marketPrice\',this.value)"></td>'
+      +'<td class="td-amt">'+(mkt?fmt(mkt):'—')+'</td>'
+      +'<td class="td-amt" style="color:var(--muted2)">'+(book?fmt(book):'—')+'</td>'
+      +'<td class="td-amt" style="color:'+rc+'">'+(book&&mkt?(ret>=0?'+':'')+fmt(ret):'—')+'</td>'
       +'<td><button class="btn btn-danger btn-sm" onclick="removeHolding(\''+tick+'\')">×</button></td></tr>';
-  }).join('') : '<tr><td colspan="5" class="empty">No holdings yet. Add tickers below to track your portfolio.</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="empty">No holdings yet. Add tickers below to track your portfolio.</td></tr>';
 
   const calcInvestBal = holdingsList.reduce(function(s,p){ return s + (p[1].shares||0)*(p[1].marketPrice||0); }, 0);
 
@@ -5958,8 +5969,8 @@ function renderSettings() {
     +'<div style="margin-top:14px;padding:13px 15px;background:var(--brand-soft);border-radius:10px;font-size:12.5px;line-height:1.6;color:var(--text-2)"><b style="color:var(--brand)">How:</b> Open your banking apps and copy current balances here. Leave blank to use calculated. For credit cards, enter amount owed.</div>'
     +'</div>'
     +'<div class="card" style="margin-bottom:14px">'
-    +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Investment Holdings</div><div class="card-sub">Add tickers + shares + current market price. Total ≈ TFSA balance.</div></div></div>'
-    +'<table class="t"><thead><tr><th>Ticker</th><th class="r">Shares</th><th class="r">Market Price</th><th class="r">Value</th><th></th></tr></thead><tbody>'+holdingsRows+'</tbody></table>'
+    +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Investment Holdings</div><div class="card-sub">Add tickers with shares, average cost base, and current market price — book cost + return compute automatically. Total ≈ TFSA balance.</div></div></div>'
+    +'<table class="t"><thead><tr><th>Ticker</th><th class="r">Shares</th><th class="r">Avg Cost</th><th class="r">Mkt Price</th><th class="r">Value</th><th class="r">Book</th><th class="r">Return</th><th></th></tr></thead><tbody>'+holdingsRows+'</tbody></table>'
     +'<div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap">'
     +'<input id="new-holding-tick" placeholder="Ticker (e.g. XEQT)" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:JetBrains Mono,monospace;font-size:12.5px;outline:none;width:160px;text-transform:uppercase">'
     +'<button class="btn btn-brand btn-sm" onclick="addHolding()">+ Add holding</button>'
@@ -6038,7 +6049,7 @@ function setGoal(key, val) {
   toast('Goal saved');
 }
 function setHolding(tick, field, val) {
-  if (!SETTINGS.holdings[tick]) SETTINGS.holdings[tick] = {shares:0, marketPrice:0};
+  if (!SETTINGS.holdings[tick]) SETTINGS.holdings[tick] = {shares:0, marketPrice:0, avgCost:0};
   const n = parseFloat(val);
   SETTINGS.holdings[tick][field] = isNaN(n) ? 0 : n;
   // Auto-update WS TFSA balance to sum of holdings
@@ -6053,7 +6064,7 @@ function addHolding() {
   const tick = (tickEl.value||'').trim().toUpperCase();
   if (!tick) { toast('Enter a ticker'); return; }
   if (SETTINGS.holdings[tick]) { toast('Already exists'); return; }
-  SETTINGS.holdings[tick] = {shares:0, marketPrice:0};
+  SETTINGS.holdings[tick] = {shares:0, marketPrice:0, avgCost:0};
   saveSettings();
   renderSettings();
   toast('Added '+tick);
@@ -6197,6 +6208,42 @@ function renderDuplicatesModal(){
       ${dupCount?`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn btn-danger btn-sm" onclick="purgeAllDuplicates()">Delete all ${dupCount} duplicate${dupCount>1?'s':''}</button><button class="btn btn-sm" onclick="closeDuplicatesModal()">Keep everything</button></div>`:''}
       <div class="dup-list">${groups.map(g=>`<div class="dup-group"><div class="dup-grid">${row(g.keep,true)}${g.dupes.map(d=>row(d,false)).join('')}</div></div>`).join('')||'<div class="empty" style="padding:20px">Nothing to review</div>'}</div>
     </div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// DISPLAY-NAME → RULE PROPAGATION (two-way mapping from the drawer)
+// ═══════════════════════════════════════════════════════
+function ruleKwFromDesc(desc){
+  const raw=String(desc||'').toLowerCase();
+  const words=normDesc(desc).split(' ').filter(w=>w.length>=3 && !isJunkKw(w) && raw.includes(w));
+  if(!words.length) return null;
+  words.sort((a,b)=>b.length-a.length);          // longest distinctive token wins
+  return words[0];
+}
+function saveDisplayName(id,val){
+  const t=TXNS.find(x=>x.id===id); if(!t) return;
+  const name=(val||'').trim(); if(!name) return;
+  const cat=t.cat;
+  // 1) exact-descriptor override — always wins, persisted locally via SETTINGS
+  SETTINGS.enrichCache=SETTINGS.enrichCache||{};
+  SETTINGS.enrichCache[t.description]={name, cat};
+  // 2) fuzzy keyword rule so FUTURE imports (different ref numbers) match too
+  const kw=ruleKwFromDesc(t.description);
+  if(kw){
+    SETTINGS.userRules=Array.isArray(SETTINGS.userRules)?SETTINGS.userRules.filter(r=>r.kw!==kw):[];
+    const rule={kw, name, cat};
+    SETTINGS.userRules.unshift(rule);
+    CAT_RULES=CAT_RULES.filter(r=>r.kw!==kw);
+    CAT_RULES.unshift(rule);
+  }
+  // 3) re-resolve everything so the new mapping propagates to all matching rows
+  invalidateResolve(); _recCache=null; recurringMerchants=null;
+  TXNS.forEach(x=>{ if(!x.catLocked) x.cat=categorize(x.description); });
+  if(typeof applyCatOverrides==='function') applyCatOverrides();
+  saveSettings();
+  try{ renderAll(); }catch(e){}
+  showTxnDetail(id);
+  toast('Saved — future "'+name+'" imports auto-named'+(kw?' & categorized':''));
 }
 
 </script>
