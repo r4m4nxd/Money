@@ -1069,6 +1069,7 @@ body{letter-spacing:-0.006em}
 .bdp-nm>div:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bdp-cat{font-size:11px;color:var(--muted2)}
 .bdp-amt{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.bdp-sec{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);margin:12px 0 2px}
 /* Budget trend header + active row */
 .bt-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .bt-title{font-size:12.5px;font-weight:600;color:var(--text)}
@@ -1443,7 +1444,8 @@ body{letter-spacing:-0.006em}
   <!-- ========= CALENDAR ========= -->
   <div class="page" id="page-calendar">
     <div class="ph"><div class="ph-l"><div class="ph-title">Financial Calendar</div><div class="ph-sub" id="cal-sub">Paydays, bills &amp; due dates</div></div><div class="cal-nav"><button class="m-arrow" onclick="calMonth(-1)" aria-label="Previous month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="cal-month-lbl"></span><button class="m-arrow" onclick="calMonth(1)" aria-label="Next month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div></div>
-    <div class="card" id="cal-grid-card"><div id="cal-grid"></div><div class="cal-pop hidden" id="cal-pop"></div></div>
+    <div class="card" id="cal-grid-card"><div id="cal-grid"></div></div>
+    <div class="modal-bg hidden" id="cal-day-bg" onclick="if(event.target===this)closeBudDayPop()"><div class="modal bud-day-card" id="cal-day-pop" onclick="event.stopPropagation()"></div></div>
     <div class="row row-1"><div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">This month's flow</div><div class="card-sub">Expected money in &amp; out</div></div></div><div id="cal-flow"></div></div></div>
   </div>
 
@@ -2955,6 +2957,21 @@ function markAllReviewed(){
   saveSettings(); renderReviewList(); renderSidebar(); toast('Marked as reviewed');
 }
 function txnSig(t){ return t.date+'|'+t.description+'|'+t.amount+'|'+t.account; }
+// Normalized fingerprint for duplicate detection — tolerant of re-download noise (spacing, case,
+// changing reference/auth numbers, punctuation) so re-importing the same statement doesn't duplicate.
+function normDesc(s){
+  return String(s||'').toLowerCase()
+    .replace(/[^a-z0-9 ]+/g,' ')   // strip punctuation/symbols
+    .replace(/\b\d{4,}\b/g,' ')    // drop long reference/auth numbers that vary per export
+    .replace(/\s+/g,' ').trim();
+}
+function dupKey(t){ return t.date+'|'+normDesc(t.description)+'|'+Math.abs(t.amount).toFixed(2)+'|'+(t.amount<0?'d':'c')+'|'+t.account; }
+// Collapse existing duplicates app-wide (keeps the first of each). Returns count removed.
+function dedupeTxns(){
+  const seen=new Set(); const before=TXNS.length;
+  TXNS = TXNS.filter(t=>{ const k=dupKey(t); if(seen.has(k)) return false; seen.add(k); return true; });
+  return before-TXNS.length;
+}
 
 function renderUpcoming() {
   const host = document.getElementById('dash-upcoming'); if(!host) return;
@@ -4124,7 +4141,7 @@ function budgetDayPop(ds, ev){
     <div class="bdp-list">${list}</div>`;
   bg.classList.remove('hidden');
 }
-function closeBudDayPop(){ const bg=document.getElementById('bud-day-bg'); if(bg)bg.classList.add('hidden'); }
+function closeBudDayPop(){ ['bud-day-bg','cal-day-bg'].forEach(id=>{const bg=document.getElementById(id); if(bg)bg.classList.add('hidden');}); }
 let budgetTrendCat=null;
 function selectBudgetCat(cat, ev){
   budgetTrendCat = (budgetTrendCat===cat) ? null : cat;
@@ -4884,6 +4901,7 @@ function renderImport() {
   const enrichCard=`<div class="upload-card" style="border-color:var(--brand-soft);grid-column:1/-1">
     <div class="uc-head"><div><div class="uc-name" style="color:var(--brand)">Clean up merchant names (AI)</div><div class="uc-count">Fixes messy/unknown descriptors using your OpenAI key · exact-match, no rule collisions</div></div><span class="uc-badge ${SETTINGS.openaiKey?'on':'off'}">${SETTINGS.openaiKey?'ready':'key?'}</span></div>
     <button class="btn btn-brand btn-sm" style="width:100%;margin-top:8px;justify-content:center" onclick="recatAll();renderAll();toast('Cleaned with merchant library')">Clean names (free)</button>
+    <button class="btn btn-sm" style="width:100%;margin-top:6px;justify-content:center" onclick="const n=dedupeTxns();saveSettings();renderAll();toast(n?(n+' duplicate'+(n>1?'s':'')+' removed'):'No duplicates found')">Remove duplicate transactions</button>
   </div>`;
   document.getElementById('upload-grid').innerHTML = enrichCard + wsCard + ACCOUNTS.map(a=>{
     const count = TXNS.filter(t=>t.account===a.name).length;
@@ -4932,7 +4950,8 @@ async function handleFiles(files,account,srcId) {
       log(`  ✓ ${added} new transactions added`,'ok');
     } catch (e) { log(`  ✗ ${e.message}`,'err'); }
   }
-  log(`Done — ${total} total added`,'ok');
+  const removed = dedupeTxns();
+  log(`Done — ${total} added${removed?`, ${removed} duplicate(s) removed`:''}`,'ok');
   saveSettings(); recatAll(); renderAll();
 }
 async function parseFile(file,account,parser) {
@@ -4953,14 +4972,17 @@ async function parseFile(file,account,parser) {
   else if (parser==='td_csv') parsed=parseTDCSV(rows);
   else parsed=parseWSCSV(rows,account);
   const acctTxns = TXNS.filter(t=>t.account===account);
-  const existing = new Set(acctTxns.map(t=>`${t.date}|${t.description}|${t.amount}`));
+  const existing = new Set(acctTxns.map(dupKey));
   // pending→settled dedupe: a credit-card payment first appears as a pending credit then re-imports
-  // as "PAYMENT FROM ..." with same date+amount — match on date+amount so it isn't duplicated
   const payKey = t=>`${t.date}|${Math.abs(t.amount).toFixed(2)}`;
   const existingPay = new Set(acctTxns.filter(t=>/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description)).map(payKey));
+  const batchSeen = new Set();
   const fresh = parsed.filter(t=>{
-    if (existing.has(`${t.date}|${t.description}|${t.amount}`)) return false;
+    const k = dupKey({...t, account});
+    if (existing.has(k)) return false;        // already imported (normalized match — tolerant of re-download noise)
+    if (batchSeen.has(k)) return false;        // duplicate within this same file
     if (/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description) && existingPay.has(payKey(t))) return false;
+    batchSeen.add(k);
     return true;
   });
   TXNS.unshift(...fresh.map(t=>({...t, id:Math.random().toString(36).slice(2), cat:categorize(t.description), reviewed:false})));
@@ -5465,24 +5487,29 @@ function renderCalendar(){
     </div>`; }
 }
 function calDay(ds, el){
-  const pop=document.getElementById('cal-pop'); if(!pop) return;
+  const bg=document.getElementById('cal-day-bg'), pop=document.getElementById('cal-day-pop'); if(!bg||!pop) return;
   const [y,m]=ds.split('-').map(Number); const day=+ds.slice(8,10);
-  const list=getCalEvents(ds.slice(0,7))[day]||[];
+  const events=getCalEvents(ds.slice(0,7))[day]||[];
   const dotc={pay:'#3FCB8E',bill:'#E07A7A',due:'#D4944A'};
-  const rows=list.map(e=>`<div class="cal-pop-row"><span class="cal-pop-dot" style="background:${dotc[e.type]||'var(--muted)'}"></span><span class="cal-pop-nm">${e.name}</span><span class="cal-pop-amt" style="color:${e.type==='pay'?'#3FCB8E':'var(--text)'}">${e.type==='pay'?'+':''}${fmt(Math.abs(e.amt))}</span></div>`).join('');
-  pop.innerHTML=`<button class="cal-pop-close" onclick="document.getElementById('cal-pop').classList.add('hidden')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
-    <div class="cal-pop-date">${new Date(y,m-1,day).toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'})}</div>
-    <div class="cal-pop-sub">${list.length} event${list.length>1?'s':''} scheduled</div>${rows}`;
-  // position near the clicked cell, clamped within the card
-  const card=document.getElementById('cal-grid-card');
-  pop.classList.remove('hidden');
-  if(el&&card){ const cr=card.getBoundingClientRect(), er=el.getBoundingClientRect();
-    let left=er.left-cr.left, top=er.top-cr.top+er.height+6;
-    const pw=pop.offsetWidth||230, ph=pop.offsetHeight||140;
-    if(left+pw>cr.width-8) left=cr.width-pw-8; if(left<8)left=8;
-    if(top+ph>cr.height-8) top=er.top-cr.top-ph-6; if(top<8)top=8;
-    pop.style.left=left+'px'; pop.style.top=top+'px';
+  const dlabel=new Date(y,m-1,day).toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'});
+  // actual transactions that day (spending) for a donut, like the budget popup
+  const tx=TXNS.filter(t=>t.date===ds && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).sort((a,b)=>Math.abs(b.amount)-Math.abs(a.amount));
+  const total=tx.reduce((s,t)=>s+Math.abs(t.amount),0);
+  const byCat={}; tx.forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+Math.abs(t.amount);});
+  const cats=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  let donut='';
+  if(total>0){ const R=38,C=2*Math.PI*R; let off=0;
+    const segs=cats.map(([c,v])=>{ const mm=CAT_MAP[c]||CAT_MAP['Other']; const len=(v/total)*C; const s=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${mm.color}" stroke-width="13" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 50 50)"/>`; off+=len; return s; }).join('');
+    donut=`<svg viewBox="0 0 100 100" width="108" height="108">${segs}<text x="50" y="47" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="700" font-family="Figtree">${fmtS(total)}</text><text x="50" y="61" text-anchor="middle" fill="var(--muted)" font-size="7">${tx.length} txn${tx.length!==1?'s':''}</text></svg>`;
   }
+  const evRows=events.map(e=>`<div class="bdp-row"><span class="bdp-dot" style="background:${dotc[e.type]||'var(--muted)'}"></span><div class="bdp-nm"><div>${e.name}</div><div class="bdp-cat">${e.type==='pay'?'Payday':e.type==='due'?'Card due':'Bill'}</div></div><span class="bdp-amt" style="color:${e.type==='pay'?'#3FCB8E':'var(--text)'}">${e.type==='pay'?'+':''}${fmt(Math.abs(e.amt))}</span></div>`).join('');
+  const txRows=tx.map(t=>{const mm=CAT_MAP[t.cat]||CAT_MAP['Other'];return `<div class="bdp-row" onclick="closeBudDayPop();showTxnDetail('${t.id}')"><span class="bdp-dot" style="background:${mm.color}"></span><div class="bdp-nm"><div>${merchantName(t.description)}</div><div class="bdp-cat">${t.cat}</div></div><span class="bdp-amt">${fmt(Math.abs(t.amount))}</span></div>`;}).join('');
+  const empty=(!events.length && !tx.length)?'<div class="empty" style="padding:18px">Nothing on this day</div>':'';
+  pop.innerHTML=`<div class="bdp-hd"><div><div class="bdp-date">${dlabel}</div><div class="bdp-sub">${events.length?events.length+' scheduled · ':''}${total>0?fmt(total)+' spent':(events.length?'':'no activity')}</div></div><button class="fm-close" onclick="closeBudDayPop()">✕</button></div>
+    ${total>0?`<div class="bdp-donut">${donut}<div class="bdp-legend">${cats.slice(0,6).map(([c,v])=>{const mm=CAT_MAP[c]||CAT_MAP['Other'];return `<div class="bdp-leg"><span class="bdp-dot" style="background:${mm.color}"></span><span class="bdp-leg-nm">${c}</span><span class="bdp-leg-amt">${fmt(v)}</span></div>`;}).join('')}</div></div>`:''}
+    ${events.length?`<div class="bdp-sec">Scheduled</div>${evRows}`:''}
+    ${tx.length?`<div class="bdp-sec">Transactions</div>${txRows}`:''}${empty}`;
+  bg.classList.remove('hidden');
 }
 
 // ── Goals + forecast (uses projectInvestment) ──
