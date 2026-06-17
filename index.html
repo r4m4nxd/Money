@@ -1099,6 +1099,14 @@ body{letter-spacing:-0.006em}
 #page-calendar .cal-today{outline:2px solid var(--brand);outline-offset:-2px}
 #page-calendar .cal-today .cal-num{color:var(--brand)}
 .cal-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto}
+#page-calendar .cal-empty{background:transparent;border:none;box-shadow:none}
+@media(max-width:600px){
+  #page-calendar .cal-grid{gap:4px;grid-auto-rows:auto}
+  #page-calendar .cal-cell{aspect-ratio:1;padding:4px 5px;border-radius:8px;gap:3px}
+  #page-calendar .cal-empty{aspect-ratio:1}
+  #page-calendar .cal-num{font-size:11px}
+  .cal-dow{font-size:10px}
+}
 .cal-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
 .cal-pay{background:#3FCB8E}.cal-bill{background:#E07A7A}.cal-due{background:#D4944A}
 .cal-legend{display:flex;gap:16px;margin-top:16px;font-size:12px;color:var(--muted2)}
@@ -1277,13 +1285,11 @@ body{letter-spacing:-0.006em}
 .dup-meta{font-size:11px;color:var(--muted)}
 .dup-amt{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;margin-top:8px}
 .dup-amt.pos{color:var(--green)}
-/* ── Settings: two-column dashboard so narrow form sections fill the right side ── */
-@media(min-width:1000px){
-  #settings-content{column-count:2;column-gap:16px}
-  #settings-content>.card{break-inside:avoid;margin:0 0 16px!important}
-  #settings-content>.card.sw{column-span:all}
-}
 /* import-duplicate interceptor: side-by-side grid + crimson tint on intercepted */
+.bal-table{table-layout:auto}
+.bal-table td{vertical-align:middle;height:54px;padding-top:7px;padding-bottom:7px}
+.bal-table td:last-child>div{min-height:34px}
+@media(max-width:640px){.bal-table{display:block;overflow-x:auto;white-space:nowrap}}
 .dup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
 .dup-group{border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--surface2)}
 .dup-cell{border-radius:10px;padding:10px 12px;background:var(--surface)}
@@ -1500,9 +1506,9 @@ body{letter-spacing:-0.006em}
 
   <div class="page" id="page-accounts">
     <div class="ph"><div class="ph-l"><div class="ph-title">Accounts</div></div><div class="ph-r"><button class="btn btn-sm" onclick="promptAddAccount()">+ Add account</button></div></div>
-    <div class="acct-stack">
+    <div class="acct-split">
       <div class="card nw-card-wrap" style="margin:0"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div><div class="card-sub">Assets vs debts over time</div></div></div><div id="acct-nw"></div></div>
-      <div id="acct-groups" class="acct-grid"></div>
+      <div id="acct-groups" style="display:flex;flex-direction:column;gap:14px"></div>
     </div>
   </div>
 
@@ -2472,6 +2478,12 @@ function getDateRange() {
   }
 }
 function inRange(date) { const r = getDateRange(); return date >= r.start && date <= r.end; }
+// Range-aware date scope: month presets behave per-month (currentMonth); range presets
+// (3m/6m/12m/ytd/all/custom) aggregate across the whole selected window. Summary views use this.
+function inScope(date){
+  if (DATE_FILTER.preset==='this_month' || DATE_FILTER.preset==='last_month') return String(date).startsWith(currentMonth);
+  return inRange(date);
+}
 function setDateFilter(preset, start, end) {
   DATE_FILTER = {preset, start, end};
   try { localStorage.setItem('money_app_date_v1', JSON.stringify(DATE_FILTER)); } catch {}
@@ -2809,11 +2821,13 @@ const PAGE_RENDERERS = {
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  const pg=document.getElementById('page-'+id); pg.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>{ if(n.dataset.pg===id) n.classList.add('active'); });
   document.querySelector('.main').scrollTop = 0;
   closeDrawer();
   PAGE_RENDERERS[id]?.();
+  // always land at the top of the page and any inner scroll panes (table feeds, rule grids, charts)
+  requestAnimationFrame(()=>{ try{ pg.scrollTop=0; pg.querySelectorAll('.txn-list,.cat-lib-grid,.ad-txns,.bar-chart,.ai-chat,[data-scroll]').forEach(el=>el.scrollTop=0); }catch(_){} });
 }
 function renderAll() {
   renderSidebar();
@@ -2958,7 +2972,7 @@ function renderMonthlySpending() {
   const now = new Date();
   const isCur = (now.getFullYear()===y && now.getMonth()+1===m);
   const today = isCur ? now.getDate() : daysInMonth;
-  const spendTxns = TXNS.filter(t=>t.date.startsWith(currentMonth) && t.amount<0 && !['Transfers','Investment','Returns'].includes(t.cat) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
+  const spendTxns = TXNS.filter(t=>inScope(t.date) && t.amount<0 && !['Transfers','Investment','Returns'].includes(t.cat) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
   const byDay = {};
   spendTxns.forEach(t=>{const d=+t.date.slice(8,10); byDay[d]=(byDay[d]||0)+Math.abs(t.amount);});
   let cum=0; const pts=[];
@@ -3131,6 +3145,7 @@ function showTxnDetail(id){
   `;
   document.getElementById('txd-modal-inner')?.classList.remove('txd-modal-acct');
   document.getElementById('txd-bg').classList.remove('hidden');
+  resetTxdScroll();
 }
 function closeTxnDetail(){ document.getElementById('txd-bg').classList.add('hidden'); document.getElementById('txd-modal-inner')?.classList.remove('txd-modal-acct'); }
 function saveNote(id,val){ const t=TXNS.find(x=>x.id===id); if(!t)return; SETTINGS.notes=SETTINGS.notes||{}; const sig=txnSig(t); if(val.trim()) SETTINGS.notes[sig]=val.trim(); else delete SETTINGS.notes[sig]; saveSettings(); }
@@ -3305,7 +3320,7 @@ function renderCashflowMini() {
 }
 
 function renderDonut() {
-  const txns = TXNS.filter(t=>t.date.startsWith(currentMonth) && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account) && !['Transfers','Investment','Returns'].includes(t.cat));
+  const txns = TXNS.filter(t=>inScope(t.date) && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account) && !['Transfers','Investment','Returns'].includes(t.cat));
   const byCat={};
   txns.forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+Math.abs(t.amount);});
   const entries = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -3459,6 +3474,17 @@ function showAccountDetail(name){
   document.getElementById('txd-modal-inner')?.classList.add('txd-modal-acct');
   renderAccountDetailBody();
   document.getElementById('txd-bg').classList.remove('hidden');
+  resetTxdScroll();
+}
+// Always open modals scrolled to the very top — the overlay (.txd-bg) and inner panes
+// otherwise retain their previous scroll position, hiding the chart that sits at the top.
+function resetTxdScroll(){
+  requestAnimationFrame(()=>{ try{
+    const bg=document.getElementById('txd-bg'); if(bg) bg.scrollTop=0;
+    const mi=document.getElementById('txd-modal-inner'); if(mi) mi.scrollTop=0;
+    const tb=document.getElementById('txd-body'); if(tb) tb.scrollTop=0;
+    document.querySelectorAll('#txd-bg .ad-txns,#txd-bg .dup-list').forEach(el=>el.scrollTop=0);
+  }catch(_){} });
 }
 function renderAccountDetailBody(){
   const name=ACCT_DETAIL_NAME; const a=ACCT_BY_NAME[name]; if(!a)return;
@@ -4517,6 +4543,7 @@ function showRecurringDetail(merchant){
   `;
   document.getElementById('txd-modal-inner')?.classList.remove('txd-modal-acct');
   document.getElementById('txd-bg').classList.remove('hidden');
+  resetTxdScroll();
 }
 
 function drillMerchant(name) {
@@ -4769,7 +4796,7 @@ function renderInvestmentsLegacy() {
 const EXCLUDED_CATS = ['Transfers','Investment','Returns','Payroll','Income','Tax Refund','Govt Benefits','Interest'];
 function renderCategories() {
   const lbl=document.getElementById('cat-month-lbl'); if(lbl) lbl.textContent=ymLabel(currentMonth,{month:'long',year:'numeric'});
-  const mt = TXNS.filter(t=>t.date.startsWith(currentMonth) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
+  const mt = TXNS.filter(t=>inScope(t.date) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
   const spentByCat={};
   mt.filter(t=>t.amount<0).forEach(t=>{spentByCat[t.cat]=(spentByCat[t.cat]||0)+Math.abs(t.amount);});
   const totalSpent = CAT_NAMES.filter(c=>!EXCLUDED_CATS.includes(c)).reduce((s,c)=>s+(spentByCat[c]||0),0);
@@ -5294,7 +5321,7 @@ function calcHealthScore() {
   const debtScore = Math.max(0, Math.min(25, 25 - debtRatio*12.5)); // 2x monthly income = 0
   // 3) Budget adherence (25pts): % of budget categories under target this month
   const monthExp = {};
-  TXNS.filter(t => t.date.startsWith(currentMonth) && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).forEach(t => {
+  TXNS.filter(t => inScope(t.date) && t.amount<0 && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).forEach(t => {
     monthExp[t.cat] = (monthExp[t.cat]||0) + Math.abs(t.amount);
   });
   const budgetCats = Object.entries(BUDGET_TARGETS).filter(([,v])=>v>0);
@@ -5456,7 +5483,7 @@ function buildInsights(){
   // 1) spending anomaly: this-month category vs trailing-3-mo average
   const cur={}, past={};
   TXNS.forEach(t=>{ if(t.amount>=0||['Transfers','Investment','Returns','Investment'].includes(t.cat))return;
-    const a=Math.abs(t.amount); if(t.date.startsWith(currentMonth)){cur[t.cat]=(cur[t.cat]||0)+a;return;}
+    const a=Math.abs(t.amount); if(inScope(t.date)){cur[t.cat]=(cur[t.cat]||0)+a;return;}
     const d=new Date(t.date+'T00:00:00'); const diff=monIdx-(d.getFullYear()*12+d.getMonth()+1);
     if(diff>=1&&diff<=3){past[t.cat]=past[t.cat]||0; past[t.cat]+=a;}
   });
@@ -5481,7 +5508,7 @@ function buildInsights(){
 function buildFeed(){
   const ev=[]; const today=new Date();
   // recent large expenses (this month, top 3)
-  const big=TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).sort((a,b)=>a.amount-b.amount).slice(0,3);
+  const big=TXNS.filter(t=>inScope(t.date)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).sort((a,b)=>a.amount-b.amount).slice(0,3);
   big.forEach(t=>ev.push({tone:'info',icon:'card',title:`${merchantName(t.description)} · ${fmt(Math.abs(t.amount))}`,detail:`${t.cat} · ${new Date(t.date+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}`,date:t.date}));
   // net-worth milestone (new high vs trailing series)
   const series=getMonthlyNetWorth(6); if(series.length){ const cur=series[series.length-1].val; const prevMax=Math.max(...series.slice(0,-1).map(s=>s.val),0);
@@ -5566,7 +5593,7 @@ function renderCalendar(){
   const ev=getCalEvents(ym); const todayStr=new Date().toISOString().slice(0,10);
   let cells='';
   ['S','M','T','W','T','F','S'].forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
-  for(let i=0;i<first;i++) cells+='<div class="cal-cell cal-empty"></div>';
+  for(let i=0;i<first;i++) cells+='<div class="cal-empty"></div>';
   for(let d=1;d<=days;d++){ const ds=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const list=ev[d]||[];
     const dots=list.slice(0,3).map(e=>`<span class="cal-dot cal-${e.type}"></span>`).join('');
@@ -5722,7 +5749,7 @@ function renderPersonality(){
   const h=calcHealthScore();
   // top spending category share + savings rate -> personality archetype
   const by={}; let tot=0;
-  TXNS.filter(t=>t.date.startsWith(currentMonth)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).forEach(t=>{by[t.cat]=(by[t.cat]||0)+Math.abs(t.amount);tot+=Math.abs(t.amount);});
+  TXNS.filter(t=>inScope(t.date)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)).forEach(t=>{by[t.cat]=(by[t.cat]||0)+Math.abs(t.amount);tot+=Math.abs(t.amount);});
   const topCat=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];
   const saveRate = h.avgInc>0 ? (h.avgInc-h.avgExp)/h.avgInc : 0;
   let type,desc,ic;
@@ -5990,7 +6017,7 @@ function renderSettings() {
     return '<tr class="tr">'
       +'<td><div style="display:flex;align-items:center;gap:9px"><span class="sf-pip" style="background:'+a.color+';width:10px;height:10px"></span><b>'+name+'</b><span class="tag" style="background:'+a.color+'1f;color:'+a.color+';font-size:10px">'+a.type+'</span>'+(a.manual?'<button class="acct-del" style="width:20px;height:20px" onclick="if(confirm(\'Remove '+a.short+'?\'))deleteManualAccount(\''+name.replace(/'/g,"\\'")+'\')">✕</button>':'')+'</div></td>'
       +'<td class="td-amt" style="color:var(--muted)">'+(calc!=null?fmt(calc):'—')+'</td>'
-      +'<td><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap">'
+      +'<td><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:nowrap">'
       +'<span style="color:var(--muted);font-size:11px">'+(isCredit?'Owed':'Balance')+'</span>'
       +'<input type="number" step="0.01" value="'+(hasOverride?ov:'')+'" placeholder="auto" style="width:110px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;text-align:right;outline:none" onblur="setBalance(\''+name.replace(/'/g,"\\'")+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()">'
       +(isCredit?'<span style="color:var(--muted);font-size:11px;margin-left:6px">Limit</span><input type="number" step="100" value="'+(lim||'')+'" placeholder="—" style="width:100px;padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:Figtree,sans-serif;font-size:13px;text-align:right;outline:none" onblur="setLimit(\''+name.replace(/'/g,"\\'")+'\',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()">':'')
@@ -6048,7 +6075,7 @@ function renderSettings() {
   document.getElementById('settings-content').innerHTML =
     '<div class="card sw" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Account Balances</div><div class="card-sub">Bank exports skip balance columns. Set actual current balances here so net worth is real.</div></div></div>'
-    +'<table class="t"><thead><tr><th>Account</th><th class="r">Calculated</th><th class="r">Your Actual</th></tr></thead><tbody>'+balRows+'</tbody></table>'
+    +'<table class="t bal-table"><thead><tr><th>Account</th><th class="r">Calculated</th><th class="r">Your Actual</th></tr></thead><tbody>'+balRows+'</tbody></table>'
     +'<div style="margin-top:14px;padding:13px 15px;background:var(--brand-soft);border-radius:10px;font-size:12.5px;line-height:1.6;color:var(--text-2)"><b style="color:var(--brand)">How:</b> Open your banking apps and copy current balances here. Leave blank to use calculated. For credit cards, enter amount owed.</div>'
     +'</div>'
     +'<div class="card sw" style="margin-bottom:14px">'
