@@ -2084,16 +2084,7 @@ let CAT_RULES = [
 // Smart merchant cleanup for unrecognized descriptions
 function prettifyDesc(desc) {
   if (!desc) return 'Unknown';
-  let d = String(desc).toLowerCase();
-  d = d.replace(/\s*\([^)]*\)\s*/g, ' ');                                    // strip (Apple Pay) etc
-  d = d.replace(/\s+(airdrie|calgary|toronto|vancouver|edmonton|montreal|delhi|ottawa|mississauga|brampton)\s+(ab|on|bc|qc|sk|mb)\s*$/i, '');
-  d = d.replace(/\s+(ab|on|bc|qc|sk|mb)\s*$/i, '');
-  d = d.replace(/#\s*\w+/g, '');                                             // strip #1234 store codes
-  d = d.replace(/\*\w+/g, '');                                               // strip *abc Amazon codes
-  d = d.replace(/\b\d{4,}\b/g, ' ');                                         // strip 4+ digit numbers
-  d = d.replace(/\s+/g, ' ').trim();
-  const words = d.split(' ').filter(w => w.length > 0).slice(0, 4);
-  return words.map(w => w.length <= 2 ? w.toUpperCase() : w[0].toUpperCase()+w.slice(1)).join(' ').slice(0, 35) || 'Unknown';
+  return cleanName(desc);
 }
 
 const LOC_WORDS = /^(calgary|airdrie|edmonton|toronto|vancouver|montreal|ottawa|mississauga|brampton|surrey|burnaby|winnipeg|hamilton|halifax|saskatoon|regina|kelowna|delhi|amritsar|ab|on|bc|qc|sk|mb|ns|nb|nl|pe|yt|nt|nu)$/i;
@@ -2232,6 +2223,47 @@ const MERCHANT_DB = [
   {re:/service charge|monthly fee|overdraft|nsf fee|account fee/,name:'Service Charge',cat:'Banking Fees'},
   {re:/\binterac e-?transfer|e-?transfer/,name:'Interac e-Transfer',cat:'Transfers'},
 ];
+// Semantic keyword matrix — fallback categorizer for merchants not in the library above.
+// Ordered specific→general; first match wins. Targets the user's real spending patterns.
+const SEMANTIC_RULES = [
+  // Government / registries / vehicle
+  {re:/registry|registries|driverabstract|driver abstract|vehicle reg|service alberta|service canada|\bcra\b|passport|licen[cs]e|land titles|\bmvid\b|govern?ment|\bcity of\b|provincial|municipal|property tax/, cat:'Government'},
+  // Insurance
+  {re:/insurance|\bins\b|life in\b|allstate|intact|aviva|\bsgi\b|co-?operators|belairdirect|td insurance|wawanesa/, cat:'Insurance'},
+  // Telecom
+  {re:/\btelus\b|rogers|\bbell\b|\bfido\b|koodo|\bshaw\b|virgin (plus|mobile)|chatr|freedom mobile|lucky mobile|\bvideotron\b/, cat:'Telecom'},
+  // Subscriptions / software / cloud
+  {re:/adobe|microsoft|\bmsft\b|netflix|spotify|disney|\bcrave\b|youtube|google (one|storage|\*)|icloud|apple\.com\/bill|apple bill|dropbox|notion|openai|chatgpt|anthropic|claude|github|patreon|onlyfans|audible|prime video|\bhbo\b|paramount|linkedin|canva|midjourney|\bvpn\b|subscription/, cat:'Subscriptions'},
+  // Fuel
+  {re:/\bshell\b|petro[- ]?can|petrocan|\besso\b|chevron|husky|\bmobil\b|fas gas|\bgas bar\b|co-?op gas|costco gas|ultramar|pioneer|\bcenex\b|domo|7-?eleven gas|fuel\b/, cat:'Fuel'},
+  // Transport: parking, tolls, transit, ride-hail, rentals, flights, hotels (no Travel cat → Transport)
+  {re:/parking|\bpark(ing)?\b.*(indigo|impark|reef|diamond)|impark|park indigo|\btoll\b|airport.*(exit|toll|park)|\btransit\b|\bgo train\b|\bviarail\b|\buber\b(?!.*eat)|\blyft\b|\btaxi\b|\bcab\b|car ?rental|\bavis\b|\bhertz\b|enterprise rent|budget rent|\bzipcar\b|\bcalgary transit\b/, cat:'Transport'},
+  {re:/air ?canada|westjet|\bklm\b|\bdelta\b air|united air|american air|lufthansa|emirates|\bflair\b|porter air|airline|\bairways\b|expedia|booking\.com|airbnb|\bvrbo\b|marriott|hilton|\bhyatt\b|sheraton|best western|\bmotel\b|\binn\b|hostel|\bresort\b|\blodge\b/, cat:'Transport'},
+  // Health (no Health cat → Pharmacy bucket)
+  {re:/chiropract|dental|dentist|\bclinic\b|medical|physio|\brehab\b|optical|optometr|\bvision\b|wellness|massage|pharmacy|drug ?mart|pharmaprix|\brx\b|health/, cat:'Pharmacy'},
+  // Fitness
+  {re:/\bgym\b|fitness|goodlife|anytime fitness|\borangetheory\b|\bf45\b|crossfit|yoga|pilates|\bclimbing\b|\bspa\b/, cat:'Fitness'},
+  // Entertainment / attractions / tickets
+  {re:/cineplex|cinema|\bimax\b|theatre|theater|\bmovie|landmark cinemas|gondola|\btower\b|\bzoo\b|stampede|wonderland|\bmuseum\b|gallery|aquarium|science cent|\btelus spark\b|\bbanff\b|gift shop|concession|amusement|playdium|\barcade\b|\bcasino\b|ticketmaster|stubhub|live nation|\bevent|attraction|national park|provincial park|\bpark ?pass\b/, cat:'Entertainment'},
+  // Coffee
+  {re:/starbucks|\bcoffee\b|\bcafe\b|caf\u00e9|second cup|\bblenz\b|good earth|\btims?\b|tim hortons|\bespresso\b|\broastery\b/, cat:'Coffee'},
+  // Fast food
+  {re:/mcdonald|burger|fatburger|bar burrito|\bsubway\b|\bkfc\b|wendy|taco|\ba&w\b|dairy queen|popeye|chipotle|five guys|harvey|booster juice|\bpizza\b|pizzeria|domino|little caesar|\bwendys\b|\bdq\b|quiznos|mr sub|\bedo\b|freshii|\bosmow|shawarma|donair|\bfries\b/, cat:'Fast Food'},
+  // Dining / restaurants (incl. South-Asian heavy in the user's data)
+  {re:/restaurant|restaur\b|\bdhaba\b|tadka|\bchaat\b|bazaar|streetz|bombay|punjabi|amritsari|\bavani\b|biryani|tandoor|\bkitchen\b|\bgrill\b|bistro|\bsushi\b|\bthai\b|\bindian\b|\bspice|\bcurry\b|masala|sweets|\bhalal\b|kabab|kebab|cuisine|eatery|\bdiner\b|gastropub|\bpub\b|\bbar & grill\b|brewery|\btavern\b|noodle|\bramen\b|\bpho\b|\bdumpling|hotpot|teriyaki|\bbbq\b|steakhouse|\bcatering\b|food court|chaiiwala|\bchai\b|\bdosa\b|crepe|colossal onion|samosa|\bnando|mary brown|chatime|\bboba\b|gelato|ice cream|\bbakery\b|patisserie|doughbit|\bdonut|\bbar\b/, cat:'Dining'},
+  // Groceries / convenience / markets
+  {re:/grocer|supermarket|\bfoods\b|\bmarket\b|\bfresh\b|farm|co-?op food|fruiticana|freshco|food basics|\bt&t\b|\bt & t\b|h ?mart|\bgrocery\b|\bbutcher\b|\bproduce\b|\bdeli\b|7-?eleven|circle k|convenience|\bmac'?s\b|cash & carry|\bco-?op\b/, cat:'Groceries'},
+  // Shopping / retail / apparel
+  {re:/\baldo\b|bluenotes|browns shoes|bath ?& ?body|\bshoes?\b|clothing|apparel|\bmall\b|winners|marshalls|hudson'?s? bay|\bthe bay\b|sephora|\bh&m\b|\bzara\b|uniqlo|footlocker|\bgap\b|old navy|\bnike\b|adidas|lululemon|\bardene\b|\bdynamite\b|garage|\bsimons\b|indigo|chapters|\btoys|\bikea\b|\bhomesense\b|canadian tire|home depot|\brona\b|\blowe'?s\b|princess auto|staples|best buy|\bdollarama\b|dollar tree|\bamazon\b|\bebay\b|\baliexpress\b|alibaba|\betsy\b|\bwayfair\b|\btemu\b|\bshein\b|electronics|hardware|\bsupply\b|sportswear|columbia|call it spring|\bdsw\b|boutique|footwear|jewel|\bwatch\b|cosmetic|\bbeauty\b|\bsalon\b|\bbarber\b|distacart|sport ?chek|mark'?s\b|\bdecathlon\b/, cat:'Shopping'},
+  // Fuel (extra)
+  {re:/petroleum|\bcanco\b|fas ?gas|mobil|\bgas\b ?(bar|station)?/, cat:'Fuel'},
+  // Banking fees / interest
+  {re:/\bfee\b|service charge|overdraft|\bnsf\b|interest charge|annual fee|cash advance fee|foreign.*fee|\batm\b/, cat:'Banking Fees'},
+  // Remittance / wire
+  {re:/remit|western union|moneygram|\bwise\b|\bremitly\b|\bxoom\b|wire transfer|sharekhan|\bria\b money/, cat:'Remittance'},
+  // Income / payroll
+  {re:/payroll|\bpay ?roll\b|direct dep|\bsalary\b|\bpayroll dep|\bcra\b.*(refund|benefit)|gst\/hst|\bccb\b|child benefit|\bei\b deposit/, cat:'Income'},
+];
 let _resCache = {};
 function invalidateResolve(){ _resCache={}; }
 function resolveMerchant(desc) {
@@ -2243,6 +2275,7 @@ function resolveMerchant(desc) {
   let best=null;                                                                          // user rules override library (most-specific kw)
   for (const r of CAT_RULES){ if (r && r.kw && r.kw.length>=3 && !isJunkKw(r.kw) && d.includes(r.kw)){ if(!best||r.kw.length>best.kw.length) best=r; } }
   if (best){ name=best.name; cat=best.cat; }
+  if (cat==='Other'){ for (const sr of SEMANTIC_RULES){ if (sr.re.test(d)){ cat=sr.cat; break; } } }   // keyword fallback matrix
   let ec=null; try{ ec=(SETTINGS.enrichCache||{})[desc]; }catch(_){}                       // exact-descriptor override wins (guard TDZ during seed init)
   if (ec){ if(ec.name) name=ec.name; if(ec.cat) cat=ec.cat; }
   const out={name, cat}; _resCache[desc]=out; return out;
@@ -2984,10 +3017,15 @@ function normDesc(s){
     .replace(/\s+/g,' ').trim();
 }
 function dupKey(t){ return t.date+'|'+normDesc(t.description)+'|'+Math.abs(t.amount).toFixed(2)+'|'+(t.amount<0?'d':'c')+'|'+t.account; }
+// Deterministic composite key that IGNORES the volatile merchant description. Banks rewrite the
+// description between exports (e.g. "wal-mart supercenter#1050" → "walmart"), so a description-based
+// key lets the same transaction slip through as a "new" row. date + |amount| + sign + account is stable.
+function ledgerKey(t){ return t.date+'|'+Math.abs(t.amount).toFixed(2)+'|'+(t.amount<0?'d':'c')+'|'+t.account; }
+let _lastIntercepted = [];   // duplicates caught during the most recent import (for the review UI)
 // Collapse existing duplicates app-wide (keeps the first of each). Returns count removed.
 function dedupeTxns(){
   const seen=new Set(); const before=TXNS.length;
-  TXNS = TXNS.filter(t=>{ const k=dupKey(t); if(seen.has(k)) return false; seen.add(k); return true; });
+  TXNS = TXNS.filter(t=>{ const k=ledgerKey(t); if(seen.has(k)) return false; seen.add(k); return true; });
   return before-TXNS.length;
 }
 
@@ -4960,6 +4998,7 @@ async function handleFiles(files,account,srcId) {
   if (pdfs.length) await handleWSPdf(pdfs);
   if (!rest.length) return;
   document.getElementById('parse-log').innerHTML='';
+  _lastIntercepted = [];
   let total=0;
   for (const file of rest) {
     log(file.name,'info');
@@ -4973,9 +5012,10 @@ async function handleFiles(files,account,srcId) {
       log(`  ✓ ${added} new transactions added`,'ok');
     } catch (e) { log(`  ✗ ${e.message}`,'err'); }
   }
-  const removed = dedupeTxns();
-  log(`Done — ${total} added${removed?`, ${removed} duplicate(s) removed`:''}`,'ok');
+  const blocked = _lastIntercepted.length;
+  log(`Done — ${total} added${blocked?`, ${blocked} duplicate(s) intercepted before they could double-count`:', no duplicates'}`, blocked?'warn':'ok');
   saveSettings(); recatAll(); renderAll();
+  if (blocked) openImportDupReview();
 }
 async function parseFile(file,account,parser) {
   let rows=[];
@@ -4994,23 +5034,30 @@ async function parseFile(file,account,parser) {
   else if (parser==='momentumplus_xlsx') parsed=parseMomentumPlusXLSX(rows,account);
   else if (parser==='td_csv') parsed=parseTDCSV(rows);
   else parsed=parseWSCSV(rows,account);
-  const acctTxns = TXNS.filter(t=>t.account===account);
-  const existing = new Set(acctTxns.map(dupKey));
-  // pending→settled dedupe: a credit-card payment first appears as a pending credit then re-imports
-  const payKey = t=>`${t.date}|${Math.abs(t.amount).toFixed(2)}`;
-  const existingPay = new Set(acctTxns.filter(t=>/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description)).map(payKey));
-  const batchSeen = new Set();
-  const fresh = parsed.filter(t=>{
-    const k = dupKey({...t, account});
-    if (existing.has(k)) return false;        // already imported (normalized match — tolerant of re-download noise)
-    if (batchSeen.has(k)) return false;        // duplicate within this same file
-    if (/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description) && existingPay.has(payKey(t))) return false;
-    batchSeen.add(k);
-    return true;
-  });
+  const {fresh, intercepted} = dedupeIncoming(parsed, account);
+  _lastIntercepted = _lastIntercepted.concat(intercepted);
   TXNS.unshift(...fresh.map(t=>({...t, id:Math.random().toString(36).slice(2), cat:categorize(t.description), reviewed:false})));
   TXNS.sort((a,b)=>b.date.localeCompare(a.date));
   return fresh.length;
+}
+// Multiplicity-aware merge on the description-independent key. Final count per
+// (date+amount+sign+account) = max(already-in-ledger, this-file). Returns the rows to add
+// plus the intercepted duplicates. Pure + standalone so it can be unit-tested.
+function dedupeIncoming(parsed, account){
+  const acctTxns = TXNS.filter(t=>t.account===account);
+  const existingCounts = {}; acctTxns.forEach(t=>{ const k=ledgerKey(t); existingCounts[k]=(existingCounts[k]||0)+1; });
+  const fileCounts = {}; parsed.forEach(t=>{ const k=ledgerKey({...t,account}); fileCounts[k]=(fileCounts[k]||0)+1; });
+  const payKey = t=>`${t.date}|${Math.abs(t.amount).toFixed(2)}`;
+  const existingPay = new Set(acctTxns.filter(t=>/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description)).map(payKey));
+  const keptForKey = {}; const fresh = []; const intercepted = [];
+  for (const t of parsed) {
+    const k = ledgerKey({...t, account});
+    const allowed = Math.max(0, (fileCounts[k]||0) - (existingCounts[k]||0));
+    if (/payment|transfer|e-?transfer|scotiaonline|teles/i.test(t.description) && existingPay.has(payKey(t))) { intercepted.push({...t, account, _why:'pending→settled'}); continue; }
+    if ((keptForKey[k]||0) < allowed) { keptForKey[k]=(keptForKey[k]||0)+1; fresh.push({...t, account}); }
+    else { intercepted.push({...t, account, _why:'already in ledger'}); }
+  }
+  return {fresh, intercepted};
 }
 const _MP_MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
 function parseMomentumPlusXLSX(rows, account){
@@ -6166,7 +6213,7 @@ init();
 // ═══════════════════════════════════════════════════════
 function findDuplicateGroups(){
   const map={};
-  TXNS.forEach(t=>{ const k=dupKey(t); (map[k]=map[k]||[]).push(t); });
+  TXNS.forEach(t=>{ const k=ledgerKey(t); (map[k]=map[k]||[]).push(t); });
   return Object.entries(map).filter(([,arr])=>arr.length>1).map(([key,arr])=>{
     const items=arr.slice().sort((a,b)=>a.date.localeCompare(b.date));
     return {key, keep:items[0], dupes:items.slice(1)};
@@ -6244,6 +6291,78 @@ function saveDisplayName(id,val){
   try{ renderAll(); }catch(e){}
   showTxnDetail(id);
   toast('Saved — future "'+name+'" imports auto-named'+(kw?' & categorized':''));
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPORT-TIME DUPLICATE INTERCEPTOR (shows what was blocked before it hit the ledger)
+// ═══════════════════════════════════════════════════════
+function openImportDupReview(){
+  if(!_lastIntercepted.length) return;
+  let host=document.getElementById('dup-modal-host');
+  if(!host){ host=document.createElement('div'); host.id='dup-modal-host'; document.body.appendChild(host); }
+  // pair each intercepted incoming row with the matching original already in the ledger
+  const rows=_lastIntercepted.map(inc=>{
+    const orig=TXNS.find(t=>ledgerKey(t)===ledgerKey(inc));
+    return {inc, orig};
+  });
+  const cell=(t,role)=>{
+    if(!t) return `<div class="dup-cell"><div class="dup-cell-hd"><span class="dup-tag">—</span></div><div class="dup-meta">no match</div></div>`;
+    const nm=role==='orig'?merchantName(t.description):prettifyDesc(cleanName(t.description));
+    return `<div class="dup-cell ${role==='orig'?'dup-keep':'dup-dupe'}">
+      <div class="dup-cell-hd"><span class="dup-tag ${role==='orig'?'dup-tag-keep':'dup-tag-dupe'}">${role==='orig'?'KEPT IN LEDGER':'INTERCEPTED'}</span></div>
+      <div class="dup-name">${String(nm).replace(/</g,'&lt;')}</div>
+      <div class="dup-meta">${t.date} · ${t.account}${t._why?' · '+t._why:''}</div>
+      <div class="dup-amt ${t.amount>0?'pos':''}">${t.amount>0?'+':''}${fmt(t.amount)}</div>
+    </div>`;
+  };
+  host.innerHTML=`<div class="txd-bg" onclick="if(event.target===this)closeDuplicatesModal()">
+    <div class="txd-modal" style="max-width:760px">
+      <button class="txd-close" onclick="closeDuplicatesModal()">✕</button>
+      <div style="font-weight:700;font-size:17px;margin-bottom:4px">${rows.length} duplicate${rows.length>1?'s':''} intercepted</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">These rows from the file already exist in your ledger (matched on date + amount + account — immune to the bank rewriting merchant names). They were <b>not</b> added, so nothing double-counts. You can keep it that way, or force the newer export to overwrite the stored names/categories.</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-brand btn-sm" onclick="closeDuplicatesModal()">Keep originals (done)</button>
+        <button class="btn btn-sm" onclick="forceImportDupes()">Force overwrite names from new file</button>
+      </div>
+      <div class="dup-list">${rows.slice(0,200).map(r=>`<div class="dup-group"><div class="dup-grid">${cell(r.orig,'orig')}${cell(r.inc,'inc')}</div></div>`).join('')}</div>
+      ${rows.length>200?`<div class="dup-meta" style="margin-top:8px">+${rows.length-200} more…</div>`:''}
+    </div></div>`;
+}
+function forceImportDupes(){
+  let n=0;
+  _lastIntercepted.forEach(inc=>{
+    const t=TXNS.find(x=>ledgerKey(x)===ledgerKey(inc));
+    if(t){ t.description=inc.description; if(!t.catLocked) t.cat=categorize(inc.description); n++; }
+  });
+  _lastIntercepted=[]; invalidateResolve(); saveSettings(); try{renderAll();}catch(e){}
+  closeDuplicatesModal(); toast(n?`${n} merchant name(s) updated from the new file`:'Nothing to update');
+}
+// Advanced merchant-name scrubber: strips (Apple Pay), URLs/domains, phone numbers, terminal/track
+// IDs, store numbers, *codes/#codes, and trailing city/province locations; title-cases nicely.
+function cleanName(desc){
+  const CITY="airdrie|calgary|edmonton|toronto|vancouver|montreal|ottawa|mississauga|brampton|surrey|burnaby|winnipeg|hamilton|halifax|saskatoon|regina|kelowna|banff|canmore|cochrane|okotoks|chestermere|revelstoke|oakville|etobicoke|lethbridge|red deer|rocky view|salmon arm|pincher creek|niagara falls|grande prairie|medicine hat|fort mcmurray|spruce grove|st george|st albert|sherwood park|nanaimo|kamloops|kingston|markham|vaughan|richmond|scarborough|north york|laval|gatineau|waterloo|kitchener|guelph|windsor|barrie|oshawa";
+  const PROV="ab|bc|on|qc|mb|sk|ns|nb|pe|nl|yt|nt|nu";
+  let d=String(desc||'').toLowerCase();
+  d=d.replace(/\([^)]*\)/g,' ');                                          // (Apple Pay) etc.
+  d=d.replace(/https?:\/\/\S+/g,' ').replace(/www\.\S+/g,' ');            // urls
+  d=d.replace(/[a-z0-9.\-]+\.(com|ca|net|org|io|co)[a-z]*/g,' ');         // domains incl. glued ".commb"
+  d=d.replace(/\b\d{3}[-\s]?\d{3}[-\s]?\d{4}\b/g,' ');                     // phone numbers
+  d=d.replace(/[*#]\s*[a-z0-9]+/g,' ');                                   // *code / #code
+  d=d.replace(/\b[a-z]{0,5}\d{2,}[a-z0-9]*\b/g,' ');                      // terminal/track IDs (have digits)
+  d=d.replace(/\b\d{2,}\b/g,' ');                                         // bare numbers
+  const tail=new RegExp('\\s+(?:'+CITY+'|'+PROV+')\\s*$','i');            // peel trailing locations
+  for(let i=0;i<5 && tail.test(d);i++) d=d.replace(tail,' ');
+  d=d.replace(/\s+co?(ab|bc|qc|mb|sk|on)\b\s*$/i,' ');                     // trailing county "coab"/"co ab"
+  for(let i=0;i<3 && tail.test(d);i++) d=d.replace(tail,' ');             // re-peel cities the county was hiding
+  d=d.replace(/[*#_]+/g,' ').replace(/\s{2,}/g,' ').replace(/\s+$/,'').replace(/^\s+/,'');
+  if(!d) return 'Unknown';
+  const SMALL=/^(on|of|the|a|an|to|in|at|by|for|and|or|de|la|le)$/;
+  const ACR=/^(ab|bc|qc|mb|sk|ns|nb|nl|usa|uk|us|llc|inc|td|bmo|cibc|rbc|atb)$/;
+  return d.split(' ').filter(Boolean).slice(0,5).map((w,i)=>{
+    if(i>0 && SMALL.test(w)) return w;
+    if(ACR.test(w)) return w.toUpperCase();
+    return w[0].toUpperCase()+w.slice(1);
+  }).join(' ').slice(0,40) || 'Unknown';
 }
 
 </script>
