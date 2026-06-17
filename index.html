@@ -128,6 +128,11 @@ body{font-family:'Figtree',-apple-system,system-ui,sans-serif;background:var(--b
 .dash-col{display:flex;flex-direction:column;gap:16px;min-width:0}
 .dash-grow{flex:1}
 .acct-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.acct-stack{display:flex;flex-direction:column;gap:16px}
+.acct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.acct-grid .acct-group-card{margin:0}
+.acct-grid .add-acct-btn{grid-column:1/-1;width:100%;justify-content:center}
+@media(max-width:760px){.acct-grid{grid-template-columns:1fr}}
 @media(max-width:1100px){.dash-grid,.acct-split{grid-template-columns:1fr}}
 /* charts: only the wide line/area charts fill width; donuts stay fixed size */
 #nw-card > svg, #acct-nw > svg, #dash-spending > svg, #cf-cat-trend > svg, #chart-cashflow > svg, #chart-networth > svg, .ad-sticky > svg, #inv-contrib > svg{width:100%;height:auto;display:block;max-height:230px}
@@ -367,16 +372,16 @@ table.t th.r,table.t td.r{text-align:right}
 
 /* ── CATEGORY LIB ── */
 .cat-lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px;max-height:440px;overflow-y:auto;padding-right:4px;min-width:0}
-.cat-lib-group{background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);min-width:0;overflow:hidden}
+.cat-lib-group{background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);min-width:0;overflow:hidden;display:flex;flex-direction:column;height:214px}
 .clg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .clg-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
 .clg-count{font-size:10.5px;color:var(--muted);font-weight:500}
-.clg-rules{display:flex;flex-direction:column;gap:3px;max-height:140px;overflow-y:auto}
+.clg-rules{display:flex;flex-direction:column;gap:3px;flex:1;min-height:0;overflow-y:auto}
 .rule-row{display:flex;align-items:center;gap:6px;padding:3px 0;min-width:0}
 .rule-kw{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rule-del{width:18px;height:18px;border-radius:4px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;display:grid;place-items:center;transition:all .1s;flex-shrink:0;opacity:.5}
 .rule-del:hover{background:rgba(192,72,72,.12);color:var(--red);opacity:1}
-.add-rule{display:flex;gap:5px;margin-top:8px}
+.add-rule{display:flex;gap:5px;margin-top:8px;flex-shrink:0}
 .add-rule input{flex:1;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none}
 .add-rule input:focus{border-color:var(--brand)}
 .add-rule button{padding:5px 11px;border-radius:6px;border:none;background:var(--brand);color:var(--on-brand);cursor:pointer;font-size:11.5px;font-family:'Figtree',sans-serif;font-weight:500}
@@ -1125,7 +1130,7 @@ body{letter-spacing:-0.006em}
 /* Goals page */
 .goals-hero-card{background:radial-gradient(130% 90% at 100% 0%,var(--glow),transparent 58%),linear-gradient(150deg,var(--surface),var(--brand-soft) 170%)}
 .goals-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px;margin-top:14px}
-.goalc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow-sm)}
+.goalc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
 .goalc-hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .goalc-ic{width:42px;height:42px;border-radius:12px;background:var(--surface3);color:var(--brand);display:grid;place-items:center;flex-shrink:0}
 .goalc-ic svg{width:20px;height:20px}
@@ -1138,7 +1143,8 @@ body{letter-spacing:-0.006em}
 .goalc-big{font-family:'Figtree';font-weight:700;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
 .goalc-big span{font-size:11px;color:var(--muted);font-weight:500}
 .goalc-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em}
-.goalc-note{margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:10px;font-size:12px;color:var(--muted2);line-height:1.5}
+.goalc-note{margin-top:auto;padding:10px 12px;background:var(--surface2);border-radius:10px;font-size:12px;color:var(--muted2);line-height:1.5}
+.goalc-figs{margin-bottom:12px}
 .gset-grid{display:flex;flex-direction:column;gap:10px}
 .gset-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--border)}
 .gset-row:last-child{border-bottom:none}
@@ -1240,6 +1246,9 @@ body{letter-spacing:-0.006em}
 .acct-row-bal{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;flex-shrink:0}
 
 /* ── ACCOUNT DETAIL MODAL ── */
+.ad-nochart{padding:6px 0 2px}
+.ad-nochart svg{max-height:90px}
+.ad-nochart-lbl{font-size:12px;color:var(--muted2);text-align:center;margin-top:6px;line-height:1.45;max-width:300px;margin-left:auto;margin-right:auto}
 .ad-sticky{position:sticky;top:0;background:var(--surface);z-index:5;padding-bottom:10px;border-bottom:1px solid var(--border);margin:-4px -2px 8px}
 .ad-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .ad-type{font-size:12px;color:var(--muted2);font-weight:600}
@@ -1268,6 +1277,23 @@ body{letter-spacing:-0.006em}
 .dup-meta{font-size:11px;color:var(--muted)}
 .dup-amt{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;margin-top:8px}
 .dup-amt.pos{color:var(--green)}
+/* ── Settings: two-column dashboard so narrow form sections fill the right side ── */
+@media(min-width:1000px){
+  #settings-content{column-count:2;column-gap:16px}
+  #settings-content>.card{break-inside:avoid;margin:0 0 16px!important}
+  #settings-content>.card.sw{column-span:all}
+}
+/* import-duplicate interceptor: side-by-side grid + crimson tint on intercepted */
+.dup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
+.dup-group{border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--surface2)}
+.dup-cell{border-radius:10px;padding:10px 12px;background:var(--surface)}
+.dup-cell.dup-dupe{background:rgba(208,72,72,.08);border:1px solid rgba(208,72,72,.32)}
+.dup-cell.dup-keep{border:1px solid var(--border)}
+.dup-cell-hd{margin-bottom:6px}
+.dup-tag{font-size:9.5px;letter-spacing:.05em;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:5px;background:var(--surface3);color:var(--muted)}
+.dup-tag-keep{background:rgba(63,203,142,.14);color:#3FCB8E}
+.dup-tag-dupe{background:rgba(208,72,72,.16);color:#E07A7A}
+@media(max-width:600px){.dup-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1474,9 +1500,9 @@ body{letter-spacing:-0.006em}
 
   <div class="page" id="page-accounts">
     <div class="ph"><div class="ph-l"><div class="ph-title">Accounts</div></div><div class="ph-r"><button class="btn btn-sm" onclick="promptAddAccount()">+ Add account</button></div></div>
-    <div class="acct-split">
+    <div class="acct-stack">
       <div class="card nw-card-wrap" style="margin:0"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div><div class="card-sub">Assets vs debts over time</div></div></div><div id="acct-nw"></div></div>
-      <div id="acct-groups" style="display:flex;flex-direction:column;gap:14px"></div>
+      <div id="acct-groups" class="acct-grid"></div>
     </div>
   </div>
 
@@ -1559,7 +1585,7 @@ body{letter-spacing:-0.006em}
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Weekly Spending Pattern</div><div class="card-sub">By day of week</div></div></div><div id="cf-weekly"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Category Trends</div><div class="card-sub">6-month per category</div></div></div><div id="cf-cat-trend"></div></div>
     </div>
-    <div class="row row-2">
+    <div class="row row-2" style="align-items:start">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Top Income Sources</div></div></div><div id="cf-income"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Top Spending</div></div></div><div id="cf-spending"></div></div>
     </div>
@@ -1593,7 +1619,7 @@ body{letter-spacing:-0.006em}
   <!-- ========= INVESTMENTS ========= -->
   <div class="page" id="page-investments">
     <div class="ph"><div class="ph-l"><div class="ph-title">Investments</div><div class="ph-sub">Wealthsimple portfolio · Set holdings in <a href="#" onclick="nav('settings');return false" style="color:var(--brand);font-weight:600">Settings</a></div></div></div>
-    <div class="kpi-grid kpi-grid-3" id="inv-kpis"></div>
+    <div class="kpi-grid kpi-grid-4" id="inv-kpis"></div>
     <div class="row row-2">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Accounts</div><div class="card-sub">All investment accounts</div></div></div><div id="inv-accounts"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Asset Allocation</div><div class="card-sub">By market value</div></div></div><div id="inv-allocation"></div></div>
@@ -3477,18 +3503,21 @@ function renderAccountDetailBody(){
     });
   });
   if(series.length) registerChart('acctdetail', W, series.map((p,i)=>({x:X(i), y:Y(p.val), lbl:p.date, txt:fmt(p.val), val:p.val})));
-  document.getElementById('txd-body').innerHTML=`
-    <div class="ad-sticky">
-      <div class="ad-hd"><div><div class="ad-type">${a.type==='credit'?'Credit Card':a.type==='invest'?'Investment':'Depository'}</div><div class="ad-name">${a.short}</div></div><div class="ad-bal">${v!=null?fmt(v):'—'}${a.type==='credit'&&limit?`<div class="ad-limit">${fmt(limit)} limit</div>`:''}</div></div>
-      <div class="ad-hover" id="ad-hover"></div>
+  const chartHtml = series.length>=2 ? `
       <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
         <defs><linearGradient id="adgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".22"/><stop offset="100%" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
         <path d="${ap}" fill="url(#adgrad)"/>
         <path d="${lp}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="${X(series.length-1).toFixed(1)}" cy="${Y(series[series.length-1]?.val||0).toFixed(1)}" r="5" fill="var(--surface)" stroke="${col}" stroke-width="2.6"/>
-        ${series.length?crosshairLayer('acctdetail',W,H,padT,padB):''}
+        ${crosshairLayer('acctdetail',W,H,padT,padB)}
       </svg>
-      <div class="nw-tabs">${tabs}</div>
+      <div class="nw-tabs">${tabs}</div>`
+    : `<div class="ad-nochart"><svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible"><line x1="${padX}" y1="${H-padB}" x2="${W-padX}" y2="${H-padB}" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4 5"/></svg><div class="ad-nochart-lbl">No balance history yet — import statements or add transactions to see the trend.</div></div>`;
+  document.getElementById('txd-body').innerHTML=`
+    <div class="ad-sticky">
+      <div class="ad-hd"><div><div class="ad-type">${a.type==='credit'?'Credit Card':a.type==='invest'?'Investment':'Depository'}</div><div class="ad-name">${a.short}</div></div><div class="ad-bal">${v!=null?fmt(v):'—'}${a.type==='credit'&&limit?`<div class="ad-limit">${fmt(limit)} limit</div>`:''}</div></div>
+      <div class="ad-hover" id="ad-hover"></div>
+      ${chartHtml}
     </div>
     <div class="ad-txns">${txHtml||'<div class="empty">No transactions</div>'}</div>`;
 }
@@ -5672,10 +5701,17 @@ function renderGoalsPage(){
     }
     const col=g.pct>=100?'#3FCB8E':'var(--brand)';
     const eta=g.pct>=100?'Goal reached':g.eta?'Forecast: '+g.eta.toLocaleDateString('en',{month:'long',year:'numeric'})+(g.months?` · ~${g.months<12?g.months+' mo':(g.months/12).toFixed(1)+' yr'}`:''):'Set a monthly contribution in Settings';
+    const remain=Math.max(0,(g.target||0)-(g.current||0));
+    const gnote=g.pct>=100
+      ? 'Funded — you can redirect this contribution toward another goal.'
+      : (g.monthly>0 && g.months)
+        ? `<b>${fmtS(remain)}</b> to go. At ${fmt(g.monthly)}/mo you'll cross the line in about ${g.months<12?g.months+' months':(g.months/12).toFixed(1)+' years'}.`
+        : `<b>${fmtS(remain)}</b> to go. Set a monthly contribution in Settings to forecast a finish date.`;
     return `<div class="goalc">
       <div class="goalc-hd"><div class="goalc-ic">${icon(g.icon)}</div><div class="goalc-meta"><div class="goalc-name">${g.label}</div><div class="goalc-tag">${eta}</div></div><div class="goalc-pct" style="color:${col}">${Math.round(g.pct)}%</div></div>
       <div class="goal-bar" style="height:10px;margin:4px 0 10px"><div class="goal-fill" style="width:${g.pct.toFixed(0)}%;background:${col}"></div></div>
       <div class="goalc-figs"><div><div class="goalc-big">${fmtS(g.current)}</div><div class="goalc-lbl">saved</div></div><div class="r"><div class="goalc-big">${fmtS(g.target)}</div><div class="goalc-lbl">target</div></div><div class="r"><div class="goalc-big">${fmt(g.monthly)}<span>/mo</span></div><div class="goalc-lbl">contributing</div></div></div>
+      <div class="goalc-note">${gnote}</div>
     </div>`;
   }).join(''); }
 }
@@ -6010,12 +6046,12 @@ function renderSettings() {
   }).join('');
 
   document.getElementById('settings-content').innerHTML =
-    '<div class="card" style="margin-bottom:14px">'
+    '<div class="card sw" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Account Balances</div><div class="card-sub">Bank exports skip balance columns. Set actual current balances here so net worth is real.</div></div></div>'
     +'<table class="t"><thead><tr><th>Account</th><th class="r">Calculated</th><th class="r">Your Actual</th></tr></thead><tbody>'+balRows+'</tbody></table>'
     +'<div style="margin-top:14px;padding:13px 15px;background:var(--brand-soft);border-radius:10px;font-size:12.5px;line-height:1.6;color:var(--text-2)"><b style="color:var(--brand)">How:</b> Open your banking apps and copy current balances here. Leave blank to use calculated. For credit cards, enter amount owed.</div>'
     +'</div>'
-    +'<div class="card" style="margin-bottom:14px">'
+    +'<div class="card sw" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Investment Holdings</div><div class="card-sub">Add tickers with shares, average cost base, and current market price — book cost + return compute automatically. Total ≈ TFSA balance.</div></div></div>'
     +'<table class="t"><thead><tr><th>Ticker</th><th class="r">Shares</th><th class="r">Avg Cost</th><th class="r">Mkt Price</th><th class="r">Value</th><th class="r">Book</th><th class="r">Return</th><th></th></tr></thead><tbody>'+holdingsRows+'</tbody></table>'
     +'<div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap">'
@@ -6064,10 +6100,10 @@ function renderSettings() {
     +'<div style="font-size:11.5px;color:var(--muted2);line-height:1.6;margin-top:8px">The Project URL + anon key are baked into the app, so each device only needs to <b>Sign in</b> from the top bar. (One-time: set SB_URL / SB_KEY near the top of the file.)<br>1. supabase.com → SQL Editor → paste above → Run<br>2. <b>Authentication → Providers → Email → turn OFF "Confirm email"</b><br>3. <b>Receipt photos:</b> Storage → New bucket → name it exactly <b>money-receipts</b> → Public ON.</div>'
     +'</details>'
     +'</div>'
-    +'<div class="card" style="margin-bottom:14px">'
+    +'<div class="card sw" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">Financial Profile &amp; Goals</div><div class="card-sub">Personalizes the Coach\u2019s advice</div></div></div>'
     +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">'+goalHTML+'</div></div>'
-    +'<div class="card" style="margin-bottom:14px">'
+    +'<div class="card sw" style="margin-bottom:14px">'
     +'<div class="card-hd"><div class="card-hd-l"><div class="card-title">What this app needs from you</div><div class="card-sub">More data \u2192 smarter coaching</div></div></div>'
     +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">'+needsHTML+'</div></div>'
     +'<div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Reset</div></div></div>'
