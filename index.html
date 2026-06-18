@@ -1357,6 +1357,10 @@ body{letter-spacing:-0.006em}
 @media (prefers-reduced-motion: no-preference){
   .kpi:hover,.brief-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg), inset 0 1px 0 var(--glass-hi)}
 }
+/* suspend expensive glass blur + border anim while the page is being stretch-scrolled (keeps overscroll at 60fps) */
+html.overscrolling .kpi,html.overscrolling .brief-tile{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.overscrolling .kpi::before,html.overscrolling .brief-tile::before{animation:none!important}
+html.overscrolling .page{backface-visibility:hidden}
 </style>
 </head>
 <body>
@@ -6530,36 +6534,44 @@ function cleanName(desc){
 <script>
 (function(){
   try{
-    var MAX=130;
-    function page(){ return document.querySelector('.page.active'); }
-    function atTop(el){ return el.scrollTop<=0; }
-    function atBottom(el){ return el.scrollTop+el.clientHeight>=el.scrollHeight-1; }
-    function setT(el,o){ if(o) el.style.setProperty('transform','translateY('+o.toFixed(1)+'px)','important'); else el.style.removeProperty('transform'); }
-    function release(el){ el.style.setProperty('transition','transform .55s cubic-bezier(.22,.61,.36,1)'); setT(el,0); setTimeout(function(){ if(el){ el.style.removeProperty('transition'); } },560); }
-    var offset=0, wheelTO;
-    document.addEventListener('wheel', function(e){
-      var el=page(); if(!el||!el.contains(e.target)) return;
-      var d=e.deltaY;
-      var down = d<0 && atTop(el), up = d>0 && atBottom(el);
-      if(down||up){
+    if(!window.requestAnimationFrame) return;
+    var MAX=110, STIFF=0.14, root=document.documentElement;
+    var page=null, y=0, target=0, raf=null, gesturing=false;
+    function active(){ return document.querySelector('.page.active'); }
+    function paint(){ if(page) page.style.setProperty('transform','translate3d(0,'+y.toFixed(2)+'px,0)','important'); }
+    function done(){ if(page){ page.style.removeProperty('transform'); page.style.removeProperty('will-change'); } root.classList.remove('overscrolling'); page=null; }
+    function begin(){ page=active(); if(!page) return false; page.style.setProperty('will-change','transform'); root.classList.add('overscrolling'); return true; }
+    function loop(){
+      y += (target - y) * STIFF;
+      if(!gesturing && Math.abs(y)<0.5 && Math.abs(target)<0.5){ y=0; target=0; paint(); raf=null; done(); return; }
+      paint(); raf=requestAnimationFrame(loop);
+    }
+    function kick(){ if(!raf) raf=requestAnimationFrame(loop); }
+    var wheelTO;
+    window.addEventListener('wheel', function(e){
+      var el=active(); if(!el||!el.contains(e.target)) return;
+      var d=e.deltaY, atTop=el.scrollTop<=0, atBot=el.scrollTop+el.clientHeight>=el.scrollHeight-1;
+      if((d<0&&atTop)||(d>0&&atBot)){
+        if(!gesturing){ if(!begin()) return; gesturing=true; }
         e.preventDefault();
-        el.style.setProperty('transition','none');
-        offset += -d*0.30;
-        if(offset>MAX) offset=MAX; if(offset<-MAX) offset=-MAX;
-        setT(el,offset);
-        clearTimeout(wheelTO);
-        wheelTO=setTimeout(function(){ offset=0; release(el); }, 90);
+        target += -d*0.16; if(target>MAX)target=MAX; if(target<-MAX)target=-MAX;
+        kick();
+        clearTimeout(wheelTO); wheelTO=setTimeout(function(){ gesturing=false; target=0; kick(); }, 80);
       }
     }, {passive:false});
-    var startY=0, pulling=false, tEl=null;
-    document.addEventListener('touchstart', function(e){ tEl=page(); if(!tEl||!tEl.contains(e.target)) {tEl=null;return;} startY=e.touches[0].clientY; pulling=false; offset=0; tEl.style.removeProperty('transition'); }, {passive:true});
-    document.addEventListener('touchmove', function(e){
-      var el=tEl; if(!el) return;
-      var dy=e.touches[0].clientY-startY;
-      var down=dy>0 && atTop(el), up=dy<0 && atBottom(el);
-      if(down||up){ pulling=true; var damp=Math.sign(dy)*Math.pow(Math.abs(dy),0.82)*0.55; offset=Math.max(-MAX,Math.min(MAX,damp)); setT(el,offset); e.preventDefault(); }
+    var sy=0;
+    window.addEventListener('touchstart', function(e){ var el=active(); if(el&&el.contains(e.target)) sy=e.touches[0].clientY; }, {passive:true});
+    window.addEventListener('touchmove', function(e){
+      var el=active(); if(!el||!el.contains(e.target)) return;
+      var dy=e.touches[0].clientY-sy, atTop=el.scrollTop<=0, atBot=el.scrollTop+el.clientHeight>=el.scrollHeight-1;
+      if((dy>0&&atTop)||(dy<0&&atBot)){
+        if(!gesturing){ if(!begin()) return; gesturing=true; }
+        e.preventDefault();
+        var damp=Math.sign(dy)*Math.pow(Math.abs(dy),0.86)*0.46;
+        target=Math.max(-MAX,Math.min(MAX,damp)); y=target; paint();
+      }
     }, {passive:false});
-    document.addEventListener('touchend', function(){ if(tEl&&pulling) release(tEl); pulling=false; }, {passive:true});
+    window.addEventListener('touchend', function(){ if(gesturing){ gesturing=false; target=0; kick(); } }, {passive:true});
   }catch(e){}
 })();
 </script>
