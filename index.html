@@ -16,28 +16,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root[data-theme="light"]{
-  --bg:#F5F8FC;        --surface:#FFFFFF;     --surface2:#F6F9FC;    --surface3:#EEF3F9;
-  --border:#E5EDF5;    --border2:#D6DEEA;
-  --text:#061B31;      --muted:#64748D;       --muted2:#475569;
-  --brand:#533AFD;     --brand-soft:#ECEBFE;  --brand2:#7A6BFF;     --on-brand:#FFFFFF;
-  --green:#15BE53;     --red:#EA2261;         --orange:#B7791F;      --yellow:#9B6829;
-  --blue:#2D6CE0;      --purple:#7A5AF8;      --pink:#F96BEE;        --teal:#119DA4;
-  --pos:#108C3D;       --glow:rgba(83,58,253,.16);
-  --shadow-sm:rgba(50,50,93,.08) 0 2px 5px -1px, rgba(0,0,0,.05) 0 1px 3px -1px;
-  --shadow:rgba(50,50,93,.12) 0 6px 18px -8px, rgba(0,0,0,.07) 0 4px 10px -6px;
-  --shadow-lg:rgba(50,50,93,.25) 0 30px 45px -30px, rgba(0,0,0,.10) 0 18px 36px -18px;
+  --bg:#EEF2F0;        --surface:#FFFFFF;     --surface2:#F4F7F5;    --surface3:#E8EEEB;
+  --border:#E2E8E4;    --border2:#D0D9D3;
+  --text:#16211C;      --muted:#6E7B74;       --muted2:#45514A;
+  --brand:#0E9E6E;     --brand-soft:#E1F3EA;  --brand2:#2DB985;     --on-brand:#FFFFFF;
+  --green:#119A6B;     --red:#D2543F;         --orange:#C68A3A;      --yellow:#BC9038;
+  --blue:#3E72AE;      --purple:#7E6BC4;      --pink:#C277A2;        --teal:#2C9E94;
+  --pos:#0C8A5F;       --glow:rgba(14,158,110,.13);
+  --glass-bg:rgba(255,255,255,.55); --glass-br:rgba(255,255,255,.6); --glass-hi:rgba(255,255,255,.7);
+  --shadow-sm:rgba(20,45,35,.05) 0 1px 2px, rgba(20,45,35,.03) 0 1px 3px -1px;
+  --shadow:rgba(20,45,35,.09) 0 6px 18px -8px, rgba(20,45,35,.05) 0 3px 8px -5px;
+  --shadow-lg:rgba(15,40,30,.14) 0 28px 50px -28px, rgba(15,40,30,.09) 0 12px 26px -14px;
 }
 :root[data-theme="dark"]{
-  --bg:#0A0E27;        --surface:#161A3A;     --surface2:#1E2347;    --surface3:#282E55;
-  --border:#2A2F57;    --border2:#3A4170;
-  --text:#EEF1FB;      --muted:#8B93B8;       --muted2:#B9C0DC;
-  --brand:#8A7BFF;     --brand-soft:#221F52;  --brand2:#A99BFF;     --on-brand:#0A0E27;
-  --green:#2BD27B;     --red:#F4568E;         --orange:#E0A050;      --yellow:#E6B84C;
-  --blue:#6E9BF5;      --purple:#A99BFF;      --pink:#F96BEE;        --teal:#36C5C9;
-  --pos:#2BD27B;       --glow:rgba(138,123,255,.24);
+  --bg:#0D110F;        --surface:#161B18;     --surface2:#1D2420;    --surface3:#272F2A;
+  --border:#283029;    --border2:#3A443D;
+  --text:#ECF1EE;      --muted:#8A938C;       --muted2:#BEC7C0;
+  --brand:#3CC98D;     --brand-soft:#15392A;  --brand2:#5FE0AC;     --on-brand:#06231A;
+  --green:#3CC98D;     --red:#E4715A;         --orange:#D9A357;      --yellow:#D6B656;
+  --blue:#6F9BD6;      --purple:#A38FD2;      --pink:#D08FB4;        --teal:#46C2B0;
+  --pos:#3CC98D;       --glow:rgba(60,201,141,.20);
+  --glass-bg:rgba(26,33,29,.55); --glass-br:rgba(255,255,255,.08); --glass-hi:rgba(255,255,255,.06);
   --shadow-sm:0 1px 2px rgba(0,0,0,.5);
-  --shadow:0 4px 16px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.32);
-  --shadow-lg:0 26px 60px rgba(0,0,0,.62), 0 8px 20px rgba(0,0,0,.42);
+  --shadow:0 4px 16px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.34);
+  --shadow-lg:0 26px 60px rgba(0,0,0,.62), 0 8px 20px rgba(0,0,0,.44);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
@@ -73,20 +75,20 @@ body{font-family:'Hanken Grotesk',-apple-system,system-ui,sans-serif;background:
 .brand-row{padding:24px 22px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
 .brand-logo{font-family:'Hanken Grotesk',sans-serif;font-size:23px;font-weight:700;letter-spacing:-0.03em;color:var(--text);display:flex;align-items:center;gap:8px}
 .brand-logo i{font-style:normal;color:var(--brand);font-weight:700}
-.brand-mark{flex:none;border-radius:7px;filter:drop-shadow(0 2px 6px rgba(83,58,253,.3))}
+.brand-mark{flex:none;border-radius:7px;filter:drop-shadow(0 2px 6px rgba(14,158,110,.3))}
 /* ── animated loading splash ── */
 #splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s ease,visibility .5s;background:
   radial-gradient(50% 40% at 50% 35%, var(--glow), transparent 70%),
   var(--bg)}
 #splash.gone{opacity:0;visibility:hidden;pointer-events:none}
-.splash-mark{filter:drop-shadow(0 8px 30px rgba(83,58,253,.45));animation:splashPop .7s cubic-bezier(.2,.9,.3,1.4) both}
+.splash-mark{filter:drop-shadow(0 8px 30px rgba(14,158,110,.45));animation:splashPop .7s cubic-bezier(.2,.9,.3,1.4) both}
 .splash-tile{transform-origin:center;animation:splashGlow 1.8s ease-in-out infinite}
 .splash-r{animation:splashDraw .9s ease both .25s;opacity:0}
 .splash-arrow{stroke-dasharray:24;stroke-dashoffset:24;animation:splashArrow .6s ease forwards .8s}
 .splash-name{font-family:'Hanken Grotesk',sans-serif;font-size:30px;font-weight:700;letter-spacing:-0.03em;color:var(--text);animation:fadeIn .6s ease both .5s}
-.splash-name i{font-style:normal;color:#533AFD;font-weight:700}
+.splash-name i{font-style:normal;color:#0E9E6E;font-weight:700}
 .splash-bar{width:160px;height:4px;border-radius:4px;background:var(--surface3);overflow:hidden;animation:fadeIn .5s ease both .7s}
-.splash-bar-fill{height:100%;width:40%;border-radius:4px;background:linear-gradient(90deg,#533AFD,#2E2B8C);animation:splashLoad 1.1s ease-in-out infinite}
+.splash-bar-fill{height:100%;width:40%;border-radius:4px;background:linear-gradient(90deg,#0E9E6E,#0A6B4C);animation:splashLoad 1.1s ease-in-out infinite}
 @keyframes splashPop{0%{transform:scale(.4) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes splashGlow{0%,100%{opacity:1}50%{opacity:.82}}
 @keyframes splashDraw{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
@@ -1045,7 +1047,7 @@ body{letter-spacing:-0.006em}
 .filter-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 2px}
 .flt-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 11px;border-radius:9px;font-size:12px;font-weight:600;background:var(--brand-soft);color:var(--brand);border:1px solid transparent}
 .flt-chip button{width:18px;height:18px;border:none;background:transparent;color:var(--brand);cursor:pointer;font-size:15px;line-height:1;border-radius:5px;display:grid;place-items:center}
-.flt-chip button:hover{background:rgba(83,58,253,.18)}
+.flt-chip button:hover{background:rgba(14,158,110,.18)}
 .flt-clear{border:1px solid var(--border);background:var(--surface2);color:var(--muted2);font-size:12px;font-weight:600;padding:5px 11px;border-radius:9px;cursor:pointer}
 .flt-clear:hover{color:var(--text)}
 .fm-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);padding:2px 2px 8px;margin:-2px -2px 2px;border-bottom:1px solid var(--border);z-index:2}
@@ -1164,7 +1166,7 @@ body{letter-spacing:-0.006em}
 
 /* Personality */
 .pers-hero{display:flex;gap:13px;align-items:flex-start;margin-bottom:14px}
-.pers-ic{width:46px;height:46px;border-radius:8px;background:linear-gradient(140deg,var(--brand),var(--brand-2,#533AFD));color:var(--on-brand);display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 16px var(--glow)}
+.pers-ic{width:46px;height:46px;border-radius:8px;background:linear-gradient(140deg,var(--brand),var(--brand-2,#0E9E6E));color:var(--on-brand);display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 16px var(--glow)}
 .pers-ic svg{width:22px;height:22px}
 .pers-type{font-family:'Hanken Grotesk';font-weight:700;font-size:20px;letter-spacing:-0.02em;color:var(--text)}
 .pers-desc{font-size:13px;color:var(--muted2);line-height:1.5;margin-top:2px}
@@ -1309,15 +1311,61 @@ body{letter-spacing:-0.006em}
 .btn-brand{font-weight:500;box-shadow:var(--shadow-sm)}
 .btn-brand:hover{box-shadow:var(--shadow)}
 .card:hover,.kpi:hover,.acct-card:hover,.brief-tile:hover{transform:none}
+
+/* ── Premium refined motion ── */
+:root{ --ease-premium:cubic-bezier(.22,.61,.36,1); }
+@media (prefers-reduced-motion: no-preference){
+  .page.active{ animation:pgIn .5s var(--ease-premium) both; }
+  @keyframes pgIn{ from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .page.active > *{ animation:cardIn .55s var(--ease-premium) both; }
+  .page.active > *:nth-child(1){animation-delay:.02s}
+  .page.active > *:nth-child(2){animation-delay:.07s}
+  .page.active > *:nth-child(3){animation-delay:.12s}
+  .page.active > *:nth-child(4){animation-delay:.17s}
+  .page.active > *:nth-child(5){animation-delay:.22s}
+  @keyframes cardIn{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .card,.kpi,.acct-card,.btn,.nav-item,.pill,.sort-pill,.rec-card,.brief-tile{transition:background .2s var(--ease-premium),border-color .2s var(--ease-premium),box-shadow .28s var(--ease-premium),color .2s var(--ease-premium),transform .24s var(--ease-premium)}
+  .card:hover,.kpi:hover,.acct-card:hover,.rec-card:hover,.brief-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .btn:active,.nav-item:active,.pill:active,.sort-pill:active{transform:scale(.97)}
+}
+
+/* ── Glass KPI / brief cards + liquid animated border ── */
+.kpi,.brief-tile{
+  position:relative; isolation:isolate;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid transparent; background-clip:padding-box;
+  box-shadow:var(--shadow), inset 0 1px 0 var(--glass-hi);
+}
+.kpi::after{display:none}
+/* liquid emerald border ring (masked to the edge, slowly flowing) */
+.kpi::before,.brief-tile::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
+  pointer-events:none; z-index:1;
+  background:linear-gradient(125deg, var(--brand) 0%, var(--brand2) 20%, transparent 42%, transparent 60%, var(--brand2) 80%, var(--brand) 100%);
+  background-size:300% 300%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  opacity:.5; animation:liquidEdge 7s ease-in-out infinite;
+}
+.kpi:hover::before,.brief-tile:hover::before{opacity:.95}
+@keyframes liquidEdge{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media (prefers-reduced-motion: reduce){ .kpi::before,.brief-tile::before{animation:none} }
+@media (prefers-reduced-motion: no-preference){
+  .kpi:hover,.brief-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg), inset 0 1px 0 var(--glass-hi)}
+}
 </style>
 </head>
 <body>
 <div id="splash">
   <svg class="splash-mark" viewBox="0 0 64 64" width="92" height="92">
-    <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#533AFD"/><stop offset="1" stop-color="#2E2B8C"/></linearGradient></defs>
+    <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E9E6E"/><stop offset="1" stop-color="#0A6B4C"/></linearGradient></defs>
     <rect class="splash-tile" width="64" height="64" rx="15" fill="url(#spg)"/>
     <path class="splash-r" d="M20 46V18h13.4c5.5 0 9.4 3.4 9.4 8.6 0 3.9-2.2 6.8-5.8 8L44 46h-6.6l-6.2-10.4H26V46h-6z M26 30.6h6.7c2.5 0 4-1.3 4-3.6s-1.5-3.6-4-3.6H26v7.2z" fill="#fff"/>
-    <path class="splash-arrow" d="M40.5 26.5L47 19" fill="none" stroke="#F96BEE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="splash-arrow" d="M40.5 26.5L47 19" fill="none" stroke="#E6C067" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
   <div class="splash-name">Ra<i>Money</i></div>
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
@@ -1327,7 +1375,7 @@ body{letter-spacing:-0.006em}
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
   <div class="brand-row">
-    <div class="brand-logo"><svg class="brand-mark" viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="bmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A6BFF"/><stop offset="1" stop-color="#533AFD"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#bmg)"/><path d="M20 46V18h13.4c5.5 0 9.4 3.4 9.4 8.6 0 3.9-2.2 6.8-5.8 8L44 46h-6.6l-6.2-10.4H26V46h-6z M26 30.6h6.7c2.5 0 4-1.3 4-3.6s-1.5-3.6-4-3.6H26v7.2z" fill="#fff"/><path d="M40.5 26.5L47 19" fill="none" stroke="#F96BEE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Ra<i>Money</i></div>
+    <div class="brand-logo"><svg class="brand-mark" viewBox="0 0 64 64" width="26" height="26"><defs><linearGradient id="bmg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2DB985"/><stop offset="1" stop-color="#0E9E6E"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#bmg)"/><path d="M20 46V18h13.4c5.5 0 9.4 3.4 9.4 8.6 0 3.9-2.2 6.8-5.8 8L44 46h-6.6l-6.2-10.4H26V46h-6z M26 30.6h6.7c2.5 0 4-1.3 4-3.6s-1.5-3.6-4-3.6H26v7.2z" fill="#fff"/><path d="M40.5 26.5L47 19" fill="none" stroke="#E6C067" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Ra<i>Money</i></div>
     <button class="theme-tog" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light or dark theme">
       <svg id="theme-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
     </button>
@@ -1408,7 +1456,7 @@ body{letter-spacing:-0.006em}
     <button class="hamburger" onclick="toggleDrawer()" aria-label="Menu">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <div class="mobile-brand"><svg class="brand-mark" viewBox="0 0 64 64" width="24" height="24"><defs><linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A6BFF"/><stop offset="1" stop-color="#533AFD"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#mbg)"/><path d="M20 46V18h13.4c5.5 0 9.4 3.4 9.4 8.6 0 3.9-2.2 6.8-5.8 8L44 46h-6.6l-6.2-10.4H26V46h-6z M26 30.6h6.7c2.5 0 4-1.3 4-3.6s-1.5-3.6-4-3.6H26v7.2z" fill="#fff"/><path d="M40.5 26.5L47 19" fill="none" stroke="#F96BEE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Ra<i>Money</i></div>
+    <div class="mobile-brand"><svg class="brand-mark" viewBox="0 0 64 64" width="24" height="24"><defs><linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2DB985"/><stop offset="1" stop-color="#0E9E6E"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#mbg)"/><path d="M20 46V18h13.4c5.5 0 9.4 3.4 9.4 8.6 0 3.9-2.2 6.8-5.8 8L44 46h-6.6l-6.2-10.4H26V46h-6z M26 30.6h6.7c2.5 0 4-1.3 4-3.6s-1.5-3.6-4-3.6H26v7.2z" fill="#fff"/><path d="M40.5 26.5L47 19" fill="none" stroke="#E6C067" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Ra<i>Money</i></div>
     <button class="date-btn" onclick="toggleDateMenu(event)" style="margin-left:auto" title="Change date range">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span id="date-btn-lbl-mobile">This Month</span>
@@ -6438,5 +6486,85 @@ function cleanName(desc){
 }
 
 </script>
+
+<script>
+(function(){
+  try{
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var SEL = '.kpi-val,.nw-val,.cf-val,.ms-big,.acct-bal,.today-amt';
+    function ease(t){ return 1-Math.pow(1-t,3); }
+    function animate(el){
+      try{
+        if (el.children.length) { el.dataset.cuDone = el.textContent; return; }
+        var finalText = el.textContent;
+        if (el.dataset.cuDone === finalText) return;
+        var m = finalText.match(/-?[0-9][0-9,]*\.?[0-9]*/);
+        if (!m) { el.dataset.cuDone = finalText; return; }
+        var numStr = m[0];
+        var target = parseFloat(numStr.replace(/,/g,''));
+        if (!isFinite(target) || Math.abs(target) < 1) { el.dataset.cuDone = finalText; return; }
+        var decimals = (numStr.split('.')[1]||'').length;
+        var hasComma = numStr.indexOf(',')>=0;
+        var pre = finalText.slice(0, m.index), post = finalText.slice(m.index + numStr.length);
+        el.dataset.cuAnimating = '1';
+        var dur = 750, start = null;
+        function fmt(v){ var s = Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}); if(!hasComma) s=s.replace(/,/g,''); return (v<0?'-':'')+s; }
+        function tick(ts){
+          if (start===null) start=ts;
+          var p = Math.min(1,(ts-start)/dur);
+          el.textContent = pre + fmt(target*ease(p)) + post;
+          if (p<1) requestAnimationFrame(tick);
+          else { el.textContent = finalText; el.dataset.cuDone = finalText; delete el.dataset.cuAnimating; }
+        }
+        requestAnimationFrame(tick);
+      }catch(e){ try{ el.dataset.cuDone = el.textContent; }catch(_){} }
+    }
+    function scan(){ document.querySelectorAll(SEL).forEach(function(el){ if(el.dataset.cuAnimating) return; if(el.dataset.cuDone===el.textContent) return; animate(el); }); }
+    var t, mo = new MutationObserver(function(){ clearTimeout(t); t=setTimeout(scan,70); });
+    function boot(){ var root=document.querySelector('.main')||document.body; try{ mo.observe(root,{childList:true,subtree:true,characterData:true}); }catch(e){} scan(); }
+    if (document.readyState!=='loading') setTimeout(boot,500); else document.addEventListener('DOMContentLoaded',function(){ setTimeout(boot,500); });
+  }catch(e){}
+})();
+</script>
+
+<script>
+(function(){
+  try{
+    var MAX=130;
+    function page(){ return document.querySelector('.page.active'); }
+    function atTop(el){ return el.scrollTop<=0; }
+    function atBottom(el){ return el.scrollTop+el.clientHeight>=el.scrollHeight-1; }
+    function setT(el,o){ if(o) el.style.setProperty('transform','translateY('+o.toFixed(1)+'px)','important'); else el.style.removeProperty('transform'); }
+    function release(el){ el.style.setProperty('transition','transform .55s cubic-bezier(.22,.61,.36,1)'); setT(el,0); setTimeout(function(){ if(el){ el.style.removeProperty('transition'); } },560); }
+    var offset=0, wheelTO;
+    document.addEventListener('wheel', function(e){
+      var el=page(); if(!el||!el.contains(e.target)) return;
+      var d=e.deltaY;
+      var down = d<0 && atTop(el), up = d>0 && atBottom(el);
+      if(down||up){
+        e.preventDefault();
+        el.style.setProperty('transition','none');
+        offset += -d*0.30;
+        if(offset>MAX) offset=MAX; if(offset<-MAX) offset=-MAX;
+        setT(el,offset);
+        clearTimeout(wheelTO);
+        wheelTO=setTimeout(function(){ offset=0; release(el); }, 90);
+      }
+    }, {passive:false});
+    var startY=0, pulling=false, tEl=null;
+    document.addEventListener('touchstart', function(e){ tEl=page(); if(!tEl||!tEl.contains(e.target)) {tEl=null;return;} startY=e.touches[0].clientY; pulling=false; offset=0; tEl.style.removeProperty('transition'); }, {passive:true});
+    document.addEventListener('touchmove', function(e){
+      var el=tEl; if(!el) return;
+      var dy=e.touches[0].clientY-startY;
+      var down=dy>0 && atTop(el), up=dy<0 && atBottom(el);
+      if(down||up){ pulling=true; var damp=Math.sign(dy)*Math.pow(Math.abs(dy),0.82)*0.55; offset=Math.max(-MAX,Math.min(MAX,damp)); setT(el,offset); e.preventDefault(); }
+    }, {passive:false});
+    document.addEventListener('touchend', function(){ if(tEl&&pulling) release(tEl); pulling=false; }, {passive:true});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
+
+<style id="__om-edit-overrides">
+</style>
