@@ -1269,6 +1269,10 @@ body{letter-spacing:-0.006em}
 .txd-modal-acct #txd-body{display:flex;flex-direction:column;min-height:0;flex:1}
 .txd-modal-acct .ad-sticky{position:static;margin:0 0 4px;flex-shrink:0;border-bottom:1px solid var(--border);padding-bottom:12px}
 .txd-modal-acct .ad-txns{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch}
+/* Account-detail chart must keep a definite height inside the modal's flex column —
+   height:auto can resolve to 0 in a fixed-height flex container on desktop, hiding the chart. */
+.txd-modal-acct .ad-sticky{flex-shrink:0}
+.txd-modal-acct .ad-sticky>svg{width:100%!important;height:auto!important;aspect-ratio:1000/180;max-height:140px;min-height:84px;display:block;animation:none!important;opacity:1!important;transform:none!important}
 .dup-list{display:flex;flex-direction:column;gap:12px;max-height:56vh;overflow-y:auto}
 .dup-group{border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--surface2)}
 .dup-grid{display:grid;grid-template-columns:1fr;gap:10px}
