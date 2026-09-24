@@ -1118,6 +1118,10 @@ body{letter-spacing:-0.006em}
 .cal-has:hover{border-color:var(--brand);background:var(--surface3)}
 #page-calendar .cal-today{outline:2px solid var(--brand);outline-offset:-2px}
 #page-calendar .cal-today .cal-num{color:var(--brand)}
+.cal-amt{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.cal-amt.in{color:var(--green)}.cal-amt.out{color:var(--red)}
+#page-calendar .cal-past{opacity:.7}
+@media(max-width:640px){.cal-amt{font-size:9px}}
 .cal-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto}
 #page-calendar .cal-empty{background:transparent;border:none;box-shadow:none}
 @media(max-width:600px){
@@ -1171,6 +1175,10 @@ body{letter-spacing:-0.006em}
 .goalc-big{font-family:'Hanken Grotesk';font-weight:700;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
 .goalc-big span{font-size:11px;color:var(--muted);font-weight:500}
 .goalc-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em}
+.sub-badge{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:6px;margin-left:6px}
+.sub-badge.up{background:rgba(224,90,90,.14);color:var(--red)}
+.sub-badge.idle{background:var(--surface3);color:var(--muted2)}
+.stale-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 14px;margin-bottom:16px;border-radius:8px;background:rgba(224,160,60,.12);border:1px solid rgba(224,160,60,.35);font-size:13px;line-height:1.45;color:var(--text)}
 .goalc-whatif{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}
 .goalc-whatif div{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column;gap:1px}
 .goalc-whatif span{font-size:10.5px;color:var(--muted)}
@@ -5692,10 +5700,16 @@ function renderBrief(){
   const nm=(SETTINGS.userName!==undefined?SETTINGS.userName:'Raman').trim(); const who=nm?', '+nm:'';
   const nwUp=b.nwChange>=0;
   const tile=(icn,lbl,val,sub,tone)=>`<div class="brief-tile brief-${tone||'n'}"><div class="brief-ic">${icn}</div><div class="brief-lbl">${lbl}</div><div class="brief-val">${val}</div><div class="brief-sub">${sub}</div></div>`;
-  host.innerHTML=`
+  // data freshness: stale imports make every "today" number misleading
+  const lastTxn=TXNS.reduce((a,t)=>t.date>a?t.date:a,'');
+  const staleDays=lastTxn?Math.floor((Date.now()-new Date(lastTxn+'T00:00:00'))/864e5):null;
+  const staleAccts=ACCOUNTS.filter(a=>a.type!=='invest').map(a=>{const d=TXNS.filter(t=>t.account===a.name).reduce((m,t)=>t.date>m?t.date:m,'');return {a,d};}).filter(x=>x.d&&(Date.now()-new Date(x.d+'T00:00:00'))/864e5>14);
+  const banner=staleDays!=null&&staleDays>7?`<div class="stale-banner"><div><b>Your data is ${staleDays} days old</b> — last transaction ${new Date(lastTxn+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}.${staleAccts.length?` Stale: ${staleAccts.map(x=>x.a.short||x.a.name).join(', ')}.`:''} Import fresh statements so today's numbers are accurate.</div><button class="btn btn-brand btn-sm" onclick="nav('import')">Import now →</button></div>`:'';
+  const noBal=ACCOUNTS.filter(a=>a.type==='chequing').every(a=>getBal(a.name)==null);
+  host.innerHTML=`${banner}
     <div class="brief-hd"><div class="brief-greet">${greeting()}${who}</div><div class="brief-day">${new Date().toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'})} · here's your money today</div></div>
     <div class="brief-grid">
-      ${tile(icon('bank'),'Cash available',fmtS(b.cash),`across ${ACCOUNTS.filter(a=>a.type==='chequing').length} accounts`,'n')}
+      ${noBal?`<div onclick="nav('settings')" style="cursor:pointer;display:contents">${tile(icon('bank'),'Cash available','—','set balances in Settings →','n')}</div>`:tile(icon('bank'),'Cash available',fmtS(b.cash),`across ${ACCOUNTS.filter(a=>a.type==='chequing').length} accounts`,'n')}
       ${tile(icon('target'),'Safe to spend',fmtS(b.sts.left),`of ${fmt(b.sts.budgeted)} budget`, b.sts.left>=0?'good':'risk')}
       ${tile(icon('receipt'),'Bills (14 days)',fmt(b.bills.total),`${b.bills.list.length} upcoming`, b.bills.total>b.cash?'risk':'n')}
       ${tile(icon(nwUp?'trendup':'trenddown'),'Net worth',(nwUp?'+':'')+fmtS(b.nwChange),'vs last month', nwUp?'good':'risk')}
@@ -5764,6 +5778,17 @@ function getSubscriptions(){
     return r.avgAmt<=100 && ['monthly','quarterly','annual'].includes(r.cadence) && !SUB_BLOCK.includes(r.cat);
   }).map(r=>({...r, monthly:cadenceMonthly(r.cadence,r.avgAmt), annual:cadenceMonthly(r.cadence,r.avgAmt)*12}));
 }
+// price-hike + inactivity signals for one recurring charge
+function subExtra(r){
+  const all=TXNS.filter(t=>merchKey(t.description)===r.merchant&&t.amount<0).sort((a,b)=>a.date.localeCompare(b.date));
+  if(all.length<2) return {};
+  const last=Math.abs(all[all.length-1].amount), prev=all.slice(-4,-1).map(t=>Math.abs(t.amount)), pAvg=prev.reduce((a,b)=>a+b,0)/prev.length;
+  const hike=last-pAvg>Math.max(0.5,pAvg*0.03)?last-pAvg:0;
+  const gap={weekly:7,'bi-weekly':14,monthly:31,quarterly:92,'semi-annual':183,annual:366}[r.cadence]||31;
+  const ref=TXNS.reduce((a,t)=>t.date>a?t.date:a,''); // measure against latest imported data, not today
+  const days=Math.floor((new Date(ref+'T00:00:00')-new Date(all[all.length-1].date+'T00:00:00'))/864e5);
+  return {hike, idle:days>gap*2?days:0};
+}
 function toggleCancelFlag(merchant){
   SETTINGS.cancelFlags=SETTINGS.cancelFlags||{};
   SETTINGS.cancelFlags[merchant]=!SETTINGS.cancelFlags[merchant];
@@ -5778,7 +5803,10 @@ function renderSubscriptions(){
   const cutMo=subs.filter(r=>flags[r.merchant]).reduce((s,r)=>s+r.monthly,0);
   const sc=document.getElementById('sub-summary');
   if(sc){ const tile=(ic,l,v,sub,tone)=>`<div class="brief-tile brief-${tone||'n'}"><div class="brief-ic">${ic}</div><div class="brief-lbl">${l}</div><div class="brief-val">${v}</div><div class="brief-sub">${sub}</div></div>`;
-    sc.innerHTML=`<div class="brief-hd"><div class="brief-greet" style="font-size:24px">${subs.length} subscriptions</div><div class="brief-day">costing you ${fmt(totalMo)}/mo · ${fmt(totalYr)}/yr</div></div>
+    const incMo=(()=>{const now=new Date();let t=0;for(let i=1;i<=3;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');t+=TXNS.filter(x=>x.date.startsWith(ym)&&x.amount>0&&INCOME_CATS.includes(x.cat)).reduce((s,x)=>s+x.amount,0);}return t/3;})();
+    const hikes=subs.map(r=>({r,x:subExtra(r)})).filter(o=>o.x.hike);
+    const hikeMo=hikes.reduce((s,o)=>s+cadenceMonthly(o.r.cadence,o.x.hike),0);
+    sc.innerHTML=`<div class="brief-hd"><div class="brief-greet" style="font-size:24px">${subs.length} subscriptions</div><div class="brief-day">costing you ${fmt(totalMo)}/mo · ${fmt(totalYr)}/yr${incMo>0?` · <b>${(totalMo/incMo*100).toFixed(1)}%</b> of your income`:''}${hikes.length?` · <span style="color:var(--red)">${hikes.length} price increase${hikes.length>1?'s':''} (+${fmt(hikeMo)}/mo)</span>`:''}</div></div>
     <div class="brief-grid">
       ${tile(icon('card'),'Monthly',fmt(totalMo),'all active subscriptions','n')}
       ${tile(icon('calendar'),'Annual',fmt(totalYr),'projected over 12 months','n')}
@@ -5787,9 +5815,10 @@ function renderSubscriptions(){
   const list=document.getElementById('sub-list');
   if(list){ list.innerHTML = subs.length ? subs.map(r=>{
     const m=CAT_MAP[r.cat]||CAT_MAP.Other; const flagged=!!flags[r.merchant]; const safe=r.merchant.replace(/'/g,"\\'");
-    return `<div class="sub-row${flagged?' sub-flagged':''}">
+    const x=subExtra(r); const badges=(x.hike?`<span class="sub-badge up" title="Last charge vs earlier average">▲ ${fmt(x.hike)} price up</span>`:'')+(x.idle?`<span class="sub-badge idle" title="No charge in ${x.idle} days">not charged in ${x.idle}d</span>`:'');
+    return `<div class="sub-row${flagged?' sub-flagged':''}" style="cursor:pointer" onclick="if(!event.target.closest('button'))showRecurringDetail('${safe}')">
       <div class="merch-ic" style="background:${m.color}1f;color:${m.color};width:40px;height:40px;font-size:18px">${m.icon}</div>
-      <div class="sub-mid"><div class="sub-name">${r.name}</div><div class="sub-meta">${r.cadence} · ${r.cat} · next ${r.nextDate}</div></div>
+      <div class="sub-mid"><div class="sub-name">${r.name}</div><div class="sub-meta">${r.cadence} · ${r.cat} · next ${r.nextDate} ${badges}</div></div>
       <div class="sub-cost"><div class="sub-mo">${fmt(r.monthly)}<span>/mo</span></div><div class="sub-yr">${fmt(r.annual)}/yr</div></div>
       <button class="sub-cancel${flagged?' on':''}" onclick="toggleCancelFlag('${safe}')" title="Flag to cancel">${flagged?icon('check'):icon('scissors')}</button>
     </div>`;
@@ -5801,13 +5830,36 @@ let calCursor=null;
 function calMonth(d){ const [y,m]=(calCursor||currentMonth).split('-').map(Number); const dt=new Date(y,m-1+d,1); calCursor=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'); renderCalendar(); }
 function getCalEvents(ym){
   const ev={}; const add=(day,e)=>{(ev[day]=ev[day]||[]).push(e);};
-  const [y,m]=ym.split('-').map(Number);
-  // bills from recurring (next occurrence within month)
-  detectRecurring().forEach(r=>{ const nd=new Date(r.nextDate+'T00:00:00'); if(nd.getFullYear()===y&&nd.getMonth()+1===m) add(nd.getDate(),{type:'bill',name:r.name,amt:r.avgAmt}); });
-  // paydays: income txns this month (and projected from prior pattern)
-  TXNS.filter(t=>t.date.startsWith(ym)&&t.amount>0&&['Payroll','Income'].includes(t.cat)).forEach(t=>add(+t.date.slice(8,10),{type:'pay',name:merchantName(t.description),amt:t.amount}));
+  const [y,m]=ym.split('-').map(Number); const dim=new Date(y,m,0).getDate();
+  const t0=new Date(); const todayStr=t0.getFullYear()+'-'+String(t0.getMonth()+1).padStart(2,'0')+'-'+String(t0.getDate()).padStart(2,'0');
+  const ds=d=>ym+'-'+String(d).padStart(2,'0');
+  const gapOf={weekly:7,'bi-weekly':14,monthly:0,quarterly:0,'semi-annual':0,annual:0};
+  const monthsOf={monthly:1,quarterly:3,'semi-annual':6,annual:12};
+  // bills: actual charges this month (paid) + cadence projection for days not yet reached
+  detectRecurring().forEach(r=>{
+    const hist=TXNS.filter(t=>merchKey(t.description)===r.merchant&&t.amount<0).sort((a,b)=>a.date.localeCompare(b.date));
+    const paid=hist.filter(t=>t.date.startsWith(ym));
+    paid.forEach(t=>add(+t.date.slice(8,10),{type:'bill',name:r.name,amt:Math.abs(t.amount),paid:true}));
+    if(paid.length&&!gapOf[r.cadence]) return;
+    const anchor=hist.length?new Date(hist[hist.length-1].date+'T00:00:00'):new Date(r.nextDate+'T00:00:00');
+    const hits=[];
+    if(gapOf[r.cadence]){ const g=gapOf[r.cadence]; const d=new Date(anchor); while(d<=new Date(y,m-1,dim)){ d.setDate(d.getDate()+g); if(d.getFullYear()===y&&d.getMonth()+1===m) hits.push(d.getDate()); } }
+    else if(monthsOf[r.cadence]){ const k=(y*12+m)-(anchor.getFullYear()*12+anchor.getMonth()+1); if(k>0&&k%monthsOf[r.cadence]===0) hits.push(Math.min(anchor.getDate(),dim)); }
+    hits.forEach(d=>{ if(ds(d)>=todayStr&&!paid.some(t=>Math.abs(+t.date.slice(8,10)-d)<4)) add(d,{type:'bill',name:r.name,amt:r.avgAmt}); });
+  });
+  // paydays: actual deposits + projection from the recent pay rhythm
+  const pay=TXNS.filter(t=>t.amount>0&&['Payroll','Income'].includes(t.cat)).sort((a,b)=>a.date.localeCompare(b.date));
+  pay.filter(t=>t.date.startsWith(ym)).forEach(t=>add(+t.date.slice(8,10),{type:'pay',name:merchantName(t.description),amt:t.amount,paid:true}));
+  const recent=pay.filter(t=>t.cat==='Payroll').slice(-6);
+  if(recent.length>=3){
+    const gaps=recent.slice(1).map((t,i)=>Math.round((new Date(t.date)-new Date(recent[i].date))/864e5)).sort((a,b)=>a-b);
+    const g=gaps[Math.floor(gaps.length/2)], amt=recent.slice(-3).reduce((s,t)=>s+t.amount,0)/3;
+    if(g>=6&&g<=35){ const d=new Date(recent[recent.length-1].date+'T00:00:00');
+      while(d<=new Date(y,m-1,dim)){ d.setDate(d.getDate()+g); const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        if(k.startsWith(ym)&&k>=todayStr) add(d.getDate(),{type:'pay',name:merchantName(recent[recent.length-1].description)+' (expected)',amt}); } }
+  }
   // credit due dates
-  ACCOUNTS.filter(a=>a.type==='credit').forEach(a=>{ const due=(SETTINGS.dueDays||{})[a.name]; if(due) add(due,{type:'due',name:a.short+' due',amt:getCreditOutstanding(a.name)||0}); });
+  ACCOUNTS.filter(a=>a.type==='credit').forEach(a=>{ const due=(SETTINGS.dueDays||{})[a.name]; if(due) add(Math.min(due,dim),{type:'due',name:a.short+' due',amt:getCreditOutstanding(a.name)||0}); });
   return ev;
 }
 function renderCalendar(){
@@ -5816,14 +5868,16 @@ function renderCalendar(){
   const [y,m]=ym.split('-').map(Number);
   document.getElementById('cal-month-lbl').textContent=new Date(y,m-1,1).toLocaleString('en',{month:'long',year:'numeric'});
   const first=new Date(y,m-1,1).getDay(); const days=new Date(y,m,0).getDate();
-  const ev=getCalEvents(ym); const todayStr=new Date().toISOString().slice(0,10);
+  const ev=getCalEvents(ym); const _t=new Date(); const todayStr=_t.getFullYear()+'-'+String(_t.getMonth()+1).padStart(2,'0')+'-'+String(_t.getDate()).padStart(2,'0');
   let cells='';
   ['S','M','T','W','T','F','S'].forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
   for(let i=0;i<first;i++) cells+='<div class="cal-empty"></div>';
   for(let d=1;d<=days;d++){ const ds=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const list=ev[d]||[];
     const dots=list.slice(0,3).map(e=>`<span class="cal-dot cal-${e.type}"></span>`).join('');
-    cells+=`<div class="cal-cell${ds===todayStr?' cal-today':''}${list.length?' cal-has':''}" ${list.length?`onclick="calDay('${ds}',this)"`:''}><span class="cal-num">${d}</span><div class="cal-dots">${dots}</div></div>`;
+    const dIn=list.filter(e=>e.type==='pay').reduce((a,e)=>a+e.amt,0), dOut=list.filter(e=>e.type!=='pay').reduce((a,e)=>a+e.amt,0);
+    const amts=(dIn?`<span class="cal-amt in">+${fmtS(dIn)}</span>`:'')+(dOut?`<span class="cal-amt out">−${fmtS(dOut)}</span>`:'');
+    cells+=`<div class="cal-cell${ds===todayStr?' cal-today':''}${ds<todayStr?' cal-past':''}${list.length?' cal-has':''}" ${list.length?`onclick="calDay('${ds}',this)"`:''}><span class="cal-num">${d}</span>${amts}<div class="cal-dots">${dots}</div></div>`;
   }
   document.getElementById('cal-grid').innerHTML=`<div class="cal-grid">${cells}</div>
     <div class="cal-legend"><span><i class="cal-dot cal-pay"></i>Payday</span><span><i class="cal-dot cal-bill"></i>Bill</span><span><i class="cal-dot cal-due"></i>Card due</span></div>`;
@@ -5835,7 +5889,7 @@ function renderCalendar(){
     fl.innerHTML=`<div class="brief-grid">
       ${tile(icon('income'),'Expected in',fmt(inc),'good')}
       ${tile(icon('receipt'),'Expected out',fmt(out),'risk')}
-      ${tile(icon('wallet'),'Net',(inc-out>=0?'+':'')+fmt(inc-out),inc-out>=0?'good':'risk')}
+      ${tile(icon('wallet'),'Net',(inc-out>=0?'+':'−')+fmt(inc-out),inc-out>=0?'good':'risk')}
     </div>`; }
 }
 function calDay(ds, el){
