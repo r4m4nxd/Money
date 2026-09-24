@@ -451,7 +451,7 @@ table.t th.r,table.t td.r{text-align:right}
 .today-sub{font-size:13px;color:var(--muted2);margin-top:6px}
 .today-bar{height:8px;background:var(--surface2);border-radius:4px;margin-top:16px;overflow:hidden}
 .today-bar-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,.0,.2,1)}
-.today-stats{display:flex;gap:24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.today-stats{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
 .today-stats > div{display:flex;flex-direction:column;gap:3px}
 .ts-lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
 .ts-val{font-family:'Hanken Grotesk',sans-serif;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums slashed-zero;font-feature-settings:'tnum','zero';color:var(--text)}
@@ -1157,7 +1157,7 @@ body{letter-spacing:-0.006em}
 
 /* Goals page */
 .goals-hero-card{background:radial-gradient(130% 90% at 100% 0%,var(--glow),transparent 58%),linear-gradient(150deg,var(--surface),var(--brand-soft) 170%)}
-.goals-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px;margin-top:14px}
+.goals-cards{flex:0 0 auto;align-items:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px;margin-top:14px}
 .goalc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
 .goalc-hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .goalc-ic{width:42px;height:42px;border-radius:8px;background:var(--surface3);color:var(--brand);display:grid;place-items:center;flex-shrink:0}
@@ -1171,6 +1171,10 @@ body{letter-spacing:-0.006em}
 .goalc-big{font-family:'Hanken Grotesk';font-weight:700;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
 .goalc-big span{font-size:11px;color:var(--muted);font-weight:500}
 .goalc-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em}
+.goalc-whatif{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}
+.goalc-whatif div{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column;gap:1px}
+.goalc-whatif span{font-size:10.5px;color:var(--muted)}
+.goalc-whatif b{font-size:13px;font-variant-numeric:tabular-nums}
 .goalc-note{margin-top:auto;padding:10px 12px;background:var(--surface2);border-radius:10px;font-size:12px;color:var(--muted2);line-height:1.5}
 .goalc-figs{margin-bottom:12px}
 .gset-grid{display:flex;flex-direction:column;gap:10px}
@@ -4313,8 +4317,9 @@ function renderBudget() {
   }
   // Today position
   const today = new Date();
-  const todayStr = today.toISOString().slice(0,10);
+  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   const isCurrentMonth = todayStr.startsWith(ym);
+  const isFuture = ym > todayStr.slice(0,7);
   const todayIdx = isCurrentMonth ? today.getDate()-1 : daysInMonth-1;
   const elapsedDays = todayIdx + 1;
   const remainingDays = daysInMonth - elapsedDays;
@@ -4341,7 +4346,36 @@ function renderBudget() {
   const tHeroLabel = todayLeft >= 0 ? 'left to spend today' : 'over today\u2019s budget';
   const todayPct = Math.min(100, todaySpent / todayAllowance * 100);
 
-  document.getElementById('budget-today').innerHTML = `
+  const heroHost=document.getElementById('budget-today');
+  if(!isCurrentMonth){
+    // Past or future month → recap / plan instead of a meaningless "today" view
+    const total=dayData.reduce((s,d)=>s+d.spent,0), diff=monthlyBudget-total, under=diff>=0;
+    const spendDays=dayData.filter(d=>d.spent>0), overDays=dayData.filter(d=>d.spent>dailyAllowance).length;
+    const peak=dayData.reduce((a,d)=>d.spent>a.spent?d:a,{spent:0});
+    const prevYM=(()=>{const d=new Date(cy,cm-2,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');})();
+    const prevTotal=TXNS.filter(t=>t.date.startsWith(prevYM)&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).reduce((s,t)=>s+Math.abs(t.amount),0);
+    const pct=monthlyBudget?Math.min(100,total/monthlyBudget*100):0, col=isFuture?'var(--muted2)':under?'var(--green)':'var(--red)';
+    heroHost.innerHTML=`<div class="today-hero"><div class="today-l">
+      <div class="today-lbl">${isFuture?'Plan':'Month recap'} · ${ymLabel(ym,{month:'long',year:'numeric'})}</div>
+      <div class="today-amt" style="color:${col}">${isFuture?fmt(monthlyBudget):fmt(Math.abs(diff))}</div>
+      <div class="today-sub">${isFuture?`to spend · ${fmt(dailyAllowance)}/day across ${daysInMonth} days`:under?`under budget — spent ${fmt(total)} of ${fmt(monthlyBudget)}`:`over budget — spent ${fmt(total)} of ${fmt(monthlyBudget)}`}</div>
+      <div class="today-bar"><div class="today-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+      ${isFuture?'':`<div class="today-stats">
+        <div><span class="ts-lbl">Avg / day</span><span class="ts-val">${fmt(total/daysInMonth)}</span></div>
+        <div><span class="ts-lbl">Days over allowance</span><span class="ts-val">${overDays} / ${daysInMonth}</span></div>
+        <div><span class="ts-lbl">No-spend days</span><span class="ts-val">${daysInMonth-spendDays.length}</span></div>
+        <div><span class="ts-lbl">Biggest day</span><span class="ts-val">${peak.spent?fmt(peak.spent)+' · '+ymLabel(ym,{month:'short'})+' '+peak.day:'—'}</span></div>
+      </div>`}
+    </div><div class="today-r"><div class="month-stats">
+      <div class="ms-row"><span class="ms-lbl">Monthly budget</span><span class="ms-val">${fmt(monthlyBudget)}</span></div>
+      <div class="ms-row"><span class="ms-lbl">Daily allowance</span><span class="ms-val">${fmt(dailyAllowance)}</span></div>
+      ${isFuture?'':`<div class="ms-row"><span class="ms-lbl">Spent</span><span class="ms-val">${fmt(total)}</span></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:8px 0">
+      <div class="ms-row"><span class="ms-lbl">vs ${ymLabel(prevYM,{month:'short'})}</span><span class="ms-val" style="color:${total<=prevTotal?'var(--green)':'var(--red)'}">${prevTotal?(total>=prevTotal?'▲ ':'▼ ')+fmt(Math.abs(total-prevTotal)):'—'}</span></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:8px 0">
+      <div class="ms-row"><span class="ms-lbl">${under?'Saved vs budget':'Overspent'}</span><span class="ms-val" style="color:${under?'var(--green)':'var(--red)'};font-size:18px;font-weight:700">${under?'+':'\u2212'}${fmt(Math.abs(diff))}</span></div>`}
+      </div><button class="btn btn-sm" style="margin-top:14px;width:100%;justify-content:center" onclick="nav('settings')">Edit monthly budget →</button></div></div>`;
+  } else heroHost.innerHTML = `
     <div class="today-hero">
       <div class="today-l">
         <div class="today-lbl">${isCurrentMonth ? 'Today — '+today.toLocaleDateString('en',{weekday:'long',month:'short',day:'numeric'}) : 'Daily allowance · '+ymLabel(ym,{month:'long',year:'numeric'})}</div>
@@ -4768,7 +4802,7 @@ function renderInvFromSnapshots(snaps){
   document.getElementById('inv-kpis').innerHTML=[
     {lbl:'Market Value', val:fcur(totalMV), sub:'Cash + holdings', col:'var(--brand)'},
     {lbl:'Book Cost', val:fcur(totalBook), sub:'Total invested', col:'var(--purple)'},
-    {lbl:'Total Return', val:(ret>=0?'+':'')+fcur(ret), sub:retPct.toFixed(2)+'%', col:ret>=0?'var(--green)':'var(--red)'},
+    {lbl:'Total Return', val:(ret>=0?'+':'−')+fcur(ret), sub:(retPct>=0?'+':'')+retPct.toFixed(2)+'%', col:ret>=0?'var(--green)':'var(--red)'},
     {lbl:'Contributions YTD', val:fcur(contribYTD), sub:'This year', col:'var(--green)'},
   ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val" style="color:${k.col}">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
   // accounts list
@@ -4913,7 +4947,7 @@ function renderInvestmentsLegacy() {
   document.getElementById('inv-kpis').innerHTML = [
     {lbl:'Total Invested', val:fmt(totalInvest), sub:'TFSA + Cash + RRSP', col:'var(--brand)'},
     {lbl:'Market Value', val:totalMV>0?fmt(totalMV):'—', sub:'From holdings table', col:'var(--purple)'},
-    {lbl:'Total Return', val:totalCB>0?(totalReturn>=0?'+':'')+fmt(totalReturn):'—', sub:totalCB>0?totalReturnPct.toFixed(2)+'%':'Add holdings in Settings', col:totalReturn>=0?'var(--green)':'var(--red)'},
+    {lbl:'Total Return', val:(totalCB>0&&totalMV>0)?(totalReturn>=0?'+':'−')+fmt(totalReturn):'—', sub:(totalCB>0&&totalMV>0)?(totalReturnPct>=0?'+':'')+totalReturnPct.toFixed(2)+'%':(totalCB>0?'Add market prices in Settings':'Add holdings in Settings'), col:(totalCB>0&&totalMV>0)?(totalReturn>=0?'var(--green)':'var(--red)'):'var(--muted)'},
     {lbl:'Avg Contribution', val:avgContrib?fmt(avgContrib)+'/mo':'—', sub:'Last 6 months', col:'var(--green)'},
   ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val" style="color:${k.col}">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
@@ -5908,6 +5942,14 @@ function renderGoalsPage(){
       ${tile(icon('trophy'),'Completed',String(done),'goals reached','n')}
       ${tile(icon('calendar'),'Next milestone',next?next.label:'—',next&&next.eta?'~'+next.eta.toLocaleDateString('en',{month:'short',year:'numeric'}):'set targets','n')}
     </div>`; }
+  // actual avg monthly savings (income − spending) over the last 6 complete months
+  const avgSave=(()=>{ const now=new Date(); let tot=0,n=0;
+    for(let i=1;i<=6;i++){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      const t=TXNS.filter(x=>x.date.startsWith(ym)&&!['WS TFSA','WS Cash','WS RRSP'].includes(x.account)); if(!t.length) continue;
+      const inc=t.filter(x=>x.amount>0&&INCOME_CATS.includes(x.cat)).reduce((s,x)=>s+x.amount,0);
+      const sp=Math.abs(t.filter(x=>x.amount<0&&!['Transfers','Investment','Returns'].includes(x.cat)).reduce((s,x)=>s+x.amount,0));
+      tot+=inc-sp; n++; }
+    return n?tot/n:0; })();
   const host=document.getElementById('goals-cards');
   if(host){ host.innerHTML=goals.map(g=>{
     if(g.debtGoal){
@@ -5926,10 +5968,23 @@ function renderGoalsPage(){
       : (g.monthly>0 && g.months)
         ? `<b>${fmtS(remain)}</b> to go. At ${fmt(g.monthly)}/mo you'll cross the line in about ${g.months<12?g.months+' months':(g.months/12).toFixed(1)+' years'}.`
         : `<b>${fmtS(remain)}</b> to go. Set a monthly contribution in Settings to forecast a finish date.`;
+    // what-if levers: +$100/mo, and what it takes to finish in 12 / 24 months
+    let whatIf='';
+    if(g.pct<100&&remain>0){
+      const mo=m=>m>600?'50+ yr':m<12?m+' mo':(m/12).toFixed(1)+' yr';
+      const faster=g.monthly>0&&g.months?Math.max(0,g.months-Math.ceil(remain/(g.monthly+100))):0;
+      whatIf=`<div class="goalc-whatif">
+        ${faster>0?`<div><span>+$100/mo</span><b>${mo(faster)} sooner</b></div>`:''}
+        <div><span>Done in 1 yr</span><b>${fmt(remain/12)}/mo</b></div>
+        <div><span>Done in 2 yr</span><b>${fmt(remain/24)}/mo</b></div>
+        ${avgSave>0?`<div><span>At your real savings (${fmtS(avgSave)}/mo)</span><b>${mo(Math.ceil(remain/avgSave))}</b></div>`:''}
+      </div>`;
+    }
     return `<div class="goalc">
       <div class="goalc-hd"><div class="goalc-ic">${icon(g.icon)}</div><div class="goalc-meta"><div class="goalc-name">${g.label}</div><div class="goalc-tag">${eta}</div></div><div class="goalc-pct" style="color:${col}">${Math.round(g.pct)}%</div></div>
       <div class="goal-bar" style="height:10px;margin:4px 0 10px"><div class="goal-fill" style="width:${g.pct.toFixed(0)}%;background:${col}"></div></div>
       <div class="goalc-figs"><div><div class="goalc-big">${fmtS(g.current)}</div><div class="goalc-lbl">saved</div></div><div class="r"><div class="goalc-big">${fmtS(g.target)}</div><div class="goalc-lbl">target</div></div><div class="r"><div class="goalc-big">${fmt(g.monthly)}<span>/mo</span></div><div class="goalc-lbl">contributing</div></div></div>
+      ${whatIf}
       <div class="goalc-note">${gnote}</div>
     </div>`;
   }).join(''); }
