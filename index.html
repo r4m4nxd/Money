@@ -1175,6 +1175,31 @@ body{letter-spacing:-0.006em}
 .goalc-big{font-family:'Hanken Grotesk';font-weight:700;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
 .goalc-big span{font-size:11px;color:var(--muted);font-weight:500}
 .goalc-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em}
+.wl-add{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.wl-add input{flex:1;min-width:120px;padding:8px 11px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12.5px;outline:none}
+.wl-add input[type=number]{flex:0 0 110px}
+.wl-row{padding:9px 0;border-top:1px solid var(--border)}
+.wl-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;margin-bottom:6px}
+.wl-name{font-weight:600;cursor:pointer}.wl-v{font-variant-numeric:tabular-nums;color:var(--muted2);display:flex;align-items:center;gap:6px}
+.wl-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 4px}.wl-x:hover{color:var(--red)}
+.wl-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.ru-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}@media(max-width:640px){.ru-grid{grid-template-columns:repeat(2,1fr)}}
+.ru-tile{display:flex;flex-direction:column;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px}
+.ru-tile span{font-size:11px;color:var(--muted)}.ru-tile b{font-size:16px;font-variant-numeric:tabular-nums}.ru-tile small{font-size:11px;color:var(--muted2)}
+.proj-kpis{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.proj-kpis>div{display:flex;flex-direction:column;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px}
+.proj-kpis span{font-size:10.5px;color:var(--muted)}.proj-kpis b{font-size:15px;font-variant-numeric:tabular-nums}.proj-kpis small{font-size:10.5px;color:var(--muted2)}
+.proj-warn{font-size:12.5px;padding:9px 12px;border-radius:8px;background:rgba(224,90,90,.12);border:1px solid rgba(224,90,90,.35);margin-bottom:10px}
+.proj-note{font-size:11.5px;color:var(--muted);margin-top:6px}.proj-note a{color:var(--brand)}
+.aom{display:flex;flex-direction:column;align-items:flex-end;cursor:help}.aom span{font-size:10.5px;color:var(--muted)}.aom b{font-size:16px;font-variant-numeric:tabular-nums}
+.flow-wrap{overflow-x:auto}
+.flow-lbl{font-size:13px;fill:var(--text);font-family:'Hanken Grotesk',sans-serif}.flow-v{fill:var(--muted2);font-weight:600}
+.flow-foot{font-size:12.5px;color:var(--muted2);margin-top:10px;font-variant-numeric:tabular-nums}
+.ro-toggle{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text);margin:6px 0;cursor:pointer}
+.ro-from{align-items:center;gap:8px;font-size:12px;color:var(--muted2);margin-bottom:8px}
+.ro-from input{padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12px}
+.ro-tag{font-size:10.5px;font-weight:600;padding:0 5px;border-radius:5px}
+.ro-tag.pos{background:rgba(63,203,142,.14);color:var(--green)}.ro-tag.neg{background:rgba(224,90,90,.14);color:var(--red)}
 .uc-cover{font-size:10.5px;color:var(--muted);margin-top:2px}
 .pace-hero{font-size:13px;color:var(--muted2);margin-bottom:10px}.pace-hero b{font-size:17px;font-variant-numeric:tabular-nums}.pace-hero span{font-size:11.5px}
 .pace-row{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:12.5px}
@@ -1607,6 +1632,7 @@ html.overscrolling .page{backface-visibility:hidden}
   <div class="page" id="page-calendar">
     <div class="ph"><div class="ph-l"><div class="ph-title">Financial Calendar</div><div class="ph-sub" id="cal-sub">Paydays, bills &amp; due dates</div></div><div class="cal-nav"><button class="m-arrow" onclick="calMonth(-1)" aria-label="Previous month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><span id="cal-month-lbl"></span><button class="m-arrow" onclick="calMonth(1)" aria-label="Next month"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div></div>
     <div class="card" id="cal-grid-card"><div id="cal-grid"></div></div>
+    <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Projected cash balance</div><div class="card-sub" id="cal-proj-sub">Next 60 days · paydays − bills − your usual day-to-day spending</div></div></div><div id="cal-proj"></div></div>
     <div class="modal-bg hidden" id="cal-day-bg" onclick="if(event.target===this)closeBudDayPop()"><div class="modal bud-day-card" id="cal-day-pop" onclick="event.stopPropagation()"></div></div>
     <div class="row row-1"><div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">This month's flow</div><div class="card-sub">Expected money in &amp; out</div></div></div><div id="cal-flow"></div></div></div>
   </div>
@@ -1616,6 +1642,7 @@ html.overscrolling .page{backface-visibility:hidden}
     <div class="ph"><div class="ph-l"><div class="ph-title">Goals</div><div class="ph-sub">Where you're headed — with forecast completion dates</div></div><div class="card-link" onclick="nav('settings')">Edit targets &rarr;</div></div>
     <div class="card goals-hero-card" id="goals-hero"></div>
     <div id="goals-cards" class="goals-cards"></div>
+    <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Round-up savings</div><div class="card-sub">What you'd save by rounding every purchase up (KOHO-style) — set up the same amount as an automatic transfer</div></div></div><div id="goals-roundup"></div></div>
   </div>
 
   <div class="page" id="page-accounts">
@@ -1699,6 +1726,7 @@ html.overscrolling .page{backface-visibility:hidden}
     </div>
     <div class="cf-summary" id="cf-summary"></div>
     <div class="card" id="cf-trends-card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Trends</div><div class="card-sub">Month-over-month · year-over-year</div></div></div><div id="cf-trends"></div></div>
+    <div class="card" id="cf-flow-card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Where your money went</div><div class="card-sub" id="cf-flow-sub">Income → spending → saved</div></div><div class="aom" id="cf-aom" title="Age of Money: on average, how many days old a dollar is when you spend it. Higher = more buffer between earning and spending. Aim for 30+."></div></div><div id="cf-flow"></div></div>
     <div class="card" id="cf-mca-card" style="margin-bottom:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Monthly Averages by Category</div><div class="card-sub" id="cf-mca-sub">Based on the selected date range</div></div></div><div id="cf-mca"></div></div>
     <div class="row row-2">
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">50 / 30 / 20 Rule</div><div class="card-sub">Needs · Wants · Savings</div></div></div><div id="cf-503020"></div></div>
@@ -1726,6 +1754,9 @@ html.overscrolling .page{backface-visibility:hidden}
       <div class="card" style="overflow-y:auto"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Categories</div><div class="card-sub">Tap a category for its trend · tap the amount to set a budget</div></div></div><div id="budget-bars"></div></div>
       <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">6-Month Trend</div></div></div><div id="budget-trend"></div></div>
     </div>
+    <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Watchlists</div><div class="card-sub">Monthly limits for specific merchants or keywords (e.g. Amazon, Uber, McDonald's)</div></div></div>
+      <div class="wl-add"><input id="wl-key" placeholder="Merchant or keyword" list="wl-suggest"><datalist id="wl-suggest"></datalist><input id="wl-lim" type="number" min="0" step="10" placeholder="$ / month"><button class="btn btn-brand btn-sm" onclick="addWatch()">+ Watch</button></div>
+      <div id="wl-list"></div></div>
     <div class="modal-bg hidden" id="bud-day-bg" onclick="if(event.target===this)closeBudDayPop()"><div class="modal bud-day-card" id="bud-day-pop" onclick="event.stopPropagation()"></div></div>
   </div>
 
@@ -1861,6 +1892,8 @@ html.overscrolling .page{backface-visibility:hidden}
     <div class="modal-title" id="budedit-title">Set budget target</div>
     <div class="modal-body">Enter monthly target for <b id="budedit-cat"></b></div>
     <input id="budedit-input" type="number" step="10" min="0" style="width:100%;padding:9px 13px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Source Code Pro',monospace;font-size:15px;outline:none;margin-bottom:8px" placeholder="0">
+    <label class="ro-toggle"><input type="checkbox" id="budedit-roll" onchange="document.getElementById('budedit-rollfrom-wrap').style.display=this.checked?'flex':'none'"> Roll over leftover (or overspend) to next month</label>
+    <div id="budedit-rollfrom-wrap" class="ro-from" style="display:none">Starting from <input type="month" id="budedit-rollfrom"></div>
     <div class="modal-actions">
       <button class="btn btn-sm" onclick="closeBudEdit()">Cancel</button>
       <button class="btn btn-brand btn-sm" onclick="saveBudEdit()">Save</button>
@@ -4213,9 +4246,57 @@ function renderCatAverages(){
       <tr><td style="font-weight:700">Total</td><td class="mca-hide-sm"></td><td style="font-weight:700">${fmt(avgSp)}</td><td class="mca-hide-sm"></td><td>${fmt(spend[lastYM])}</td><td></td><td class="mca-hide-sm"></td><td class="mca-hide-sm">100%</td><td class="mca-hide-sm"></td></tr>
     </tbody></table></div>`;
 }
+// Age of Money (YNAB): FIFO-match each outflow to the oldest income dollars; average age of the last 10 outflows
+function ageOfMoney(){
+  const EXA=['WS TFSA','WS Cash','WS RRSP'];
+  const tx=TXNS.filter(t=>!EXA.includes(t.account)&&t.cat!=='Transfers'&&(t.amount<0||INCOME_CATS.includes(t.cat))).slice().sort((a,b)=>a.date.localeCompare(b.date)||b.amount-a.amount);
+  const q=[]; let qi=0; const ages=[];
+  tx.forEach(t=>{
+    if(t.amount>0){ q.push({d:t.date,left:t.amount}); return; }
+    let need=-t.amount, wsum=0, used=0;
+    while(need>0.005&&qi<q.length){ const b=q[qi]; const take=Math.min(need,b.left); wsum+=take*((new Date(t.date)-new Date(b.d))/864e5); used+=take; b.left-=take; need-=take; if(b.left<=0.005) qi++; }
+    if(used>0) ages.push(wsum/used);
+  });
+  const last=ages.slice(-10); return last.length?Math.round(last.reduce((a,b)=>a+b,0)/last.length):null;
+}
+// Sankey-style flow: income sources → categories + saved, over the selected date scope
+function renderMoneyFlow(){
+  const host=document.getElementById('cf-flow'); if(!host) return;
+  const aom=ageOfMoney(), ae=document.getElementById('cf-aom');
+  if(ae) ae.innerHTML=aom!=null?`<span>Age of money</span><b style="color:${aom>=30?'var(--green)':aom>=14?'var(--orange)':'var(--red)'}">${aom} days</b>`:'';
+  const EXA=['WS TFSA','WS Cash','WS RRSP'], NS=['Transfers','Returns'];
+  const tx=TXNS.filter(t=>inScope(t.date)&&!EXA.includes(t.account));
+  const r=getDateRange(); const sub=document.getElementById('cf-flow-sub');
+  if(sub) sub.textContent=(DATE_FILTER.preset==='this_month'||DATE_FILTER.preset==='last_month'?ymLabel(currentMonth,{month:'long',year:'numeric'}):r.label)+' · income → spending → saved';
+  const inc={}; tx.filter(t=>t.amount>0&&INCOME_CATS.includes(t.cat)).forEach(t=>{inc[t.cat]=(inc[t.cat]||0)+t.amount;});
+  const out={}; tx.filter(t=>t.amount<0&&!NS.includes(t.cat)&&t.cat!=='Investment'&&!INCOME_CATS.includes(t.cat)).forEach(t=>{out[t.cat]=(out[t.cat]||0)-t.amount;});
+  const invested=tx.filter(t=>t.amount<0&&t.cat==='Investment').reduce((s,t)=>s-t.amount,0);
+  const totIn=Object.values(inc).reduce((a,b)=>a+b,0), totOut=Object.values(out).reduce((a,b)=>a+b,0)+invested;
+  if(!totIn&&!totOut){ host.innerHTML='<div class="empty">No income or spending in this range</div>'; return; }
+  let right=Object.entries(out).sort((a,b)=>b[1]-a[1]); if(right.length>9){ const rest=right.slice(8).reduce((s,x)=>s+x[1],0); right=right.slice(0,8).concat([['Everything else',rest]]); }
+  if(invested>0) right.push(['Invested',invested]);
+  const saved=totIn-totOut; if(saved>0) right.push(['Saved',saved]);
+  const left=Object.entries(inc).sort((a,b)=>b[1]-a[1]); if(saved<0) left.push(['From savings',-saved]);
+  const total=Math.max(totIn,totOut)||1, W=1000, gap=6, H=Math.max(260,right.length*34), colW=14, lx=170, rx=W-230, mx=W/2-colW/2;
+  const scale=(H-gap*(Math.max(left.length,right.length)-1))/total;
+  const col=c=>c==='Saved'?'var(--green)':c==='Invested'?'var(--purple)':c==='From savings'?'var(--red)':(CAT_MAP[c]||CAT_MAP.Other).color;
+  let y=0; const L=left.map(([c,v])=>{const h=Math.max(2,v*scale);const o={c,v,y,h};y+=h+gap;return o;});
+  y=0; const R=right.map(([c,v])=>{const h=Math.max(2,v*scale);const o={c,v,y,h};y+=h+gap;return o;});
+  const midH=total*scale, midY=(H-midH)/2;
+  let ml=midY, mr=midY, paths='';
+  const band=(x1,y1,h1,x2,y2,h2,c,tip)=>{const cx=(x1+x2)/2;return `<path d="M${x1} ${y1}C${cx} ${y1} ${cx} ${y2} ${x2} ${y2}L${x2} ${y2+h2}C${cx} ${y2+h2} ${cx} ${y1+h1} ${x1} ${y1+h1}Z" fill="${c}" opacity=".32" onmousemove="showTip('${tip}',event)" onmouseleave="hideTip()"/>`;};
+  L.forEach(n=>{paths+=band(lx+colW,n.y,n.h,mx,ml,n.h,col(n.c),`<b>${n.c}</b><br>${fmt(n.v)}`); ml+=n.h;});
+  R.forEach(n=>{paths+=band(mx+colW,mr,n.h,rx,n.y,n.h,col(n.c),`<b>${n.c}</b><br>${fmt(n.v)} · ${(n.v/(totIn||total)*100).toFixed(0)}% of income`); mr+=n.h;});
+  const nodes=L.map(n=>`<rect x="${lx}" y="${n.y}" width="${colW}" height="${n.h}" rx="3" fill="${col(n.c)}"/><text x="${lx-8}" y="${n.y+n.h/2+4}" text-anchor="end" class="flow-lbl">${n.c} <tspan class="flow-v">${fmtS(n.v)}</tspan></text>`).join('')
+    +`<rect x="${mx}" y="${midY}" width="${colW}" height="${midH}" rx="3" fill="var(--brand)"/>`
+    +R.map(n=>`<rect x="${rx}" y="${n.y}" width="${colW}" height="${n.h}" rx="3" fill="${col(n.c)}" style="cursor:${['Saved','Invested','Everything else'].includes(n.c)?'default':'pointer'}" ${!['Saved','Invested','Everything else'].includes(n.c)?`onclick="drillCategory('${n.c.replace(/'/g,"\\'")}')"`:''}/><text x="${rx+colW+8}" y="${n.y+n.h/2+4}" class="flow-lbl">${n.c} <tspan class="flow-v">${fmtS(n.v)}</tspan></text>`).join('');
+  host.innerHTML=`<div class="flow-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:560px;display:block">${paths}${nodes}</svg></div>
+    <div class="flow-foot">In <b style="color:var(--green)">${fmt(totIn)}</b> · Spent <b style="color:var(--red)">${fmt(totOut-invested)}</b> · ${invested?`Invested <b style="color:var(--purple)">${fmt(invested)}</b> · `:''}${saved>=0?`Saved <b style="color:var(--green)">${fmt(saved)}</b> (${totIn?(saved/totIn*100).toFixed(0):0}%)`:`Drew <b style="color:var(--red)">${fmt(-saved)}</b> from savings`}</div>`;
+}
 function renderCashflow() {
   updateMonthLabels();
   renderTrends();
+  renderMoneyFlow();
   renderCatAverages();
   const ym = currentMonth;
   const txns = TXNS.filter(t=>t.date.startsWith(ym) && !['WS TFSA','WS Cash','WS RRSP'].includes(t.account));
@@ -4518,19 +4599,42 @@ function renderBudget() {
   const byCat={}; txns.forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+Math.abs(t.amount);});
   document.getElementById('budget-bars').innerHTML = CAT_META
     .filter(m=>!EXCLUDED_CATS.includes(m.cat))
-    .map(m=>({cat:m.cat, icon:m.icon, bud:BUDGET_TARGETS[m.cat]||0, spent:byCat[m.cat]||0}))
-    .filter(r=>r.bud>0 || r.spent>0)
+    .map(m=>{ const base=BUDGET_TARGETS[m.cat]||0, ro=rolloverFor(m.cat,ym); return {cat:m.cat, icon:m.icon, base, ro, bud:Math.max(0,base+ro), spent:byCat[m.cat]||0}; })
+    .filter(r=>r.base>0 || r.spent>0)
     .sort((a,b)=> (b.bud>0?b.spent/b.bud:0) - (a.bud>0?a.spent/a.bud:0) || b.spent-a.spent )
     .map(r=>{
       const pct = r.bud>0 ? Math.min(r.spent/r.bud*100,100) : 0;
       const col = r.bud===0 ? 'var(--border2)' : pct>=100 ? 'var(--red)' : pct>=80 ? 'var(--orange)' : pct>=60 ? 'var(--yellow)' : 'var(--green)';
-      const vals = r.bud>0 ? `${fmt(r.spent)} / ${fmt(r.bud)}` : `${fmt(r.spent)} · <span style="color:var(--brand)">set budget</span>`;
+      const roTag = r.ro ? ` <span class="ro-tag ${r.ro>0?'pos':'neg'}" title="Rolled over from previous months (base ${fmt(r.base)})">${r.ro>0?'+':'−'}${fmtS(Math.abs(r.ro))} ↻</span>` : '';
+      const vals = r.base>0 ? `${fmt(r.spent)} / ${fmt(r.bud)}${roTag}` : `${fmt(r.spent)} · <span style="color:var(--brand)">set budget</span>`;
       return `<div class="budget-item${budgetTrendCat===r.cat?' bi-active':''}" onclick="selectBudgetCat('${r.cat}',event)" style="cursor:pointer">
         <div class="bi-row"><div class="bi-name"><span class="ic">${r.icon||'•'}</span>${r.cat}</div><div class="bi-vals" onclick="event.stopPropagation();editBudget('${r.cat}')" style="cursor:pointer">${vals}</div></div>
         <div class="bbar"><div class="bfill" style="width:${pct}%;background:${col}"></div></div>
       </div>`;
     }).join('');
   renderBudgetTrend();
+  renderWatchlists();
+}
+// ── Watchlists: per-merchant/keyword monthly limits ──
+function watchSpent(key, ym){ const k=key.toLowerCase();
+  return TXNS.filter(t=>t.date.startsWith(ym)&&t.amount<0&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)&&(merchantName(t.description).toLowerCase().includes(k)||String(t.description).toLowerCase().includes(k)||t.cat.toLowerCase()===k)).reduce((s,t)=>s-t.amount,0); }
+function addWatch(){ const k=document.getElementById('wl-key').value.trim(), l=parseFloat(document.getElementById('wl-lim').value)||0;
+  if(!k){ toast('Enter a merchant or keyword'); return; }
+  SETTINGS.watchlist=(SETTINGS.watchlist||[]).filter(w=>w.key.toLowerCase()!==k.toLowerCase()).concat([{key:k,limit:l}]); saveSettings(); renderWatchlists(); toast('Watching '+k); }
+function removeWatch(k){ SETTINGS.watchlist=(SETTINGS.watchlist||[]).filter(w=>w.key!==k); saveSettings(); renderWatchlists(); }
+function renderWatchlists(){
+  const host=document.getElementById('wl-list'); if(!host) return;
+  const dl=document.getElementById('wl-suggest');
+  if(dl&&!dl.children.length){ const c={}; TXNS.filter(t=>t.amount<0).forEach(t=>{const n=merchantName(t.description);c[n]=(c[n]||0)+1;}); dl.innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,40).map(([n])=>`<option value="${n.replace(/"/g,'&quot;')}">`).join(''); }
+  const wl=SETTINGS.watchlist||[]; const [y,m]=currentMonth.split('-').map(Number);
+  const prevYMs=[1,2,3].map(i=>{const d=new Date(y,m-1-i,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');});
+  host.innerHTML=wl.length?wl.map(w=>{ const sp=watchSpent(w.key,currentMonth), avg=prevYMs.reduce((s,k)=>s+watchSpent(w.key,k),0)/3;
+    const pct=w.limit?Math.min(100,sp/w.limit*100):0, col=!w.limit?'var(--brand)':sp>w.limit?'var(--red)':pct>=80?'var(--orange)':'var(--green)';
+    const safe=w.key.replace(/'/g,"\\'");
+    return `<div class="wl-row"><div class="wl-top"><span class="wl-name" onclick="drillCategory('${safe}')">${w.key}</span><span class="wl-v"><b style="color:${col}">${fmt(sp)}</b>${w.limit?` / ${fmt(w.limit)}`:''}<button class="wl-x" onclick="removeWatch('${safe}')" title="Stop watching">✕</button></span></div>
+      <div class="bbar"><div class="bfill" style="width:${w.limit?pct:0}%;background:${col}"></div></div>
+      <div class="wl-sub">3-mo avg ${fmt(avg)}/mo${w.limit&&sp>w.limit?` · <span style="color:var(--red)">over by ${fmt(sp-w.limit)}</span>`:w.limit?` · ${fmt(w.limit-sp)} left`:''}</div></div>`; }).join('')
+    :'<div class="empty" style="padding:14px">Nothing watched yet — add a merchant you tend to overspend at.</div>';
 }
 
 function filterByDate(ds) {
@@ -4594,10 +4698,23 @@ function renderBudgetTrend() {
 }
 
 let budEditCat=null;
+// Rollover (YNAB/Monarch style): carry each month's leftover (or overspend) since the start month into ym
+function rolloverFor(cat, ym){
+  const from=(SETTINGS.rollover||{})[cat]; const bud=BUDGET_TARGETS[cat]||0;
+  if(!from||!bud||from>=ym) return 0;
+  let carry=0; let [y,m]=from.split('-').map(Number);
+  while(true){ const k=y+'-'+String(m).padStart(2,'0'); if(k>=ym) break;
+    const spent=TXNS.filter(t=>t.cat===cat&&t.amount<0&&t.date.startsWith(k)&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).reduce((s,t)=>s-t.amount,0);
+    carry+=bud-spent; m++; if(m>12){m=1;y++;} }
+  return carry;
+}
 function editBudget(cat) {
   budEditCat=cat;
   document.getElementById('budedit-cat').textContent=cat;
   document.getElementById('budedit-input').value=BUDGET_TARGETS[cat]||0;
+  const ro=(SETTINGS.rollover||{})[cat]; const rb=document.getElementById('budedit-roll');
+  rb.checked=!!ro; document.getElementById('budedit-rollfrom-wrap').style.display=ro?'flex':'none';
+  document.getElementById('budedit-rollfrom').value=ro||(()=>{const [y,m]=currentMonth.split('-').map(Number);const d=new Date(y,m-4,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');})();
   document.getElementById('budedit-bg').classList.remove('hidden');
   setTimeout(()=>document.getElementById('budedit-input').focus(),50);
 }
@@ -4606,8 +4723,10 @@ function saveBudEdit() {
   const v = parseFloat(document.getElementById('budedit-input').value)||0;
   if (budEditCat){ if(v>0) BUDGET_TARGETS[budEditCat]=v; else delete BUDGET_TARGETS[budEditCat]; }
   SETTINGS.budgetTargets = BUDGET_TARGETS;      // persist locally so it survives reloads
+  SETTINGS.rollover=SETTINGS.rollover||{};
+  if(budEditCat){ if(document.getElementById('budedit-roll').checked) SETTINGS.rollover[budEditCat]=document.getElementById('budedit-rollfrom').value||currentMonth; else delete SETTINGS.rollover[budEditCat]; }
   saveSettings();
-  closeBudEdit(); renderBudget();
+  closeBudEdit(); renderBudget(); if(document.querySelector('#page-categories.active')) renderCategories();
   toast(v>0?'Budget set to '+fmt(v):'Budget cleared');
 }
 document.getElementById('budedit-bg').addEventListener('click', e=>{if(e.target===e.currentTarget)closeBudEdit();});
@@ -5120,7 +5239,7 @@ function renderCategories() {
   const totalBudget = Object.values(BUDGET_TARGETS).reduce((s,v)=>s+v,0);
   // donut card
   const monShort=ymLabel(currentMonth,{month:'short'});
-  const reg = CAT_META.filter(m=>!EXCLUDED_CATS.includes(m.cat)).map(m=>({...m, spent:spentByCat[m.cat]||0, budget:BUDGET_TARGETS[m.cat]||0}))
+  const reg = CAT_META.filter(m=>!EXCLUDED_CATS.includes(m.cat)).map(m=>{ const ro=rolloverFor(m.cat,currentMonth); return {...m, ro, spent:spentByCat[m.cat]||0, budget:Math.max(0,(BUDGET_TARGETS[m.cat]||0)+ro)}; })
     .sort((a,b)=> (b.spent-a.spent) || (b.budget-a.budget));
   // donut arcs by SPENDING share — clickable, with tooltips
   const r=52,cx=66,cy=66,sw=14,circ=2*Math.PI*r; let off=0,slices='';
@@ -5146,7 +5265,7 @@ function renderCategories() {
     return `<div class="catrow2" onclick="drillCategory('${c.cat}')">
       <div class="catrow2-ic" style="background:${c.color}1f;color:${c.color}">${c.icon}</div>
       <div class="catrow2-main">
-        <div class="catrow2-top"><span class="catrow2-name">${c.cat}</span><span class="catrow2-nums"><b>${fmt(c.spent)}</b> <span class="catrow2-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">/ ${c.budget?fmt(c.budget):'Set'}</span></span></div>
+        <div class="catrow2-top"><span class="catrow2-name">${c.cat}</span><span class="catrow2-nums"><b>${fmt(c.spent)}</b> <span class="catrow2-budget" onclick="event.stopPropagation();editBudget('${c.cat}')" title="Edit budget">/ ${c.budget?fmt(c.budget):'Set'}${c.ro?` <span class="ro-tag ${c.ro>0?'pos':'neg'}">${c.ro>0?'+':'−'}${fmtS(Math.abs(c.ro))} ↻</span>`:''}</span></span></div>
         <div class="catrow2-track"><div class="catrow2-fill" style="width:${pct}%;${fillStyle}"></div></div>
         ${hint}
       </div>
@@ -5823,6 +5942,10 @@ function buildInsights(){
   Object.keys(cur).forEach(c=>{ const avg=(past[c]||0)/3; if(avg>20 && cur[c]>avg*1.5 && cur[c]-avg>60){
     out.push({tone:'risk',icon:'bolt',title:`${c} spending is up`,detail:`${fmt(cur[c])} this month vs ${fmt(avg)} typical — ${Math.round((cur[c]/avg-1)*100)}% higher`});
   }});
+  // 1b) watchlist limits hit (merchant/keyword caps set on the Budget page)
+  (SETTINGS.watchlist||[]).forEach(w=>{ if(!w.limit) return; const sp=watchSpent(w.key,currentMonth);
+    if(sp>w.limit) out.unshift({tone:'risk',icon:'alert',title:`Over your ${w.key} limit`,detail:`${fmt(sp)} this month vs ${fmt(w.limit)} limit`});
+    else if(sp>=w.limit*0.8) out.push({tone:'info',icon:'alert',title:`${w.key}: ${Math.round(sp/w.limit*100)}% of limit`,detail:`${fmt(w.limit-sp)} left this month`}); });
   // 2) subscription increase: recurring whose latest charge jumped
   detectRecurring().forEach(r=>{ const ts=TXNS.filter(t=>merchKey(t.description)===r.merchant&&t.amount<0).sort((a,b)=>a.date.localeCompare(b.date));
     if(ts.length>=3){ const last=Math.abs(ts[ts.length-1].amount); if(last>r.avgAmt*1.12 && last-r.avgAmt>1.5){
@@ -5976,6 +6099,7 @@ function renderCalendar(){
   }
   document.getElementById('cal-grid').innerHTML=`<div class="cal-grid">${cells}</div>
     <div class="cal-legend"><span><i class="cal-dot cal-pay"></i>Payday</span><span><i class="cal-dot cal-bill"></i>Bill</span><span><i class="cal-dot cal-due"></i>Card due</span></div>`;
+  renderCashProjection();
   const pop=document.getElementById('cal-pop'); if(pop) pop.classList.add('hidden');
   // flow summary
   let inc=0,out=0; Object.values(ev).flat().forEach(e=>{ if(e.type==='pay')inc+=e.amt; else out+=e.amt; });
@@ -5986,6 +6110,47 @@ function renderCalendar(){
       ${tile(icon('receipt'),'Expected out',fmt(out),'risk')}
       ${tile(icon('wallet'),'Net',(inc-out>=0?'+':'−')+fmt(inc-out),inc-out>=0?'good':'risk')}
     </div>`; }
+}
+// Forward cash projection (Simplifi-style): start from chequing balances, add expected pay, subtract bills + avg daily flex spend
+function renderCashProjection(){
+  const host=document.getElementById('cal-proj'); if(!host) return;
+  const chq=ACCOUNTS.filter(a=>a.type==='chequing'), bals=chq.map(a=>getBal(a.name)), known=bals.some(v=>v!=null);
+  const start=bals.reduce((s,v)=>s+(v||0),0);
+  const cardOwed=ACCOUNTS.filter(a=>a.type==='credit').reduce((s,a)=>s+(getCreditOutstanding(a.name)||0),0);
+  // avg daily non-recurring spend over the last 90 days of data
+  const last=TXNS.reduce((a,t)=>t.date>a?t.date:a,''); if(!last){ host.innerHTML='<div class="empty">No data yet</div>'; return; }
+  const from90=new Date(new Date(last+'T00:00:00')-90*864e5).toISOString().slice(0,10);
+  const recM=new Set(detectRecurring().map(r=>r.merchant));
+  const flex=TXNS.filter(t=>t.date>from90&&t.date<=last&&t.amount<0&&!['Transfers','Investment','Returns'].includes(t.cat)&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)&&!recM.has(merchKey(t.description))).reduce((s,t)=>s-t.amount,0)/90;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const evCache={}; const evFor=d=>{const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); return (evCache[ym]=evCache[ym]||getCalEvents(ym))[d.getDate()]||[];};
+  const pts=[]; let bal=start, low={v:Infinity}, events=[];
+  for(let i=0;i<=60;i++){ const d=new Date(today); d.setDate(d.getDate()+i);
+    if(i>0){ bal-=flex; evFor(d).filter(e=>!e.paid).forEach(e=>{ if(e.type==='pay') bal+=e.amt; else if(e.type==='bill') bal-=e.amt; /* card dues skipped: day-to-day spend already counts card purchases */ if(e.amt>50) events.push({d,e}); }); }
+    pts.push({d,v:bal}); if(bal<low.v) low={v:bal,d}; }
+  const W=1000,H=200,pl=8,pr=8,pt=16,pb=24, vs=pts.map(p=>p.v), mn=Math.min(...vs,0), mxv=Math.max(...vs,1), rg=mxv-mn||1;
+  const X=i=>pl+i/60*(W-pl-pr), Y=v=>pt+(1-(v-mn)/rg)*(H-pt-pb);
+  const line=pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p.v).toFixed(1)).join(' ');
+  const zero=mn<0?`<line x1="${pl}" x2="${W-pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--red)" stroke-dasharray="4 4" opacity=".6"/>`:'';
+  const li=pts.findIndex(p=>p.v===low.v);
+  const ticks=[0,15,30,45,60].map(i=>`<text x="${X(i)}" y="${H-6}" text-anchor="${i===0?'start':i===60?'end':'middle'}" fill="var(--muted)" font-size="11">${pts[i].d.toLocaleDateString('en',{month:'short',day:'numeric'})}</text>`).join('');
+  const endV=pts[60].v, lowCol=!known?'var(--muted2)':low.v<0?'var(--red)':low.v<500?'var(--orange)':'var(--green)';
+  host.innerHTML=`<div class="proj-kpis">
+      <div><span>${known?'Cash today':'Start (balances not set)'}</span><b>${fmt(start)}</b></div>
+      <div><span>Lowest point</span><b style="color:${lowCol}">${low.v<0?'−':''}${fmt(low.v)}</b><small>${low.d.toLocaleDateString('en',{month:'short',day:'numeric'})}</small></div>
+      <div><span>In 60 days</span><b style="color:${endV>=start?'var(--green)':'var(--red)'}">${endV<0?'−':''}${fmt(endV)}</b></div>
+      <div><span>Day-to-day spend</span><b>${fmt(flex)}/day</b></div>
+      ${cardOwed?`<div><span>Card balances owed</span><b style="color:var(--orange)">${fmt(cardOwed)}</b></div>`:''}
+    </div>
+    ${known&&low.v<0?`<div class="proj-warn">⚠ You're projected to go <b>${fmt(-low.v)}</b> below zero around <b>${low.d.toLocaleDateString('en',{month:'long',day:'numeric'})}</b>. Move money or trim flex spending before then.</div>`:''}
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block">${zero}
+      <path d="${line} L${X(60)} ${H-pb} L${X(0)} ${H-pb}Z" fill="var(--brand)" opacity=".08"/>
+      <path d="${line}" fill="none" stroke="var(--brand)" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="${X(li)}" cy="${Y(low.v)}" r="4.5" fill="${lowCol}"/>${ticks}
+      <rect x="0" y="0" width="${W}" height="${H}" fill="transparent" onmousemove="(function(ev,el){const r=el.getBoundingClientRect();const i=Math.max(0,Math.min(60,Math.round((ev.clientX-r.left)/r.width*60)));const p=window._projPts[i];showTip('<b>'+p.d.toLocaleDateString('en',{weekday:'short',month:'short',day:'numeric'})+'</b><br>'+(p.v<0?'−':'')+fmt(p.v),ev)})(event,this)" onmouseleave="hideTip()"/>
+    </svg>
+    ${known?'':`<div class="proj-note">Set your chequing balances on the <a href="#" onclick="nav('accounts');return false">Accounts</a> page for a real projection — this shows the change from $0.</div>`}`;
+  window._projPts=pts;
 }
 function calDay(ds, el){
   const bg=document.getElementById('cal-day-bg'), pop=document.getElementById('cal-day-pop'); if(!bg||!pop) return;
@@ -6099,6 +6264,7 @@ function renderGoalsPage(){
       const sp=Math.abs(t.filter(x=>x.amount<0&&!['Transfers','Investment','Returns'].includes(x.cat)).reduce((s,x)=>s+x.amount,0));
       tot+=inc-sp; n++; }
     return n?tot/n:0; })();
+  renderRoundups();
   const host=document.getElementById('goals-cards');
   if(host){ host.innerHTML=goals.map(g=>{
     if(g.debtGoal){
@@ -6139,6 +6305,16 @@ function renderGoalsPage(){
   }).join(''); }
 }
 
+function renderRoundups(){
+  const host=document.getElementById('goals-roundup'); if(!host) return;
+  const last=TXNS.reduce((a,t)=>t.date>a?t.date:a,''); if(!last){ host.innerHTML='<div class="empty">No data</div>'; return; }
+  const from=new Date(new Date(last+'T00:00:00')-90*864e5).toISOString().slice(0,10);
+  const buys=TXNS.filter(t=>t.date>from&&t.amount<0&&!['Transfers','Investment','Returns','Remittance','Housing','Insurance','Utilities','Telecom'].includes(t.cat)&&!['WS TFSA','WS Cash','WS RRSP'].includes(t.account)).map(t=>-t.amount);
+  const ru=step=>buys.reduce((s,a)=>{const r=Math.ceil(a/step)*step-a;return s+(r<0.005?step:r);},0)/3;
+  const opts=[{l:'Round to $1',v:ru(1)},{l:'Round to $5',v:ru(5)},{l:'$1 round-up ×2',v:ru(1)*2},{l:'$1 round-up ×3',v:ru(1)*3}];
+  host.innerHTML=`<div class="ru-grid">${opts.map(o=>`<div class="ru-tile"><span>${o.l}</span><b>${fmt(o.v)}/mo</b><small>${fmtS(o.v*12)}/yr</small></div>`).join('')}</div>
+    <div class="goalc-note" style="margin-top:10px">Based on ${buys.length} everyday purchases in the last 90 days of data (bills and transfers excluded). A <b>${fmt(ru(1))}/mo</b> automatic transfer to your emergency fund is painless — it's money you're already rounding away.</div>`;
+}
 // ── Behavioral finance: spending personality + strengths/weaknesses ──
 function renderPersonality(){
   const host=document.getElementById('coach-personality'); if(!host)return;
