@@ -1175,6 +1175,14 @@ body{letter-spacing:-0.006em}
 .goalc-big{font-family:'Hanken Grotesk';font-weight:700;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
 .goalc-big span{font-size:11px;color:var(--muted);font-weight:500}
 .goalc-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em}
+.uc-cover{font-size:10.5px;color:var(--muted);margin-top:2px}
+.pace-hero{font-size:13px;color:var(--muted2);margin-bottom:10px}.pace-hero b{font-size:17px;font-variant-numeric:tabular-nums}.pace-hero span{font-size:11.5px}
+.pace-row{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:12.5px}
+.pace-cat{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.pace-bar{position:relative;height:8px;background:var(--surface2);border-radius:4px}
+.pace-bar::after{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--border2)}
+.pace-bar i{position:absolute;top:0;bottom:0;border-radius:4px}
+.pace-v{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
 .rec-fixed{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 .rec-fixed-hd{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted2);margin-bottom:8px}
 .rec-fixed-hd b{color:var(--text);font-variant-numeric:tabular-nums}
@@ -1553,6 +1561,7 @@ html.overscrolling .page{backface-visibility:hidden}
         <div class="card nw-card-wrap"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Net worth</div></div></div><div id="nw-card"></div></div>
         <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Top categories</div><div class="card-sub" id="donut-sub">—</div></div><div class="card-link" onclick="nav('categories')">View all →</div></div><div id="chart-donut"></div></div>
         <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Next two weeks</div><div class="card-sub">Upcoming recurring</div></div><div class="card-link" onclick="nav('recurring')">View all →</div></div><div id="dash-upcoming"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-hd-l"><div class="card-title">Spending pace</div><div class="card-sub" id="dash-pace-sub">This month vs your 3-month average</div></div><div class="card-link" onclick="nav('cashflow')">Details →</div></div><div id="dash-pace"></div></div>
       </div>
     </div>
   </div>
@@ -3068,6 +3077,27 @@ function renderDashboard() {
   renderNetWorthCard();
   renderDonut();
   renderUpcoming();
+  renderPace();
+}
+// month-to-date spend vs the average of the prior 3 months at the same day-of-month, per category
+function renderPace(){
+  const host=document.getElementById('dash-pace'); if(!host) return;
+  const EXA=['WS TFSA','WS Cash','WS RRSP'], NS=['Transfers','Investment','Returns'];
+  const [y,m]=currentMonth.split('-').map(Number), now=new Date();
+  const isCur=now.getFullYear()===y&&now.getMonth()+1===m, dim=new Date(y,m,0).getDate();
+  const lastData=TXNS.reduce((a,t)=>t.date>a?t.date:a,''); // don't compare days we have no data for yet
+  let day=isCur?now.getDate():dim; if(lastData.startsWith(currentMonth)) day=Math.min(day,+lastData.slice(8,10));
+  const spend=(ym,upto)=>{ const o={}; TXNS.filter(t=>t.date.startsWith(ym)&&+t.date.slice(8,10)<=upto&&t.amount<0&&!NS.includes(t.cat)&&!INCOME_CATS.includes(t.cat)&&!EXA.includes(t.account)).forEach(t=>{o[t.cat]=(o[t.cat]||0)+Math.abs(t.amount);}); return o; };
+  const cur=spend(currentMonth,day), prev=[1,2,3].map(i=>{const d=new Date(y,m-1-i,1);return spend(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),day);});
+  const cats=new Set([...Object.keys(cur),...prev.flatMap(Object.keys)]);
+  const rows=[...cats].map(c=>({c,now:cur[c]||0,avg:prev.reduce((s,o)=>s+(o[c]||0),0)/3})).map(r=>({...r,d:r.now-r.avg})).filter(r=>r.now||r.avg);
+  const tNow=rows.reduce((s,r)=>s+r.now,0), tAvg=rows.reduce((s,r)=>s+r.avg,0), td=tNow-tAvg;
+  const sub=document.getElementById('dash-pace-sub'); if(sub) sub.textContent=`${ymLabel(currentMonth,{month:'short'})} 1–${day} vs same days, prior 3 months`;
+  if(!rows.length){ host.innerHTML='<div class="empty">No spending yet</div>'; return; }
+  const top=rows.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).slice(0,5), mx=Math.max(1,...top.map(r=>Math.abs(r.d)));
+  host.innerHTML=`<div class="pace-hero"><b style="color:${td<=0?'var(--green)':'var(--red)'}">${td<=0?'▼':'▲'} ${fmt(Math.abs(td))}</b> ${td<=0?'less':'more'} than usual <span>(${fmt(tNow)} vs ${fmt(tAvg)})</span></div>
+    ${top.map(r=>{const col=r.d<=0?'var(--green)':'var(--red)', w=(Math.abs(r.d)/mx*50).toFixed(1);
+      return `<div class="pace-row" onclick="drillCategory('${r.c.replace(/'/g,"\\'")}')"><span class="pace-cat">${r.c}</span><span class="pace-bar"><i style="${r.d<=0?`right:50%`:`left:50%`};width:${w}%;background:${col}"></i></span><span class="pace-v" style="color:${col}">${r.d<=0?'−':'+'}${fmtS(Math.abs(r.d))}</span></div>`;}).join('')}`;
 }
 
 function renderMonthlySpending() {
@@ -5314,9 +5344,13 @@ function renderImport() {
     <button class="btn btn-sm" style="width:100%;margin-top:6px;justify-content:center" onclick="openDuplicatesModal()">Review duplicates…</button>
   </div>`;
   document.getElementById('upload-grid').innerHTML = enrichCard + wsCard + ACCOUNTS.map(a=>{
-    const count = TXNS.filter(t=>t.account===a.name).length;
+    const at=TXNS.filter(t=>t.account===a.name); const count = at.length;
+    const first=at.reduce((m,t)=>!m||t.date<m?t.date:m,''), last=at.reduce((m,t)=>t.date>m?t.date:m,'');
+    const lastAgo=last?Math.floor((Date.now()-new Date(last+'T00:00:00'))/864e5):null;
+    const fd=d=>new Date(d+'T00:00:00').toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'});
+    const cover=count?`<div class="uc-cover"${lastAgo>14?' style="color:var(--orange)"':''}>${fd(first)} → ${fd(last)}${lastAgo>14?` · import from ${fd(last)}`:''}</div>`:'';
     return `<div class="upload-card">
-      <div class="uc-head"><div><div class="uc-name" style="color:${a.color}">${a.name}</div><div class="uc-count">${count?count+' transactions':'No data'}</div></div><span class="uc-badge ${count?'on':'off'}">${count?'✓':'empty'}</span></div>
+      <div class="uc-head"><div><div class="uc-name" style="color:${a.color}">${a.name}</div><div class="uc-count">${count?count+' transactions':'No data'}</div>${cover}</div><span class="uc-badge ${count?'on':'off'}">${count?'✓':'empty'}</span></div>
       <div class="dropzone" id="dz-${a.id}" ondragover="dzOver(event,'${a.id}')" ondragleave="dzOut('${a.id}')" ondrop="dzDrop(event,'${a.name}','${a.id}')">
         <input type="file" accept=".csv,.xlsx,.pdf" multiple onchange="handleFiles(this.files,'${a.name}','${a.id}')">
         ↑ Drop or click<div class="dropzone-hint">${a.name.includes('WS')||a.name.includes('TFSA')?'PDF statement or CSV':(a.parser.includes('xlsx')?'.xlsx':'CSV')} · multi-file OK</div>
