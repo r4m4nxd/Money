@@ -270,7 +270,40 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .card .fc b{font-family:var(--f-display);font-size:17px;min-width:22px;text-align:right}
 .card .wl{text-align:center;margin-top:6px}
 .card .fm{top:auto;bottom:34px;right:12px}
-.pphoto{display:flex;gap:12px;align-items:center}
+.pphoto{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.cardprev{width:170px;flex:none}.pphoto .cardprev + .face{display:none}
+.cards{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
+.fut{--metal:#E6C36A;--metal2:#F7E3A1;position:relative;display:block;width:100%;aspect-ratio:100/156;container-type:inline-size;border:0;padding:0;background:none;cursor:pointer;font:inherit;color:var(--metal);text-align:left;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.fut.t-silver{--metal:#D7DDE3;--metal2:#F4F7FA}.fut.t-bronze{--metal:#D9A06B;--metal2:#F0C197}
+.fut.off{opacity:.45}
+.fut .frame{position:absolute;inset:0;width:100%;height:100%}
+.fut .ph{position:absolute;right:5cqw;top:7cqw;width:72cqw;height:86cqw;display:grid;place-items:end center;
+  -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 97%),linear-gradient(to right,transparent 0,#000 34%);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,#000 58%,transparent 97%),linear-gradient(to right,transparent 0,#000 34%);mask-composite:intersect}
+.fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.fut .ph .sil{position:absolute;inset:auto 4% 0 4%;width:92%;fill:#8E939C;opacity:.28}
+.fut .ph .ini{position:absolute;top:28%;left:0;right:0;text-align:center;font:800 16cqw var(--f-display);color:var(--metal);opacity:.55}
+.fut .fl{position:absolute;left:8cqw;top:11cqw;width:24cqw;display:flex;flex-direction:column;align-items:center;gap:1cqw;z-index:1}
+.fut .ovr{font:800 21cqw/.85 var(--f-display);color:var(--metal2);letter-spacing:-.02em}
+.fut .ps{font:800 9cqw/1 var(--f-display);color:var(--metal2);letter-spacing:.04em}
+.fut .club{width:12cqw;height:12cqw;border-radius:50%;margin-top:2cqw;box-shadow:0 0 0 .5cqw var(--metal)}
+.fut .no{margin-top:2cqw;width:9cqw;height:8cqw;display:grid;place-items:center;background:var(--metal);color:#15120A;font:800 5.5cqw var(--f-display);clip-path:polygon(0 0,100% 0,50% 100%);padding-bottom:2cqw}
+.fut .st{font-size:7cqw;color:var(--metal2);margin-top:1cqw}
+.fut .fn{position:absolute;left:8cqw;right:8cqw;top:92cqw;text-align:center;font:800 10cqw/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.03em;color:var(--metal2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fut .fs{position:absolute;left:7cqw;right:7cqw;top:106cqw;display:grid;grid-template-columns:repeat(6,1fr);gap:1cqw;text-align:center}
+.fut .fs span{display:flex;flex-direction:column;align-items:center}
+.fut .fs i{font:700 5.2cqw var(--f-display);font-style:normal;color:var(--metal);letter-spacing:.02em}
+.fut .fs b{font:800 8.8cqw/1.05 var(--f-display);color:var(--metal2);letter-spacing:-.02em}
+.fut .fb{position:absolute;left:10cqw;right:10cqw;top:129cqw;display:flex;justify-content:center;align-items:center;gap:5cqw}
+.fut .fb img{width:9cqw;height:9cqw;border-radius:50%;box-shadow:0 0 0 .4cqw var(--metal)}
+.fut .fb .flag{font-size:8cqw;line-height:1}
+.fut .fb .aw{font:700 5.5cqw var(--f-display);color:var(--metal2)}.fut .fb .aw.up{color:#6FE3A6}.fut .fb .aw.dn{color:#FF8A8A}
+.fut.star{filter:drop-shadow(0 0 8px rgba(242,196,107,.35)) drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.fut{transition:transform .2s}.fut:hover{transform:translateY(-3px)}}
+.fut:focus-visible{outline:none;filter:drop-shadow(0 0 0 2px var(--accent)) drop-shadow(0 0 4px var(--accent))}
+.tok .dot img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;border-radius:50%}
+.tok .dot{overflow:hidden}
 .pphoto .face{width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--surface2);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:26px;border:2px solid var(--accent)}
 .pphoto .face img{width:100%;height:100%;object-fit:cover}
 </style>
@@ -292,6 +325,12 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 </div></header>
 <main class="wrap" id="main"><p class="empty">Loading squad…</p></main>
 <div id="modal"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="m-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7E3A1"/><stop offset=".45" stop-color="#C9A24B"/><stop offset=".7" stop-color="#F2D78A"/><stop offset="1" stop-color="#8E6A24"/></linearGradient>
+  <linearGradient id="m-silver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F7FA"/><stop offset=".45" stop-color="#A9B3BD"/><stop offset=".7" stop-color="#E3E8ED"/><stop offset="1" stop-color="#6F7983"/></linearGradient>
+  <linearGradient id="m-bronze" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0C197"/><stop offset=".45" stop-color="#B07442"/><stop offset=".7" stop-color="#E2A777"/><stop offset="1" stop-color="#6E4222"/></linearGradient>
+  <radialGradient id="pan" cx=".6" cy=".25" r=".9"><stop offset="0" stop-color="#2A2A2E"/><stop offset=".55" stop-color="#141417"/><stop offset="1" stop-color="#0A0A0C"/></radialGradient>
+</defs></svg>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -321,11 +360,31 @@ function applyTheme(t){const r=document.documentElement;if(t==='system')r.remove
   const b=document.getElementById('themebtn');if(b)b.textContent=THEME_L[t]}
 let theme=ls('atb_theme')||'system';applyTheme(theme);
 // Photos: square-crop and shrink to a small JPEG so it syncs with the player record
-function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const S2=240,c=document.createElement('canvas');c.width=c.height=S2;
-  const m=Math.min(img.width,img.height);c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/3,m,m,0,0,S2,S2);URL.revokeObjectURL(img.src);res(c.toDataURL('image/jpeg',.8))};
+// Portrait 4:5 crop from the top of the photo (head and chest), shrunk to ~35 KB so it syncs with the player record
+function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const W=360,H=450,c=document.createElement('canvas');c.width=W;c.height=H;
+  const w=img.width,h=img.height,cw=Math.min(w,h*0.8),ch=cw*1.25,sx=(w-cw)/2,sy=Math.max(0,Math.min(h-ch,h*0.03));
+  c.getContext('2d').drawImage(img,sx,sy,cw,ch,0,0,W,H);URL.revokeObjectURL(img.src);res(c.toDataURL('image/jpeg',.82))};
   img.onerror=rej;img.src=URL.createObjectURL(file)})}
 const face=p=>p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name));
 let pendPhoto;
+const NATIONS=[['','None'],['IN','India'],['CA','Canada'],['PK','Pakistan'],['GB-ENG','England'],['GB-SCT','Scotland'],['GB','United Kingdom'],['IE','Ireland'],['US','USA'],['AF','Afghanistan'],['BD','Bangladesh'],['LK','Sri Lanka'],['NP','Nepal'],['PH','Philippines'],['NG','Nigeria'],['GH','Ghana'],['KE','Kenya'],['SO','Somalia'],['ET','Ethiopia'],['ER','Eritrea'],['JM','Jamaica'],['MX','Mexico'],['BR','Brazil'],['AR','Argentina'],['CO','Colombia'],['PT','Portugal'],['ES','Spain'],['IT','Italy'],['DE','Germany'],['FR','France'],['NL','Netherlands'],['PL','Poland'],['UA','Ukraine'],['VN','Vietnam'],['CN','China'],['KR','South Korea'],['LB','Lebanon'],['SY','Syria'],['IR','Iran'],['IQ','Iraq'],['EG','Egypt'],['MA','Morocco']];
+const flag=c=>!c?'':c==='GB-ENG'?'🏴\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}':c==='GB-SCT'?'🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}':String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));
+const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></svg>`;
+const CARD_PATH='M10,0 H90 L100,7 V146 Q100,156 90,156 H10 Q0,156 0,146 V7 Z',IN_PATH='M11.5,2.6 H88.5 L97.4,8.8 V145 Q97.4,153.4 89,153.4 H11 Q2.6,153.4 2.6,145 V8.8 Z',LINE_PATH='M13,5.2 H87 L94.8,10.6 V144 Q94.8,150.8 88,150.8 H12 Q5.2,150.8 5.2,144 V10.6 Z';
+// FC-style card: metal frame by tier, dark panel, faded chest-up photo, OVR/position/crest column, name, six stats, flag and crest.
+function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'gold':tier(r.ovr),f=k=>Math.round((r.a[k]||0)*10),h=r.hist,fm=h.length?h[h.length-1].ovr-r.ovr:0;
+  const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',Math.round(((r.a.str||0)+(r.a.sta||0))*5)]];
+  const tag=btn?'button':'div';
+  return `<${tag} class="fut t-${t}${p.star?' star':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}"`:''}>
+    <svg class="frame" viewBox="0 0 100 156" preserveAspectRatio="none" aria-hidden="true"><path d="${CARD_PATH}" fill="url(#m-${t})"/><path d="${IN_PATH}" fill="url(#pan)"/>
+      ${p.star?`<g class="shards" fill="none" stroke="url(#m-gold)" stroke-width=".35" opacity=".55"><path d="M60,12 L92,30 L74,62 L52,40 Z"/><path d="M74,62 L94,78 L80,98"/><path d="M52,40 L40,20 L60,12"/><path d="M92,30 L96,58"/></g>`:''}
+      <path d="${LINE_PATH}" fill="none" stroke="url(#m-${t})" stroke-width=".6" opacity=".7" vector-effect="non-scaling-stroke"/></svg>
+    <div class="ph">${p.photo?`<img src="${p.photo}" alt="">`:SIL}</div>
+    <div class="fl"><b class="ovr num">${r.ovr}</b><span class="ps">${p.pos}</span><img class="club" src="icons/crest-640.jpg" alt="">${p.number?`<span class="no num">${esc(p.number)}</span>`:''}${p.star?'<span class="st">★</span>':''}</div>
+    <div class="fn">${esc(p.name)}</div>
+    <div class="fs num">${stats.map(([l,v])=>`<span><i>${l}</i><b>${v}</b></span>`).join('')}</div>
+    <div class="fb">${p.nation?`<span class="flag" title="${esc((NATIONS.find(n=>n[0]===p.nation)||[])[1]||'')}">${flag(p.nation)}</span>`:''}<img src="icons/crest-640.jpg" alt="Airdrie United">${r.motm?`<span class="aw">🏆${r.motm}</span>`:''}${h.length&&Math.abs(fm)>1?`<span class="aw ${fm>0?'up':'dn'}">${fm>0?'▲':'▼'}</span>`:''}</div>
+  </${tag}>`}
 function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d.getDay()+7)%7));return d.toISOString().slice(0,10)}
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
@@ -723,12 +782,7 @@ function vSquad(){
     <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
   <div class="cards">${ps.map(p=>{const r=R(p.id);const h=r.hist;const fm=h.length?h[h.length-1].ovr-r.ovr:0;
     const f=k=>Math.round((r.a[k]||0)*10);
-    return `<button class="card ${p.star?'star':tier(r.ovr)} ${p.active===false?'off':''}" data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}">
-      <div class="top"><div class="ol"><div class="ovr num">${r.ovr}</div><div class="ps">${p.pos}</div>${p.star?'<div class="ps">★</div>':''}</div><div class="face">${face(p)}</div></div>
-      ${h.length?`<span class="fm">${fm>1?'▲':fm<-1?'▼':''}</span>`:''}
-      <div class="cn">${esc(p.name)}</div>
-      <div class="fc num"><span><b>${f('spd')}</b>PAC</span><span><b>${f('bal')}</b>DRI</span><span><b>${f('sho')}</b>SHO</span><span><b>${f('def')}</b>DEF</span><span><b>${f('pas')}</b>PAS</span><span><b>${Math.round(((r.a.str||0)+(r.a.sta||0))*5)}</b>PHY</span></div>
-      <div class="wl num">${r.apps} apps · W${r.W} D${r.D} L${r.L}${r.motm?` · 🏆${r.motm}`:""}</div></button>`}).join('')}</div>`;
+    return cardHTML(p)}).join('')}</div>`;
 }
 
 /* ---------- managers (admin only; accounts are created by the atb-managers edge function) ---------- */
@@ -874,10 +928,11 @@ function vGuide(){
     <li><b>Att.</b> = matches played ÷ matches saved this season. <b>±</b> = current OVR minus their starting OVR. <b>Balance gap</b> is saved when you save a match; older matches use today’s ratings.</li>
     <li>Answer and last-minute stats need the Vercel app signed in; the Claude link shows match stats only.</li></ul>`)}
 
-  ${sec('cards','Player cards',`<ul><li><b>Gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players get a navy-and-gold card.</li>
+  ${sec('cards','Player cards',`<ul><li>Cards are dark with a metal frame: <b>gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players always get gold with a glow and shard detail.</li>
+    <li>Top-left: OVR, position, club crest, shirt number (if set) and ★. Bottom: nation flag (if set), crest, 🏆 count and form arrow.</li>
     <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
     <li><b>Apps</b> = matches the player was picked for. W-D-L as above.</li>
-    <li><b>Photo:</b> tap a card → Add photo. It’s cropped square, shrunk to a small image and synced with the player. Without one, the card shows initials.</li>
+    <li><b>Photo:</b> tap a card → Add photo. It’s cropped tall from the top (head and chest), shrunk to a small image, synced with the player, and fades softly into the card. The photo also appears on the pitch view. Without one, the card shows a grey empty player outline.</li>
     <li><b>▲</b> / <b>▼</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
     <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
 
@@ -941,10 +996,12 @@ function playerModal(id){pendPhoto=undefined;
   const r=id?R(id):null;
   openModal(`<div class="mh"><h2>${id?esc(p.name):'New player'}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="stack">
-    <div class="pphoto"><div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}</div></div>
+    <div class="pphoto">${id?`<div class="cardprev">${cardHTML(p,{btn:false})}</div>`:''}<div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}<span class="small muted" style="flex-basis:100%">Best: a photo from the chest up, face centred. It’s cropped tall and fades into the card.</span></div></div>
     <div class="row" style="gap:10px;align-items:flex-end"><label class="f" style="flex:1 1 180px">Name<input id="pn" value="${esc(p.name)}"></label>
     <label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
     <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
+    <label class="f">Shirt no.<input id="pno" inputmode="numeric" maxlength="2" style="width:64px" value="${esc(p.number||'')}"></label>
+    <label class="f">Nation<select id="pnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(p.nation||'')?'selected':''}>${c?flag(c)+' ':''}${n}</option>`).join('')}</select></label>
     <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
     <h3>${id?'Starting ratings':'Starting ratings (1–10)'}</h3>
@@ -1005,7 +1062,7 @@ const PITCH_SVG=`<svg class="mk" viewBox="0 0 300 400" preserveAspectRatio="none
 function pitchHTML(t,lu,ti,interactive){
   const g=splitLU(lu);const Y={GK:90,DEF:71,MID:49,FWD:26};const col=KITHEX[t.kit]||'#555';let k=0;const sel=draft.sel;
   const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;
-    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${esc(initials(p?.name))}</span><span class="tn">${esc(p?.name||'?')}</span></${interactive?'button':'div'}>`};
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name))}</span><span class="tn">${esc(p?.name||'?')}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
   for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?150:94)/k);ids.forEach((id,i)=>{const x=k>=4?13+i*74/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-5:4):0);html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
@@ -1116,7 +1173,7 @@ document.addEventListener('click',async e=>{
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;if(row.dataset.skip==='1'){delete m.ratings[pid];return}const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
   if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
-  if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);return}
+  if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=SIL;return}
   if(a==='addguest'){openModal(`<div class="mh"><h2>Add guest</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
     <div class="row" style="align-items:flex-end;gap:10px"><label class="f" style="flex:1 1 180px">Name<input id="gn"></label><label class="f">Position<select id="gp">${POS.map(x=>`<option>${x}</option>`).join('')}</select></label>
     <label class="f">Level<select id="gl">${[[60,'Beginner (60)'],[66,'Casual (66)'],[72,'Average (72)'],[78,'Good (78)'],[84,'Very good (84)'],[90,'Top (90)']].map(([v,l])=>`<option value="${v}" ${v===72?'selected':''}>${l}</option>`).join('')}</select></label></div>
@@ -1153,7 +1210,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>base[k]=Math.min(10,Math.max(1,+$('#pb_'+k).value||7)));
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
+    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
@@ -1171,7 +1228,7 @@ document.addEventListener('change',async e=>{
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
   if(a==='potm'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));m.potm=el.value||null;await putMatch(m);if(el.value)toast('🏆 '+pById(el.value).name);return}
-  if(a==='photo'){const f=el.files[0];if(!f)return;try{pendPhoto=await shrinkPhoto(f);$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
+  if(a==='photo'){const f=el.files[0];if(!f)return;try{pendPhoto=await shrinkPhoto(f);$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`;const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
   if(a==='form'){const i=+el.dataset.i;const lu=teamLU(i);draft.lu[i]={f:el.value,gk:lu.gk};draft.sel=null;saveDraft();render();return}
   if(a==='gk'){const i=+el.dataset.i;draft.lu[i]={gk:el.checked};draft.sel=null;saveDraft();render();return}
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
