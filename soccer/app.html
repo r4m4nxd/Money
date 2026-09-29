@@ -210,7 +210,15 @@ async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);i<0?S.mat
 async function delMatch(id){S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
 async function putSettings(){if(mode==='db'){try{await db.doc('settings/main').set(S.settings)}catch(e){}}else persistLocal();render()}
 
-async function seedFromFile(){try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}}
+async function seedFromFile(){try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}if(j.season){S.settings.season=j.season;await putSettings()}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}}
+
+/* One-time roster update when seed.json names a new season: drop players not on it, add new ones, refresh names/positions */
+async function syncRoster(){try{const j=await (await fetch('seed.json')).json();if(!j.season||S.settings.season===j.season)return;
+  if(S.players.length){const keep=new Set(j.players.map(p=>p.id));let ch=0;
+    for(const p of S.players.slice())if(!keep.has(p.id)){await delPlayer(p.id);ch++}
+    for(const np of j.players){const cur=pById(np.id);if(!cur){await putPlayer(np);ch++}else if(cur.pos!==np.pos||cur.name!==np.name||cur.active===false){await putPlayer({...cur,name:np.name,pos:np.pos,active:true});ch++}}
+    if(ch)toast('Squad updated to the '+j.season+' roster')}
+  S.settings.season=j.season;await putSettings()}catch(e){}}
 
 /* Supabase sync: one row per document in atb_docs, shaped like the db API the page already uses */
 let supa=null, supaUser=null;
@@ -247,20 +255,20 @@ async function boot(){
   }
   if(db){
     mode='db';
-    let got=0;const done=async()=>{if(++got<2)return;
+    const seen=new Set();let started=false;const done=async k=>{seen.add(k);if(seen.size<3||started)return;started=true;
       const local=ls('atb_state');
       if(cloud==='supa'&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
         for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
-      loaded=true;render()};
-    db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done()},e=>{done()});
-    db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done()},e=>{done()});
-    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}},()=>{});
+      await syncRoster();loaded=true;render()};
+    db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
+    db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
+    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}done('s')},()=>{done('s')});
   }else{
     mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
     if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM'},st.settings)}
     else{try{const j=await (await fetch('seed.json')).json();S.players=j.players;persistLocal()}catch(e){}}
-    loaded=true;render();
+    await syncRoster();loaded=true;render();
   }
 }
 
@@ -359,7 +367,7 @@ function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));
   $('#sub').textContent=S.players.filter(p=>p.active!==false).length+' active players · '+S.matches.length+' matches';
   const m=$('#main');
-  if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from last season’s 31 players and their averaged ratings, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load last season’s squad</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
+  if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster, with last season’s averaged ratings for returning players, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
   m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():vSettings();
 }
 
