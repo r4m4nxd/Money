@@ -13,6 +13,7 @@ cd "$(dirname "$0")"
 <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<style>header.top{top:0!important;padding-top:env(safe-area-inset-top,0px)}#splash{padding-top:env(safe-area-inset-top,0px)}</style>
 </head><body>
 H
 cat app.html; printf '\n</body></html>\n'; } > index.html
