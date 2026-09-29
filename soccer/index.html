@@ -1,5 +1,15 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#072F63">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AUFC">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+</head><body>
 <title>Airdrie Team Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap">
@@ -12,7 +22,7 @@
   --blue:#2F6FD6; --green:#1E9A52; --orange:#EE8A1A; --red:#D23B3B; --purple:#7B4BC9; --black:#2A2E35;
   --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:10px; --boards:#C9D1D8;
+  --r:10px; --club-orange:#E07B24; --boards:#C9D1D8;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0D1520; --surface:#16212E; --surface2:#1B2837; --ink:#E7ECF2; --muted:#93A0B2; --line:#27364A;
@@ -25,6 +35,27 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:0 60px}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:baseline;gap:10px;padding-block:12px 4px;flex-wrap:wrap}
+.brand{align-items:center}.crest{width:34px;height:34px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--club-orange)}
+#splash{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 42%,#0E3F80 0,#072F63 45%,#041C3D 100%);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
+#splash.out{opacity:0;visibility:hidden}
+.sp-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sp-crest{position:relative;width:min(56vw,260px);aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #E07B24,0 18px 50px rgba(0,0,0,.5)}
+.sp-crest img{width:100%;height:100%;display:block}
+.sp-shine{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,235,190,.55) 50%,transparent 65%);transform:translateX(-120%)}
+.sp-ring{position:absolute;top:calc(min(56vw,260px)/-2*0.1);width:calc(min(56vw,260px)*1.1);left:50%;margin-left:calc(min(56vw,260px)*-.55);overflow:visible}
+.sp-ring circle{fill:none;stroke:#E07B24;stroke-width:2.5;stroke-dasharray:604;stroke-dashoffset:604;transform:rotate(-90deg);transform-origin:center}
+.sp-t{margin-top:18px;font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;color:#F2C46B}
+.sp-s{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:#E07B24}
+@media (prefers-reduced-motion:no-preference){
+  .sp-crest{animation:spIn .9s cubic-bezier(.2,.9,.25,1.2) both}
+  .sp-shine{animation:spShine .8s .75s ease-out both}
+  .sp-ring circle{animation:spRing 1s .2s ease-out forwards}
+  .sp-t{animation:spUp .5s .7s ease-out both}.sp-s{animation:spUp .5s .85s ease-out both}
+}
+@keyframes spIn{from{transform:scale(.55) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes spShine{to{transform:translateX(120%)}}
+@keyframes spRing{to{stroke-dashoffset:0}}
+@keyframes spUp{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:.02em;margin:0;text-transform:uppercase;line-height:1}
 .brand small{color:var(--muted);font-size:13px}
 .sync{margin-left:auto;font-size:12px;color:var(--muted)}
@@ -163,8 +194,12 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 @media (prefers-reduced-motion:no-preference){.chip,.btn{transition:background .12s,color .12s}}
 </style>
 
+<div id="splash" aria-hidden="true"><div class="sp-in">
+  <svg class="sp-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
+  <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
+  <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><h1>Airdrie Team Builder</h1><small id="sub">Saturday soccer</small><span class="sync" id="sync"></span></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="34" height="34"><h1>Airdrie United</h1><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match">Match Day</button>
     <button role="tab" data-v="history">Matches &amp; Ratings</button>
@@ -671,6 +706,10 @@ document.addEventListener('change',async e=>{
       for(const p of j.players)await putPlayer(p);for(const m of j.matches||[])await putMatch(m);if(j.settings){Object.assign(S.settings,j.settings);await putSettings()}toast('Imported '+j.players.length+' players, '+(j.matches||[]).length+' matches')}catch(err){toast('That file is not a Team Builder backup')}el.value='';return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+(function(){const sp=$('#splash');let seen=false;try{seen=sessionStorage.getItem('atb_splash')==='1';sessionStorage.setItem('atb_splash','1')}catch(e){}
+  if(seen){sp.remove();return}
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const hide=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),500)};
+  sp.addEventListener('click',hide);setTimeout(hide,reduce?600:2100)})();
 boot();
 })();
 </script>
