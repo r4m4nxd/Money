@@ -468,10 +468,17 @@ let view=ls('atb_view')||'match';
 
 const persistLocal=()=>ls('atb_state',S);
 async function putPlayer(p){const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
-  if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render()}
+  if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();syncOpenPolls()}
 async function delPlayer(id){S.players=S.players.filter(p=>p.id!==id);
   draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
-  if(mode==='db'){try{await db.doc('players/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
+  if(mode==='db'){try{await db.doc('players/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render();syncOpenPolls()}
+/* Open availability links show the current squad: any rename, position change, new, deleted or inactive player is pushed to every open link from today on. */
+const pollRoster=()=>S.players.filter(p=>p.active!==false&&!p.guest).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
+let pollSyncT=null;
+function syncOpenPolls(){if(cloud!=='supa'||!supa)return;clearTimeout(pollSyncT);pollSyncT=setTimeout(async()=>{try{
+  const {data,error}=await supa.from('atb_polls').select('id,players').eq('owner',teamOwner).eq('open',true).gte('match_date',new Date().toISOString().slice(0,10));if(error)return;
+  const roster=pollRoster(),js=JSON.stringify(roster);
+  for(const p of data||[])if(JSON.stringify(p.players)!==js)await supa.from('atb_polls').update({players:roster}).eq('id',p.id)}catch(e){}},1200)}
 async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);i<0?S.matches.push(m):S.matches[i]=m;
   if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render()}
 async function delMatch(id){S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
@@ -550,7 +557,7 @@ async function boot(){
       if(cloud==='supa'&&teamOwner===supaUser.id&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
         for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
       if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
-      await syncRoster();loaded=true;render();if(cloud==='supa')loadStats()};
+      await syncRoster();loaded=true;render();if(cloud==='supa'){loadStats();syncOpenPolls()}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
     db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}done('s')},()=>{done('s')});
@@ -919,7 +926,8 @@ function vGuide(){
     <li>Needs sync (signed in on the Vercel app). On Match Day press <b>Open link for [date]</b>, then <b>Copy WhatsApp message</b> and post it.</li>
     <li>Players open the link, tap their name once (their phone remembers it) and press <b>I’m in</b> or <b>Can’t make it</b>. They can change their answer any time until you close the link.</li>
     <li>The page shows names, positions and who’s in. It never shows ratings, and nobody can see or change your squad, matches or settings through it.</li>
-    <li>Only active squad players are on the link; guests are not.</li>
+    <li>Only active squad players are on the link; guests are not. The link always shows the current squad: renaming a player, changing a position, adding, deleting or marking someone inactive updates every open link within a couple of seconds.</li>
+    <li>Each match date has its own link. It stays the same all week (even after Reset answers or closing and reopening); next week you open a new one.</li>
     <li>Back on Match Day, <b>Refresh</b> fetches answers and <b>Use answers</b> marks every “in” as playing and every “out” as not. Players who haven’t answered keep whatever you set by hand.</li>
     <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. <b>Reset answers</b> (tap twice) clears every answer on the link so players start fresh; the link itself stays the same. Each date gets its own link.</li>
     <li>Anyone with the link can answer for any name on it, so share it only in your group.</li></ul>`)}
@@ -1258,7 +1266,7 @@ document.addEventListener('click',async e=>{
     if(draft.teams){const pos=$('#gp').value;let bi=0,bv=1e9;draft.teams.forEach((t,i)=>{const x=t.length*1000+t.filter(y=>posOf(y)===pos).length*100+teamStats(t).tot;if(x<bv){bv=x;bi=i}});draft.teams[bi].push(gid);draft.alts=[draft.teams]}
     saveDraft();closeModal();render();toast(name+' added as a guest');return}
   if(a==='clearguests'){if(el.dataset.sure){for(const p of S.players.filter(p=>p.guest))await delPlayer(p.id);toast('Guests removed')}else{el.dataset.sure=1;el.textContent='Tap again to remove all guests';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove guests'}},3000)}return}
-  if(a==='pollopen'){el.disabled=true;const players=S.players.filter(p=>p.active!==false&&!p.guest).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
+  if(a==='pollopen'){el.disabled=true;const players=pollRoster();
     const {data,error}=await supa.from('atb_polls').insert({owner:teamOwner,kickoff:kickoffISO(draft.date),match_date:draft.date,time_label:S.settings.time,title:'Saturday Soccer',players}).select('id').single();
     if(error){toast('Could not open link: '+error.message);el.disabled=false;return}poll={date:draft.date,id:data.id,open:true,rsvp:{},loading:false,err:null};render();toast('Link ready. Copy the WhatsApp message');return}
   if(a==='pollrefresh'){await loadPoll(true);st.loaded=false;loadStats();toast('Answers updated');return}
