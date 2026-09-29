@@ -14,22 +14,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap">
 <style>
-/* Layout: sticky header + tab bar, one working column; teams laid out as a wrap grid of kit-coloured columns */
+/* Layout: sticky club header + angled tab bar, one working column; FC-style cut-corner panels; kit-coloured team columns */
 :root{
-  --bg:#EDF1EC; --surface:#FFFFFF; --surface2:#F5F7F4; --ink:#13203A; --muted:#5B6679; --line:#D3DAD1;
-  --accent:#177245; --accent-ink:#FFFFFF; --warn:#B4531A; --bad:#B42B2B; --good:#177245;
-  --gold1:#F1D57A; --gold2:#B8912F; --silver1:#E3E7EB; --silver2:#9AA3AD; --bronze1:#E2B084; --bronze2:#9C6B43; --card-ink:#1A1A17;
+  --bg:#EEF2F8; --surface:#FFFFFF; --surface2:#F3F6FB; --ink:#0B1630; --muted:#56627A; --line:#D6DDE9;
+  --accent:#D96A0F; --accent-ink:#FFFFFF; --gold:#B8862A; --warn:#B4531A; --bad:#C62F3E; --good:#138A5A;
+  --hdr1:#0A1F44; --hdr2:#123A7A; --hdr-ink:#F4F7FB;
+  --gold1:#F6DC86; --gold2:#B8862A; --silver1:#EEF1F4; --silver2:#9AA4AF; --bronze1:#EDBB8C; --bronze2:#94603A; --card-ink:#17120A;
+  --star1:#0B1D3F; --star2:#1C3F86; --star-ink:#F7D27A;
   --blue:#2F6FD6; --green:#1E9A52; --orange:#EE8A1A; --red:#D23B3B; --purple:#7B4BC9; --black:#2A2E35;
   --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:10px; --club-orange:#E07B24; --boards:#C9D1D8;
+  --r:10px; --cut:12px; --club-orange:#E07B24; --boards:#C9D1D8;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0D1520; --surface:#16212E; --surface2:#1B2837; --ink:#E7ECF2; --muted:#93A0B2; --line:#27364A;
-  --accent:#3DBB7C; --accent-ink:#06220F; --warn:#E59656; --bad:#EF6B6B; --good:#3DBB7C; color-scheme:dark}}
+  --bg:#060D1A; --surface:#0E1A2F; --surface2:#13223C; --ink:#EAF0F8; --muted:#8D9BB4; --line:#22324E;
+  --accent:#F58A2A; --accent-ink:#1B0C00; --gold:#F2C46B; --warn:#FFB547; --bad:#FF5C6C; --good:#3DDC97;
+  --hdr1:#050B17; --hdr2:#0E2552; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0D1520; --surface:#16212E; --surface2:#1B2837; --ink:#E7ECF2; --muted:#93A0B2; --line:#27364A;
-  --accent:#3DBB7C; --accent-ink:#06220F; --warn:#E59656; --bad:#EF6B6B; --good:#3DBB7C; color-scheme:dark}
+  --bg:#060D1A; --surface:#0E1A2F; --surface2:#13223C; --ink:#EAF0F8; --muted:#8D9BB4; --line:#22324E;
+  --accent:#F58A2A; --accent-ink:#1B0C00; --gold:#F2C46B; --warn:#FFB547; --bad:#FF5C6C; --good:#3DDC97;
+  --hdr1:#050B17; --hdr2:#0E2552; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.4;margin:0}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:0 60px}
@@ -197,9 +201,53 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .gbody ul,.gbody ol{padding-left:20px;margin:6px 0}.gbody li{margin:4px 0}.gbody p{margin:8px 0}
 .gbody .tbl{margin:8px 0}.gbody td{text-align:left;white-space:normal}
 .empty{text-align:center;padding:30px 12px;color:var(--muted)}
+.toast .undo{margin-left:12px;background:none;border:0;color:var(--accent);font:inherit;font-weight:700;text-transform:uppercase;cursor:pointer}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;z-index:80;font-weight:600;font-size:14px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
 @media (prefers-reduced-motion:no-preference){.chip,.btn{transition:background .12s,color .12s}}
+/* ---- FC skin ---- */
+body{background:var(--bg) linear-gradient(135deg,transparent 0 70%,color-mix(in srgb,var(--accent) 5%,transparent) 70% 100%) fixed}
+header.top{background:linear-gradient(100deg,var(--hdr1),var(--hdr2));border-bottom:2px solid var(--accent);color:var(--hdr-ink)}
+header.top .brand h1{color:var(--hdr-ink);letter-spacing:.06em}
+header.top small,header.top .sync{color:#A9B8D2}
+header.top .sync .btn.ghost{color:var(--gold1)}
+nav.tabs{gap:6px}
+nav.tabs button{color:#A9B8D2;border-radius:0;transform:skewX(-14deg);padding:6px 14px}
+nav.tabs button>span{display:inline-block;transform:skewX(14deg)}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.themebtn{margin-left:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--hdr-ink);border-radius:999px;padding:4px 10px;font:600 12px var(--f-body);cursor:pointer;white-space:nowrap}
+h2{letter-spacing:.06em}
+h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(--accent);margin-right:10px;transform:skewX(-14deg);vertical-align:-1px}
+.panel,.team,.gsec{border-radius:0;clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%)}
+.btn{border-radius:0;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));text-transform:uppercase;letter-spacing:.05em;font-family:var(--f-display);font-size:15px;padding:8px 14px}
+.btn.ghost{clip-path:none}
+.btn.primary{background:linear-gradient(100deg,var(--accent),color-mix(in srgb,var(--accent) 75%,#FFD28A))}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.team .hd{background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.07) 0 10px,transparent 10px 22px)!important}
+.stats b{color:var(--ink)}
+.pill.ok{background:color-mix(in srgb,var(--good) 18%,transparent)}
+/* FC player cards */
+.cards{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:14px}
+.card{border-radius:0;padding:12px 12px 16px;clip-path:polygon(50% 0,100% 6%,100% 88%,50% 100%,0 88%,0 6%);background:linear-gradient(160deg,var(--t1),var(--t2));color:var(--card-ink);overflow:hidden;min-height:236px;box-shadow:none}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 45%,transparent 60%);transform:translateX(-100%);pointer-events:none}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.card:hover::after{transition:transform .7s;transform:translateX(100%)}}
+.card.star{--t1:var(--star2);--t2:var(--star1);color:var(--star-ink)}
+.card.star .cn{border-color:rgba(247,210,122,.4)}
+.card .top{display:flex;gap:8px;align-items:flex-start}
+.card .ol{display:flex;flex-direction:column;align-items:center;min-width:40px;padding-top:8px}
+.card .ovr{font-size:40px}
+.card .face{margin-left:auto;width:84px;height:84px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:rgba(0,0,0,.12);font-family:var(--f-display);font-weight:800;font-size:32px;margin-top:6px}
+.card.star .face{background:rgba(255,255,255,.08)}
+.card .face img{width:100%;height:100%;object-fit:cover}
+.card .cn{text-align:center;margin-top:8px;border-bottom:1px solid rgba(0,0,0,.2)}
+.card .fc{display:grid;grid-template-columns:1fr 1fr;gap:1px 14px;margin:6px 6px 0;font-size:13px;font-variant-numeric:tabular-nums}
+.card .fc span{display:flex;gap:6px;align-items:baseline}
+.card .fc b{font-family:var(--f-display);font-size:17px;min-width:22px;text-align:right}
+.card .wl{text-align:center;margin-top:6px}
+.card .fm{top:auto;bottom:34px;right:12px}
+.pphoto{display:flex;gap:12px;align-items:center}
+.pphoto .face{width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--surface2);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:26px;border:2px solid var(--accent)}
+.pphoto .face img{width:100%;height:100%;object-fit:cover}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -207,13 +255,13 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
   <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="34" height="34"><h1>Airdrie United</h1><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="34" height="34"><h1>Airdrie United</h1><small id="sub">Team Builder</small><span class="sync" id="sync"></span><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
   <nav class="tabs" role="tablist" id="tabs">
-    <button role="tab" data-v="match">Match Day</button>
-    <button role="tab" data-v="history">Matches &amp; Ratings</button>
-    <button role="tab" data-v="squad">Squad</button>
-    <button role="tab" data-v="settings">Settings</button>
-    <button role="tab" data-v="guide">Guide</button>
+    <button role="tab" data-v="match"><span>Match Day</span></button>
+    <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
+    <button role="tab" data-v="squad"><span>Squad</span></button>
+    <button role="tab" data-v="settings"><span>Settings</span></button>
+    <button role="tab" data-v="guide"><span>Guide</span></button>
   </nav>
 </div></header>
 <main class="wrap" id="main"><p class="empty">Loading squad…</p></main>
@@ -239,7 +287,19 @@ const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||uid();
 function ls(k,v){try{if(v===undefined){const x=localStorage.getItem(k);return x?JSON.parse(x):null}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
-function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+function toast(t,undo){const d=document.createElement('div');d.className='toast';d.textContent=t;
+  if(undo){const b=document.createElement('button');b.textContent='Undo';b.className='undo';b.onclick=()=>{d.remove();undo()};d.appendChild(b)}
+  document.body.appendChild(d);setTimeout(()=>d.remove(),undo?6000:2200)}
+const THEMES=['system','dark','light'],THEME_L={system:'◐ Auto',dark:'● Dark',light:'○ Light'};
+function applyTheme(t){const r=document.documentElement;if(t==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
+  const b=document.getElementById('themebtn');if(b)b.textContent=THEME_L[t]}
+let theme=ls('atb_theme')||'system';applyTheme(theme);
+// Photos: square-crop and shrink to a small JPEG so it syncs with the player record
+function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const S2=240,c=document.createElement('canvas');c.width=c.height=S2;
+  const m=Math.min(img.width,img.height);c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/3,m,m,0,0,S2,S2);URL.revokeObjectURL(img.src);res(c.toDataURL('image/jpeg',.8))};
+  img.onerror=rej;img.src=URL.createObjectURL(file)})}
+const face=p=>p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name));
+let pendPhoto;
 function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d.getDay()+7)%7));return d.toISOString().slice(0,10)}
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
@@ -348,7 +408,8 @@ function compute(){
     for(const m of ms){const ti=m.teams.findIndex(t=>t.players.includes(p.id));if(ti<0)continue;const gs=m.teams.map(t=>t.goals);if(gs.some(g=>g===''||g==null))continue;
       const mine=+gs[ti],best=Math.max(...gs.map(Number));const top=gs.filter(g=>+g===best).length;
       if(mine===best&&top===1)W++;else if(mine===best)D++;else L++}
-    out[p.id]={...sc,a,hist,W,D,L,games:rs.length};
+    const apps=ms.filter(m=>m.teams.some(t=>t.players.includes(p.id))).length;
+    out[p.id]={...sc,a,hist,W,D,L,games:rs.length,apps};
   }
   return out;
 }
@@ -468,7 +529,7 @@ function vMatch(){
   <div class="panel">${grp}
     <div class="row" style="margin-top:10px"><button class="btn" data-a="allin">Everyone</button><button class="btn" data-a="nonein">Clear</button>
     <button class="btn primary" data-a="balance" style="margin-left:auto" ${av.size<draft.n*2?'disabled':''}>Balance ${draft.n} teams</button></div>
-    <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team. Star players (★) with the same position go to different teams.</p>
+    <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team. Star players (★) with the same position go to different teams. After balancing, tapping a late arrival in or a dropout out only changes that one player’s team.</p>
   </div>${teamsHtml}`;
 }
 
@@ -492,12 +553,13 @@ function vSquad(){
     <label class="small row" style="gap:4px;margin-left:8px"><input type="checkbox" id="showoff" data-a="showoff" ${showOff?'checked':''}> Show inactive</label>
     <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
   <div class="cards">${ps.map(p=>{const r=R(p.id);const h=r.hist;const fm=h.length?h[h.length-1].ovr-r.ovr:0;
-    return `<button class="card ${tier(r.ovr)} ${p.active===false?'off':''}" data-a="editp" data-id="${p.id}">
-      <div class="ovr num">${r.ovr}</div><div class="ps">${p.pos}${p.star?" ★":""}</div>
-      ${h.length?`<span class="fm">${fm>1?'▲ form':fm<-1?'▼ form':''}</span>`:''}
+    const f=k=>Math.round((r.a[k]||0)*10);
+    return `<button class="card ${p.star?'star':tier(r.ovr)} ${p.active===false?'off':''}" data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}">
+      <div class="top"><div class="ol"><div class="ovr num">${r.ovr}</div><div class="ps">${p.pos}</div>${p.star?'<div class="ps">★</div>':''}</div><div class="face">${face(p)}</div></div>
+      ${h.length?`<span class="fm">${fm>1?'▲':fm<-1?'▼':''}</span>`:''}
       <div class="cn">${esc(p.name)}</div>
-      <div class="cs"><span><b>${Math.round(r.fwd*100)}</b>FWD</span><span><b>${Math.round(r.mid*100)}</b>MID</span><span><b>${Math.round(r.def*100)}</b>DEF</span><span><b>${Math.round(r.pace*100)}</b>PAC</span></div>
-      <div class="wl num">${r.games} rated · W${r.W} D${r.D} L${r.L}</div></button>`}).join('')}</div>`;
+      <div class="fc num"><span><b>${f('spd')}</b>PAC</span><span><b>${f('bal')}</b>DRI</span><span><b>${f('sho')}</b>SHO</span><span><b>${f('def')}</b>DEF</span><span><b>${f('pas')}</b>PAS</span><span><b>${Math.round(((r.a.str||0)+(r.a.sta||0))*5)}</b>PHY</span></div>
+      <div class="wl num">${r.apps} apps · W${r.W} D${r.D} L${r.L}</div></button>`}).join('')}</div>`;
 }
 
 function vGuide(){
@@ -557,7 +619,8 @@ function vGuide(){
 
   ${sec('manual','Moving and locking',`<ul><li>Use the team dropdown next to a player to move them. Team ratings and the gap update immediately.</li>
     <li>🔒 locks a player to their current team. Pressing Balance again keeps locked players where they are and balances everyone else around them.</li>
-    <li>Team name and kit colour can be changed in each team’s header.</li></ul>`)}
+    <li>Team name and kit colour can be changed in each team’s header.</li>
+    <li><b>Late arrivals and dropouts:</b> once teams exist, tapping a player in adds just that player to the team that needs them most (fewest players, then fewest of their position, then lowest rating). Tapping a player out removes only them. Nobody else moves. Press Balance again if you want a full reshuffle.</li></ul>`)}
 
   ${sec('form','Formations and the pitch',`<ul>
     <li><b>On pitch per team</b> (default 8) is the number of starters, keeper included. Everyone else is a sub.</li>
@@ -591,9 +654,11 @@ function vGuide(){
     <li>The team with the most goals gets a win for each of its players; teams tied for most get a draw; everyone else a loss.</li>
     <li>Wins, draws and losses show on player cards. They do not affect ratings or balancing.</li></ul>`)}
 
-  ${sec('cards','Player cards',`<ul><li><b>Gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below.</li>
-    <li>Cards show OVR, position, FWD / MID / DEF / PAC scores, how many matches rated, and W-D-L.</li>
-    <li><b>▲ form</b> / <b>▼ form</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
+  ${sec('cards','Player cards',`<ul><li><b>Gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players get a navy-and-gold card.</li>
+    <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
+    <li><b>Apps</b> = matches the player was picked for. W-D-L as above.</li>
+    <li><b>Photo:</b> tap a card → Add photo. It’s cropped square, shrunk to a small image and synced with the player. Without one, the card shows initials.</li>
+    <li><b>▲</b> / <b>▼</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
     <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
 
   ${sec('data','Where data lives and sync',`<ul>
@@ -601,7 +666,9 @@ function vGuide(){
     <li>The first time a device signs in and the cloud is empty, that device’s squad and matches are uploaded.</li>
     <li><b>Not signed in:</b> everything stays in that browser only. Clearing Safari data erases it, so use Export backup.</li>
     <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
-    <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li></ul>`)}
+    <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li>
+    <li><b>Offline:</b> on the Vercel app the screens load even with no signal at the gym. Changes made offline may not save; you’ll see a message when the connection drops and when it’s back.</li>
+    <li><b>Theme:</b> the button in the header cycles Auto (follows your phone), Dark and Light. It’s remembered per device.</li></ul>`)}
 
   ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
     <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
@@ -609,7 +676,7 @@ function vGuide(){
   ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves one file with the squad, matches and settings. <b>Import backup</b> adds or replaces players and matches with the same IDs; it does not delete anything else.</li>
     <li><b>Delete player</b> removes them from the squad and today’s teams. Their past ratings stay inside old matches but no longer count anywhere.</li>
     <li><b>Delete match</b> removes the match and every rating in it, so player averages change.</li>
-    <li>Both deletes ask for a second tap and cannot be undone.</li></ul>`)}`;
+    <li>Both deletes ask for a second tap. A deleted player can be brought back with <b>Undo</b> for a few seconds; a deleted match cannot.</li></ul>`)}`;
 }
 
 function vSettings(){
@@ -638,11 +705,12 @@ function vSettings(){
 function openModal(html){$('#modal').innerHTML=`<div class="scrim" data-a="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
 function closeModal(){$('#modal').innerHTML=''}
 
-function playerModal(id){
+function playerModal(id){pendPhoto=undefined;
   const p=id?pById(id):{id:'',name:'',pos:'MID',base:Object.fromEntries(K.map(k=>[k,7])),baseN:0,active:true};
   const r=id?R(id):null;
   openModal(`<div class="mh"><h2>${id?esc(p.name):'New player'}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="stack">
+    <div class="pphoto"><div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}</div></div>
     <div class="row" style="gap:10px;align-items:flex-end"><label class="f" style="flex:1 1 180px">Name<input id="pn" value="${esc(p.name)}"></label>
     <label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
     <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
@@ -765,7 +833,12 @@ document.addEventListener('click',async e=>{
   if(a==='scrim'&&e.target===el){closeModal();return}
   if(a==='close'){closeModal();return}
   if(a==='seed'){await seedFromFile();return}
-  if(a==='av'){const s=new Set(draft.avail);s.has(id)?s.delete(id):s.add(id);draft.avail=[...s];saveDraft();render();return}
+  if(a==='av'){const s=new Set(draft.avail);const on=!s.has(id);on?s.add(id):s.delete(id);draft.avail=[...s];
+    if(draft.teams){if(!on){draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];toast(pById(id).name+' removed from their team')}
+      else if(!draft.teams.some(t=>t.includes(id))){const pos=posOf(id);let bi=0,bv=1e9;draft.teams.forEach((t,i)=>{const v=t.length*1000+t.filter(x=>posOf(x)===pos).length*100+teamStats(t).tot;if(v<bv){bv=v;bi=i}});
+        draft.teams[bi].push(id);toast(pById(id).name+' added to '+(draft.names[bi]||'Team '+KITS[draft.kits[bi]||DEF_KITS[bi]]))}
+      draft.alts=[draft.teams]}
+    saveDraft();render();return}
   if(a==='allin'){draft.avail=S.players.filter(p=>p.active!==false).map(p=>p.id);saveDraft();render();return}
   if(a==='nonein'){draft.avail=[];draft.teams=null;draft.locks={};saveDraft();render();return}
   if(a==='balance'){const ids=draft.avail.filter(id=>pById(id));Object.keys(draft.locks).forEach(k=>{if(!ids.includes(k))delete draft.locks[k]});
@@ -782,7 +855,7 @@ document.addEventListener('click',async e=>{
   if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();view='match';ls('atb_view',view);render();window.scrollTo(0,0);return}
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
   if(a==='rate'){rateModal(id);return}
-  if(a==='delp'){if(el.dataset.sure){const nm=pById(id)?.name;await delPlayer(id);closeModal();toast('Deleted '+nm)}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
+  if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
   if(a==='slot'){const i=+el.dataset.i,k=+el.dataset.k;const s=draft.sel;
     if(s&&s.t===i&&s.k!==k){const lu=teamLU(i);[lu.order[s.k],lu.order[k]]=[lu.order[k],lu.order[s.k]];draft.sel=null}else draft.sel=s&&s.t===i&&s.k===k?null:{t:i,k};saveDraft();render();return}
@@ -799,6 +872,8 @@ document.addEventListener('click',async e=>{
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
+  if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
+  if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);return}
   if(a==='gjump'){e.preventDefault();const d=document.getElementById('g-'+el.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}return}
   if(a==='sf'){squadFilter=el.dataset.f;render();return}
   if(a==='addp'){playerModal(null);return}
@@ -806,7 +881,8 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>base[k]=Math.min(10,Math.max(1,+$('#pb_'+k).value||7)));
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    await putPlayer({...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,base});closeModal();toast('Saved '+name);return}
+    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
+    await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
     el.disabled=true;try{const c=await html2canvas($('#sharecard'),{backgroundColor:'#0F1B2B',scale:2});const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('teams-'+lastShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
@@ -822,6 +898,7 @@ document.addEventListener('change',async e=>{
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
+  if(a==='photo'){const f=el.files[0];if(!f)return;try{pendPhoto=await shrinkPhoto(f);$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
   if(a==='form'){const i=+el.dataset.i;const lu=teamLU(i);draft.lu[i]={f:el.value,gk:lu.gk};draft.sel=null;saveDraft();render();return}
   if(a==='gk'){const i=+el.dataset.i;draft.lu[i]={gk:el.checked};draft.sel=null;saveDraft();render();return}
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
@@ -832,6 +909,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
   if(seen){sp.remove();return}
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const hide=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),500)};
   sp.addEventListener('click',hide);setTimeout(hide,reduce?600:2100)})();
+addEventListener('offline',()=>toast('You’re offline. Changes may not save until you reconnect.'));
+addEventListener('online',()=>toast('Back online'));
+if('serviceWorker' in navigator&&location.protocol==='https:'&&window.parent===window&&!location.hostname.endsWith('claude.ai')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 boot();
 })();
 </script>
