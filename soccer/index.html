@@ -286,39 +286,44 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .pphoto{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .cardprev{width:170px;flex:none}.pphoto .cardprev + .face{display:none}
 .cards{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
-.fut{--metal:#E6C36A;--metal2:#F7E3A1;position:relative;display:block;width:100%;aspect-ratio:100/156;container-type:inline-size;border:0;padding:0;background:none;cursor:pointer;font:inherit;color:var(--metal);text-align:left;
-  filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
-.fut.t-silver{--metal:#D7DDE3;--metal2:#F4F7FA}.fut.t-bronze{--metal:#D9A06B;--metal2:#F0C197}
-.fut.off{opacity:.45}
-.fut .frame{position:absolute;inset:0;width:100%;height:100%}
-.fut .ph{position:absolute;right:5cqw;top:7cqw;width:72cqw;height:86cqw;display:grid;place-items:end center;
-  -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 97%),linear-gradient(to right,transparent 0,#000 34%);-webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to bottom,#000 58%,transparent 97%),linear-gradient(to right,transparent 0,#000 34%);mask-composite:intersect}
-.fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
-.fut .ph .sil{position:absolute;inset:auto 4% 0 4%;width:92%;fill:#8E939C;opacity:.28}
-.fut .ph .ini{position:absolute;top:28%;left:0;right:0;text-align:center;font:800 16cqw var(--f-display);color:var(--metal);opacity:.55}
-.fut .fl{position:absolute;left:8cqw;top:11cqw;width:24cqw;display:flex;flex-direction:column;align-items:center;gap:1cqw;z-index:1}
-.fut .ovr{font:800 21cqw/.85 var(--f-display);color:var(--metal2);letter-spacing:-.02em}
-.fut .ps{font:800 9cqw/1 var(--f-display);color:var(--metal2);letter-spacing:.04em}
-.fut .club{width:12cqw;height:12cqw;border-radius:50%;margin-top:2cqw;box-shadow:0 0 0 .5cqw var(--metal)}
-.fut .no{margin-top:2cqw;width:9cqw;height:8cqw;display:grid;place-items:center;background:var(--metal);color:#15120A;font:800 5.5cqw var(--f-display);clip-path:polygon(0 0,100% 0,50% 100%);padding-bottom:2cqw}
-.fut .st{font-size:7cqw;color:var(--metal2);margin-top:1cqw}
-.fut .fn{position:absolute;left:8cqw;right:8cqw;top:92cqw;text-align:center;font:800 10cqw/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.03em;color:var(--metal2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fut .fs{position:absolute;left:7cqw;right:7cqw;top:106cqw;display:grid;grid-template-columns:repeat(6,1fr);gap:1cqw;text-align:center}
-.fut .fs span{display:flex;flex-direction:column;align-items:center}
-.fut .fs i{font:700 5.2cqw var(--f-display);font-style:normal;color:var(--metal);letter-spacing:.02em}
-.fut .fs b{font:800 8.8cqw/1.05 var(--f-display);color:var(--metal2);letter-spacing:-.02em}
-.fut .fb{position:absolute;left:10cqw;right:10cqw;top:129cqw;display:flex;justify-content:center;align-items:center;gap:5cqw}
-.fut .fb img{width:9cqw;height:9cqw;border-radius:50%;box-shadow:0 0 0 .4cqw var(--metal)}
-.fut .fb .flag{font-size:8cqw;line-height:1}
-.fut .fb .aw{font:700 5.5cqw var(--f-display);color:var(--metal2)}.fut .fb .aw.up{color:#6FE3A6}.fut .fb .aw.dn{color:#FF8A8A}
-.fut.star{filter:drop-shadow(0 0 8px rgba(242,196,107,.35)) drop-shadow(0 6px 10px rgba(0,0,0,.35))}
-@media (hover:hover) and (prefers-reduced-motion:no-preference){.fut{transition:transform .2s}.fut:hover{transform:translateY(-3px)}}
-.fut:focus-visible{outline:none;filter:drop-shadow(0 0 0 2px var(--accent)) drop-shadow(0 0 4px var(--accent))}
 .tok .dot img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;border-radius:50%}
 .tok .dot{overflow:hidden}
 .pphoto .face{width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--surface2);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:26px;border:2px solid var(--accent)}
 .pphoto .face img{width:100%;height:100%;object-fit:cover}
+/* ---- FC player card (EA FC layout) ---- */
+.cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px 12px}
+.fut{--c1:#F6E6A6;--c2:#D9B65C;--c3:#F3DC92;--ink2:#3A2D10;--lab:#5A4719;--glow:rgba(255,255,255,.35);
+  display:block;width:100%;aspect-ratio:100/128;border:0;padding:0;background:none;font:inherit;cursor:pointer;container-type:inline-size;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.28));color:var(--ink2)}
+.fut.t-silver{--c1:#F2F5F8;--c2:#B9C3CC;--c3:#E6EBEF;--ink2:#262C33;--lab:#46505A;--glow:rgba(255,255,255,.45)}
+.fut.t-bronze{--c1:#F1C9A2;--c2:#B97B4A;--c3:#E7B587;--ink2:#35200D;--lab:#5B3A1E;--glow:rgba(255,236,214,.35)}
+.fut.t-special{--c1:#2B2B30;--c2:#101012;--c3:#23232A;--ink2:#F4D98A;--lab:#CDB064;--glow:rgba(244,217,138,.16)}
+.fut.off{opacity:.45}
+.fut .fbody{position:relative;width:100%;height:100%;clip-path:url(#fcShape);overflow:hidden;
+  background:linear-gradient(160deg,var(--c1) 0%,var(--c2) 48%,var(--c3) 78%,var(--c2) 100%)}
+.fut.t-special .fbody{background:radial-gradient(120% 80% at 70% 20%,#34343B 0,#16161A 55%,#0B0B0D 100%)}
+.fut .streak{position:absolute;background:linear-gradient(90deg,transparent,var(--glow),transparent);transform:rotate(-38deg);pointer-events:none}
+.fut .s1{width:120cqw;height:9cqw;top:14cqw;left:10cqw}.fut .s2{width:120cqw;height:3cqw;top:30cqw;left:18cqw;opacity:.8}.fut .s3{width:120cqw;height:14cqw;top:52cqw;left:34cqw;opacity:.5}
+.fut .ph{position:absolute;left:24cqw;top:7cqw;width:66cqw;height:68cqw;display:grid;place-items:end center;
+  -webkit-mask-image:radial-gradient(ellipse 54% 58% at 50% 40%,#000 42%,rgba(0,0,0,.55) 68%,transparent 96%);mask-image:radial-gradient(ellipse 54% 58% at 50% 40%,#000 42%,rgba(0,0,0,.55) 68%,transparent 96%)}
+.fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+.fut .ph .sil{width:78%;fill:var(--ink2);opacity:.16;margin-bottom:4cqw}
+.fut .fl{position:absolute;left:9cqw;top:15cqw;display:flex;flex-direction:column;align-items:center;min-width:20cqw;z-index:1}
+.fut .ovr{font:800 19cqw/.9 var(--f-display);letter-spacing:-.02em}
+.fut .ps{font:700 8cqw/1.1 var(--f-display);letter-spacing:.02em}
+.fut .no{margin-top:2cqw;font:700 5.6cqw var(--f-display);color:var(--lab)}
+.fut .st{font-size:7cqw;line-height:1;margin-top:1.5cqw}
+.fut .fn{position:absolute;left:6cqw;right:6cqw;top:74cqw;text-align:center;font:800 10.5cqw/1.05 var(--f-display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fut .fs{position:absolute;left:7cqw;right:7cqw;top:88cqw;display:grid;grid-template-columns:repeat(6,1fr);text-align:center}
+.fut .fs span{display:flex;flex-direction:column;align-items:center;gap:.5cqw}
+.fut .fs i{font:700 5cqw/1 var(--f-display);font-style:normal;color:var(--lab);letter-spacing:.02em}
+.fut .fs b{font:800 8.6cqw/1 var(--f-display)}
+.fut .fb{position:absolute;left:0;right:0;top:106cqw;display:flex;justify-content:center;align-items:center;gap:4cqw}
+.fut .fb .flag{width:8cqw;height:6cqw;object-fit:cover;border-radius:.6cqw;box-shadow:0 0 0 .3cqw rgba(0,0,0,.15)}
+.fut .fb .club{width:7.5cqw;height:7.5cqw;border-radius:50%}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.fut{transition:transform .2s}.fut:hover{transform:translateY(-3px)}}
+.fut:focus-visible{outline:none;filter:drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 3px var(--accent))}
+
 /* ---- phone ergonomics ---- */
 body{background:var(--bg)}
 .panel,.team,.gsec,.tile{clip-path:none;border-radius:6px}
@@ -404,10 +409,7 @@ h3{line-height:1.2}
 <main class="wrap" id="main"><p class="empty">Loading squad…</p></main>
 <div id="modal"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <linearGradient id="m-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7E3A1"/><stop offset=".45" stop-color="#C9A24B"/><stop offset=".7" stop-color="#F2D78A"/><stop offset="1" stop-color="#8E6A24"/></linearGradient>
-  <linearGradient id="m-silver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F7FA"/><stop offset=".45" stop-color="#A9B3BD"/><stop offset=".7" stop-color="#E3E8ED"/><stop offset="1" stop-color="#6F7983"/></linearGradient>
-  <linearGradient id="m-bronze" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0C197"/><stop offset=".45" stop-color="#B07442"/><stop offset=".7" stop-color="#E2A777"/><stop offset="1" stop-color="#6E4222"/></linearGradient>
-  <radialGradient id="pan" cx=".6" cy=".25" r=".9"><stop offset="0" stop-color="#2A2A2E"/><stop offset=".55" stop-color="#141417"/><stop offset="1" stop-color="#0A0A0C"/></radialGradient>
+  <clipPath id="fcShape" clipPathUnits="objectBoundingBox"><path d="M0,0.109 Q0,0.047 0.08,0.039 Q0.18,0.031 0.24,0 H0.76 Q0.82,0.031 0.92,0.039 Q1,0.047 1,0.109 V0.8125 Q1,0.859 0.94,0.875 L0.56,0.977 Q0.5,0.992 0.44,0.977 L0.06,0.875 Q0,0.859 0,0.8125 Z"/></clipPath>
 </defs></svg>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -448,21 +450,20 @@ let pendPhoto;
 const NATIONS=[['','None'],['IN','India'],['CA','Canada'],['PK','Pakistan'],['GB-ENG','England'],['GB-SCT','Scotland'],['GB','United Kingdom'],['IE','Ireland'],['US','USA'],['AF','Afghanistan'],['BD','Bangladesh'],['LK','Sri Lanka'],['NP','Nepal'],['PH','Philippines'],['NG','Nigeria'],['GH','Ghana'],['KE','Kenya'],['SO','Somalia'],['ET','Ethiopia'],['ER','Eritrea'],['JM','Jamaica'],['MX','Mexico'],['BR','Brazil'],['AR','Argentina'],['CO','Colombia'],['PT','Portugal'],['ES','Spain'],['IT','Italy'],['DE','Germany'],['FR','France'],['NL','Netherlands'],['PL','Poland'],['UA','Ukraine'],['VN','Vietnam'],['CN','China'],['KR','South Korea'],['LB','Lebanon'],['SY','Syria'],['IR','Iran'],['IQ','Iraq'],['EG','Egypt'],['MA','Morocco']];
 const flag=c=>!c?'':c==='GB-ENG'?'🏴\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}':c==='GB-SCT'?'🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}':String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));
 const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></svg>`;
-const CARD_PATH='M10,0 H90 L100,7 V146 Q100,156 90,156 H10 Q0,156 0,146 V7 Z',IN_PATH='M11.5,2.6 H88.5 L97.4,8.8 V145 Q97.4,153.4 89,153.4 H11 Q2.6,153.4 2.6,145 V8.8 Z',LINE_PATH='M13,5.2 H87 L94.8,10.6 V144 Q94.8,150.8 88,150.8 H12 Q5.2,150.8 5.2,144 V10.6 Z';
-// FC-style card: metal frame by tier, dark panel, faded chest-up photo, OVR/position/crest column, name, six stats, flag and crest.
-function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'gold':tier(r.ovr),f=k=>Math.round((r.a[k]||0)*10),h=r.hist,fm=h.length?h[h.length-1].ovr-r.ovr:0;
+const flagImg=c=>c?`<img class="flag" src="icons/flags/${c.toLowerCase()}.svg" alt="${esc((NATIONS.find(n=>n[0]===c)||[])[1]||'')}">`:'';
+const titleName=n=>String(n||'').replace(/\S+/g,w=>w.length<=3&&w===w.toUpperCase()?w:w[0].toUpperCase()+w.slice(1));
+// FC card (EA FC layout): metal body by tier, OVR + position top-left, photo centre fading into the card, name, six stats, flag + crest.
+function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'special':tier(r.ovr),f=k=>Math.round((r.a[k]||0)*10);
   const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',Math.round(((r.a.str||0)+(r.a.sta||0))*5)]];
   const tag=btn?'button':'div';
-  return `<${tag} class="fut t-${t}${p.star?' star':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}"`:''}>
-    <svg class="frame" viewBox="0 0 100 156" preserveAspectRatio="none" aria-hidden="true"><path d="${CARD_PATH}" fill="url(#m-${t})"/><path d="${IN_PATH}" fill="url(#pan)"/>
-      ${p.star?`<g class="shards" fill="none" stroke="url(#m-gold)" stroke-width=".35" opacity=".55"><path d="M60,12 L92,30 L74,62 L52,40 Z"/><path d="M74,62 L94,78 L80,98"/><path d="M52,40 L40,20 L60,12"/><path d="M92,30 L96,58"/></g>`:''}
-      <path d="${LINE_PATH}" fill="none" stroke="url(#m-${t})" stroke-width=".6" opacity=".7" vector-effect="non-scaling-stroke"/></svg>
+  return `<${tag} class="fut t-${t}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}"`:''}><div class="fbody">
+    <span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span>
     <div class="ph">${p.photo?`<img src="${p.photo}" alt="">`:SIL}</div>
-    <div class="fl"><b class="ovr num">${r.ovr}</b><span class="ps">${p.pos}</span><img class="club" src="icons/crest-640.jpg" alt="">${p.number?`<span class="no num">${esc(p.number)}</span>`:''}${p.star?'<span class="st">★</span>':''}</div>
-    <div class="fn">${esc(p.name)}</div>
+    <div class="fl"><b class="ovr num">${r.ovr}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
+    <div class="fn">${esc(titleName(p.name))}</div>
     <div class="fs num">${stats.map(([l,v])=>`<span><i>${l}</i><b>${v}</b></span>`).join('')}</div>
-    <div class="fb">${p.nation?`<span class="flag" title="${esc((NATIONS.find(n=>n[0]===p.nation)||[])[1]||'')}">${flag(p.nation)}</span>`:''}<img src="icons/crest-640.jpg" alt="Airdrie United">${r.motm?`<span class="aw">🏆${r.motm}</span>`:''}${h.length&&Math.abs(fm)>1?`<span class="aw ${fm>0?'up':'dn'}">${fm>0?'▲':'▼'}</span>`:''}</div>
-  </${tag}>`}
+    <div class="fb">${flagImg(p.nation)}<img class="club" src="icons/crest-640.jpg" alt="Airdrie United"></div>
+  </div></${tag}>`}
 function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d.getDay()+7)%7));return d.toISOString().slice(0,10)}
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
@@ -1006,8 +1007,8 @@ function vGuide(){
     <li><b>Att.</b> = matches played ÷ matches saved this season. <b>±</b> = current OVR minus their starting OVR. <b>Balance gap</b> is saved when you save a match; older matches use today’s ratings.</li>
     <li>Answer and last-minute stats need the Vercel app signed in; the Claude link shows match stats only.</li></ul>`)}
 
-  ${sec('cards','Player cards',`<ul><li>Cards are dark with a metal frame: <b>gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players always get gold with a glow and shard detail.</li>
-    <li>Top-left: OVR, position, club crest, shirt number (if set) and ★. Bottom: nation flag (if set), crest, 🏆 count and form arrow.</li>
+  ${sec('cards','Player cards',`<ul><li>Cards follow the EA FC layout: <b>gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players get a black-and-gold special card.</li>
+    <li>Top-left: OVR, position, shirt number (if set) and ★. Middle: photo. Then the name, the six stats, and the nation flag (if set) with the club crest. Trophies, apps and form live on the player’s page and the Stats tab.</li>
     <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
     <li><b>Apps</b> = matches the player was picked for. W-D-L as above.</li>
     <li><b>Photo:</b> tap a card → Add photo. It’s cropped tall from the top (head and chest), shrunk to a small image, synced with the player, and fades softly into the card. The photo also appears on the pitch view. Without one, the card shows a grey empty player outline.</li>
@@ -1081,7 +1082,7 @@ function playerModal(id){pendPhoto=undefined;
     <label class="f">Name<input id="pn" value="${esc(p.name)}" autocomplete="off"></label>
     <div class="fgrid f3"><label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
     <label class="f">Shirt no.<input id="pno" inputmode="numeric" maxlength="2" value="${esc(p.number||'')}"></label>
-    <label class="f">Nation<select id="pnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(p.nation||'')?'selected':''}>${c?flag(c)+' ':''}${n}</option>`).join('')}</select></label></div>
+    <label class="f">Nation<select id="pnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(p.nation||'')?'selected':''}>${n}</option>`).join('')}</select></label></div>
     <div class="row" style="gap:18px"><label class="small row chk"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
     <label class="small row chk"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
