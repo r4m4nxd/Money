@@ -332,7 +332,9 @@ async function syncRoster(){try{const j=await (await fetch('seed.json')).json();
   S.settings.season=j.season;await putSettings()}catch(e){}}
 
 /* Supabase sync: one row per document in atb_docs, shaped like the db API the page already uses */
-let supa=null, supaUser=null;
+let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
+const ADMIN_EMAIL='rsramansingh96@gmail.com';
+const MGR_DOMAINS=['aufc-managers.invalid','managers.aufc.local'];
 function supaDB(client,uid){
   const cols={};
   const snap=col=>({docs:[...cols[col].map].map(([id,d])=>({id,exists:true,data:()=>d}))});
@@ -360,7 +362,7 @@ function showLogin(err){
   $('#tabs').hidden=true;$('#sync').textContent='';$('#sub').textContent='Manager sign-in';
   $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest"><h2 style="margin:0">Manager sign-in</h2>
     <p class="small muted" style="margin:0">This app is private. Players get team sheets and the availability link through WhatsApp.</p>
-    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:`<form class="stack" id="lform" novalidate><label class="f">Email<input id="se" type="email" autocomplete="username" required></label>
+    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:`<form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>
     <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required></label>
     <div class="row"><button class="btn primary" data-a="signin" type="submit">Sign in</button><button class="btn ghost" type="button" data-a="forgot">Forgot password?</button></div><span class="small muted" id="smsg" role="status"></span></form>`}</div>`;
   $('#lform')?.addEventListener('submit',e=>e.preventDefault());
@@ -376,7 +378,12 @@ async function boot(){
     try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
       supa.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')setTimeout(newPasswordModal,300)});
       const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
-    if(supaUser){db=supaDB(supa,supaUser.id);cloud='supa';$('#sync').textContent='Synced · '+supaUser.email}
+    if(supaUser){
+      // Managers work on the admin's team data; the admin's own id is the team id.
+      try{const {data:mm}=await supa.from('atb_members').select('team_owner,username').eq('member',supaUser.id).maybeSingle();if(mm){teamOwner=mm.team_owner;myName=mm.username}}catch(e){}
+      teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
+      db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent='Synced · '+(myName?myName+' (manager)':supaUser.email);
+      if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>')}
   }
   // The hosted app is manager-only: without a signed-in session nothing loads, not even the roster file.
   if(!db&&!window.claude){showLogin(supa?'':'Can’t reach the sign-in service. Check your connection and reload.');return}
@@ -384,7 +391,7 @@ async function boot(){
     mode='db';
     const seen=new Set();let started=false;const done=async k=>{seen.add(k);if(seen.size<3||started)return;started=true;
       const local=ls('atb_state');
-      if(cloud==='supa'&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
+      if(cloud==='supa'&&teamOwner===supaUser.id&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
         for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
       if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
       await syncRoster();loaded=true;render()};
@@ -497,7 +504,7 @@ function render(){
   $('#sub').textContent=S.players.filter(p=>p.active!==false).length+' active players · '+S.matches.length+' matches';
   const m=$('#main');
   if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster. Everyone starts at 7; set each player’s ratings in Squad, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
-  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='guide'?vGuide():vSettings();
+  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='guide'?vGuide():view==='managers'&&isAdmin?vManagers():vSettings();
 }
 
 function vMatch(){
@@ -556,7 +563,7 @@ let poll={date:null,id:null,open:false,rsvp:{},loading:false,err:null};
 const pollUrl=id=>location.origin+location.pathname.replace(/[^/]*$/,'')+'in.html?p='+id;
 async function loadPoll(force){if(!supaUser||poll.loading)return;if(poll.date===draft.date&&!force)return;
   poll={...poll,date:draft.date,loading:true,err:null};
-  try{const {data,error}=await supa.from('atb_polls').select('id,open').eq('owner',supaUser.id).eq('match_date',draft.date).order('created_at',{ascending:false}).limit(1);if(error)throw error;
+  try{const {data,error}=await supa.from('atb_polls').select('id,open').eq('owner',teamOwner).eq('match_date',draft.date).order('created_at',{ascending:false}).limit(1);if(error)throw error;
     const p=data[0];poll.id=p?.id||null;poll.open=!!p?.open;poll.rsvp={};
     if(p){const r=await supa.from('atb_rsvp').select('player_id,status').eq('poll_id',p.id);if(r.error)throw r.error;r.data.forEach(x=>poll.rsvp[x.player_id]=x.status)}}
   catch(e){poll.err=e.message||'Could not load answers'}poll.loading=false;if(view==='match')render()}
@@ -567,7 +574,7 @@ function pollPanel(){
   if(!poll.id)return `<div class="panel pollp row"><div style="flex:1 1 220px"><b>Availability link</b><div class="small muted">Post a link in WhatsApp; players tap their own name. You’ll see who’s in here.</div></div><button class="btn primary" data-a="pollopen" ${poll.loading?'disabled':''}>Open link for ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</button>${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
   return `<div class="panel pollp stack"><div class="row"><b>Availability link</b><span class="pill ${poll.open?'ok':'meh'}">${poll.open?'Open':'Closed'}</span><span class="num"><b>${ins.length}</b> in · <b>${outs.length}</b> out</span>
     <span class="row" style="margin-left:auto;gap:6px"><button class="btn" data-a="pollrefresh">Refresh</button><button class="btn primary" data-a="polluse" ${ins.length?'':'disabled'}>Use answers</button></span></div>
-    <div class="row"><input id="pollurl" readonly value="${pollUrl(poll.id)}" style="flex:1 1 220px;font-size:13px"><button class="btn" data-a="pollcopy">Copy WhatsApp message</button><button class="btn ghost" data-a="${poll.open?'pollclose':'pollreopen'}">${poll.open?'Close link':'Reopen link'}</button></div>
+    <div class="row"><input id="pollurl" readonly value="${pollUrl(poll.id)}" style="flex:1 1 220px;font-size:13px"><button class="btn" data-a="pollcopy">Copy WhatsApp message</button><button class="btn ghost" data-a="${poll.open?'pollclose':'pollreopen'}">${poll.open?'Close link':'Reopen link'}</button><button class="btn ghost danger" data-a="pollreset" ${Object.keys(poll.rsvp).length?'':'disabled'}>Reset answers</button></div>
     ${ins.length?`<div class="small muted">In: ${ins.map(k=>esc(pById(k).name)).join(', ')}</div>`:''}${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
 }
 
@@ -601,12 +608,34 @@ function vSquad(){
       <div class="wl num">${r.apps} apps · W${r.W} D${r.D} L${r.L}${r.motm?` · 🏆${r.motm}`:""}</div></button>`}).join('')}</div>`;
 }
 
+/* ---------- managers (admin only; accounts are created by the atb-managers edge function) ---------- */
+let mgrs={list:null,loading:false,err:''};
+async function mgrCall(body){const {data,error}=await supa.functions.invoke('atb-managers',{body});
+  if(error){let m=error.message;try{const j=await error.context.json();m=j.error||m}catch(e){}throw new Error(m)}if(data&&data.error)throw new Error(data.error);return data}
+async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers}catch(e){mgrs.err=e.message}mgrs.loading=false;if(view==='managers')render()}
+const genPw=()=>{const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';const b=new Uint32Array(12);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('')};
+function vManagers(){
+  if(!mgrs.list&&!mgrs.loading&&!mgrs.err)setTimeout(loadMgrs,0);
+  const when=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Never';
+  return `<h2>Managers</h2>
+  <div class="panel stack"><p class="small muted" style="margin:0">Managers sign in with a username and password you give them. They can do everything in the app (squad, ratings, matches, links) on this team’s data. Only you (${ADMIN_EMAIL}) can see this page and add or remove managers.</p>
+    <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 160px">Username<input id="mu" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="e.g. harjot"></label>
+    <label class="f" style="flex:1 1 160px">Password<input id="mp" autocomplete="new-password" value="${genPw()}"></label>
+    <button class="btn" data-a="mgen" type="button">New password</button><button class="btn primary" data-a="madd">Add manager</button></div>
+    <span class="small muted" id="mmsg" role="status"></span></div>
+  <h2>Current managers</h2>
+  ${mgrs.err?`<div class="panel"><span style="color:var(--bad)">${esc(mgrs.err)}</span> <button class="btn" data-a="mreload">Try again</button></div>`:
+    !mgrs.list?'<div class="panel muted">Loading…</div>':!mgrs.list.length?'<div class="panel muted">No managers yet. Add one above, then send them the app link, their username and password.</div>':
+    `<div class="mlist">${mgrs.list.map(m=>`<div class="panel row"><div style="flex:1 1 160px"><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
+      <input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div>`).join('')}</div>`}`;
+}
+
 function vGuide(){
   const sec=(id,t,body,open)=>`<details class="gsec" id="g-${id}" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
   const code=x=>`<code>${x}</code>`;
   return `<h2>How the app works</h2>
   <p class="gintro">Every rule the app uses, from adding a player to sharing the line-up. Numbers here are the live defaults; the ones you can change are in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['managers','Managers and access'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
     <li><b>Before Saturday:</b> open Match Day, tap everyone who is coming, press <b>Balance</b>.</li>
@@ -645,7 +674,7 @@ function vGuide(){
     <li>The page shows names, positions and who’s in. It never shows ratings, and nobody can see or change your squad, matches or settings through it.</li>
     <li>Only active squad players are on the link; guests are not.</li>
     <li>Back on Match Day, <b>Refresh</b> fetches answers and <b>Use answers</b> marks every “in” as playing and every “out” as not. Players who haven’t answered keep whatever you set by hand.</li>
-    <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. Each date gets its own link.</li>
+    <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. <b>Reset answers</b> (tap twice) clears every answer on the link so players start fresh; the link itself stays the same. Each date gets its own link.</li>
     <li>Anyone with the link can answer for any name on it, so share it only in your group.</li></ul>`)}
 
   ${sec('guests','Guest players',`<ul>
@@ -731,6 +760,14 @@ function vGuide(){
 
   ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
     <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
+
+  ${sec('managers','Managers and access',`<ul>
+    <li><b>Admin:</b> ${ADMIN_EMAIL} is the only account that sees the <b>Managers</b> tab and can add, reset or remove managers.</li>
+    <li><b>Add manager:</b> type a username; a strong password is suggested (or type your own, 8+ characters). The login details are copied so you can send them privately.</li>
+    <li>Managers sign in with their <b>username</b> and password. They see and change the same squad, ratings, matches, settings and availability links as you, live.</li>
+    <li><b>Set password</b> replaces a manager’s password. <b>Remove</b> deletes their login immediately; everything they changed stays.</li>
+    <li>Managers can’t use Forgot password; they ask you to set a new one. Their logins have no real email address, so no reset email can ever be sent for them.</li>
+    <li>Players never need an account: they only get WhatsApp cards and the availability link.</li></ul>`)}
 
   ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves one file with the squad, matches and settings. <b>Import backup</b> adds or replaces players and matches with the same IDs; it does not delete anything else.</li>
     <li><b>Delete player</b> removes them from the squad and today’s teams. Their past ratings stay inside old matches but no longer count anywhere.</li>
@@ -923,12 +960,15 @@ document.addEventListener('click',async e=>{
   if(a==='sharesel'){shareModal(lastShareM,el.dataset.s);return}
   if(a==='gosync'){view='settings';ls('atb_view',view);render();setTimeout(()=>$('#syncsec')?.scrollIntoView(),50);return}
   if(a==='forgot'){const email=$('#se').value.trim();const msg=$('#smsg');if(!email){msg.textContent='Type your email first.';return}
+    if(!email.includes('@')){msg.textContent='Managers: ask the admin to reset your password.';return}
     const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.textContent=error?error.message:'If that email has an account, a reset link is on its way.';return}
   if(a==='setpw'){const pw=$('#np').value;if(pw.length<8){$('#npmsg').textContent='Use at least 8 characters.';return}const {error}=await supa.auth.updateUser({password:pw});
     if(error){$('#npmsg').textContent=error.message;return}closeModal();toast('Password updated');return}
-  if(a==='signin'||a==='signup'){const email=$('#se').value.trim(),password=$('#sp').value;const msg=$('#smsg');if(!email||password.length<6){msg.textContent='Enter your email and a password of at least 6 characters.';return}
+  if(a==='signin'||a==='signup'){const email=$('#se').value.trim(),password=$('#sp').value;const msg=$('#smsg');if(!email||!password){msg.textContent='Enter your email or username and password.';return}
     el.disabled=true;msg.textContent=a==='signin'?'Signing in…':'Creating account…';
-    try{const r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
+    try{let r;
+      if(a==='signin'&&!email.includes('@')){for(const d of MGR_DOMAINS){r=await supa.auth.signInWithPassword({email:email.toLowerCase()+'@'+d,password});if(!r.error)break}}
+      else r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
       if(r.error)throw r.error;if(r.data.session){location.reload();return}
       msg.textContent='Account created. Open the confirmation email, then come back and sign in.'}catch(err){msg.textContent=err.message||'Could not sign in'}el.disabled=false;return}
   if(a==='signout'){await supa.auth.signOut();location.reload();return}
@@ -952,11 +992,22 @@ document.addEventListener('click',async e=>{
     saveDraft();closeModal();render();toast(name+' added as a guest');return}
   if(a==='clearguests'){if(el.dataset.sure){for(const p of S.players.filter(p=>p.guest))await delPlayer(p.id);toast('Guests removed')}else{el.dataset.sure=1;el.textContent='Tap again to remove all guests';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove guests'}},3000)}return}
   if(a==='pollopen'){el.disabled=true;const players=S.players.filter(p=>p.active!==false&&!p.guest).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
-    const {data,error}=await supa.from('atb_polls').insert({owner:supaUser.id,match_date:draft.date,time_label:S.settings.time,title:'Saturday Soccer',players}).select('id').single();
+    const {data,error}=await supa.from('atb_polls').insert({owner:teamOwner,match_date:draft.date,time_label:S.settings.time,title:'Saturday Soccer',players}).select('id').single();
     if(error){toast('Could not open link: '+error.message);el.disabled=false;return}poll={date:draft.date,id:data.id,open:true,rsvp:{},loading:false,err:null};render();toast('Link ready. Copy the WhatsApp message');return}
   if(a==='pollrefresh'){await loadPoll(true);toast('Answers updated');return}
   if(a==='polluse'){const s=new Set(draft.avail);Object.entries(poll.rsvp).forEach(([k,v])=>{if(!pById(k))return;v==='in'?s.add(k):s.delete(k)});draft.avail=[...s];saveDraft();render();toast('Who’s playing updated from the link');return}
   if(a==='pollcopy'){const t=`⚽ *Saturday Soccer* – ${fmtDate(draft.date)}, ${S.settings.time}\nTap your name and say if you’re in:\n${pollUrl(poll.id)}`;try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){$('#pollurl').select();toast('Copy the link from the box')}return}
+  if(a==='pollreset'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to clear all answers';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Reset answers'}},3000);return}
+    const {error}=await supa.from('atb_rsvp').delete().eq('poll_id',poll.id);if(error){toast('Could not reset: '+error.message);return}poll.rsvp={};render();toast('All answers cleared. Players can answer again');return}
+  if(a==='mgen'){$('#mp').value=genPw();return}
+  if(a==='mreload'){mgrs={list:null,loading:false,err:''};render();return}
+  if(a==='madd'){const username=$('#mu').value.trim().toLowerCase(),password=$('#mp').value;const msg=$('#mmsg');el.disabled=true;msg.textContent='Adding…';
+    try{await mgrCall({action:'create',username,password});const t=`Airdrie United Team Builder\n${location.origin+location.pathname.replace(/[^/]*$/,'')}\nUsername: ${username}\nPassword: ${password}`;
+      try{await navigator.clipboard.writeText(t);toast('Added '+username+'. Login details copied')}catch(e){toast('Added '+username)}mgrs.list=null;render()}
+    catch(e){msg.textContent=e.message;el.disabled=false}return}
+  if(a==='mreset'){const pw=$('#rp_'+CSS.escape(id)).value;if(pw.length<8){toast('Use at least 8 characters');return}try{await mgrCall({action:'reset',member:id,password:pw});toast('Password updated')}catch(e){toast(e.message)}return}
+  if(a==='mdel'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to remove';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove'}},3000);return}
+    try{await mgrCall({action:'remove',member:id});toast('Manager removed. They can no longer sign in');mgrs.list=null;render()}catch(e){toast(e.message)}return}
   if(a==='pollclose'||a==='pollreopen'){const open=a==='pollreopen';const {error}=await supa.from('atb_polls').update({open}).eq('id',poll.id);if(error){toast('Could not update link');return}poll.open=open;render();toast(open?'Link reopened':'Link closed. Players can no longer answer');return}
   if(a==='gjump'){e.preventDefault();const d=document.getElementById('g-'+el.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}return}
   if(a==='sf'){squadFilter=el.dataset.f;render();return}

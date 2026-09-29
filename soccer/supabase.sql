@@ -35,3 +35,16 @@ create policy "atb rsvp update open" on public.atb_rsvp for update to anon, auth
 create policy "atb rsvp owner delete" on public.atb_rsvp for delete to authenticated using (exists (select 1 from public.atb_polls p where p.id = poll_id and p.owner = (select auth.uid())));
 grant select on public.atb_polls to anon;
 grant select, insert, update on public.atb_rsvp to anon;
+
+-- Managers share the admin's team. Accounts are created only by the atb-managers edge function (admin email check inside).
+create table if not exists public.atb_members (
+  team_owner uuid not null references auth.users(id) on delete cascade,
+  member uuid not null references auth.users(id) on delete cascade,
+  username text not null, created_at timestamptz not null default now(),
+  primary key (team_owner, member), unique (member));
+alter table public.atb_members enable row level security;
+create policy "atb members read" on public.atb_members for select to authenticated using (team_owner = (select auth.uid()) or member = (select auth.uid()));
+create schema if not exists private;
+create or replace function private.atb_is_team(o uuid) returns boolean language sql stable security definer set search_path = '' as $$
+  select o = auth.uid() or exists (select 1 from public.atb_members m where m.team_owner = o and m.member = auth.uid()) $$;
+-- then replace the owner-only policies on atb_docs / atb_polls / atb_rsvp with private.atb_is_team(owner) checks
