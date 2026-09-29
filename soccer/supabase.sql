@@ -48,3 +48,15 @@ create schema if not exists private;
 create or replace function private.atb_is_team(o uuid) returns boolean language sql stable security definer set search_path = '' as $$
   select o = auth.uid() or exists (select 1 from public.atb_members m where m.team_owner = o and m.member = auth.uid()) $$;
 -- then replace the owner-only policies on atb_docs / atb_polls / atb_rsvp with private.atb_is_team(owner) checks
+
+-- Answer history: every change to atb_rsvp is logged by a trigger; managers read it, nobody writes it directly.
+alter table public.atb_polls add column if not exists kickoff timestamptz;
+create table if not exists public.atb_rsvp_log (
+  id bigint generated always as identity primary key,
+  poll_id uuid not null references public.atb_polls(id) on delete cascade,
+  player_id text not null, status text not null check (status in ('in','out','cleared')), prev_status text,
+  at timestamptz not null default now());
+alter table public.atb_rsvp_log enable row level security;
+create policy "atb rsvp log team read" on public.atb_rsvp_log for select to authenticated
+  using (exists (select 1 from public.atb_polls p where p.id = poll_id and private.atb_is_team(p.owner)));
+-- trigger function private.atb_log_rsvp() (security definer) inserts on insert/update(status change)/delete of atb_rsvp

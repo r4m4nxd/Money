@@ -17,6 +17,10 @@ header{display:flex;gap:12px;align-items:center}
 header img{width:56px;height:56px;border-radius:50%;box-shadow:0 0 0 2px var(--accent)}
 h1{font:800 26px/1 var(--f-display);text-transform:uppercase;letter-spacing:.05em;margin:0}
 .sub{color:var(--muted);margin-top:4px}
+.when{margin-top:14px;background:linear-gradient(100deg,#0A1F44,#123A7A);border-left:4px solid var(--accent);padding:12px 14px}
+.when .wd{font:800 24px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.when .wt{font:700 20px var(--f-display);color:#F2C46B;margin-top:2px}
+.when .wc{font-size:13px;color:var(--muted);margin-top:4px}
 .count{display:flex;gap:10px;margin:16px 0 10px}
 .count div{flex:1;background:var(--surface);border:1px solid var(--line);padding:10px;text-align:center}
 .count b{display:block;font:800 28px var(--f-display)}
@@ -59,8 +63,11 @@ function render(){
   <ul id="list">${poll.players.map(p=>`<li data-n="${esc(p.name.toLowerCase())}"><span class="pos">${esc(p.pos)}</span><button class="pick" data-id="${esc(p.id)}">${esc(p.name)}</button>${rs[p.id]?`<span class="st ${rs[p.id]}">${rs[p.id]==='in'?'In':'Out'}</span>`:''}</li>`).join('')}</ul>`;
   $('#q')?.addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#list li').forEach(li=>li.hidden=!li.dataset.n.includes(q))});
 }
-const head=()=>`<header><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h1>${esc(poll.title||'Saturday Soccer')}</h1><div class="sub">${fmt(poll.match_date)}${poll.time_label?' · '+esc(poll.time_label):''}</div></div></header>`;
-async function load(){const {data,error}=await sb.from('atb_polls').select('id,title,match_date,time_label,players,open').eq('id',pid).maybeSingle();
+function until(){if(!poll.kickoff)return '';const ms=new Date(poll.kickoff)-Date.now();if(ms<=0)return 'Kick-off has passed';
+  const h=Math.floor(ms/36e5),d=Math.floor(h/24);return 'Kick-off in '+(d?d+' day'+(d>1?'s':'')+' ':'')+(h%24)+' h'+(d?'':' '+Math.floor(ms/6e4)%60+' min')}
+const head=()=>`<header><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h1>${esc(poll.title||'Saturday Soccer')}</h1><div class="sub">Airdrie United</div></div></header>
+  <div class="when"><div class="wd">${fmt(poll.match_date)}</div><div class="wt">${esc(poll.time_label||'')}</div><div class="wc">${until()}</div></div>`;
+async function load(){const {data,error}=await sb.from('atb_polls').select('id,title,match_date,time_label,kickoff,players,open').eq('id',pid).maybeSingle();
   if(error||!data){app.innerHTML='<p class="msg">This link doesn’t work any more. Ask in the group chat for the new one.</p>';return false}
   poll=data;const r=await sb.from('atb_rsvp').select('player_id,status').eq('poll_id',pid);rs={};(r.data||[]).forEach(x=>rs[x.player_id]=x.status);
   me=ls('aufc_me');if(!poll.players.some(p=>p.id===me))me=null;return true}
