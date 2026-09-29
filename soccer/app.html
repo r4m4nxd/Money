@@ -10,7 +10,7 @@
   --blue:#2F6FD6; --green:#1E9A52; --orange:#EE8A1A; --red:#D23B3B; --purple:#7B4BC9; --black:#2A2E35;
   --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:10px;
+  --r:10px; --boards:#C9D1D8;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0D1520; --surface:#16212E; --surface2:#1B2837; --ink:#E7ECF2; --muted:#93A0B2; --line:#27364A;
@@ -129,6 +129,26 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute
 .sharecard .st ol{margin:0;padding:6px 10px 10px 30px;font-size:14px}
 .sharecard .st li{padding:2px 0}
 .sharecard .st li em{font-style:normal;font-family:var(--f-display);font-weight:700;font-size:12px;letter-spacing:.06em;color:#A9B6C6;margin-left:6px}
+.tb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line)}
+.tb select{padding:3px 6px}
+.pwrap{padding:4px 12px 12px}
+.pitch{position:relative;width:100%;max-width:400px;aspect-ratio:3/4;margin:0 auto;border-radius:18px;border:5px solid var(--boards);background:#2F8F52;overflow:hidden}
+.pitch .mk{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.tok{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;width:25%;background:none;border:0;padding:0;font:inherit;color:#fff;z-index:1}
+button.tok{cursor:pointer}
+.tok .dot{width:38px;height:38px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:15px;letter-spacing:.02em;box-shadow:0 2px 4px rgba(0,0,0,.35)}
+.tok .tn{font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:1px 6px;border-radius:4px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
+.subs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:8px;font-size:13px}
+.subs>span:first-child{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.subb{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:13px}
+button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
+.sharecard .subs>span:first-child{color:#A9B6C6}.sharecard .subb{background:#172638;border-color:#2A3B52;color:#F2F5F8}
+.sharecard.one{max-width:440px}
+.kitsw{width:26px;height:26px;border-radius:6px;flex:none;display:inline-block}.kitsw.sm{width:12px;height:12px;border-radius:3px}
+.star{color:#D9A21B;margin-left:4px;font-size:.95em}
+.fbadge{white-space:nowrap;margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:18px;background:#172638;padding:4px 10px;border-radius:8px}
+.sharecard .st h4 small{float:right;font-size:14px;opacity:.85}
 .empty{text-align:center;padding:30px 12px;color:var(--muted)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;z-index:80;font-weight:600;font-size:14px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
@@ -148,8 +168,11 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute
 <div id="modal"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (()=>{
+const SUPA_URL='https://dqjzufofmblerslcynzr.supabase.co';
+const SUPA_KEY='sb_publishable_nO9M2WUxmc3smuX-FL0E8g_CNEzvTfE';
 const K=['pas','sho','def','bal','min','tea','spd','sta','str'];
 const KL={pas:'Passing',sho:'Shooting',def:'Defending',bal:'Ball Skill',min:'Mindset',tea:'Team Work',spd:'Speed',sta:'Stamina',str:'Strength'};
 const POS=['DEF','MID','FWD'];
@@ -170,7 +193,7 @@ function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(und
 
 /* ---------- state + storage ---------- */
 const S={players:[],matches:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM'}};
-let db=null, mode='local', loaded=false;
+let db=null, mode='local', cloud=null, loaded=false;
 const draft=Object.assign({date:nextSat(),n:3,kits:DEF_KITS.slice(),names:[],avail:[],teams:null,locks:{},editing:null,alts:[]},ls('atb_draft')||{});
 if(draft.date<new Date().toISOString().slice(0,10)&&!draft.editing){draft.date=nextSat()}
 const saveDraft=()=>ls('atb_draft',draft);
@@ -179,6 +202,9 @@ let view=ls('atb_view')||'match';
 const persistLocal=()=>ls('atb_state',S);
 async function putPlayer(p){const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
   if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render()}
+async function delPlayer(id){S.players=S.players.filter(p=>p.id!==id);
+  draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
+  if(mode==='db'){try{await db.doc('players/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
 async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);i<0?S.matches.push(m):S.matches[i]=m;
   if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render()}
 async function delMatch(id){S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
@@ -186,17 +212,51 @@ async function putSettings(){if(mode==='db'){try{await db.doc('settings/main').s
 
 async function seedFromFile(){try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}}
 
+/* Supabase sync: one row per document in atb_docs, shaped like the db API the page already uses */
+let supa=null, supaUser=null;
+function supaDB(client,uid){
+  const cols={};
+  const snap=col=>({docs:[...cols[col].map].map(([id,d])=>({id,exists:true,data:()=>d}))});
+  const emit=col=>{const c=cols[col];if(!c.ready)return;const s=snap(col);c.cbs.forEach(f=>f(s))};
+  function watch(col,fn,err){
+    if(!cols[col]){cols[col]={map:new Map(),cbs:[],ready:false};
+      client.from('atb_docs').select('id,data').eq('col',col).then(({data,error})=>{
+        if(error){err&&err(error);return}data.forEach(r=>cols[col].map.set(r.id,r.data));cols[col].ready=true;emit(col)})}
+    cols[col].cbs.push(fn);if(cols[col].ready)fn(snap(col));
+  }
+  client.channel('atb-'+uid).on('postgres_changes',{event:'*',schema:'public',table:'atb_docs'},p=>{
+    const row=p.eventType==='DELETE'?p.old:p.new;if(!row||row.owner!==uid||!cols[row.col])return;
+    if(p.eventType==='DELETE')cols[row.col].map.delete(row.id);else cols[row.col].map.set(row.id,row.data);emit(row.col)}).subscribe();
+  const split=path=>{const i=path.indexOf('/');return [path.slice(0,i),path.slice(i+1)]};
+  return {
+    collection:col=>({onSnapshot:(fn,err)=>watch(col,fn,err)}),
+    doc:path=>{const [col,id]=split(path);return {
+      async set(data){const {error}=await client.from('atb_docs').upsert({owner:uid,col,id,data,updated_at:new Date().toISOString()});if(error)throw error;cols[col]&&(cols[col].map.set(id,data));},
+      async delete(){const {error}=await client.from('atb_docs').delete().eq('col',col).eq('id',id);if(error)throw error;cols[col]&&cols[col].map.delete(id)},
+      onSnapshot(fn,err){watch(col,s=>{const d=s.docs.find(x=>x.id===id);fn(d||{id,exists:false,data:()=>undefined})},err)}}}
+  };
+}
+
 async function boot(){
-  let t=0;while(!window.claude&&t<15){await new Promise(r=>setTimeout(r,100));t++}
+  if(window.parent!==window){let t=0;while(!window.claude&&t<15){await new Promise(r=>setTimeout(r,100));t++}}
   try{db=window.claude?await window.claude.use('db'):null}catch(e){db=null}
+  if(db){cloud='claude';$('#sync').textContent='Synced to your Claude account'}
+  else if(window.supabase&&!window.claude){
+    try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
+    if(supaUser){db=supaDB(supa,supaUser.id);cloud='supa';$('#sync').textContent='Synced · '+supaUser.email}
+  }
   if(db){
-    mode='db';$('#sync').textContent='Synced to your account';
-    let got=0;const done=()=>{if(++got>=2){loaded=true;render()}};
+    mode='db';
+    let got=0;const done=async()=>{if(++got<2)return;
+      const local=ls('atb_state');
+      if(cloud==='supa'&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
+        for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
+      loaded=true;render()};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done()},e=>{done()});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done()},e=>{done()});
     db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}},()=>{});
   }else{
-    mode='local';$('#sync').textContent='Saved on this device';
+    mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
     if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM'},st.settings)}
     else{try{const j=await (await fetch('seed.json')).json();S.players=j.players;persistLocal()}catch(e){}}
@@ -234,6 +294,7 @@ function compute(){
 }
 const R=id=>CACHE[id]||{fwd:0,mid:0,def:0,pace:0,ovr:0,a:{},hist:[]};
 const pById=id=>S.players.find(p=>p.id===id);
+const star=id=>pById(id)?.star?'<span class="star" title="Star player">★</span>':'';
 const posOf=id=>(draft.posOverride&&draft.posOverride[id])||pById(id)?.pos||'MID';
 function teamStats(ids){
   const rs=ids.map(R);
@@ -256,6 +317,7 @@ function cost(T,pairs){
   const sz=st.map(s=>s.n);c+=Math.max(0,Math.max(...sz)-Math.min(...sz)-1)*1000;
   for(const p of POS){const v=st.map(s=>s.c[p]);const d=Math.max(...v)-Math.min(...v);c+=d*6+Math.max(0,d-1)*60}
   c+=spread('tot')*12+spread('atk')*3+spread('mid')*3+spread('def')*3+spread('pace')*1.5;
+  for(const t of T){const sc={};for(const id of t)if(pById(id)?.star){const p=posOf(id);sc[p]=(sc[p]||0)+1}for(const p in sc)if(sc[p]>1)c+=(sc[p]-1)*800}
   if(S.settings.mix&&pairs.size){for(const t of T)for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const a=t[i],b=t[j];if(pairs.has(a<b?a+'|'+b:b+'|'+a))c+=1.2}}
   return c;
 }
@@ -306,7 +368,7 @@ function vMatch(){
   const av=new Set(draft.avail.filter(id=>pById(id)));
   const grp=POS.map(pos=>{
     const ps=act.filter(p=>p.pos===pos).sort((a,b)=>R(b.id).ovr-R(a.id).ovr);
-    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('');
+    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)}${star(p.id)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('');
   const cnt={DEF:0,MID:0,FWD:0};[...av].forEach(id=>cnt[posOf(id)]++);
   let teamsHtml='';
   if(draft.teams){
@@ -324,11 +386,15 @@ function vMatch(){
       return `<section class="team"><div class="hd" style="background:${KITHEX[kit]}">
         <input id="tn${i}" value="${esc(draft.names[i]||'Team '+KITS[kit])}" data-a="tname" data-i="${i}" aria-label="Team name">
         <select id="tk${i}" data-a="tkit" data-i="${i}" aria-label="Kit colour">${Object.keys(KITS).map(k=>`<option value="${k}" ${k===kit?'selected':''}>${KITS[k]}</option>`).join('')}</select></div>
-        <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}</span><span class="num muted small">${R(id).ovr}</span>
+        <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}${star(id)}</span><span class="num muted small">${R(id).ovr}</span>
           <span class="row" style="gap:2px"><button class="lock" aria-pressed="${draft.locks[id]!=null}" title="Keep in this team when balancing" data-a="lock" data-id="${id}" data-i="${i}">${draft.locks[id]!=null?'🔒':'🔓'}</button>
           <select aria-label="Move ${esc(p?.name)}" data-a="move" data-id="${id}">${draft.teams.map((_,j)=>`<option value="${j}" ${j===i?'selected':''}>${esc((draft.names[j]||'Team '+KITS[draft.kits[j]||DEF_KITS[j]]).replace(/^Team /,''))}</option>`).join('')}</select></span></li>`}).join('')}</ul>
         <div class="stats num"><div><span>Att</span><b>${r1(s.atk)}</b>${arrow(s.atk,'atk')}</div><div><span>Mid</span><b>${r1(s.mid)}</b>${arrow(s.mid,'mid')}</div><div><span>Def</span><b>${r1(s.def)}</b>${arrow(s.def,'def')}</div><div><span>Pace</span><b>${r1(s.pace)}</b>${arrow(s.pace,'pace')}</div><div><span>Total</span><b>${r1(s.tot)}</b>${arrow(s.tot,'tot')}</div></div>
-        <div class="lines num">${s.n} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD</div></section>`}).join('')}</div>`;
+        <div class="lines num">${s.n} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD${(()=>{const sc={};t.forEach(id=>{if(pById(id)?.star){const p=posOf(id);sc[p]=(sc[p]||0)+1}});const bad=Object.keys(sc).filter(p=>sc[p]>1);return bad.length?` <span class="pill meh">${bad.map(p=>sc[p]+" ★ "+p).join(", ")}</span>`:""})()}</div>
+        ${(()=>{const lu=teamLU(i);const show=(draft.pitch||{})[i];return `<div class="tb"><label class="small">Formation <select id="fm${i}" data-a="form" data-i="${i}">${formOpts(t,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
+          <label class="small row" style="gap:4px"><input type="checkbox" id="gk${i}" data-a="gk" data-i="${i}" ${lu.gk?'checked':''}> Keeper</label>
+          <span class="row" style="margin-left:auto;gap:6px"><button class="btn" data-a="pitch" data-i="${i}">${show?'Hide pitch':'Pitch'}</button><button class="btn" data-a="shareteam" data-i="${i}">Share</button></span></div>
+          ${show?`<div class="pwrap">${pitchHTML({kit},lu,i,true)}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap their spots.</p></div>`:''}`})()}</section>`}).join('')}</div>`;
   }
   return `<h2>${draft.editing?'Editing match':'Next match'}</h2>
   <div class="panel row" style="gap:12px;align-items:flex-end">
@@ -341,7 +407,7 @@ function vMatch(){
   <div class="panel">${grp}
     <div class="row" style="margin-top:10px"><button class="btn" data-a="allin">Everyone</button><button class="btn" data-a="nonein">Clear</button>
     <button class="btn primary" data-a="balance" style="margin-left:auto" ${av.size<draft.n*2?'disabled':''}>Balance ${draft.n} teams</button></div>
-    <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team.</p>
+    <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team. Star players (★) with the same position go to different teams.</p>
   </div>${teamsHtml}`;
 }
 
@@ -366,7 +432,7 @@ function vSquad(){
     <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
   <div class="cards">${ps.map(p=>{const r=R(p.id);const h=r.hist;const fm=h.length?h[h.length-1].ovr-r.ovr:0;
     return `<button class="card ${tier(r.ovr)} ${p.active===false?'off':''}" data-a="editp" data-id="${p.id}">
-      <div class="ovr num">${r.ovr}</div><div class="ps">${p.pos}</div>
+      <div class="ovr num">${r.ovr}</div><div class="ps">${p.pos}${p.star?" ★":""}</div>
       ${h.length?`<span class="fm">${fm>1?'▲ form':fm<-1?'▼ form':''}</span>`:''}
       <div class="cn">${esc(p.name)}</div>
       <div class="cs"><span><b>${Math.round(r.fwd*100)}</b>FWD</span><span><b>${Math.round(r.mid*100)}</b>MID</span><span><b>${Math.round(r.def*100)}</b>DEF</span><span><b>${Math.round(r.pace*100)}</b>PAC</span></div>
@@ -384,7 +450,11 @@ function vSettings(){
     </div>
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
   </div>
-  <h2>Backup</h2><div class="panel stack"><p class="small muted" style="margin:0">${mode==='db'?'Your squad and matches sync to your Claude account, so they follow you across devices.':'Data is kept in this browser only. Export a backup now and then.'}</p>
+  ${cloud!=='claude'&&supa?`<h2 id="syncsec">Sync across devices</h2><div class="panel stack">${supaUser?`<p style="margin:0">Signed in as <b>${esc(supaUser.email)}</b>. Changes appear on every device signed in with this account.</p><div class="row"><button class="btn" data-a="signout">Sign out</button></div>`
+    :`<p class="small muted" style="margin:0">Sign in with the same email and password on your phone, laptop and tablet to share one squad. The first time you sign in, this device’s squad and matches are uploaded.</p>
+    <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 200px">Email<input id="se" type="email" autocomplete="username"></label><label class="f" style="flex:1 1 160px">Password<input id="sp" type="password" autocomplete="current-password"></label></div>
+    <div class="row"><button class="btn primary" data-a="signin">Sign in</button><button class="btn" data-a="signup">Create account</button><span class="small muted" id="smsg"></span></div>`}</div>`:''}
+  <h2>Backup</h2><div class="panel stack"><p class="small muted" style="margin:0">${mode==='db'?'Your squad and matches are synced, so they follow you across devices.':'Data is kept in this browser only. Export a backup now and then.'}</p>
     <div class="row"><button class="btn" data-a="export">Export backup (.json)</button><label class="btn" for="imp">Import backup</label><input type="file" id="imp" accept=".json,application/json" hidden data-a="import"></div></div>`;
 }
 
@@ -399,13 +469,16 @@ function playerModal(id){
   <div class="stack">
     <div class="row" style="gap:10px;align-items:flex-end"><label class="f" style="flex:1 1 180px">Name<input id="pn" value="${esc(p.name)}"></label>
     <label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
-    <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label></div>
+    <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
+    <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
+    <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
     <h3>${id?'Starting ratings':'Starting ratings (1–10)'}</h3>
     <p class="small muted" style="margin:0">${id&&p.baseN?`From ${p.baseN} matches last season. `:''}Match ratings you enter later are averaged on top of these.</p>
     <div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="pb_${k}" value="${r1(p.base?.[k]??7)}"></label>`).join('')}</div>
     ${r?`<h3>Current (averaged)</h3><div class="tbl"><table><tr>${K.map(k=>`<th>${KL[k]}</th>`).join('')}</tr><tr>${K.map(k=>`<td>${r1(r.a[k])}</td>`).join('')}</tr></table></div>
     ${r.hist.length?`<h3>Form</h3><div class="tbl"><table><tr><th>Match</th><th>OVR</th></tr>${r.hist.slice().reverse().map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.ovr}</td></tr>`).join('')}</table></div>`:''}`:''}
-    <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button></div>
+    <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button>${id?`<button class="btn danger" data-a="delp" data-id="${p.id}" style="margin-left:auto">Delete player</button>`:''}</div>
+    ${id?'<p class="small muted" style="margin:0">Deleting removes the player from the squad. Their past match ratings stay in match history. To keep them but hide them, untick Active this season.</p>':''}
   </div>`);
 }
 
@@ -420,18 +493,67 @@ function rateModal(mid){
   <div class="row" style="position:sticky;bottom:0;background:var(--bg);padding-block:10px"><button class="btn primary" data-a="saverate" data-id="${m.id}">Save ratings</button><span class="small muted">Saves every player in this match.</span></div>`);
 }
 
-function shareData(m){return {date:m.date,teams:m.teams.map(t=>({name:t.name,kit:t.kit,players:sortTeam(t.players).map(id=>({name:pById(id)?.name||'?',pos:posOf(id)}))}))}}
-function draftAsMatch(){return {date:draft.date,teams:draft.teams.map((t,i)=>({name:draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]],kit:draft.kits[i]||DEF_KITS[i],players:t}))}}
-let lastShare=null;
-function shareModal(m){
-  const d=shareData(m);lastShare=d;
+/* ---------- formations + pitch ---------- */
+const FORMS=['2-2-1','2-2-2','3-2-1','2-3-1','3-2-2','2-3-2','2-2-3','3-3-1','2-4-1','3-3-2','3-2-3','2-4-2','4-3-1','4-2-2','3-4-1','3-3-3','4-3-2','3-4-2','4-2-3','2-5-2','4-4-1','4-4-2','4-3-3','3-4-3','3-5-2','5-3-2'];
+const fsum=f=>f.split('-').reduce((s,x)=>s+ +x,0);
+function autoForm(ids,gk){const c={DEF:0,MID:0,FWD:0};ids.forEach(id=>c[posOf(id)]++);
+  if(gk){if(c.DEF)c.DEF--;else if(c.MID)c.MID--;else c.FWD--}return c.DEF+'-'+c.MID+'-'+c.FWD}
+function formOpts(ids,gk){const cap=ids.length-(gk?1:0);const o=FORMS.filter(f=>fsum(f)<=cap&&fsum(f)>=cap-3);const a=autoForm(ids,gk);if(!o.includes(a))o.push(a);return o.sort((x,y)=>fsum(y)-fsum(x)||(x<y?1:-1))}
+function autoOrder(ids,f,gk){
+  const L=f.split('-').map(Number);const lines=[['DEF',L[0],'def'],['MID',L[1],'mid'],['FWD',L[2],'fwd']];
+  let pool=ids.slice();const got={DEF:[],MID:[],FWD:[]};
+  for(const [pos,n,k] of lines){const c=pool.filter(id=>posOf(id)===pos).sort((a,b)=>R(b)[k]-R(a)[k]).slice(0,n);got[pos].push(...c);pool=pool.filter(id=>!c.includes(id))}
+  let g=[];if(gk&&pool.length){pool.sort((a,b)=>R(b).def-R(a).def);g=[pool.shift()]}
+  for(const [pos,n,k] of lines){while(got[pos].length<n&&pool.length){pool.sort((a,b)=>R(b)[k]-R(a)[k]);got[pos].push(pool.shift())}}
+  if(gk&&!g.length){const d=got.DEF.length?got.DEF:got.MID.length?got.MID:got.FWD;g=[d.pop()]}
+  return [...g,...got.DEF,...got.MID,...got.FWD,...pool];
+}
+function getLU(ids,lu){
+  let gk=!!(lu&&lu.gk)&&ids.length>1;let f=lu&&lu.f;const cap=ids.length-(gk?1:0);
+  if(!f||fsum(f)>cap)f=autoForm(ids,gk);
+  if(lu&&lu.f===f&&!!lu.gk===gk&&lu.order&&lu.order.length===ids.length&&ids.every(id=>lu.order.includes(id)))return {f,gk,order:lu.order.slice()};
+  return {f,gk,order:autoOrder(ids,f,gk)};
+}
+function splitLU(lu){const L=lu.f.split('-').map(Number);let i=lu.gk?1:0;const o=lu.order;
+  const r={GK:lu.gk?o.slice(0,1):[],DEF:o.slice(i,i+=L[0]),MID:o.slice(i,i+=L[1]),FWD:o.slice(i,i+=L[2])};r.SUB=o.slice(i);return r}
+const initials=n=>String(n||'?').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const PITCH_SVG=`<svg class="mk" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="400" fill="#2F8F52"/>${[0,2,4,6,8].map(i=>`<rect y="${i*40}" width="300" height="40" fill="#2A8249"/>`).join("")}<g fill="none" stroke="#FFFFFF" stroke-opacity=".75" stroke-width="2"><rect x="8" y="8" width="284" height="384" rx="16"/><line x1="8" y1="200" x2="292" y2="200"/><circle cx="150" cy="200" r="36"/><path d="M78 8 Q78 72 150 72 Q222 72 222 8"/><path d="M78 392 Q78 328 150 328 Q222 328 222 392"/></g><circle cx="150" cy="200" r="3" fill="#FFFFFF" fill-opacity=".8"/><rect x="122" y="1" width="56" height="7" rx="2" fill="#FFFFFF"/><rect x="122" y="392" width="56" height="7" rx="2" fill="#FFFFFF"/></svg>`;
+function pitchHTML(t,lu,ti,interactive){
+  const g=splitLU(lu);const Y={GK:90,DEF:71,MID:49,FWD:26};const col=KITHEX[t.kit]||'#555';let k=0;const sel=draft.sel;
+  const tok=(id,role,x,y,idx)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${esc(initials(p?.name))}</span><span class="tn">${esc(p?.name||'?')}</span></${interactive?'button':'div'}>`};
+  let html='';let idx=0;
+  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];ids.forEach((id,i)=>{html+=tok(id,role,(i+1)/(ids.length+1)*100,Y[role],idx++)})}
+  const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
+    return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
+  return `<div class="pitch">${PITCH_SVG}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
+}
+function teamLU(i){const t=draft.teams[i];draft.lu=draft.lu||[];const lu=getLU(t,draft.lu[i]);draft.lu[i]=lu;return lu}
+
+function shareData(m){return {date:m.date,teams:m.teams.map(t=>{const ids=t.players.filter(id=>pById(id));const lu=getLU(ids,t.lu);
+  return {name:t.name,kit:t.kit,ids,lu,players:sortTeam(ids).map(id=>({name:pById(id).name,pos:posOf(id)}))}})}}
+function draftAsMatch(){return {date:draft.date,teams:draft.teams.map((t,i)=>({name:draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]],kit:draft.kits[i]||DEF_KITS[i],players:t,lu:teamLU(i)}))}}
+let lastShare=null,shareSel='all';
+function shareModal(m,sel){
+  const d=shareData(m);lastShare=d;shareSel=sel??'all';
+  const one=shareSel!=='all'?d.teams[+shareSel]:null;
+  const card=one?`<div id="sharecard" class="sharecard one"><div style="display:flex;gap:10px;align-items:center"><span class="kitsw" style="background:${KITHEX[one.kit]}"></span><div style="min-width:0"><div class="sh">${esc(one.name)}</div><div class="sd" style="margin:2px 0 0">${fmtDate(d.date)} · ${esc(S.settings.time)}</div></div><span class="fbadge">${one.lu.gk?'GK · ':''}${one.lu.f}</span></div>
+      <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false)}</div></div>`
+    :`<div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(S.settings.time)}</div>
+    <div class="sg">${d.teams.map(t=>`<div class="st"><h4 style="background:${KITHEX[t.kit]}">${esc(t.name)}<small>${t.lu.f}</small></h4><ol>${t.players.map(p=>`<li>${esc(p.name)}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>`;
   openModal(`<div class="mh"><h2>Share</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(S.settings.time)}</div>
-    <div class="sg">${d.teams.map(t=>`<div class="st"><h4 style="background:${KITHEX[t.kit]}">${esc(t.name)}</h4><ol>${t.players.map(p=>`<li>${esc(p.name)}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>
+  <div class="chips" style="margin-bottom:12px;justify-content:center"><button class="chip" style="padding-left:10px" aria-pressed="${shareSel==='all'}" data-a="sharesel" data-s="all">All teams</button>${d.teams.map((t,i)=>`<button class="chip" style="padding-left:10px" aria-pressed="${shareSel==String(i)}" data-a="sharesel" data-s="${i}"><span class="kitsw sm" style="background:${KITHEX[t.kit]}"></span>${esc(t.name)} on pitch</button>`).join('')}</div>
+  ${card}
   <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button><button class="btn" data-a="copytxt">Copy text for WhatsApp</button></div>
   <p class="small muted" style="text-align:center">No ratings are shown. Screenshot the card, save it as an image, or paste the text into your group.</p>`);
+  lastShareM=m;
 }
-function shareText(d){return `⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${S.settings.time}\n\n`+d.teams.map(t=>`${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}*\n`+t.players.map((p,i)=>`${i+1}. ${p.name} (${p.pos})`).join('\n')).join('\n\n')}
+let lastShareM=null;
+function teamText(t){const g=splitLU(t.lu);const nm=id=>pById(id)?.name;const ln=(lab,ids)=>ids.length?`${lab}: ${ids.map(nm).join(', ')}\n`:'';
+  return `${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+ln('🧤 GK',g.GK)+ln('🛡️ DEF',g.DEF)+ln('⚙️ MID',g.MID)+ln('🎯 FWD',g.FWD)+ln('🔁 Subs',g.SUB)}
+function shareText(d){const head=`⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${S.settings.time}\n\n`;
+  if(shareSel!=='all')return head+teamText(d.teams[+shareSel]);
+  return head+d.teams.map(t=>`${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+t.players.map((p,i)=>`${i+1}. ${p.name} (${p.pos})`).join('\n')).join('\n\n')}
 
 async function saveFile(name,data,mime){
   let dl=null;try{dl=window.claude?await window.claude.use('downloads'):null}catch(e){}
@@ -458,12 +580,25 @@ document.addEventListener('click',async e=>{
   if(a==='savematch'){const mm=draftAsMatch();const old=draft.editing&&S.matches.find(x=>x.id===draft.editing);
     const m={id:old?old.id:draft.date+'-'+uid(),date:mm.date,teams:mm.teams.map((t,i)=>({...t,goals:old?.teams[i]?.goals??null})),ratings:old?.ratings||{},createdAt:old?.createdAt||Date.now()};
     await putMatch(m);draft.editing=m.id;saveDraft();toast('Match saved');render();return}
-  if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextSat(),names:[]});saveDraft();render();return}
+  if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextSat(),names:[],lu:[],pitch:{},sel:null});saveDraft();render();return}
   if(a==='share'){shareModal(draftAsMatch());return}
   if(a==='sharem'){shareModal(S.matches.find(x=>x.id===id));return}
-  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.slice()),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();view='match';ls('atb_view',view);render();window.scrollTo(0,0);return}
+  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();view='match';ls('atb_view',view);render();window.scrollTo(0,0);return}
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
   if(a==='rate'){rateModal(id);return}
+  if(a==='delp'){if(el.dataset.sure){const nm=pById(id)?.name;await delPlayer(id);closeModal();toast('Deleted '+nm)}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
+  if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
+  if(a==='slot'){const i=+el.dataset.i,k=+el.dataset.k;const s=draft.sel;
+    if(s&&s.t===i&&s.k!==k){const lu=teamLU(i);[lu.order[s.k],lu.order[k]]=[lu.order[k],lu.order[s.k]];draft.sel=null}else draft.sel=s&&s.t===i&&s.k===k?null:{t:i,k};saveDraft();render();return}
+  if(a==='shareteam'){shareModal(draftAsMatch(),String(el.dataset.i));return}
+  if(a==='sharesel'){shareModal(lastShareM,el.dataset.s);return}
+  if(a==='gosync'){view='settings';ls('atb_view',view);render();setTimeout(()=>$('#syncsec')?.scrollIntoView(),50);return}
+  if(a==='signin'||a==='signup'){const email=$('#se').value.trim(),password=$('#sp').value;const msg=$('#smsg');if(!email||password.length<6){msg.textContent='Enter your email and a password of at least 6 characters.';return}
+    el.disabled=true;msg.textContent=a==='signin'?'Signing in…':'Creating account…';
+    try{const r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
+      if(r.error)throw r.error;if(r.data.session){location.reload();return}
+      msg.textContent='Account created. Open the confirmation email, then come back and sign in.'}catch(err){msg.textContent=err.message||'Could not sign in'}el.disabled=false;return}
+  if(a==='signout'){await supa.auth.signOut();location.reload();return}
   if(a==='bump'){const d=+el.dataset.d;K.forEach(k=>{const i=$(`#r_${CSS.escape(id)}_${k}`);i.value=Math.min(10,Math.max(1,(+i.value||7)+d))});return}
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
@@ -474,7 +609,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>base[k]=Math.min(10,Math.max(1,+$('#pb_'+k).value||7)));
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    await putPlayer({...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,base});closeModal();toast('Saved '+name);return}
+    await putPlayer({...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,base});closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
     el.disabled=true;try{const c=await html2canvas($('#sharecard'),{backgroundColor:'#0F1B2B',scale:2});const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('teams-'+lastShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
@@ -483,13 +618,15 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',async e=>{
   const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
   if(a==='date'){draft.date=el.value||nextSat();saveDraft();render();return}
-  if(a==='nteams'){draft.n=+el.value;draft.teams=null;draft.alts=[];draft.locks={};saveDraft();render();return}
+  if(a==='nteams'){draft.n=+el.value;draft.teams=null;draft.lu=[];draft.pitch={};draft.alts=[];draft.locks={};saveDraft();render();return}
   if(a==='tname'){draft.names[+el.dataset.i]=el.value.trim();saveDraft();render();return}
   if(a==='tkit'){const i=+el.dataset.i;const old=draft.kits[i];draft.kits[i]=el.value;const nm=draft.names[i];if(!nm||nm==='Team '+KITS[old])draft.names[i]='';saveDraft();render();return}
   if(a==='move'){const to=+el.value,id=el.dataset.id;draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));draft.teams[to].push(id);if(draft.locks[id]!=null)draft.locks[id]=to;draft.alts=[draft.teams];saveDraft();render();return}
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
+  if(a==='form'){const i=+el.dataset.i;const lu=teamLU(i);draft.lu[i]={f:el.value,gk:lu.gk};draft.sel=null;saveDraft();render();return}
+  if(a==='gk'){const i=+el.dataset.i;draft.lu[i]={gk:el.checked};draft.sel=null;saveDraft();render();return}
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
       for(const p of j.players)await putPlayer(p);for(const m of j.matches||[])await putMatch(m);if(j.settings){Object.assign(S.settings,j.settings);await putSettings()}toast('Imported '+j.players.length+' players, '+(j.matches||[]).length+' matches')}catch(err){toast('That file is not a Team Builder backup')}el.value='';return}
 });
