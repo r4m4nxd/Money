@@ -359,9 +359,12 @@ label.f input,label.f select{width:100%}
 .cardprev{margin:0 auto}
 .pphoto{justify-content:center}
 .pphoto>.row{flex:1 1 200px}
+.brand .themebtn+.themebtn{margin-left:-4px}
+.brand .themebtn{min-width:36px;min-height:36px;padding:4px 9px;font-size:15px;line-height:1}
+.hide-r .more{display:none}
 .brand{flex-wrap:nowrap;align-items:center;gap:10px;padding-block:10px 4px}
 .bt{flex:1;min-width:0}
-.brand h1{font-size:22px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand h1{font-size:20px;letter-spacing:.04em!important;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .meta{display:flex;gap:6px;align-items:baseline;font-size:12px;line-height:1.3;color:#A9B8D2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .meta small{font-size:12px;flex:none}.meta .sync{margin:0;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .meta .sync::before{content:"·";margin-right:6px}.meta .sync:empty::before{content:none}
@@ -400,7 +403,7 @@ h3{line-height:1.2}
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
   <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match"><span>Match Day</span></button>
     <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
@@ -439,10 +442,15 @@ function ls(k,v){try{if(v===undefined){const x=localStorage.getItem(k);return x?
 function toast(t,undo){const d=document.createElement('div');d.className='toast';d.textContent=t;
   if(undo){const b=document.createElement('button');b.textContent='Undo';b.className='undo';b.onclick=()=>{d.remove();undo()};d.appendChild(b)}
   document.body.appendChild(d);setTimeout(()=>d.remove(),undo?6000:2200)}
-const THEMES=['system','dark','light'],THEME_L={system:'◐ Auto',dark:'● Dark',light:'○ Light'};
+const THEMES=['system','dark','light'],THEME_L={system:'◐',dark:'●',light:'○'},THEME_N={system:'Theme: auto',dark:'Theme: dark',light:'Theme: light'};
 function applyTheme(t){const r=document.documentElement;if(t==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
-  const b=document.getElementById('themebtn');if(b)b.textContent=THEME_L[t]}
+  const b=document.getElementById('themebtn');if(b){b.textContent=THEME_L[t];b.title=THEME_N[t];b.setAttribute('aria-label',THEME_N[t]+'. Tap to change')}}
 let theme=ls('atb_theme')||'system';applyTheme(theme);
+/* Hide ratings: every rating shown on screen reads 99 and rating order is not revealed. Real values still drive balancing and are never overwritten. */
+let hideR=!!ls('atb_hide');
+const rv=x=>hideR?99:x;
+function applyHide(){document.documentElement.classList.toggle('hide-r',hideR);const b=document.getElementById('rbtn');if(b){b.textContent=hideR?'🙈':'👁';b.setAttribute('aria-pressed',hideR);b.title=hideR?'Ratings hidden: tap to show':'Tap to hide ratings'}}
+applyHide();
 // Photos: square-crop and shrink to a small JPEG so it syncs with the player record
 // Portrait 4:5 crop from the top of the photo (head and chest), shrunk to ~35 KB so it syncs with the player record
 function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const W=360,H=450,c=document.createElement('canvas');c.width=W;c.height=H;
@@ -457,13 +465,13 @@ const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><circle cx=
 const flagImg=c=>c?`<img class="flag" src="icons/flags/${c.toLowerCase()}.svg" alt="${esc((NATIONS.find(n=>n[0]===c)||[])[1]||'')}">`:'';
 const titleName=n=>String(n||'').replace(/\S+/g,w=>w.length<=3&&w===w.toUpperCase()?w:w[0].toUpperCase()+w.slice(1));
 // FC card (EA FC layout): metal body by tier, OVR + position top-left, photo centre fading into the card, name, six stats, flag + crest.
-function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'special':tier(r.ovr),f=k=>Math.round((r.a[k]||0)*10);
-  const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',Math.round(((r.a.str||0)+(r.a.sta||0))*5)]];
+function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'special':hideR?'gold':tier(r.ovr),f=k=>rv(Math.round((r.a[k]||0)*10));
+  const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',rv(Math.round(((r.a.str||0)+(r.a.sta||0))*5))]];
   const tag=btn?'button':'div';
-  return `<${tag} class="fut t-${t}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${r.ovr} ${p.pos}"`:''}><div class="fbody">
+  return `<${tag} class="fut t-${t}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}><div class="fbody">
     <span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span>
     <div class="ph">${p.photo?`<img src="${p.photo}" alt="">`:SIL}</div>
-    <div class="fl"><b class="ovr num">${r.ovr}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
+    <div class="fl"><b class="ovr num">${rv(r.ovr)}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
     <div class="fn${p.name.length>16?' xl':p.name.length>12?' l':''}">${esc(titleName(p.name))}</div>
     <div class="fs num">${stats.map(([l,v])=>`<span><i>${l}</i><b>${v}</b></span>`).join('')}</div>
     <div class="fb">${flagImg(p.nation)}<img class="club" src="icons/crest-640.jpg" alt="Airdrie United"></div>
@@ -671,7 +679,7 @@ function balance(ids,n,locks){
   results.sort((a,b)=>a.c-b.c);
   return results.slice(0,8);
 }
-function sortTeam(t){const o={DEF:0,MID:1,FWD:2};return t.slice().sort((a,b)=>o[posOf(a)]-o[posOf(b)]||R(b).ovr-R(a).ovr)}
+function sortTeam(t){const o={DEF:0,MID:1,FWD:2};return t.slice().sort((a,b)=>o[posOf(a)]-o[posOf(b)]||(hideR?(pById(a)?.name||'').localeCompare(pById(b)?.name||''):R(b).ovr-R(a).ovr))}
 
 /* ---------- views ---------- */
 function render(){
@@ -688,9 +696,9 @@ function vMatch(){
   const act=S.players.filter(p=>p.active!==false&&!p.guest);const guests=S.players.filter(p=>p.guest);
   const av=new Set(draft.avail.filter(id=>pById(id)));
   const grp=POS.map(pos=>{
-    const ps=act.filter(p=>p.pos===pos).sort((a,b)=>R(b.id).ovr-R(a.id).ovr);
-    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)}${star(p.id)}${lateFlag(p.id)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('')
-    +`<div class="grp"><span class="pos GST" style="justify-self:start">GUEST</span><div class="chips">${guests.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)} <span class="muted small">${p.pos}</span></button>`).join('')}<button class="chip addg" data-a="addguest">＋ Guest</button>${guests.length?'<button class="chip addg" data-a="clearguests">Remove guests</button>':''}</div></div>`;
+    const ps=act.filter(p=>p.pos===pos).sort((a,b)=>hideR?a.name.localeCompare(b.name):R(b.id).ovr-R(a.id).ovr);
+    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${rv(R(p.id).ovr)}</span>${esc(p.name)}${star(p.id)}${lateFlag(p.id)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('')
+    +`<div class="grp"><span class="pos GST" style="justify-self:start">GUEST</span><div class="chips">${guests.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${rv(R(p.id).ovr)}</span>${esc(p.name)} <span class="muted small">${p.pos}</span></button>`).join('')}<button class="chip addg" data-a="addguest">＋ Guest</button>${guests.length?'<button class="chip addg" data-a="clearguests">Remove guests</button>':''}</div></div>`;
   const cnt={DEF:0,MID:0,FWD:0};[...av].forEach(id=>cnt[posOf(id)]++);
   let teamsHtml='';
   if(draft.teams){
@@ -700,7 +708,7 @@ function vMatch(){
     const arrow=(v,k)=>{const d=v-mean(k);return Math.abs(d)<0.5?'<span class="d muted">=</span>':d>0?`<span class="d up">▲${r1(d)}</span>`:`<span class="d dn">▼${r1(-d)}</span>`};
     teamsHtml=`<h2>Teams</h2>
     <div class="panel row" style="justify-content:space-between;margin-bottom:12px">
-      <div class="balance"><span>Overall gap <b class="num">${r1(spread)}</b> pts <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span></span>
+      <div class="balance"><span>Overall gap <b class="num">${hideR?'–':r1(spread)}</b> pts <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span></span>
       <span class="muted">${S.settings.mix?'Mixing last week’s teammates':''}</span></div>
       <div class="row"><button class="btn" data-a="reroll" ${draft.alts.length>1?'':'disabled'}>Another balanced option</button><button class="btn" data-a="share">Share to WhatsApp</button><button class="btn primary" data-a="savematch">${draft.editing?'Update match':'Save match'}</button></div>
     </div>
@@ -708,10 +716,10 @@ function vMatch(){
       return `<section class="team"><div class="hd" style="background:${KITHEX[kit]}">
         <input id="tn${i}" value="${esc(draft.names[i]||'Team '+KITS[kit])}" data-a="tname" data-i="${i}" aria-label="Team name">
         <select id="tk${i}" data-a="tkit" data-i="${i}" aria-label="Kit colour">${Object.keys(KITS).map(k=>`<option value="${k}" ${k===kit?'selected':''}>${KITS[k]}</option>`).join('')}</select></div>
-        <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}${star(id)}</span><span class="num muted small">${R(id).ovr}</span>
+        <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}${star(id)}</span><span class="num muted small">${rv(R(id).ovr)}</span>
           <span class="row" style="gap:2px"><button class="lock" aria-pressed="${draft.locks[id]!=null}" title="Keep in this team when balancing" data-a="lock" data-id="${id}" data-i="${i}">${draft.locks[id]!=null?'🔒':'🔓'}</button>
           <select aria-label="Move ${esc(p?.name)}" data-a="move" data-id="${id}">${draft.teams.map((_,j)=>`<option value="${j}" ${j===i?'selected':''}>${esc((draft.names[j]||'Team '+KITS[draft.kits[j]||DEF_KITS[j]]).replace(/^Team /,''))}</option>`).join('')}</select></span></li>`}).join('')}</ul>
-        <div class="stitle">Team rating · all ${t.length} players</div><div class="stats num" style="border-top:0;padding-top:2px"><div><span>Att</span><b>${r1(s.atk)}</b>${arrow(s.atk,'atk')}</div><div><span>Mid</span><b>${r1(s.mid)}</b>${arrow(s.mid,'mid')}</div><div><span>Def</span><b>${r1(s.def)}</b>${arrow(s.def,'def')}</div><div><span>Pace</span><b>${r1(s.pace)}</b>${arrow(s.pace,'pace')}</div><div><span>Total</span><b>${r1(s.tot)}</b>${arrow(s.tot,'tot')}</div></div>
+        <div class="stitle">Team rating · all ${t.length} players</div><div class="stats num" style="border-top:0;padding-top:2px"><div><span>Att</span><b>${hideR?99:r1(s.atk)}</b>${hideR?'':arrow(s.atk,'atk')}</div><div><span>Mid</span><b>${hideR?99:r1(s.mid)}</b>${hideR?'':arrow(s.mid,'mid')}</div><div><span>Def</span><b>${hideR?99:r1(s.def)}</b>${hideR?'':arrow(s.def,'def')}</div><div><span>Pace</span><b>${hideR?99:r1(s.pace)}</b>${hideR?'':arrow(s.pace,'pace')}</div><div><span>Total</span><b>${hideR?99:r1(s.tot)}</b>${hideR?'':arrow(s.tot,'tot')}</div></div>
         <div class="lines num">${s.n} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD${(()=>{const sc={};t.forEach(id=>{if(pById(id)?.star){const p=posOf(id);sc[p]=(sc[p]||0)+1}});const bad=Object.keys(sc).filter(p=>sc[p]>1);return bad.length?` <span class="pill meh">${bad.map(p=>sc[p]+" ★ "+p).join(", ")}</span>`:""})()}</div>
         ${(()=>{const lu=teamLU(i);const show=(draft.pitch||{})[i];return `<div class="tb"><label class="small">Formation <select id="fm${i}" data-a="form" data-i="${i}">${formOpts(t,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
           <label class="small row" style="gap:4px"><input type="checkbox" id="gk${i}" data-a="gk" data-i="${i}" ${lu.gk?'checked':''}> Keeper</label>
@@ -818,7 +826,7 @@ function vStats(){
     .map((x,i)=>`<li><span class="rk num">${i+1}</span><span class="nm">${esc(x.p.name)}</span><b class="num">${fmt(x[key],x)}</b></li>`).join('')||'<li class="muted small">Not enough data yet</li>';
   const board=(t,sub,list)=>`<div class="panel lb"><h3>${t}</h3><div class="small muted">${sub}</div><ol>${list}</ol></div>`;
   const cols=[['p','Player'],['ovr','OVR'],['delta','±'],['apps','Apps'],['att','Att.'],['win','Win %'],['motm','🏆'],['resp','Answered'],['drops','Late drops'],['joins','Late joins'],['lead','Notice']];
-  const sorted=PS.slice().sort((a,b)=>{const k=statsSort.k;if(k==='p')return statsSort.d*a.p.name.localeCompare(b.p.name);return statsSort.d*((a[k]??-1e9)-(b[k]??-1e9))});
+  const sorted=PS.slice().sort((a,b)=>{const k=hideR&&(statsSort.k==='ovr'||statsSort.k==='delta')?'p':statsSort.k;if(k==='p')return statsSort.d*a.p.name.localeCompare(b.p.name);return statsSort.d*((a[k]??-1e9)-(b[k]??-1e9))});
   const noLink=cloud!=='supa';
   return `<h2>Season stats</h2>
   <div class="tiles">
@@ -835,8 +843,8 @@ function vStats(){
   </div>
   <h2>Leaderboards</h2>
   <div class="lbs">
-    ${board('Top rated','Current OVR',top(PS,'ovr',v=>v))}
-    ${board('Most improved','OVR change since season start',top(PS,'delta',v=>'+'+v,x=>x.delta>0))}
+    ${hideR?'':board('Top rated','Current OVR',top(PS,'ovr',v=>v))}
+    ${hideR?'':board('Most improved','OVR change since season start',top(PS,'delta',v=>'+'+v,x=>x.delta>0))}
     ${board('Ever-present','Matches played',top(PS,'apps',v=>v,x=>x.apps>0))}
     ${board('🏆 Player of the Match','Awards',top(PS,'motm',v=>v,x=>x.motm>0))}
     ${board('Winners','Win % (3+ results)',top(PS,'win',v=>pct(v),x=>x.res>=3))}
@@ -846,7 +854,7 @@ function vStats(){
   </div>
   <h2>All players</h2>
   <div class="panel tbl stbl"><table><thead><tr>${cols.map(([k,l])=>`<th><button class="sortb" data-a="ssort" data-k="${k}" aria-sort="${statsSort.k===k?(statsSort.d<0?'descending':'ascending'):'none'}">${l}${statsSort.k===k?(statsSort.d<0?' ▼':' ▲'):''}</button></th>`).join('')}</tr></thead>
-  <tbody>${sorted.map(x=>`<tr><td><button class="linkb" data-a="editp" data-id="${x.p.id}">${esc(x.p.name)}</button> <span class="pos ${x.p.pos}">${x.p.pos}</span></td><td>${x.ovr}</td><td class="${x.delta>0?'up':x.delta<0?'dn':''}">${x.delta>0?'+':''}${x.delta||'–'}</td><td>${x.apps}</td><td>${pct(x.att)}</td><td>${pct(x.win)}</td><td>${x.motm||'–'}</td><td>${noLink?'–':pct(x.resp)}</td><td>${noLink?'–':x.drops?`<span class="tag bad">⚠ ${x.drops}</span>`:'0'}</td><td>${noLink?'–':x.joins}</td><td>${x.lead==null?'–':fmtHB(x.lead).replace(' before','')}</td></tr>`).join('')}</tbody></table></div>
+  <tbody>${sorted.map(x=>`<tr><td><button class="linkb" data-a="editp" data-id="${x.p.id}">${esc(x.p.name)}</button> <span class="pos ${x.p.pos}">${x.p.pos}</span></td><td>${rv(x.ovr)}</td><td class="${hideR?'':x.delta>0?'up':x.delta<0?'dn':''}">${hideR?'–':(x.delta>0?'+':'')+(x.delta||'–')}</td><td>${x.apps}</td><td>${pct(x.att)}</td><td>${pct(x.win)}</td><td>${x.motm||'–'}</td><td>${noLink?'–':pct(x.resp)}</td><td>${noLink?'–':x.drops?`<span class="tag bad">⚠ ${x.drops}</span>`:'0'}</td><td>${noLink?'–':x.joins}</td><td>${x.lead==null?'–':fmtHB(x.lead).replace(' before','')}</td></tr>`).join('')}</tbody></table></div>
   <p class="small muted">Att. = matches played ÷ matches this season. Answered = links answered ÷ links they were on. Notice = how long before kick-off their first answer came, on average. Tap a column to sort.</p>`;
 }
 
@@ -866,7 +874,7 @@ let squadFilter='ALL',showOff=false;
 function vSquad(){
   let ps=S.players.filter(p=>showOff||(p.active!==false&&!p.guest));
   if(squadFilter!=='ALL')ps=ps.filter(p=>p.pos===squadFilter);
-  ps.sort((a,b)=>R(b.id).ovr-R(a.id).ovr);
+  ps.sort((a,b)=>hideR?a.name.localeCompare(b.name):R(b.id).ovr-R(a.id).ovr);
   return `<h2>Squad</h2><div class="row" style="margin-bottom:12px">${['ALL',...POS].map(f=>`<button class="chip" aria-pressed="${squadFilter===f}" data-a="sf" data-f="${f}" style="padding-left:10px">${f==='ALL'?'All':f}</button>`).join('')}
     <label class="small row" style="gap:4px;margin-left:8px"><input type="checkbox" id="showoff" data-a="showoff" ${showOff?'checked':''}> Show inactive &amp; guests</label>
     <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
@@ -1036,7 +1044,8 @@ function vGuide(){
     <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
     <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li>
     <li><b>Offline:</b> on the Vercel app the screens load even with no signal at the gym. Changes made offline may not save; you’ll see a message when the connection drops and when it’s back.</li>
-    <li><b>Theme:</b> the button in the header cycles Auto (follows your phone), Dark and Light. It’s remembered per device.</li></ul>`)}
+    <li><b>Hide ratings:</b> tap <b>👁</b> in the header to switch to <b>🙈</b>. Every rating on screen (cards, chips, team lists, team and pitch ratings, Stats) shows 99, cards all turn gold, and lists sort by name so nobody can work out the order. Rating boxes and the detailed rating inputs are hidden. Balancing and saving still use the real ratings. It’s remembered per device; tap again to show.</li>
+    <li><b>Theme:</b> the ◐ button in the header cycles Auto (follows your phone, ◐), Dark (●) and Light (○). It’s remembered per device.</li></ul>`)}
 
   ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
     <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
@@ -1100,9 +1109,9 @@ function playerModal(id){pendPhoto=undefined;
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
     <h3>${id?'Starting ratings':'Starting ratings (1–10)'}</h3>
     <p class="small muted" style="margin:0">${id&&p.baseN?`From ${p.baseN} matches last season. `:''}Match ratings you enter later are averaged on top of these.</p>
-    <div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="pb_${k}" value="${r1(p.base?.[k]??7)}"></label>`).join('')}</div>
-    ${r?(()=>{const x=playerStats().find(y=>y.p.id===id);return x?`<h3>Season</h3><div class="pstat num"><span><b>${x.apps}</b>Apps</span><span><b>${x.W}-${x.D}-${x.L}</b>W-D-L</span><span><b>${x.motm}</b>🏆</span>${cloud==='supa'?`<span><b>${pct(x.resp)}</b>Answered</span><span><b>${x.drops}</b>Late drops</span><span><b>${x.joins}</b>Late joins</span>`:''}</div>${r.hist.length>1?`<div class="row small muted">OVR by match ${spark(r.hist.map(h=>h.ovr))}</div>`:''}`:''})():''}
-    ${r?`<h3>Current (averaged)</h3><div class="tbl"><table><tr>${K.map(k=>`<th>${KL[k]}</th>`).join('')}</tr><tr>${K.map(k=>`<td>${r1(r.a[k])}</td>`).join('')}</tr></table></div>
+    ${id&&hideR?'<p class="small muted" style="margin:0">Ratings are hidden. Tap <b>🙈</b> in the header to see or edit them.</p>':`<div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="pb_${k}" value="${r1(p.base?.[k]??7)}"></label>`).join('')}</div>`}
+    ${r?(()=>{const x=playerStats().find(y=>y.p.id===id);return x?`<h3>Season</h3><div class="pstat num"><span><b>${x.apps}</b>Apps</span><span><b>${x.W}-${x.D}-${x.L}</b>W-D-L</span><span><b>${x.motm}</b>🏆</span>${cloud==='supa'?`<span><b>${pct(x.resp)}</b>Answered</span><span><b>${x.drops}</b>Late drops</span><span><b>${x.joins}</b>Late joins</span>`:''}</div>${r.hist.length>1&&!hideR?`<div class="row small muted">OVR by match ${spark(r.hist.map(h=>h.ovr))}</div>`:''}`:''})():''}
+    ${r&&!hideR?`<h3>Current (averaged)</h3><div class="tbl"><table><tr>${K.map(k=>`<th>${KL[k]}</th>`).join('')}</tr><tr>${K.map(k=>`<td>${r1(r.a[k])}</td>`).join('')}</tr></table></div>
     ${r.hist.length?`<h3>Form</h3><div class="tbl"><table><tr><th>Match</th><th>OVR</th></tr>${r.hist.slice().reverse().map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.ovr}</td></tr>`).join('')}</table></div>`:''}`:''}
     <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button>${id?`<button class="btn danger" data-a="delp" data-id="${p.id}" style="margin-left:auto">Delete player</button>`:''}</div>
     ${id?'<p class="small muted" style="margin:0">Deleting removes the player from the squad. Their past match ratings stay in match history. To keep them but hide them, untick Active this season.</p>':''}
@@ -1163,7 +1172,7 @@ function pitchHTML(t,lu,ti,interactive){
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   let rate='';if(interactive){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
-    rate=`<div class="prate num"><span>On pitch (${st.n})</span><span>Att <b>${r1(st.atk)}</b></span><span>Mid <b>${r1(st.mid)}</b></span><span>Def <b>${r1(st.def)}</b></span><span>Pace <b>${r1(st.pace)}</b></span><span>Total <b>${r1(st.tot)}</b></span></div>`}
+    rate=`<div class="prate num"><span>On pitch (${st.n})</span><span>Att <b>${hideR?99:r1(st.atk)}</b></span><span>Mid <b>${hideR?99:r1(st.mid)}</b></span><span>Def <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`}
   return `${rate}<div class="pitch">${PITCH_SVG}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
 }
 function teamLU(i){const t=draft.teams[i];draft.lu=draft.lu||[];const lu=getLU(t,draft.lu[i]);draft.lu[i]=lu;return lu}
@@ -1267,6 +1276,7 @@ document.addEventListener('click',async e=>{
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;if(row.dataset.skip==='1'){delete m.ratings[pid];return}const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
+  if(a==='hider'){hideR=!hideR;ls('atb_hide',hideR?1:0);applyHide();render();toast(hideR?'Ratings hidden (all 99)':'Ratings visible');return}
   if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
   if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=SIL;return}
   if(a==='addguest'){openModal(`<div class="mh"><h2>Add guest</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
@@ -1303,7 +1313,7 @@ document.addEventListener('click',async e=>{
   if(a==='addp'){playerModal(null);return}
   if(a==='editp'){playerModal(id);return}
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
-    const old=id?pById(id):null;const base={};K.forEach(k=>base[k]=Math.min(10,Math.max(1,+$('#pb_'+k).value||7)));
+    const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
     const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
