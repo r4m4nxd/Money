@@ -188,6 +188,14 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .star{color:#D9A21B;margin-left:4px;font-size:.95em}
 .fbadge{white-space:nowrap;margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:18px;background:#172638;padding:4px 10px;border-radius:8px}
 .sharecard .st h4 small{float:right;font-size:14px;opacity:.85}
+.gintro{color:var(--muted);max-width:65ch;margin-top:0}
+.gtoc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.gtoc a{font-size:13px;color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px}
+.gsec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px;scroll-margin-top:170px}
+.gsec summary{cursor:pointer;padding:12px 14px;font-family:var(--f-display);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.04em}
+.gbody{padding:0 16px 14px;max-width:70ch;line-height:1.55}
+.gbody ul,.gbody ol{padding-left:20px;margin:6px 0}.gbody li{margin:4px 0}.gbody p{margin:8px 0}
+.gbody .tbl{margin:8px 0}.gbody td{text-align:left;white-space:normal}
 .empty{text-align:center;padding:30px 12px;color:var(--muted)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;z-index:80;font-weight:600;font-size:14px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
@@ -205,6 +213,7 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
     <button role="tab" data-v="history">Matches &amp; Ratings</button>
     <button role="tab" data-v="squad">Squad</button>
     <button role="tab" data-v="settings">Settings</button>
+    <button role="tab" data-v="guide">Guide</button>
   </nav>
 </div></header>
 <main class="wrap" id="main"><p class="empty">Loading squad…</p></main>
@@ -411,7 +420,7 @@ function render(){
   $('#sub').textContent=S.players.filter(p=>p.active!==false).length+' active players · '+S.matches.length+' matches';
   const m=$('#main');
   if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster, with last season’s averaged ratings for returning players, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
-  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():vSettings();
+  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='guide'?vGuide():vSettings();
 }
 
 function vMatch(){
@@ -489,6 +498,118 @@ function vSquad(){
       <div class="cn">${esc(p.name)}</div>
       <div class="cs"><span><b>${Math.round(r.fwd*100)}</b>FWD</span><span><b>${Math.round(r.mid*100)}</b>MID</span><span><b>${Math.round(r.def*100)}</b>DEF</span><span><b>${Math.round(r.pace*100)}</b>PAC</span></div>
       <div class="wl num">${r.games} rated · W${r.W} D${r.D} L${r.L}</div></button>`}).join('')}</div>`;
+}
+
+function vGuide(){
+  const sec=(id,t,body,open)=>`<details class="gsec" id="g-${id}" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
+  const code=x=>`<code>${x}</code>`;
+  return `<h2>How the app works</h2>
+  <p class="gintro">Every rule the app uses, from adding a player to sharing the line-up. Numbers here are the live defaults; the ones you can change are in Settings.</p>
+  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and form'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+
+  ${sec('life','The weekly cycle',`<ol>
+    <li><b>Before Saturday:</b> open Match Day, tap everyone who is coming, press <b>Balance</b>.</li>
+    <li>Check the teams, move or lock anyone by hand, pick formations if you want.</li>
+    <li>Press <b>Save match</b>, then <b>Share to WhatsApp</b> and post the card or text. It never shows ratings.</li>
+    <li><b>After the game:</b> open Matches &amp; Ratings, type each team’s goals, then <b>Rate players</b>.</li>
+    <li>The new ratings are averaged into every player’s numbers, so next week’s balance uses up-to-date form.</li></ol>`,true)}
+
+  ${sec('squad','Squad and players',`<ul>
+    <li>Each player has a <b>name</b>, one <b>position</b> (DEF, MID or FWD), an <b>Active this season</b> tick, a <b>★ Star player</b> tick, and nine <b>starting ratings</b> from 1 to 10.</li>
+    <li><b>Add player</b> (Squad tab) creates a player with starting ratings you type; new players default to 7 in everything.</li>
+    <li>Returning players’ starting ratings are their averages from last season’s Excel sheet.</li>
+    <li>Inactive players stay in the database but are hidden from Match Day and the squad list (tick <b>Show inactive</b> to see them).</li>
+    <li>Position decides which line a player is counted in for team balance and where they go on the pitch.</li></ul>`)}
+
+  ${sec('ratings','Ratings and scores',`<p>The nine attributes: Passing, Shooting, Defending, Ball Skill, Mindset, Team Work, Speed, Stamina, Strength.</p>
+    <p><b>Current attributes</b> = average of the starting ratings and every match rating the player has received:</p>
+    <ul><li>Starting ratings count as <b>${S.settings.baseW} matches</b> (Settings → Last season counts as), or as many matches as the player actually had last season if fewer.</li>
+    <li>A brand-new player’s starting ratings count as half a match once they have real ratings, so their true form takes over quickly.</li>
+    <li>Settings → Average over can limit this to the last 3, 5, 8 or 12 matches.</li></ul>
+    <p>From the attributes come four scores, the same formulas as last season’s sheet:</p>
+    <div class="tbl"><table><tr><th>Score</th><th>Average of</th></tr>
+    <tr><td>FWD</td><td>everything except Defending</td></tr><tr><td>MID</td><td>everything except Speed and Strength</td></tr>
+    <tr><td>DEF</td><td>everything except Ball Skill</td></tr><tr><td>PACE</td><td>Speed only</td></tr></table></div>
+    <p><b>OVR</b> = average of FWD, MID, DEF and PACE, shown out of 100 (a 7.4 average shows as 74).</p>`)}
+
+  ${sec('avail','Match Day: who’s in',`<ul>
+    <li>The date defaults to the next Saturday; time comes from Settings (${esc(S.settings.time)}).</li>
+    <li>Players are grouped by position with their OVR. Tap to mark in; <b>Everyone</b> and <b>Clear</b> do what they say.</li>
+    <li>Choose 2, 3 or 4 teams and how many play <b>on pitch per team</b> (keeper included). <b>Balance</b> needs at least two players per team.</li>
+    <li>Your Match Day selections are remembered on the device you made them on until you save the match.</li></ul>`)}
+
+  ${sec('balance','How teams are balanced',`<p>The app tries 80 different starting splits, improves each one by swapping players between teams until no swap helps, and keeps the 8 best distinct results. <b>Another balanced option</b> steps through those 8.</p>
+    <p>Each split gets a penalty score; lower is better. What it counts, from strongest to weakest:</p>
+    <div class="tbl"><table><tr><th>Rule</th><th>Penalty</th></tr>
+    <tr><td>Team sizes differ by more than 1</td><td>1000 per extra player</td></tr>
+    <tr><td>Two ★ stars with the same position on one team</td><td>800 per extra star</td></tr>
+    <tr><td>DEF, MID or FWD counts differ by more than 1 between teams</td><td>60 per extra, plus 6 per player of difference</td></tr>
+    <tr><td>Gap in team Total rating</td><td>12 per point</td></tr>
+    <tr><td>Gap in Attack, Midfield or Defence rating</td><td>3 per point each</td></tr>
+    <tr><td>Gap in Pace</td><td>1.5 per point</td></tr>
+    <tr><td>Two players who were teammates at the last saved match (if <b>Mix up last week’s teammates</b> is on)</td><td>1.2 per pair</td></tr></table></div>
+    <p><b>Team ratings</b> (the Att / Mid / Def / Pace / Total row under each team) are the average FWD, MID, DEF and PACE score of <i>all</i> players in that team, subs included, out of 100. ▲ / ▼ show how far a team is above or below the average of all teams; within 0.5 shows “=”.</p>
+    <p>The header shows the <b>Overall gap</b>: the difference between the best and worst team Total. Under 1.5 points is marked Balanced.</p>`)}
+
+  ${sec('stars','Star players',`<ul><li>Tick ★ Star player on a player’s card.</li>
+    <li>Balancing never puts two stars with the same position on one team if any split avoids it. One star DEF, one star MID and one star FWD together is fine.</li>
+    <li>You can still move stars by hand. A team that ends up with two same-position stars shows a warning pill like “2 ★ DEF”.</li></ul>`)}
+
+  ${sec('manual','Moving and locking',`<ul><li>Use the team dropdown next to a player to move them. Team ratings and the gap update immediately.</li>
+    <li>🔒 locks a player to their current team. Pressing Balance again keeps locked players where they are and balances everyone else around them.</li>
+    <li>Team name and kit colour can be changed in each team’s header.</li></ul>`)}
+
+  ${sec('form','Formations and the pitch',`<ul>
+    <li><b>On pitch per team</b> (default 8) is the number of starters, keeper included. Everyone else is a sub.</li>
+    <li>Tick <b>Keeper</b> to reserve one starter as goalkeeper.</li>
+    <li>The Formation menu lists every DEF-MID-FWD shape (1–5 defenders, 1–5 midfielders, 1–4 forwards) that adds up to the outfield starters. The default shape follows the team’s own position mix.</li>
+    <li><b>Placing players:</b> each line is filled first with players of that position, best score for the line first. The keeper is the best remaining defender by DEF score. Empty spots are filled from the leftovers by that line’s score. Whoever is left becomes a sub.</li>
+    <li>Press <b>Pitch</b> to see it. Tap two players (on the pitch or in subs) to swap them.</li>
+    <li>The strip above the pitch is the <b>on-pitch rating</b>: starters only. The team list rating stays the whole squad.</li>
+    <li>Changing the team (balance, move) keeps the formation but re-places players.</li></ul>`)}
+
+  ${sec('share','Sharing to WhatsApp',`<ul><li><b>All teams</b> card: date, time, the rotation line, and each team’s players with positions.</li>
+    <li><b>Team on pitch</b> card: one team’s formation on the pitch plus subs.</li>
+    <li><b>Save as image</b> makes a picture; <b>Copy text for WhatsApp</b> copies a text version. You can also just screenshot the card.</li>
+    <li>Shared cards and text never include ratings, OVR or scores.</li></ul>`)}
+
+  ${sec('rot','Match-night rotation',(()=>{const g=+S.settings.gameMin||9,c=+(S.settings.changeMin??1),t=+S.settings.sessionMin||120,reps=Math.floor(t/((g+c)*3));
+    return `<p>One pitch, three teams: <b>A v B → B v C → C v A</b>, repeated. Each block of three games has every team playing two and resting one, so only whole blocks keep time equal.</p>
+    <p>Blocks = session ÷ ((game + changeover) × 3), rounded down. With your settings (${t} min session, ${g}-min games, ${c}-min change) that is <b>${reps} blocks</b>, ${reps*3} games, <b>${reps*2} games each</b>.</p>
+    <p>With 4 teams it uses a 6-game round (AB, CD, AC, BD, AD, BC); each team plays 3 per round. With 2 teams no rotation is shown.</p>`})())}
+
+  ${sec('save','Saving a match',`<ul><li><b>Save match</b> stores the date, teams, kit colours, formations and line-ups.</li>
+    <li>Saving again while editing updates the same match instead of making a new one.</li>
+    <li><b>Edit teams</b> on a past match loads it back into Match Day. <b>Start a new match instead</b> clears Match Day for next week.</li></ul>`)}
+
+  ${sec('rate','Rating after the game',`<ul><li>Open <b>Rate players</b> on the match. Each box starts at the player’s current average (rounded to 0.5), or their saved rating if you already rated them.</li>
+    <li>Change only what stood out. <b>+½ all</b> / <b>−½ all</b> move all nine at once. Values are kept between 1 and 10.</li>
+    <li><b>Save ratings</b> saves every player in the match. The badge on the match shows how many are rated.</li>
+    <li>From that moment every average, OVR, balance and card uses the new ratings.</li></ul>`)}
+
+  ${sec('results','Scores, wins and form',`<ul><li>Type each team’s total goals for the night on the match. Results only count once every team has a score.</li>
+    <li>The team with the most goals gets a win for each of its players; teams tied for most get a draw; everyone else a loss.</li>
+    <li>Wins, draws and losses show on player cards. They do not affect ratings or balancing.</li></ul>`)}
+
+  ${sec('cards','Player cards',`<ul><li><b>Gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below.</li>
+    <li>Cards show OVR, position, FWD / MID / DEF / PAC scores, how many matches rated, and W-D-L.</li>
+    <li><b>▲ form</b> / <b>▼ form</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
+    <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
+
+  ${sec('data','Where data lives and sync',`<ul>
+    <li><b>Signed in</b> (Settings → Sync across devices): squad, matches and settings are stored in your private Supabase database and appear on every device signed in with the same email within a second or two. Nobody else can read them.</li>
+    <li>The first time a device signs in and the cloud is empty, that device’s squad and matches are uploaded.</li>
+    <li><b>Not signed in:</b> everything stays in that browser only. Clearing Safari data erases it, so use Export backup.</li>
+    <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
+    <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li></ul>`)}
+
+  ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
+    <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
+
+  ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves one file with the squad, matches and settings. <b>Import backup</b> adds or replaces players and matches with the same IDs; it does not delete anything else.</li>
+    <li><b>Delete player</b> removes them from the squad and today’s teams. Their past ratings stay inside old matches but no longer count anywhere.</li>
+    <li><b>Delete match</b> removes the match and every rating in it, so player averages change.</li>
+    <li>Both deletes ask for a second tap and cannot be undone.</li></ul>`)}`;
 }
 
 function vSettings(){
@@ -618,7 +739,7 @@ function teamText(t){const g=splitLU(t.lu);const nm=id=>pById(id)?.name;const ln
 /* Night rotation: one pitch, every team plays the same number of games; repeat only whole cycles */
 function rotation(d){const n=d.teams.length;if(n<3)return null;
   const P=n===3?[[0,1],[1,2],[2,0]]:[[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
-  const st=S.settings,g=+st.gameMin||9,c=+st.changeMin||1,tot=+st.sessionMin||120;
+  const st=S.settings,g=+st.gameMin||9,c=+(st.changeMin??1),tot=+st.sessionMin||120;
   const reps=Math.max(1,Math.floor(tot/((g+c)*P.length)));const games=reps*P.length;
   const each=games*2/n;return {P,reps,g,c,games,each}}
 function rotLine(d,emoji){const r=rotation(d);if(!r)return '';
@@ -678,6 +799,7 @@ document.addEventListener('click',async e=>{
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
+  if(a==='gjump'){e.preventDefault();const d=document.getElementById('g-'+el.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}return}
   if(a==='sf'){squadFilter=el.dataset.f;render();return}
   if(a==='addp'){playerModal(null);return}
   if(a==='editp'){playerModal(id);return}
