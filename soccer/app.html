@@ -149,6 +149,8 @@ button.tok{cursor:pointer}
 button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .sharecard .subs>span:first-child{color:#A9B6C6}.sharecard .subb{background:#172638;border-color:#2A3B52;color:#F2F5F8}
 .sharecard.one{max-width:440px}
+.rot{background:#172638;border-radius:10px;padding:8px 10px;margin:-4px 0 12px;font-size:14px;font-weight:600}
+.rot .kitsw.sm{vertical-align:-1px}.rot .arr{color:#A9B6C6;margin-inline:4px}.rot .rt{color:#A9B6C6;font-size:12px;font-weight:500;margin-top:3px}
 .kitsw{width:26px;height:26px;border-radius:6px;flex:none;display:inline-block}.kitsw.sm{width:12px;height:12px;border-radius:3px}
 .star{color:#D9A21B;margin-left:4px;font-size:.95em}
 .fbadge{white-space:nowrap;margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:18px;background:#172638;padding:4px 10px;border-radius:8px}
@@ -196,7 +198,7 @@ function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
 /* ---------- state + storage ---------- */
-const S={players:[],matches:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8}};
+const S={players:[],matches:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8,sessionMin:120,gameMin:9,changeMin:1}};
 let db=null, mode='local', cloud=null, loaded=false;
 const draft=Object.assign({date:nextSat(),n:3,kits:DEF_KITS.slice(),names:[],avail:[],teams:null,locks:{},editing:null,alts:[]},ls('atb_draft')||{});
 if(draft.date<new Date().toISOString().slice(0,10)&&!draft.editing){draft.date=nextSat()}
@@ -270,7 +272,7 @@ async function boot(){
   }else{
     mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
-    if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8},st.settings)}
+    if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8,sessionMin:120,gameMin:9,changeMin:1},st.settings)}
     else{try{const j=await (await fetch('seed.json')).json();S.players=j.players;persistLocal()}catch(e){}}
     await syncRoster();loaded=true;render();
   }
@@ -459,6 +461,9 @@ function vSettings(){
       <label class="f">Last season counts as<select id="bw" data-a="set" data-k="baseW">${[0,1,2,3,5,8].map(n=>`<option value="${n}" ${n==s.baseW?'selected':''}>${n} match${n==1?'':'es'}</option>`).join('')}</select></label>
       <label class="f">Average over<select id="rn" data-a="set" data-k="recentN">${[0,3,5,8,12].map(n=>`<option value="${n}" ${n==s.recentN?'selected':''}>${n?'last '+n+' matches':'all matches'}</option>`).join('')}</select></label>
       <label class="f">Match time<input id="mt" value="${esc(s.time)}" data-a="set" data-k="time"></label>
+      <label class="f">Session (min)<input id="sm" type="number" min="30" max="240" style="width:80px" value="${s.sessionMin||120}" data-a="set" data-k="sessionMin"></label>
+      <label class="f">Game (min)<input id="gm" type="number" min="3" max="30" style="width:70px" value="${s.gameMin||9}" data-a="set" data-k="gameMin"></label>
+      <label class="f">Changeover (min)<input id="cm" type="number" min="0" max="10" style="width:70px" value="${s.changeMin??1}" data-a="set" data-k="changeMin"></label>
       <label class="small row" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates</label>
     </div>
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
@@ -561,7 +566,7 @@ function shareModal(m,sel){
   const one=shareSel!=='all'?d.teams[+shareSel]:null;
   const card=one?`<div id="sharecard" class="sharecard one"><div style="display:flex;gap:10px;align-items:center"><span class="kitsw" style="background:${KITHEX[one.kit]}"></span><div style="min-width:0"><div class="sh">${esc(one.name)}</div><div class="sd" style="margin:2px 0 0">${fmtDate(d.date)} · ${esc(S.settings.time)}</div></div><span class="fbadge">${one.lu.gk?'GK · ':''}${one.lu.f}</span></div>
       <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false)}</div></div>`
-    :`<div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(S.settings.time)}</div>
+    :`<div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(S.settings.time)}</div>${rotLine(d,false)}
     <div class="sg">${d.teams.map(t=>`<div class="st"><h4 style="background:${KITHEX[t.kit]}">${esc(t.name)}<small>${t.lu.f}</small></h4><ol>${t.players.map(p=>`<li>${esc(p.name)}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>`;
   openModal(`<div class="mh"><h2>Share</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="chips" style="margin-bottom:12px;justify-content:center"><button class="chip" style="padding-left:10px" aria-pressed="${shareSel==='all'}" data-a="sharesel" data-s="all">All teams</button>${d.teams.map((t,i)=>`<button class="chip" style="padding-left:10px" aria-pressed="${shareSel==String(i)}" data-a="sharesel" data-s="${i}"><span class="kitsw sm" style="background:${KITHEX[t.kit]}"></span>${esc(t.name)} on pitch</button>`).join('')}</div>
@@ -573,7 +578,18 @@ function shareModal(m,sel){
 let lastShareM=null;
 function teamText(t){const g=splitLU(t.lu);const nm=id=>pById(id)?.name;const ln=(lab,ids)=>ids.length?`${lab}: ${ids.map(nm).join(', ')}\n`:'';
   return `${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+ln('🧤 GK',g.GK)+ln('🛡️ DEF',g.DEF)+ln('⚙️ MID',g.MID)+ln('🎯 FWD',g.FWD)+ln('🔁 Subs',g.SUB)}
-function shareText(d){const head=`⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${S.settings.time}\n\n`;
+/* Night rotation: one pitch, every team plays the same number of games; repeat only whole cycles */
+function rotation(d){const n=d.teams.length;if(n<3)return null;
+  const P=n===3?[[0,1],[1,2],[2,0]]:[[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
+  const st=S.settings,g=+st.gameMin||9,c=+st.changeMin||1,tot=+st.sessionMin||120;
+  const reps=Math.max(1,Math.floor(tot/((g+c)*P.length)));const games=reps*P.length;
+  const each=games*2/n;return {P,reps,g,c,games,each}}
+function rotLine(d,emoji){const r=rotation(d);if(!r)return '';
+  const nm=i=>d.teams[i].name.replace(/^team\s+/i,'');const k=i=>emoji?(KITEMO[d.teams[i].kit]||'▪️')+' '+nm(i):`<span class="kitsw sm" style="background:${KITHEX[d.teams[i].kit]}"></span> ${esc(nm(i))}`;
+  const seq=r.P.map(([a,b])=>`${k(a)} v ${k(b)}`).join(emoji?' → ':' <span class="arr">→</span> ');
+  const tail=`repeat ${r.reps}× · ${r.g}-min games · ${r.c}-min change · ${r.each} games each`;
+  return emoji?`🔄 ${seq}\n${tail}\n\n`:`<div class="rot"><div>${seq}</div><div class="rt">${tail}</div></div>`}
+function shareText(d){const head=`⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${S.settings.time}\n\n`+rotLine(d,true);
   if(shareSel!=='all')return head+teamText(d.teams[+shareSel]);
   return head+d.teams.map(t=>`${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+t.players.map((p,i)=>`${i+1}. ${p.name} (${p.pos})`).join('\n')).join('\n\n')}
 
