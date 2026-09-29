@@ -189,6 +189,15 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .gbody ul,.gbody ol{padding-left:20px;margin:6px 0}.gbody li{margin:4px 0}.gbody p{margin:8px 0}
 .gbody .tbl{margin:8px 0}.gbody td{text-align:left;white-space:normal}
 .empty{text-align:center;padding:30px 12px;color:var(--muted)}
+.pos.GST{color:var(--gold)}
+.chip.addg{padding-left:10px;border-style:dashed}
+.pollp summary{cursor:pointer}
+.qr{display:flex;gap:6px;flex-wrap:wrap}
+.qb{min-width:46px;padding:8px 10px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);font:700 15px var(--f-display);cursor:pointer;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))}
+.qb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.qb.skip{margin-left:auto}.qb.skip[aria-pressed="true"]{background:var(--muted);border-color:var(--muted);color:var(--bg)}
+.rate[data-skip="1"] b{text-decoration:line-through;opacity:.6}
+.more summary{cursor:pointer;margin-top:4px}
 .toast .undo{margin-left:12px;background:none;border:0;color:var(--accent);font:inherit;font-weight:700;text-transform:uppercase;cursor:pointer}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;z-index:80;font-weight:600;font-size:14px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
@@ -396,8 +405,8 @@ function compute(){
     for(const m of ms){const ti=m.teams.findIndex(t=>t.players.includes(p.id));if(ti<0)continue;const gs=m.teams.map(t=>t.goals);if(gs.some(g=>g===''||g==null))continue;
       const mine=+gs[ti],best=Math.max(...gs.map(Number));const top=gs.filter(g=>+g===best).length;
       if(mine===best&&top===1)W++;else if(mine===best)D++;else L++}
-    const apps=ms.filter(m=>m.teams.some(t=>t.players.includes(p.id))).length;
-    out[p.id]={...sc,a,hist,W,D,L,games:rs.length,apps};
+    const apps=ms.filter(m=>m.teams.some(t=>t.players.includes(p.id))).length;const motm=ms.filter(m=>m.potm===p.id).length;
+    out[p.id]={...sc,a,hist,W,D,L,games:rs.length,apps,motm};
   }
   return out;
 }
@@ -473,11 +482,12 @@ function render(){
 }
 
 function vMatch(){
-  const act=S.players.filter(p=>p.active!==false);
+  const act=S.players.filter(p=>p.active!==false&&!p.guest);const guests=S.players.filter(p=>p.guest);
   const av=new Set(draft.avail.filter(id=>pById(id)));
   const grp=POS.map(pos=>{
     const ps=act.filter(p=>p.pos===pos).sort((a,b)=>R(b.id).ovr-R(a.id).ovr);
-    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)}${star(p.id)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('');
+    return `<div class="grp"><span class="pos ${pos}" style="justify-self:start">${pos}</span><div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)}${star(p.id)}</button>`).join('')||'<span class="muted small">None</span>'}</div></div>`}).join('')
+    +`<div class="grp"><span class="pos GST" style="justify-self:start">GUEST</span><div class="chips">${guests.map(p=>`<button class="chip" aria-pressed="${av.has(p.id)}" data-a="av" data-id="${p.id}"><span class="o num">${R(p.id).ovr}</span>${esc(p.name)} <span class="muted small">${p.pos}</span></button>`).join('')}<button class="chip addg" data-a="addguest">＋ Guest</button>${guests.length?'<button class="chip addg" data-a="clearguests">Remove guests</button>':''}</div></div>`;
   const cnt={DEF:0,MID:0,FWD:0};[...av].forEach(id=>cnt[posOf(id)]++);
   let teamsHtml='';
   if(draft.teams){
@@ -514,11 +524,32 @@ function vMatch(){
     ${draft.editing?'<button class="btn ghost" data-a="newmatch" style="margin-left:auto">Start a new match instead</button>':''}
   </div>
   <h2>Who’s playing <span class="muted num" style="font-size:16px">${av.size} in · ${cnt.DEF} DEF · ${cnt.MID} MID · ${cnt.FWD} FWD</span></h2>
+  ${pollPanel()}
   <div class="panel">${grp}
     <div class="row" style="margin-top:10px"><button class="btn" data-a="allin">Everyone</button><button class="btn" data-a="nonein">Clear</button>
     <button class="btn primary" data-a="balance" style="margin-left:auto" ${av.size<draft.n*2?'disabled':''}>Balance ${draft.n} teams</button></div>
     <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team. Star players (★) with the same position go to different teams. After balancing, tapping a late arrival in or a dropout out only changes that one player’s team.</p>
   </div>${teamsHtml}`;
+}
+
+/* ---------- availability link (Supabase only) ---------- */
+let poll={date:null,id:null,open:false,rsvp:{},loading:false,err:null};
+const pollUrl=id=>location.origin+location.pathname.replace(/[^/]*$/,'')+'in.html?p='+id;
+async function loadPoll(force){if(!supaUser||poll.loading)return;if(poll.date===draft.date&&!force)return;
+  poll={...poll,date:draft.date,loading:true,err:null};
+  try{const {data,error}=await supa.from('atb_polls').select('id,open').eq('owner',supaUser.id).eq('match_date',draft.date).order('created_at',{ascending:false}).limit(1);if(error)throw error;
+    const p=data[0];poll.id=p?.id||null;poll.open=!!p?.open;poll.rsvp={};
+    if(p){const r=await supa.from('atb_rsvp').select('player_id,status').eq('poll_id',p.id);if(r.error)throw r.error;r.data.forEach(x=>poll.rsvp[x.player_id]=x.status)}}
+  catch(e){poll.err=e.message||'Could not load answers'}poll.loading=false;if(view==='match')render()}
+function pollPanel(){
+  if(cloud!=='supa')return `<details class="panel pollp"><summary><b>Availability link</b> <span class="muted small">Let players tap “I’m in” themselves</span></summary><p class="small muted" style="margin:8px 0 0">This needs sync. Sign in under Settings → Sync across devices on the Vercel app, then open a link here and post it in WhatsApp.</p></details>`;
+  if(poll.date!==draft.date){setTimeout(()=>loadPoll(),0)}
+  const ins=Object.keys(poll.rsvp).filter(k=>poll.rsvp[k]==='in'&&pById(k)),outs=Object.keys(poll.rsvp).filter(k=>poll.rsvp[k]==='out');
+  if(!poll.id)return `<div class="panel pollp row"><div style="flex:1 1 220px"><b>Availability link</b><div class="small muted">Post a link in WhatsApp; players tap their own name. You’ll see who’s in here.</div></div><button class="btn primary" data-a="pollopen" ${poll.loading?'disabled':''}>Open link for ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</button>${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
+  return `<div class="panel pollp stack"><div class="row"><b>Availability link</b><span class="pill ${poll.open?'ok':'meh'}">${poll.open?'Open':'Closed'}</span><span class="num"><b>${ins.length}</b> in · <b>${outs.length}</b> out</span>
+    <span class="row" style="margin-left:auto;gap:6px"><button class="btn" data-a="pollrefresh">Refresh</button><button class="btn primary" data-a="polluse" ${ins.length?'':'disabled'}>Use answers</button></span></div>
+    <div class="row"><input id="pollurl" readonly value="${pollUrl(poll.id)}" style="flex:1 1 220px;font-size:13px"><button class="btn" data-a="pollcopy">Copy WhatsApp message</button><button class="btn ghost" data-a="${poll.open?'pollclose':'pollreopen'}">${poll.open?'Close link':'Reopen link'}</button></div>
+    ${ins.length?`<div class="small muted">In: ${ins.map(k=>esc(pById(k).name)).join(', ')}</div>`:''}${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
 }
 
 function vHistory(){
@@ -527,6 +558,7 @@ function vHistory(){
   return `<h2>Matches</h2><div class="mlist">${ms.map(m=>{const rated=Object.keys(m.ratings||{}).length;const tot=m.teams.reduce((s,t)=>s+t.players.length,0);
     return `<div class="panel stack"><div class="mrow"><h3>${fmtDate(m.date)}</h3><span class="pill ${rated>=tot?'ok':'meh'}">${rated}/${tot} rated</span>
       <span class="row" style="margin-left:auto"><button class="btn primary" data-a="rate" data-id="${m.id}">Rate players</button><button class="btn" data-a="editm" data-id="${m.id}">Edit teams</button><button class="btn" data-a="sharem" data-id="${m.id}">Share</button><button class="btn danger" data-a="delm" data-id="${m.id}">Delete</button></span></div>
+      <label class="small row" style="gap:6px">🏆 Player of the Match <select id="potm${m.id}" data-a="potm" data-id="${m.id}"><option value="">Not picked</option>${m.teams.flatMap(t=>t.players).filter(id=>pById(id)).sort((a,b)=>pById(a).name.localeCompare(pById(b).name)).map(id=>`<option value="${id}" ${m.potm===id?'selected':''}>${esc(pById(id).name)}</option>`).join('')}</select></label>
       <div class="score">${m.teams.map((t,i)=>`<span class="k" style="background:${KITHEX[t.kit]||'#888'}"></span><span>${esc(t.name)}</span><input class="num" id="g${m.id}_${i}" type="number" min="0" inputmode="numeric" placeholder="–" value="${t.goals??''}" data-a="goal" data-id="${m.id}" data-i="${i}" aria-label="Goals ${esc(t.name)}">`).join('<span class="muted" style="padding-inline:4px">·</span>')}</div>
     </div>`}).join('')}</div>`;
 }
@@ -534,11 +566,11 @@ function vHistory(){
 function tier(o){return o>=78?"gold":o>=71?"silver":"bronze"}
 let squadFilter='ALL',showOff=false;
 function vSquad(){
-  let ps=S.players.filter(p=>showOff||p.active!==false);
+  let ps=S.players.filter(p=>showOff||(p.active!==false&&!p.guest));
   if(squadFilter!=='ALL')ps=ps.filter(p=>p.pos===squadFilter);
   ps.sort((a,b)=>R(b.id).ovr-R(a.id).ovr);
   return `<h2>Squad</h2><div class="row" style="margin-bottom:12px">${['ALL',...POS].map(f=>`<button class="chip" aria-pressed="${squadFilter===f}" data-a="sf" data-f="${f}" style="padding-left:10px">${f==='ALL'?'All':f}</button>`).join('')}
-    <label class="small row" style="gap:4px;margin-left:8px"><input type="checkbox" id="showoff" data-a="showoff" ${showOff?'checked':''}> Show inactive</label>
+    <label class="small row" style="gap:4px;margin-left:8px"><input type="checkbox" id="showoff" data-a="showoff" ${showOff?'checked':''}> Show inactive &amp; guests</label>
     <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
   <div class="cards">${ps.map(p=>{const r=R(p.id);const h=r.hist;const fm=h.length?h[h.length-1].ovr-r.ovr:0;
     const f=k=>Math.round((r.a[k]||0)*10);
@@ -547,7 +579,7 @@ function vSquad(){
       ${h.length?`<span class="fm">${fm>1?'▲':fm<-1?'▼':''}</span>`:''}
       <div class="cn">${esc(p.name)}</div>
       <div class="fc num"><span><b>${f('spd')}</b>PAC</span><span><b>${f('bal')}</b>DRI</span><span><b>${f('sho')}</b>SHO</span><span><b>${f('def')}</b>DEF</span><span><b>${f('pas')}</b>PAS</span><span><b>${Math.round(((r.a.str||0)+(r.a.sta||0))*5)}</b>PHY</span></div>
-      <div class="wl num">${r.apps} apps · W${r.W} D${r.D} L${r.L}</div></button>`}).join('')}</div>`;
+      <div class="wl num">${r.apps} apps · W${r.W} D${r.D} L${r.L}${r.motm?` · 🏆${r.motm}`:""}</div></button>`}).join('')}</div>`;
 }
 
 function vGuide(){
@@ -555,7 +587,7 @@ function vGuide(){
   const code=x=>`<code>${x}</code>`;
   return `<h2>How the app works</h2>
   <p class="gintro">Every rule the app uses, from adding a player to sharing the line-up. Numbers here are the live defaults; the ones you can change are in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and form'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
     <li><b>Before Saturday:</b> open Match Day, tap everyone who is coming, press <b>Balance</b>.</li>
@@ -587,6 +619,21 @@ function vGuide(){
     <li>Players are grouped by position with their OVR. Tap to mark in; <b>Everyone</b> and <b>Clear</b> do what they say.</li>
     <li>Choose 2, 3 or 4 teams and how many play <b>on pitch per team</b> (keeper included). <b>Balance</b> needs at least two players per team.</li>
     <li>Your Match Day selections are remembered on the device you made them on until you save the match.</li></ul>`)}
+
+  ${sec('link','Availability link',`<ul>
+    <li>Needs sync (signed in on the Vercel app). On Match Day press <b>Open link for [date]</b>, then <b>Copy WhatsApp message</b> and post it.</li>
+    <li>Players open the link, tap their name once (their phone remembers it) and press <b>I’m in</b> or <b>Can’t make it</b>. They can change their answer any time until you close the link.</li>
+    <li>The page shows names, positions and who’s in. It never shows ratings, and nobody can see or change your squad, matches or settings through it.</li>
+    <li>Only active squad players are on the link; guests are not.</li>
+    <li>Back on Match Day, <b>Refresh</b> fetches answers and <b>Use answers</b> marks every “in” as playing and every “out” as not. Players who haven’t answered keep whatever you set by hand.</li>
+    <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. Each date gets its own link.</li>
+    <li>Anyone with the link can answer for any name on it, so share it only in your group.</li></ul>`)}
+
+  ${sec('guests','Guest players',`<ul>
+    <li><b>＋ Guest</b> on Match Day adds a one-off player with a name, position and level (Beginner 60 to Top 90). Every attribute starts at that level.</li>
+    <li>Guests are marked in straight away. If teams already exist they join the team that needs them most, like a late arrival.</li>
+    <li>Guests show only on Match Day (and in Squad with Show inactive &amp; guests). They are not on the availability link and not affected by the season roster update.</li>
+    <li>You can rate guests after the game. <b>Remove guests</b> deletes all of them; their old match ratings stop counting.</li></ul>`)}
 
   ${sec('balance','How teams are balanced',`<p>The app tries 80 different starting splits, improves each one by swapping players between teams until no swap helps, and keeps the 8 best distinct results. <b>Another balanced option</b> steps through those 8.</p>
     <p>Each split gets a penalty score; lower is better. What it counts, from strongest to weakest:</p>
@@ -633,14 +680,17 @@ function vGuide(){
     <li>Saving again while editing updates the same match instead of making a new one.</li>
     <li><b>Edit teams</b> on a past match loads it back into Match Day. <b>Start a new match instead</b> clears Match Day for next week.</li></ul>`)}
 
-  ${sec('rate','Rating after the game',`<ul><li>Open <b>Rate players</b> on the match. Each box starts at the player’s current average (rounded to 0.5), or their saved rating if you already rated them.</li>
-    <li>Change only what stood out. <b>+½ all</b> / <b>−½ all</b> move all nine at once. Values are kept between 1 and 10.</li>
+  ${sec('rate','Rating after the game',`<ul><li>Open <b>Rate players</b> on the match. Each player gets one row of buttons: <b>−1, −½, =, +½, +1</b>, meaning how they played compared with their usual level. <b>=</b> is selected by default.</li>
+    <li>A button sets all nine ratings to the player’s current average plus that amount (rounded to 0.5, kept between 1 and 10).</li>
+    <li><b>All 9 ratings</b> opens the detailed boxes if you want to rate one attribute differently. Already-rated players show their saved ratings.</li>
+    <li><b>Skip</b> leaves a player unrated for this match (didn’t turn up, left injured). Skipping a rated player removes their rating for that match.</li>
     <li><b>Save ratings</b> saves every player in the match. The badge on the match shows how many are rated.</li>
     <li>From that moment every average, OVR, balance and card uses the new ratings.</li></ul>`)}
 
   ${sec('results','Scores, wins and form',`<ul><li>Type each team’s total goals for the night on the match. Results only count once every team has a score.</li>
     <li>The team with the most goals gets a win for each of its players; teams tied for most get a draw; everyone else a loss.</li>
-    <li>Wins, draws and losses show on player cards. They do not affect ratings or balancing.</li></ul>`)}
+    <li>Wins, draws and losses show on player cards. They do not affect ratings or balancing.</li>
+    <li><b>🏆 Player of the Match:</b> pick one player per match from the dropdown. Their card shows 🏆 with the total. It doesn’t affect ratings.</li></ul>`)}
 
   ${sec('cards','Player cards',`<ul><li><b>Gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players get a navy-and-gold card.</li>
     <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
@@ -717,11 +767,12 @@ function playerModal(id){pendPhoto=undefined;
 function rateModal(mid){
   const m=S.matches.find(x=>x.id===mid);if(!m)return;
   openModal(`<div class="mh"><h2>Rate · ${new Date(m.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <p class="small muted" style="margin-top:0">Boxes start at each player’s current average. Change what stood out, then save. Scores 1–10.</p>
+  <p class="small muted" style="margin-top:0">One tap per player: how did they play compared with their usual level? <b>=</b> means as usual. Open “All 9 ratings” only if you want detail. <b>Skip</b> leaves a player unrated (didn’t play, left early).</p>
   ${m.teams.map(t=>`<h3 style="color:${KITHEX[t.kit]};margin-top:12px">${esc(t.name)}</h3>${sortTeam(t.players).map(id=>{const p=pById(id);if(!p)return'';const cur=m.ratings?.[id];const base=cur||R(id).a;
-    return `<div class="rate" data-pid="${id}"><div class="row"><span class="pos ${posOf(id)}">${posOf(id)}</span><b>${esc(p.name)}</b>${cur?'<span class="pill ok">rated</span>':''}
-      <span class="row" style="margin-left:auto;gap:4px"><button class="btn" data-a="bump" data-d="-0.5" data-id="${id}">−½ all</button><button class="btn" data-a="bump" data-d="0.5" data-id="${id}">+½ all</button></span></div>
-      <div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="r_${id}_${k}" value="${Math.round((+base[k]||7)*2)/2}"></label>`).join('')}</div></div>`}).join('')}`).join('')}
+    const av0=R(id).a;
+    return `<div class="rate" data-pid="${id}"><div class="row"><span class="pos ${posOf(id)}">${posOf(id)}</span><b>${esc(p.name)}</b>${cur?'<span class="pill ok">rated</span>':''}</div>
+      <div class="qr" role="group" aria-label="Rate ${esc(p.name)}">${[[-1,'−1'],[-0.5,'−½'],[0,'='],[0.5,'+½'],[1,'+1']].map(([d,l])=>`<button class="qb" data-a="qr" data-d="${d}" data-id="${id}" aria-pressed="${!cur&&d===0}">${l}</button>`).join('')}<button class="qb skip" data-a="qskip" data-id="${id}" aria-pressed="false">Skip</button></div>
+      <details class="more"><summary class="small muted">All 9 ratings</summary><div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="r_${id}_${k}" data-b="${av0[k]}" value="${Math.round((+base[k]||7)*2)/2}"></label>`).join('')}</div></details></div>`}).join('')}`).join('')}
   <div class="row" style="position:sticky;bottom:0;background:var(--bg);padding-block:10px"><button class="btn primary" data-a="saverate" data-id="${m.id}">Save ratings</button><span class="small muted">Saves every player in this match.</span></div>`);
 }
 
@@ -856,12 +907,32 @@ document.addEventListener('click',async e=>{
       if(r.error)throw r.error;if(r.data.session){location.reload();return}
       msg.textContent='Account created. Open the confirmation email, then come back and sign in.'}catch(err){msg.textContent=err.message||'Could not sign in'}el.disabled=false;return}
   if(a==='signout'){await supa.auth.signOut();location.reload();return}
+  if(a==='qr'){const d=+el.dataset.d;K.forEach(k=>{const i=$(`#r_${CSS.escape(id)}_${k}`);i.value=Math.min(10,Math.max(1,Math.round((+i.dataset.b+d)*2)/2))});
+    el.parentNode.querySelectorAll('.qb').forEach(b=>b.setAttribute('aria-pressed',b===el));el.closest('.rate').dataset.skip='';return}
+  if(a==='qskip'){const row=el.closest('.rate');const on=row.dataset.skip!=='1';row.dataset.skip=on?'1':'';el.parentNode.querySelectorAll('.qb').forEach(b=>b.setAttribute('aria-pressed',on?b===el:b.dataset.d==='0'));return}
   if(a==='bump'){const d=+el.dataset.d;K.forEach(k=>{const i=$(`#r_${CSS.escape(id)}_${k}`);i.value=Math.min(10,Math.max(1,(+i.value||7)+d))});return}
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
-    document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
+    document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;if(row.dataset.skip==='1'){delete m.ratings[pid];return}const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
   if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
   if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);return}
+  if(a==='addguest'){openModal(`<div class="mh"><h2>Add guest</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
+    <div class="row" style="align-items:flex-end;gap:10px"><label class="f" style="flex:1 1 180px">Name<input id="gn"></label><label class="f">Position<select id="gp">${POS.map(x=>`<option>${x}</option>`).join('')}</select></label>
+    <label class="f">Level<select id="gl">${[[60,'Beginner (60)'],[66,'Casual (66)'],[72,'Average (72)'],[78,'Good (78)'],[84,'Very good (84)'],[90,'Top (90)']].map(([v,l])=>`<option value="${v}" ${v===72?'selected':''}>${l}</option>`).join('')}</select></label></div>
+    <p class="small muted" style="margin:0">Guests appear only on Match Day and are left out of the squad and availability link. You can rate them after the game like anyone else.</p>
+    <div class="row"><button class="btn primary" data-a="saveguest">Add and mark in</button></div></div>`);setTimeout(()=>$('#gn')?.focus(),50);return}
+  if(a==='saveguest'){const name=$('#gn').value.trim();if(!name){toast('Enter a name');return}const v=+$('#gl').value/10;const gid='guest-'+slug(name)+'-'+uid().slice(-3);
+    await putPlayer({id:gid,name,pos:$('#gp').value,guest:true,active:true,base:Object.fromEntries(K.map(k=>[k,v])),baseN:0});draft.avail.push(gid);
+    if(draft.teams){const pos=$('#gp').value;let bi=0,bv=1e9;draft.teams.forEach((t,i)=>{const x=t.length*1000+t.filter(y=>posOf(y)===pos).length*100+teamStats(t).tot;if(x<bv){bv=x;bi=i}});draft.teams[bi].push(gid);draft.alts=[draft.teams]}
+    saveDraft();closeModal();render();toast(name+' added as a guest');return}
+  if(a==='clearguests'){if(el.dataset.sure){for(const p of S.players.filter(p=>p.guest))await delPlayer(p.id);toast('Guests removed')}else{el.dataset.sure=1;el.textContent='Tap again to remove all guests';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove guests'}},3000)}return}
+  if(a==='pollopen'){el.disabled=true;const players=S.players.filter(p=>p.active!==false&&!p.guest).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
+    const {data,error}=await supa.from('atb_polls').insert({owner:supaUser.id,match_date:draft.date,time_label:S.settings.time,title:'Saturday Soccer',players}).select('id').single();
+    if(error){toast('Could not open link: '+error.message);el.disabled=false;return}poll={date:draft.date,id:data.id,open:true,rsvp:{},loading:false,err:null};render();toast('Link ready. Copy the WhatsApp message');return}
+  if(a==='pollrefresh'){await loadPoll(true);toast('Answers updated');return}
+  if(a==='polluse'){const s=new Set(draft.avail);Object.entries(poll.rsvp).forEach(([k,v])=>{if(!pById(k))return;v==='in'?s.add(k):s.delete(k)});draft.avail=[...s];saveDraft();render();toast('Who’s playing updated from the link');return}
+  if(a==='pollcopy'){const t=`⚽ *Saturday Soccer* – ${fmtDate(draft.date)}, ${S.settings.time}\nTap your name and say if you’re in:\n${pollUrl(poll.id)}`;try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){$('#pollurl').select();toast('Copy the link from the box')}return}
+  if(a==='pollclose'||a==='pollreopen'){const open=a==='pollreopen';const {error}=await supa.from('atb_polls').update({open}).eq('id',poll.id);if(error){toast('Could not update link');return}poll.open=open;render();toast(open?'Link reopened':'Link closed. Players can no longer answer');return}
   if(a==='gjump'){e.preventDefault();const d=document.getElementById('g-'+el.dataset.g);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}return}
   if(a==='sf'){squadFilter=el.dataset.f;render();return}
   if(a==='addp'){playerModal(null);return}
@@ -878,7 +949,7 @@ document.addEventListener('click',async e=>{
 });
 document.addEventListener('change',async e=>{
   const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
-  if(a==='date'){draft.date=el.value||nextSat();saveDraft();render();return}
+  if(a==='date'){draft.date=el.value||nextSat();poll.date=null;saveDraft();render();return}
   if(a==='nteams'){draft.n=+el.value;draft.teams=null;draft.lu=[];draft.pitch={};draft.alts=[];draft.locks={};saveDraft();render();return}
   if(a==='tname'){draft.names[+el.dataset.i]=el.value.trim();saveDraft();render();return}
   if(a==='tkit'){const i=+el.dataset.i;const old=draft.kits[i];draft.kits[i]=el.value;const nm=draft.names[i];if(!nm||nm==='Team '+KITS[old])draft.names[i]='';saveDraft();render();return}
@@ -886,6 +957,7 @@ document.addEventListener('change',async e=>{
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
+  if(a==='potm'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));m.potm=el.value||null;await putMatch(m);if(el.value)toast('🏆 '+pById(el.value).name);return}
   if(a==='photo'){const f=el.files[0];if(!f)return;try{pendPhoto=await shrinkPhoto(f);$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
   if(a==='form'){const i=+el.dataset.i;const lu=teamLU(i);draft.lu[i]={f:el.value,gk:lu.gk};draft.sel=null;saveDraft();render();return}
   if(a==='gk'){const i=+el.dataset.i;draft.lu[i]={gk:el.checked};draft.sel=null;saveDraft();render();return}

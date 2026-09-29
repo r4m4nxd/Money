@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Airdrie United · Are you in?</title>
+<meta name="theme-color" content="#072F63">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Saira+Condensed:wght@700;800&display=swap">
+<style>
+/* One screen for players: crest, date, their name, In / Out. Club night palette, single dark look on purpose. */
+:root{--bg:#060D1A;--surface:#0E1A2F;--line:#22324E;--ink:#EAF0F8;--muted:#8D9BB4;--accent:#F58A2A;--accent-ink:#1B0C00;--good:#3DDC97;--bad:#FF5C6C;
+  --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;--f-body:"Barlow",system-ui,-apple-system,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--f-body);padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;gap:12px;align-items:center}
+header img{width:56px;height:56px;border-radius:50%;box-shadow:0 0 0 2px var(--accent)}
+h1{font:800 26px/1 var(--f-display);text-transform:uppercase;letter-spacing:.05em;margin:0}
+.sub{color:var(--muted);margin-top:4px}
+.count{display:flex;gap:10px;margin:16px 0 10px}
+.count div{flex:1;background:var(--surface);border:1px solid var(--line);padding:10px;text-align:center}
+.count b{display:block;font:800 28px var(--f-display)}
+.count .in b{color:var(--good)}.count .out b{color:var(--bad)}
+.me{background:linear-gradient(100deg,#0A1F44,#123A7A);border-bottom:2px solid var(--accent);padding:14px;margin-bottom:14px}
+.me h2{font:800 20px var(--f-display);text-transform:uppercase;margin:0 0 8px}
+.btns{display:flex;gap:8px}
+.btns button{flex:1;padding:14px;font:800 18px var(--f-display);text-transform:uppercase;letter-spacing:.05em;border:0;cursor:pointer;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+.bin{background:var(--good);color:#032014}.bout{background:#2A3A55;color:var(--ink)}
+.btns button[aria-pressed="true"]{outline:3px solid #fff;outline-offset:-3px}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;cursor:pointer;padding:6px 0 0}
+input{width:100%;padding:12px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);margin-bottom:10px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}
+li button.pick{flex:1;text-align:left;background:none;border:0;color:var(--ink);font:600 16px var(--f-body);cursor:pointer;padding:0}
+.st{font:700 13px var(--f-display);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px}
+.st.in{background:var(--good);color:#032014}.st.out{background:#2A3A55;color:var(--muted)}
+.pos{font:700 12px var(--f-display);color:var(--muted);width:32px}
+.msg{text-align:center;color:var(--muted);padding:40px 0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style></head><body>
+<div class="wrap" id="app"><p class="msg">Loading…</p></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(()=>{
+const SUPA_URL='https://dqjzufofmblerslcynzr.supabase.co',SUPA_KEY='sb_publishable_nO9M2WUxmc3smuX-FL0E8g_CNEzvTfE';
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}};
+const pid=new URLSearchParams(location.search).get('p');
+let sb,poll,rs={},me=null,busy=false;
+const fmt=d=>new Date(d+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+function render(){
+  if(!poll.open){app.innerHTML=head()+`<p class="msg">This link is closed. Ask in the group chat.</p>`;return}
+  const ins=poll.players.filter(p=>rs[p.id]==='in'),outs=poll.players.filter(p=>rs[p.id]==='out');
+  const mp=poll.players.find(p=>p.id===me);
+  app.innerHTML=head()+`<div class="count"><div class="in"><b>${ins.length}</b>In</div><div class="out"><b>${outs.length}</b>Out</div><div><b>${poll.players.length-ins.length-outs.length}</b>No answer</div></div>
+  ${mp?`<div class="me"><h2>${esc(mp.name)}, are you in?</h2><div class="btns"><button class="bin" data-s="in" aria-pressed="${rs[me]==='in'}">I’m in</button><button class="bout" data-s="out" aria-pressed="${rs[me]==='out'}">Can’t make it</button></div><button class="link" id="notme">Not ${esc(mp.name)}?</button></div>`
+     :`<div class="me"><h2>Tap your name</h2><input id="q" placeholder="Search your name" autocomplete="off"></div>`}
+  <ul id="list">${poll.players.map(p=>`<li data-n="${esc(p.name.toLowerCase())}"><span class="pos">${esc(p.pos)}</span><button class="pick" data-id="${esc(p.id)}">${esc(p.name)}</button>${rs[p.id]?`<span class="st ${rs[p.id]}">${rs[p.id]==='in'?'In':'Out'}</span>`:''}</li>`).join('')}</ul>`;
+  $('#q')?.addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#list li').forEach(li=>li.hidden=!li.dataset.n.includes(q))});
+}
+const head=()=>`<header><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h1>${esc(poll.title||'Saturday Soccer')}</h1><div class="sub">${fmt(poll.match_date)}${poll.time_label?' · '+esc(poll.time_label):''}</div></div></header>`;
+async function load(){const {data,error}=await sb.from('atb_polls').select('id,title,match_date,time_label,players,open').eq('id',pid).maybeSingle();
+  if(error||!data){app.innerHTML='<p class="msg">This link doesn’t work any more. Ask in the group chat for the new one.</p>';return false}
+  poll=data;const r=await sb.from('atb_rsvp').select('player_id,status').eq('poll_id',pid);rs={};(r.data||[]).forEach(x=>rs[x.player_id]=x.status);
+  me=ls('aufc_me');if(!poll.players.some(p=>p.id===me))me=null;return true}
+app.addEventListener('click',async e=>{
+  const pick=e.target.closest('.pick');if(pick){me=pick.dataset.id;ls('aufc_me',me);render();scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.id==='notme'){me=null;ls('aufc_me',null);render();return}
+  const b=e.target.closest('[data-s]');if(b&&me&&!busy){busy=true;const status=b.dataset.s;
+    const {error}=await sb.from('atb_rsvp').upsert({poll_id:pid,player_id:me,status,updated_at:new Date().toISOString()});
+    busy=false;if(error){alert('Could not save. Check your signal and try again.');return}rs[me]=status;render()}
+});
+(async()=>{if(!pid||!window.supabase){app.innerHTML='<p class="msg">Open the link from the group chat.</p>';return}
+  sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}});if(await load())render();
+  setInterval(async()=>{if(document.visibilityState==='visible'&&!busy&&await load())render()},20000)})();
+})();
+</script>
+</body></html>
