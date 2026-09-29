@@ -131,13 +131,17 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute
 .sharecard .st li em{font-style:normal;font-family:var(--f-display);font-weight:700;font-size:12px;letter-spacing:.06em;color:#A9B6C6;margin-left:6px}
 .tb{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line)}
 .tb select{padding:3px 6px}
+.stitle{background:var(--surface2);border-top:1px solid var(--line);padding:8px 12px 0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.prate{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;max-width:400px;margin:0 auto 8px;font-size:12px;color:var(--muted)}
+.prate b{color:var(--ink);font-family:var(--f-display);font-size:15px}
+.prate span:first-child{width:100%;text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 .pwrap{padding:4px 12px 12px}
 .pitch{position:relative;width:100%;max-width:400px;aspect-ratio:3/4;margin:0 auto;border-radius:18px;border:5px solid var(--boards);background:#2F8F52;overflow:hidden}
 .pitch .mk{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .tok{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;width:25%;background:none;border:0;padding:0;font:inherit;color:#fff;z-index:1}
 button.tok{cursor:pointer}
-.tok .dot{width:38px;height:38px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:15px;letter-spacing:.02em;box-shadow:0 2px 4px rgba(0,0,0,.35)}
-.tok .tn{font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:1px 6px;border-radius:4px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tok .dot{width:32px;height:32px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.02em;box-shadow:0 2px 4px rgba(0,0,0,.35)}
+.tok .tn{font-size:10px;line-height:1.15;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:1px 4px;border-radius:4px;max-width:100%;text-align:center;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
 .subs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:8px;font-size:13px}
 .subs>span:first-child{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -192,7 +196,7 @@ function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
 /* ---------- state + storage ---------- */
-const S={players:[],matches:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM'}};
+const S={players:[],matches:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8}};
 let db=null, mode='local', cloud=null, loaded=false;
 const draft=Object.assign({date:nextSat(),n:3,kits:DEF_KITS.slice(),names:[],avail:[],teams:null,locks:{},editing:null,alts:[]},ls('atb_draft')||{});
 if(draft.date<new Date().toISOString().slice(0,10)&&!draft.editing){draft.date=nextSat()}
@@ -266,7 +270,7 @@ async function boot(){
   }else{
     mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
-    if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM'},st.settings)}
+    if(st&&st.players&&st.players.length){Object.assign(S,st);S.settings=Object.assign({baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8},st.settings)}
     else{try{const j=await (await fetch('seed.json')).json();S.players=j.players;persistLocal()}catch(e){}}
     await syncRoster();loaded=true;render();
   }
@@ -397,7 +401,7 @@ function vMatch(){
         <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}${star(id)}</span><span class="num muted small">${R(id).ovr}</span>
           <span class="row" style="gap:2px"><button class="lock" aria-pressed="${draft.locks[id]!=null}" title="Keep in this team when balancing" data-a="lock" data-id="${id}" data-i="${i}">${draft.locks[id]!=null?'🔒':'🔓'}</button>
           <select aria-label="Move ${esc(p?.name)}" data-a="move" data-id="${id}">${draft.teams.map((_,j)=>`<option value="${j}" ${j===i?'selected':''}>${esc((draft.names[j]||'Team '+KITS[draft.kits[j]||DEF_KITS[j]]).replace(/^Team /,''))}</option>`).join('')}</select></span></li>`}).join('')}</ul>
-        <div class="stats num"><div><span>Att</span><b>${r1(s.atk)}</b>${arrow(s.atk,'atk')}</div><div><span>Mid</span><b>${r1(s.mid)}</b>${arrow(s.mid,'mid')}</div><div><span>Def</span><b>${r1(s.def)}</b>${arrow(s.def,'def')}</div><div><span>Pace</span><b>${r1(s.pace)}</b>${arrow(s.pace,'pace')}</div><div><span>Total</span><b>${r1(s.tot)}</b>${arrow(s.tot,'tot')}</div></div>
+        <div class="stitle">Team rating · all ${t.length} players</div><div class="stats num" style="border-top:0;padding-top:2px"><div><span>Att</span><b>${r1(s.atk)}</b>${arrow(s.atk,'atk')}</div><div><span>Mid</span><b>${r1(s.mid)}</b>${arrow(s.mid,'mid')}</div><div><span>Def</span><b>${r1(s.def)}</b>${arrow(s.def,'def')}</div><div><span>Pace</span><b>${r1(s.pace)}</b>${arrow(s.pace,'pace')}</div><div><span>Total</span><b>${r1(s.tot)}</b>${arrow(s.tot,'tot')}</div></div>
         <div class="lines num">${s.n} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD${(()=>{const sc={};t.forEach(id=>{if(pById(id)?.star){const p=posOf(id);sc[p]=(sc[p]||0)+1}});const bad=Object.keys(sc).filter(p=>sc[p]>1);return bad.length?` <span class="pill meh">${bad.map(p=>sc[p]+" ★ "+p).join(", ")}</span>`:""})()}</div>
         ${(()=>{const lu=teamLU(i);const show=(draft.pitch||{})[i];return `<div class="tb"><label class="small">Formation <select id="fm${i}" data-a="form" data-i="${i}">${formOpts(t,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
           <label class="small row" style="gap:4px"><input type="checkbox" id="gk${i}" data-a="gk" data-i="${i}" ${lu.gk?'checked':''}> Keeper</label>
@@ -408,6 +412,7 @@ function vMatch(){
   <div class="panel row" style="gap:12px;align-items:flex-end">
     <label class="f">Date<input type="date" id="mdate" value="${draft.date}" data-a="date"></label>
     <label class="f">Teams<select id="mn" data-a="nteams">${[2,3,4].map(n=>`<option ${n==draft.n?'selected':''}>${n}</option>`).join('')}</select></label>
+    <label class="f">On pitch per team<select id="op" data-a="set" data-k="onPitch">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n==onPitch()?'selected':''}>${n} players</option>`).join('')}</select></label>
     <div class="small muted" style="padding-bottom:8px">${fmtDate(draft.date)} · ${esc(S.settings.time)}</div>
     ${draft.editing?'<button class="btn ghost" data-a="newmatch" style="margin-left:auto">Start a new match instead</button>':''}
   </div>
@@ -502,11 +507,18 @@ function rateModal(mid){
 }
 
 /* ---------- formations + pitch ---------- */
-const FORMS=['2-2-1','2-2-2','3-2-1','2-3-1','3-2-2','2-3-2','2-2-3','3-3-1','2-4-1','3-3-2','3-2-3','2-4-2','4-3-1','4-2-2','3-4-1','3-3-3','4-3-2','3-4-2','4-2-3','2-5-2','4-4-1','4-4-2','4-3-3','3-4-3','3-5-2','5-3-2'];
 const fsum=f=>f.split('-').reduce((s,x)=>s+ +x,0);
-function autoForm(ids,gk){const c={DEF:0,MID:0,FWD:0};ids.forEach(id=>c[posOf(id)]++);
-  if(gk){if(c.DEF)c.DEF--;else if(c.MID)c.MID--;else c.FWD--}return c.DEF+'-'+c.MID+'-'+c.FWD}
-function formOpts(ids,gk){const cap=ids.length-(gk?1:0);const o=FORMS.filter(f=>fsum(f)<=cap&&fsum(f)>=cap-3);const a=autoForm(ids,gk);if(!o.includes(a))o.push(a);return o.sort((x,y)=>fsum(y)-fsum(x)||(x<y?1:-1))}
+const onPitch=()=>+S.settings.onPitch||8;
+// outfield players to place: the pitch limit (keeper counts toward it), never more than the team has
+const target=(ids,gk)=>Math.max(1,Math.min(onPitch(),ids.length)-(gk?1:0));
+function autoForm(ids,gk){const T=target(ids,gk);const c={DEF:0,MID:0,FWD:0};ids.forEach(id=>c[posOf(id)]++);const n=ids.length||1;
+  const want=POS.map(p=>c[p]/n*T);const out=want.map(x=>Math.max(T>=3?1:0,Math.floor(x)));
+  while(out.reduce((a,b)=>a+b,0)<T){let bi=0,bv=-1;want.forEach((w,i)=>{const r=w-out[i];if(r>bv){bv=r;bi=i}});out[bi]++}
+  while(out.reduce((a,b)=>a+b,0)>T){let bi=0;out.forEach((v,i)=>{if(v-want[i]>out[bi]-want[bi])bi=i});out[bi]--}
+  return out.join('-')}
+function formOpts(ids,gk){const T=target(ids,gk);const o=[];
+  for(let d=1;d<=5;d++)for(let m=1;m<=5;m++){const f=T-d-m;if(f>=1&&f<=4)o.push(d+'-'+m+'-'+f)}
+  const a=autoForm(ids,gk);if(!o.includes(a))o.push(a);return o.sort((x,y)=>x<y?1:-1)}
 function autoOrder(ids,f,gk){
   const L=f.split('-').map(Number);const lines=[['DEF',L[0],'def'],['MID',L[1],'mid'],['FWD',L[2],'fwd']];
   let pool=ids.slice();const got={DEF:[],MID:[],FWD:[]};
@@ -518,7 +530,7 @@ function autoOrder(ids,f,gk){
 }
 function getLU(ids,lu){
   let gk=!!(lu&&lu.gk)&&ids.length>1;let f=lu&&lu.f;const cap=ids.length-(gk?1:0);
-  if(!f||fsum(f)>cap)f=autoForm(ids,gk);
+  if(!f||fsum(f)!==target(ids,gk))f=autoForm(ids,gk);
   if(lu&&lu.f===f&&!!lu.gk===gk&&lu.order&&lu.order.length===ids.length&&ids.every(id=>lu.order.includes(id)))return {f,gk,order:lu.order.slice()};
   return {f,gk,order:autoOrder(ids,f,gk)};
 }
@@ -528,13 +540,15 @@ const initials=n=>String(n||'?').split(/\s+/).map(w=>w[0]).join('').slice(0,2).t
 const PITCH_SVG=`<svg class="mk" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="400" fill="#2F8F52"/>${[0,2,4,6,8].map(i=>`<rect y="${i*40}" width="300" height="40" fill="#2A8249"/>`).join("")}<g fill="none" stroke="#FFFFFF" stroke-opacity=".75" stroke-width="2"><rect x="8" y="8" width="284" height="384" rx="16"/><line x1="8" y1="200" x2="292" y2="200"/><circle cx="150" cy="200" r="36"/><path d="M78 8 Q78 72 150 72 Q222 72 222 8"/><path d="M78 392 Q78 328 150 328 Q222 328 222 392"/></g><circle cx="150" cy="200" r="3" fill="#FFFFFF" fill-opacity=".8"/><rect x="122" y="1" width="56" height="7" rx="2" fill="#FFFFFF"/><rect x="122" y="392" width="56" height="7" rx="2" fill="#FFFFFF"/></svg>`;
 function pitchHTML(t,lu,ti,interactive){
   const g=splitLU(lu);const Y={GK:90,DEF:71,MID:49,FWD:26};const col=KITHEX[t.kit]||'#555';let k=0;const sel=draft.sel;
-  const tok=(id,role,x,y,idx)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;
-    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${esc(initials(p?.name))}</span><span class="tn">${esc(p?.name||'?')}</span></${interactive?'button':'div'}>`};
+  const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${esc(initials(p?.name))}</span><span class="tn">${esc(p?.name||'?')}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
-  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];ids.forEach((id,i)=>{html+=tok(id,role,(i+1)/(ids.length+1)*100,Y[role],idx++)})}
+  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?150:94)/k);ids.forEach((id,i)=>{const x=k>=4?13+i*74/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-5:4):0);html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
-  return `<div class="pitch">${PITCH_SVG}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
+  let rate='';if(interactive){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
+    rate=`<div class="prate num"><span>On pitch (${st.n})</span><span>Att <b>${r1(st.atk)}</b></span><span>Mid <b>${r1(st.mid)}</b></span><span>Def <b>${r1(st.def)}</b></span><span>Pace <b>${r1(st.pace)}</b></span><span>Total <b>${r1(st.tot)}</b></span></div>`}
+  return `${rate}<div class="pitch">${PITCH_SVG}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
 }
 function teamLU(i){const t=draft.teams[i];draft.lu=draft.lu||[];const lu=getLU(t,draft.lu[i]);draft.lu[i]=lu;return lu}
 
