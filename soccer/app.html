@@ -279,16 +279,19 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .pphoto .face img{width:100%;height:100%;object-fit:cover}
 /* ---- FC player card (EA FC layout) ---- */
 .cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px 12px}
-.fut{--c1:#F6E6A6;--c2:#D9B65C;--c3:#F3DC92;--ink2:#3A2D10;--lab:#5A4719;--glow:rgba(255,255,255,.35);
+.fut{--c1:#F6E6A6;--c2:#D9B65C;--c3:#F3DC92;--ink2:#3A2D10;--lab:#5A4719;--glow:rgba(255,255,255,.35);--rim:linear-gradient(160deg,#FFF4C9 0%,#B8892E 38%,#F6DC8E 66%,#8A6522 100%);
   display:block;width:100%;aspect-ratio:100/128;border:0;padding:0;background:none;font:inherit;cursor:pointer;container-type:inline-size;
-  filter:drop-shadow(0 8px 14px rgba(0,0,0,.28));color:var(--ink2)}
-.fut.t-silver{--c1:#F2F5F8;--c2:#B9C3CC;--c3:#E6EBEF;--ink2:#262C33;--lab:#46505A;--glow:rgba(255,255,255,.45)}
-.fut.t-bronze{--c1:#F1C9A2;--c2:#B97B4A;--c3:#E7B587;--ink2:#35200D;--lab:#5B3A1E;--glow:rgba(255,236,214,.35)}
-.fut.t-special{--c1:#2B2B30;--c2:#101012;--c3:#23232A;--ink2:#F4D98A;--lab:#CDB064;--glow:rgba(244,217,138,.16)}
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.18)) drop-shadow(0 8px 14px rgba(0,0,0,.35));color:var(--ink2)}
+.fut.t-silver{--c1:#F2F5F8;--c2:#B9C3CC;--c3:#E6EBEF;--ink2:#262C33;--lab:#46505A;--glow:rgba(255,255,255,.45);--rim:linear-gradient(160deg,#FFFFFF 0%,#8B96A1 38%,#EEF2F5 66%,#66707A 100%)}
+.fut.t-bronze{--c1:#F1C9A2;--c2:#B97B4A;--c3:#E7B587;--ink2:#35200D;--lab:#5B3A1E;--glow:rgba(255,236,214,.35);--rim:linear-gradient(160deg,#FFDDBE 0%,#8E5A34 38%,#EBBC8E 66%,#643B1D 100%)}
+.fut.t-special{--c1:#2B2B30;--c2:#101012;--c3:#23232A;--ink2:#F4D98A;--lab:#CDB064;--glow:rgba(244,217,138,.16);--rim:linear-gradient(160deg,#FFF1BF 0%,#A27A2A 36%,#F4D98A 64%,#7A5719 100%)}
 .fut.off{opacity:.45}
 .fut .fbody{position:relative;width:100%;height:100%;clip-path:url(#fcShape);overflow:hidden;
+  background:var(--rim)}
+.fut .fbody::before{content:"";position:absolute;inset:1.8cqw 1.8cqw 2.2cqw;clip-path:url(#fcShape);
   background:linear-gradient(160deg,var(--c1) 0%,var(--c2) 48%,var(--c3) 78%,var(--c2) 100%)}
-.fut.t-special .fbody{background:radial-gradient(120% 80% at 70% 20%,#34343B 0,#16161A 55%,#0B0B0D 100%)}
+.fut .fbody>*{z-index:1}
+.fut.t-special .fbody::before{background:radial-gradient(120% 80% at 70% 20%,#34343B 0,#16161A 55%,#0B0B0D 100%)}
 .fut .streak{position:absolute;background:linear-gradient(90deg,transparent,var(--glow),transparent);transform:rotate(-38deg);pointer-events:none}
 .fut .s1{width:120cqw;height:9cqw;top:14cqw;left:10cqw}.fut .s2{width:120cqw;height:3cqw;top:30cqw;left:18cqw;opacity:.8}.fut .s3{width:120cqw;height:14cqw;top:52cqw;left:34cqw;opacity:.5}
 .fut .ph{position:absolute;left:24cqw;top:7cqw;width:66cqw;height:68cqw;display:grid;place-items:end center;
@@ -301,6 +304,7 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .fut .no{margin-top:2cqw;font:700 5.6cqw var(--f-display);color:var(--lab)}
 .fut .st{font-size:7cqw;line-height:1;margin-top:1.5cqw}
 .fut .fn{position:absolute;left:6cqw;right:6cqw;top:74cqw;text-align:center;font:800 10.5cqw/1.05 var(--f-display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fut .fn.l{font-size:9cqw;top:75cqw}.fut .fn.xl{font-size:7.6cqw;top:76cqw}
 .fut .fs{position:absolute;left:7cqw;right:7cqw;top:88cqw;display:grid;grid-template-columns:repeat(6,1fr);text-align:center}
 .fut .fs span{display:flex;flex-direction:column;align-items:center;gap:.5cqw}
 .fut .fs i{font:700 5cqw/1 var(--f-display);font-style:normal;color:var(--lab);letter-spacing:.02em}
@@ -447,7 +451,7 @@ function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'special':tier(r.ovr
     <span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span>
     <div class="ph">${p.photo?`<img src="${p.photo}" alt="">`:SIL}</div>
     <div class="fl"><b class="ovr num">${r.ovr}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
-    <div class="fn">${esc(titleName(p.name))}</div>
+    <div class="fn${p.name.length>16?' xl':p.name.length>12?' l':''}">${esc(titleName(p.name))}</div>
     <div class="fs num">${stats.map(([l,v])=>`<span><i>${l}</i><b>${v}</b></span>`).join('')}</div>
     <div class="fb">${flagImg(p.nation)}<img class="club" src="icons/crest-640.jpg" alt="Airdrie United"></div>
   </div></${tag}>`}
