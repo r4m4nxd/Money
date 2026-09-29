@@ -35,6 +35,7 @@
   --accent:#F58A2A; --accent-ink:#1B0C00; --gold:#F2C46B; --warn:#FFB547; --bad:#FF5C6C; --good:#3DDC97;
   --hdr1:#050B17; --hdr2:#0E2552; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.4;margin:0}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:0 60px}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -210,6 +211,7 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .qb.skip{margin-left:auto}.qb.skip[aria-pressed="true"]{background:var(--muted);border-color:var(--muted);color:var(--bg)}
 .rate[data-skip="1"] b{text-decoration:line-through;opacity:.6}
 .more summary{cursor:pointer;margin-top:4px}
+.login{max-width:420px;margin:32px auto;text-align:left}.lcrest{width:84px;height:84px;border-radius:50%;box-shadow:0 0 0 2px var(--accent)}
 .toast .undo{margin-left:12px;background:none;border:0;color:var(--accent);font:inherit;font-weight:700;text-transform:uppercase;cursor:pointer}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;z-index:80;font-weight:600;font-size:14px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
@@ -366,20 +368,37 @@ function supaDB(client,uid){
   };
 }
 
+function showLogin(err){
+  $('#tabs').hidden=true;$('#sync').textContent='';$('#sub').textContent='Manager sign-in';
+  $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest"><h2 style="margin:0">Manager sign-in</h2>
+    <p class="small muted" style="margin:0">This app is private. Players get team sheets and the availability link through WhatsApp.</p>
+    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:`<form class="stack" id="lform" novalidate><label class="f">Email<input id="se" type="email" autocomplete="username" required></label>
+    <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required></label>
+    <div class="row"><button class="btn primary" data-a="signin" type="submit">Sign in</button><button class="btn ghost" type="button" data-a="forgot">Forgot password?</button></div><span class="small muted" id="smsg" role="status"></span></form>`}</div>`;
+  $('#lform')?.addEventListener('submit',e=>e.preventDefault());
+}
+function newPasswordModal(){openModal(`<div class="mh"><h2>Set a new password</h2></div><div class="stack"><label class="f">New password<input id="np" type="password" autocomplete="new-password"></label>
+  <div class="row"><button class="btn primary" data-a="setpw">Save password</button><span class="small muted" id="npmsg"></span></div></div>`)}
+
 async function boot(){
   if(window.parent!==window){let t=0;while(!window.claude&&t<15){await new Promise(r=>setTimeout(r,100));t++}}
   try{db=window.claude?await window.claude.use('db'):null}catch(e){db=null}
   if(db){cloud='claude';$('#sync').textContent='Synced to your Claude account'}
   else if(window.supabase&&!window.claude){
-    try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
+    try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+      supa.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')setTimeout(newPasswordModal,300)});
+      const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
     if(supaUser){db=supaDB(supa,supaUser.id);cloud='supa';$('#sync').textContent='Synced · '+supaUser.email}
   }
+  // The hosted app is manager-only: without a signed-in session nothing loads, not even the roster file.
+  if(!db&&!window.claude){showLogin(supa?'':'Can’t reach the sign-in service. Check your connection and reload.');return}
   if(db){
     mode='db';
     const seen=new Set();let started=false;const done=async k=>{seen.add(k);if(seen.size<3||started)return;started=true;
       const local=ls('atb_state');
       if(cloud==='supa'&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
         for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
+      if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
       await syncRoster();loaded=true;render()};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
@@ -489,7 +508,7 @@ function render(){
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));
   $('#sub').textContent=S.players.filter(p=>p.active!==false).length+' active players · '+S.matches.length+' matches';
   const m=$('#main');
-  if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster, with last season’s averaged ratings for returning players, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
+  if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster. Everyone starts at 7; set each player’s ratings in Squad, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
   m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='guide'?vGuide():vSettings();
 }
 
@@ -712,7 +731,9 @@ function vGuide(){
     <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
 
   ${sec('data','Where data lives and sync',`<ul>
-    <li><b>Signed in</b> (Settings → Sync across devices): squad, matches and settings are stored in your private Supabase database and appear on every device signed in with the same email within a second or two. Nobody else can read them.</li>
+    <li><b>Privacy:</b> the Vercel app opens to a manager sign-in screen. Without your email and password nothing loads: no squad, no ratings, no roster file. There is no sign-up button. Players only ever see WhatsApp cards and the availability page, which shows names and positions.</li>
+    <li><b>Forgot password?</b> on the sign-in screen emails you a reset link; opening it lets you set a new password.</li>
+    <li><b>Signed in:</b> squad, matches and settings are stored in your private Supabase database and appear on every device signed in with the same email within a second or two. Nobody else can read them.</li>
     <li>The first time a device signs in and the cloud is empty, that device’s squad and matches are uploaded.</li>
     <li><b>Not signed in:</b> everything stays in that browser only. Clearing Safari data erases it, so use Export backup.</li>
     <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
@@ -746,7 +767,7 @@ function vSettings(){
   ${cloud!=='claude'&&supa?`<h2 id="syncsec">Sync across devices</h2><div class="panel stack">${supaUser?`<p style="margin:0">Signed in as <b>${esc(supaUser.email)}</b>. Changes appear on every device signed in with this account.</p><div class="row"><button class="btn" data-a="signout">Sign out</button></div>`
     :`<p class="small muted" style="margin:0">Sign in with the same email and password on your phone, laptop and tablet to share one squad. The first time you sign in, this device’s squad and matches are uploaded.</p>
     <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 200px">Email<input id="se" type="email" autocomplete="username"></label><label class="f" style="flex:1 1 160px">Password<input id="sp" type="password" autocomplete="current-password"></label></div>
-    <div class="row"><button class="btn primary" data-a="signin">Sign in</button><button class="btn" data-a="signup">Create account</button><span class="small muted" id="smsg"></span></div>`}</div>`:''}
+    <div class="row"><button class="btn primary" data-a="signin">Sign in</button><span class="small muted" id="smsg"></span></div>`}</div>`:''}
   <h2>Backup</h2><div class="panel stack"><p class="small muted" style="margin:0">${mode==='db'?'Your squad and matches are synced, so they follow you across devices.':'Data is kept in this browser only. Export a backup now and then.'}</p>
     <div class="row"><button class="btn" data-a="export">Export backup (.json)</button><label class="btn" for="imp">Import backup</label><input type="file" id="imp" accept=".json,application/json" hidden data-a="import"></div></div>`;
 }
@@ -913,6 +934,10 @@ document.addEventListener('click',async e=>{
   if(a==='shareteam'){shareModal(draftAsMatch(),String(el.dataset.i));return}
   if(a==='sharesel'){shareModal(lastShareM,el.dataset.s);return}
   if(a==='gosync'){view='settings';ls('atb_view',view);render();setTimeout(()=>$('#syncsec')?.scrollIntoView(),50);return}
+  if(a==='forgot'){const email=$('#se').value.trim();const msg=$('#smsg');if(!email){msg.textContent='Type your email first.';return}
+    const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.textContent=error?error.message:'If that email has an account, a reset link is on its way.';return}
+  if(a==='setpw'){const pw=$('#np').value;if(pw.length<8){$('#npmsg').textContent='Use at least 8 characters.';return}const {error}=await supa.auth.updateUser({password:pw});
+    if(error){$('#npmsg').textContent=error.message;return}closeModal();toast('Password updated');return}
   if(a==='signin'||a==='signup'){const email=$('#se').value.trim(),password=$('#sp').value;const msg=$('#smsg');if(!email||password.length<6){msg.textContent='Enter your email and a password of at least 6 characters.';return}
     el.disabled=true;msg.textContent=a==='signin'?'Signing in…':'Creating account…';
     try{const r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
