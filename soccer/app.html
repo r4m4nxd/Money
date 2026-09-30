@@ -129,7 +129,9 @@ label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mu
 .score input{width:52px;text-align:center}
 
 /* modal */
-.scrim{position:fixed;inset:0;background:rgba(8,12,18,.55);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
+.scrim{position:fixed;inset:0;background:rgba(6,10,16,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;touch-action:pan-y}
+.scrim>.modal{margin:auto 0;animation:mIn .18s ease-out}@keyframes mIn{from{opacity:0;transform:scale(.97)}}.scrim>.modal.nudge{animation:nudge .25s}@keyframes nudge{50%{transform:scale(1.015)}}
+body.mopen #main,body.mopen header.top{pointer-events:none;user-select:none}
 .modal{background:var(--bg);color:var(--ink);border-radius:14px;width:100%;max-width:760px;padding:16px;border:1px solid var(--line)}
 .modal .mh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .modal .mh h2{margin:0}
@@ -1258,8 +1260,8 @@ function vSettings(){
 }
 
 /* ---------- modals ---------- */
-function openModal(html){document.documentElement.style.overflow='hidden';$('#modal').innerHTML=`<div class="scrim" data-a="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
-function closeModal(){document.documentElement.style.overflow='';$('#modal').innerHTML=''}
+function openModal(html){document.documentElement.style.overflow='hidden';document.body.classList.add('mopen');$('#modal').innerHTML=`<div class="scrim" data-a="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
+function closeModal(){document.documentElement.style.overflow='';document.body.classList.remove('mopen');$('#modal').innerHTML=''}
 
 function playerModal(id){pendPhoto=undefined;
   const p=id?pById(id):{id:'',name:'',pos:'MID',base:Object.fromEntries(K.map(k=>[k,7])),baseN:0,active:true};
@@ -1393,7 +1395,7 @@ document.addEventListener('click',async e=>{
   const tab=e.target.closest('#tabs button');if(tab){view=tab.dataset.v;ls('atb_view',view);render();window.scrollTo(0,0);const nav=$('#tabs');nav.scrollTo({left:tab.offsetLeft-nav.clientWidth/2+tab.clientWidth/2,behavior:'smooth'});return}
   const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,id=el.dataset.id;
   if(el.tagName==='SELECT'||el.tagName==='INPUT'&&el.type!=='checkbox')return;
-  if(a==='scrim'&&e.target===el){closeModal();return}
+  if(a==='scrim'&&e.target===el){const m=el.firstElementChild;m.classList.remove('nudge');void m.offsetWidth;m.classList.add('nudge');return}
   if(a==='close'){closeModal();return}
   if(a==='seed'){await seedFromFile();return}
   if(a==='av'){const s=new Set(draft.avail);const on=!s.has(id);on?s.add(id):s.delete(id);draft.avail=[...s];
@@ -1524,7 +1526,7 @@ document.addEventListener('change',async e=>{
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
       for(const p of j.players)await putPlayer(p);for(const m of j.matches||[])await putMatch(m);if(j.settings){Object.assign(S.settings,j.settings);await putSettings()}toast('Imported '+j.players.length+' players, '+(j.matches||[]).length+' matches')}catch(err){toast('That file is not a Team Builder backup')}el.value='';return}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pphoto'))closeModal()});
 (function(){const sp=$('#splash');let seen=false;try{seen=sessionStorage.getItem('atb_splash')==='1';sessionStorage.setItem('atb_splash','1')}catch(e){}
   if(seen){sp.remove();return}
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const hide=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),500)};
