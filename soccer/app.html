@@ -349,6 +349,7 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100
 input[type=date]::-webkit-date-and-time-value{text-align:left}
 .mwhen{font-size:14px;color:var(--muted)}
 .btn.wide{width:100%}
+.mgrh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.mgrh .pill{white-space:nowrap;flex:none}
 .wl2{border:1px dashed var(--line);border-radius:6px;padding:8px 12px}.wl2 ol{margin:6px 0 0;padding-left:22px;font-size:14px}
 .phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phead .pcount{margin-left:auto;font-size:15px}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bgrid .btn{width:100%;letter-spacing:.02em;padding-inline:8px;white-space:nowrap}
@@ -564,9 +565,9 @@ const saveDraft=()=>ls('atb_draft',draft);
 let view=ls('atb_view')||'match';
 
 const persistLocal=()=>ls('atb_state',S);
-async function putPlayer(p){const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
+async function putPlayer(p){logAct(pById(p.id)?'Edited player':'Added player',p.name);const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
   if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();syncOpenPolls()}
-async function delPlayer(id){S.players=S.players.filter(p=>p.id!==id);
+async function delPlayer(id){logAct('Deleted player',pById(id)?.name);S.players=S.players.filter(p=>p.id!==id);
   draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
   if(mode==='db'){try{await db.doc('players/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render();syncOpenPolls()}
 /* Open availability links show the current squad: any rename, position change, new, deleted or inactive player is pushed to every open link from today on. */
@@ -576,15 +577,19 @@ function syncOpenPolls(){if(cloud!=='supa'||!supa)return;clearTimeout(pollSyncT)
   const {data,error}=await supa.from('atb_polls').select('id,players,max_players').eq('owner',teamOwner).eq('open',true).gte('match_date',new Date().toISOString().slice(0,10));if(error)return;
   const roster=pollRoster(),js=JSON.stringify(roster),mx=+S.settings.maxPlayers||null;
   for(const p of data||[])if(JSON.stringify(p.players)!==js||(p.max_players||null)!==mx)await supa.from('atb_polls').update({players:roster,max_players:mx}).eq('id',p.id)}catch(e){}},1200)}
+/* Activity log (Supabase only): what each manager did and when; the admin reads it on the Managers tab. Repeats of the same action within a minute are skipped. */
+let quietLog=false;const lastLog={};
+function logAct(action,detail){if(cloud!=='supa'||!supaUser||quietLog)return;const k=action+'|'+(detail||'');const t=Date.now();if(lastLog[k]&&t-lastLog[k]<60000)return;lastLog[k]=t;
+  supa.from('atb_activity').insert({team:teamOwner,member:supaUser.id,action,detail:detail?String(detail).slice(0,200):null}).then(()=>{},()=>{})}
 async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);i<0?S.matches.push(m):S.matches[i]=m;
-  if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render()}
-async function delMatch(id){S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
-async function putSettings(){if(mode==='db'){try{await db.doc('settings/main').set(S.settings)}catch(e){}}else persistLocal();render()}
+  if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();logAct('Updated match',fmtDate(m.date))}
+async function delMatch(id){const dm=S.matches.find(m=>m.id===id);logAct('Deleted match',dm&&fmtDate(dm.date));S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
+async function putSettings(){logAct('Changed settings');if(mode==='db'){try{await db.doc('settings/main').set(S.settings)}catch(e){}}else persistLocal();render()}
 
-async function seedFromFile(){try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}if(j.season){S.settings.season=j.season;await putSettings()}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}}
+async function seedFromFile(){quietLog=true;try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}if(j.season){S.settings.season=j.season;await putSettings()}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}quietLog=false}
 
 /* One-time roster update when seed.json names a new season: drop players not on it, add new ones, refresh names/positions */
-async function syncRoster(){try{const j=await (await fetch('seed.json')).json();if(!j.season||S.settings.season===j.season)return;
+async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.json')).json();if(!j.season||S.settings.season===j.season)return;
   if(S.players.length){const keep=new Set(j.players.map(p=>p.id));let ch=0;
     for(const p of S.players.slice())if(!keep.has(p.id)){await delPlayer(p.id);ch++}
     for(const np of j.players){const cur=pById(np.id);if(!cur){await putPlayer(np);ch++}else if(cur.pos!==np.pos||cur.name!==np.name||cur.active===false){await putPlayer({...cur,name:np.name,pos:np.pos,active:true});ch++}}
@@ -654,7 +659,7 @@ async function boot(){
       if(cloud==='supa'&&teamOwner===supaUser.id&&!S.players.length&&local&&local.players&&local.players.length){toast('Uploading this device’s data…');
         for(const p of local.players)await putPlayer(p);for(const m of local.matches||[])await putMatch(m);if(local.settings){Object.assign(S.settings,local.settings);await putSettings()}toast('This device’s squad is now synced')}
       if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
-      await syncRoster();loaded=true;render();if(cloud==='supa'){loadStats();syncOpenPolls()}};
+      await syncRoster();quietLog=false;loaded=true;render();if(cloud==='supa'){loadStats();syncOpenPolls();logAct('Opened app')}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
     db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}done('s')},()=>{done('s')});
@@ -1014,8 +1019,9 @@ function vSquad(){
 let mgrs={list:null,loading:false,err:''};
 async function mgrCall(body){const {data,error}=await supa.functions.invoke('atb-managers',{body});
   if(error){let m=error.message;try{const j=await error.context.json();m=j.error||m}catch(e){}throw new Error(m)}if(data&&data.error)throw new Error(data.error);return data}
-async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers}catch(e){mgrs.err=e.message}mgrs.loading=false;if(view==='managers')render()}
+async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers;const a=await supa.from('atb_activity').select('member,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(500);mgrs.act=a.data||[]}catch(e){mgrs.err=e.message}mgrs.loading=false;if(view==='managers')render()}
 const genPw=()=>{const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';const b=new Uint32Array(12);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('')};
+const ago=t=>{const s=(Date.now()-new Date(t))/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'};
 function vManagers(){
   if(!mgrs.list&&!mgrs.loading&&!mgrs.err)setTimeout(loadMgrs,0);
   const when=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Never';
@@ -1028,8 +1034,11 @@ function vManagers(){
   <h2>Current managers</h2>
   ${mgrs.err?`<div class="panel"><span style="color:var(--bad)">${esc(mgrs.err)}</span> <button class="btn" data-a="mreload">Try again</button></div>`:
     !mgrs.list?'<div class="panel muted">Loading…</div>':!mgrs.list.length?'<div class="panel muted">No managers yet. Add one above, then send them the app link, their username and password.</div>':
-    `<div class="mlist">${mgrs.list.map(m=>`<div class="panel row"><div style="flex:1 1 160px"><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
-      <input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div>`).join('')}</div>`}`;
+    `<div class="mlist">${mgrs.list.map(m=>{const acts=(mgrs.act||[]).filter(x=>x.member===m.member),last=acts[0];
+      return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
+        <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
+      ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`;
 }
 
 function vGuide(){
@@ -1193,6 +1202,7 @@ function vGuide(){
     <li><b>Admin:</b> ${ADMIN_EMAIL} is the only account that sees the <b>Managers</b> tab and can add, reset or remove managers.</li>
     <li><b>Add manager:</b> type a username; a strong password is suggested (or type your own, 8+ characters). The login details are copied so you can send them privately.</li>
     <li>Managers sign in with their <b>username</b> and password. They see and change the same squad, ratings, matches, settings and availability links as you, live.</li>
+    <li><b>Activity:</b> each manager shows <b>Active … ago</b> (the last time they used the app, not just when they signed in) and an <b>Activity</b> list: opened the app, added/edited/deleted players, balanced teams, saved or updated matches and ratings, opened/closed/reset links, used answers, reset PINs and changed settings. Kept for 90 days; only you can see it.</li>
     <li><b>Set password</b> replaces a manager’s password. <b>Remove</b> deletes their login immediately; everything they changed stays.</li>
     <li>Managers can’t use Forgot password; they ask you to set a new one. Their logins have no real email address, so no reset email can ever be sent for them.</li>
     <li>Players never need an account: they only get WhatsApp cards and the availability link.</li></ul>`)}
@@ -1394,7 +1404,7 @@ document.addEventListener('click',async e=>{
     saveDraft();render();return}
   if(a==='allin'){draft.avail=S.players.filter(p=>p.active!==false).map(p=>p.id);saveDraft();render();return}
   if(a==='nonein'){draft.avail=[];draft.teams=null;draft.locks={};saveDraft();render();return}
-  if(a==='balance'){const ids=draft.avail.filter(id=>pById(id));Object.keys(draft.locks).forEach(k=>{if(!ids.includes(k))delete draft.locks[k]});
+  if(a==='balance'){logAct('Balanced teams',fmtDate(draft.date));const ids=draft.avail.filter(id=>pById(id));Object.keys(draft.locks).forEach(k=>{if(!ids.includes(k))delete draft.locks[k]});
     draft.alts=balance(ids,draft.n,draft.locks).map(r=>r.T);draft.altI=0;draft.teams=draft.alts[0];
     while(draft.names.length<draft.n)draft.names.push('');saveDraft();render();return}
   if(a==='reroll'){draft.altI=((draft.altI||0)+1)%draft.alts.length;draft.teams=draft.alts[draft.altI];saveDraft();render();toast('Option '+(draft.altI+1)+' of '+draft.alts.length);return}
@@ -1403,7 +1413,7 @@ document.addEventListener('click',async e=>{
     const m={id:old?old.id:draft.date+'-'+uid(),date:mm.date,teams:mm.teams.map((t,i)=>({...t,goals:old?.teams[i]?.goals??null})),ratings:old?.ratings||{},createdAt:old?.createdAt||Date.now(),gap:(()=>{const t=mm.teams.map(x=>teamStats(x.players).tot);return Math.round((Math.max(...t)-Math.min(...t))*10)/10})()};
     await putMatch(m);draft.editing=m.id;saveDraft();toast('Match saved');render();return}
   if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextSat(),names:[],lu:[],pitch:{},sel:null});saveDraft();render();return}
-  if(a==='share'){shareModal(draftAsMatch());return}
+  if(a==='share'){logAct('Opened share card',fmtDate(draft.date));shareModal(draftAsMatch());return}
   if(a==='sharem'){shareModal(S.matches.find(x=>x.id===id));return}
   if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();view='match';ls('atb_view',view);render();window.scrollTo(0,0);return}
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
@@ -1448,17 +1458,17 @@ document.addEventListener('click',async e=>{
     if(draft.teams){const pos=$('#gp').value;let bi=0,bv=1e9;draft.teams.forEach((t,i)=>{const x=t.length*1000+t.filter(y=>posOf(y)===pos).length*100+teamStats(t).tot;if(x<bv){bv=x;bi=i}});draft.teams[bi].push(gid);draft.alts=[draft.teams]}
     saveDraft();closeModal();render();toast(name+' added as a guest');return}
   if(a==='clearguests'){if(el.dataset.sure){for(const p of S.players.filter(p=>p.guest))await delPlayer(p.id);toast('Guests removed')}else{el.dataset.sure=1;el.textContent='Tap again to remove all guests';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove guests'}},3000)}return}
-  if(a==='pollopen'){el.disabled=true;const players=pollRoster();
+  if(a==='pollopen'){logAct('Opened availability link',fmtDate(draft.date));el.disabled=true;const players=pollRoster();
     const {data,error}=await supa.from('atb_polls').insert({owner:teamOwner,max_players:+S.settings.maxPlayers||null,kickoff:kickoffISO(draft.date),match_date:draft.date,time_label:S.settings.time,title:'Saturday Soccer',players}).select('id').single();
     if(error){toast('Could not open link: '+error.message);el.disabled=false;return}poll={date:draft.date,id:data.id,open:true,rsvp:{},loading:false,err:null};render();toast('Link ready. Copy the WhatsApp message');return}
   if(a==='pollrefresh'){await loadPoll(true);st.loaded=false;loadStats();toast('Answers updated');return}
-  if(a==='polluse'){const q=pollQueue(),s=new Set(draft.avail);Object.entries(poll.rsvp).forEach(([k,v])=>{if(!pById(k))return;v==='in'&&!q.wait.includes(k)?s.add(k):s.delete(k)});draft.avail=[...s];saveDraft();render();toast('Who’s playing updated from the link');return}
+  if(a==='polluse'){logAct('Used link answers',fmtDate(draft.date));const q=pollQueue(),s=new Set(draft.avail);Object.entries(poll.rsvp).forEach(([k,v])=>{if(!pById(k))return;v==='in'&&!q.wait.includes(k)?s.add(k):s.delete(k)});draft.avail=[...s];saveDraft();render();toast('Who’s playing updated from the link');return}
   if(a==='pollcopy'){const t=`⚽ *Saturday Soccer* – ${fmtDate(draft.date)}, ${S.settings.time}\nTap your name and say if you’re in:\n${pollUrl(poll.id)}`;try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){$('#pollurl').select();toast('Copy the link from the box')}return}
   if(a==='pollreset'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to clear all answers';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Reset answers'}},3000);return}
-    const {error}=await supa.from('atb_rsvp').delete().eq('poll_id',poll.id);if(error){toast('Could not reset: '+error.message);return}poll.rsvp={};render();toast('All answers cleared. Players can answer again');return}
+    logAct('Reset link answers',fmtDate(draft.date));const {error}=await supa.from('atb_rsvp').delete().eq('poll_id',poll.id);if(error){toast('Could not reset: '+error.message);return}poll.rsvp={};render();toast('All answers cleared. Players can answer again');return}
   if(a==='pinreset'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to reset';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Reset PIN'}},3000);return}
     const {error}=await supa.from('atb_player_pins').delete().eq('owner',teamOwner).eq('player_id',id);if(error){toast('Could not reset: '+error.message);return}
-    delete st.pins[id];el.closest('.pinrow').querySelector('.small').textContent='Reset. They choose a new PIN on their next vote.';el.remove();toast('PIN reset');return}
+    logAct('Reset PIN',pById(id)?.name);delete st.pins[id];el.closest('.pinrow').querySelector('.small').textContent='Reset. They choose a new PIN on their next vote.';el.remove();toast('PIN reset');return}
   if(a==='ntfon'){const a2='abcdefghijkmnpqrstuvwxyz23456789',b=new Uint32Array(18);crypto.getRandomValues(b);const topic='aufc-'+[...b].map(x=>a2[x%a2.length]).join('');
     const {error}=await supa.from('atb_notify').insert({team:teamOwner,member:supaUser.id,topic});if(error){toast('Could not turn on: '+error.message);return}ntf=null;render();toast('Vote alerts on. Follow the steps to subscribe');return}
   if(a==='ntfoff'){const {error}=await supa.from('atb_notify').delete().eq('member',supaUser.id).eq('team',teamOwner);if(error){toast('Could not turn off');return}ntf=null;render();toast('Vote alerts off');return}
@@ -1475,7 +1485,7 @@ document.addEventListener('click',async e=>{
   if(a==='mreset'){const pw=$('#rp_'+CSS.escape(id)).value;if(pw.length<8){toast('Use at least 8 characters');return}try{await mgrCall({action:'reset',member:id,password:pw});toast('Password updated')}catch(e){toast(e.message)}return}
   if(a==='mdel'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to remove';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove'}},3000);return}
     try{await mgrCall({action:'remove',member:id});toast('Manager removed. They can no longer sign in');mgrs.list=null;render()}catch(e){toast(e.message)}return}
-  if(a==='pollclose'||a==='pollreopen'){const open=a==='pollreopen';const {error}=await supa.from('atb_polls').update({open}).eq('id',poll.id);if(error){toast('Could not update link');return}poll.open=open;render();toast(open?'Link reopened':'Link closed. Players can no longer answer');return}
+  if(a==='pollclose'||a==='pollreopen'){logAct(a==='pollclose'?'Closed link':'Reopened link',fmtDate(draft.date));const open=a==='pollreopen';const {error}=await supa.from('atb_polls').update({open}).eq('id',poll.id);if(error){toast('Could not update link');return}poll.open=open;render();toast(open?'Link reopened':'Link closed. Players can no longer answer');return}
   if(a==='awper'){awardPeriod=el.dataset.p;render();return}
   if(a==='awopen'){const A=computeAwards(awardPeriod);lastAwards=A;openModal(`<div class="mh"><h2>Awards card</h2><button class="btn ghost x" data-a="close">Close</button></div>${awardsCard(A)}
     <div class="bgrid" style="margin-top:12px"><button class="btn primary" data-a="saveimg">Save as image</button><button class="btn" data-a="awcopy">Copy text</button></div><p class="small muted" style="text-align:center">No ratings are shown. Post it in the group.</p>`);lastShare={date:new Date().toISOString().slice(0,10)};return}
