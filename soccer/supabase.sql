@@ -83,3 +83,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 --   see = 'club' (default), or see = 'squad' and the player is in data->'squad',
 --   or see = 'pick' and the player is in data->'seeIds'. seeIds is stripped from the payload.
 -- Settings payload also carries psAuto (auto-award PlayStyles from ratings).
+
+-- Club crests not bundled in icons/crests/ (MLS, Saudi, Argentine, Brazilian, Indian clubs) are copied into the
+-- public storage bucket 'crests' as <id>.png (no write policies: only the service role can change them).
