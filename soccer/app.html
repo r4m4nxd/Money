@@ -1172,190 +1172,197 @@ function playerActPanel(when){const acts=mgrs.pact;
 
 function vGuide(){
   const sec=(id,t,body,open)=>`<details class="gsec" id="g-${id}" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
-  const code=x=>`<code>${x}</code>`;
-  return `<h2>How the app works</h2>
-  <p class="gintro">Every rule the app uses, from adding a player to sharing the line-up. Numbers here are the live defaults; the ones you can change are in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['stats','Stats and commitment'],['awards','Awards'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['players','Player sign-in'],['managers','Managers and access'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  const s=S.settings,L=sched().map(x=>x.d).sort();
+  return `<h2>Manager guide</h2>
+  <p class="gintro">Everything the app does, in the order you use it each week. Numbers shown are your live settings; change them in Settings.</p>
+  <nav class="gtoc">${[['life','The weekly cycle'],['schedule','Season schedule'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link and PINs'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['attend','Attendance (after every game)'],['rate','Rating, goals and notes'],['results','Scores, wins and Player of the Match'],['stats','Stats and reliability'],['awards','Awards'],['cards','Player cards and photos'],['portal','The player portal'],['motiv','Growth, XP and badges'],['control','Controlling player access'],['managers','Managers and activity'],['settings','Every setting explained'],['data','Privacy, sync and devices'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
-    <li><b>Before Saturday:</b> open Match Day, tap everyone who is coming, press <b>Balance</b>.</li>
-    <li>Check the teams, move or lock anyone by hand, pick formations if you want.</li>
-    <li>Press <b>Save match</b>, then <b>Share to WhatsApp</b> and post the card or text. It never shows ratings.</li>
-    <li><b>After the game:</b> open Matches &amp; Ratings, type each team’s goals, then <b>Rate players</b>.</li>
-    <li>The new ratings are averaged into every player’s numbers, so next week’s balance uses up-to-date form.</li></ol>`,true)}
+    <li><b>Saturday 9 PM (automatic):</b> tonight’s link closes and the next game’s link opens. You get a phone alert with the link: forward it to WhatsApp.</li>
+    <li><b>During the week:</b> players answer on the link or in their player portal. Watch answers and late changes on Match Day.</li>
+    <li><b>Before the game:</b> Match Day fills Who’s playing from the answers and balances the teams. Adjust, then <b>Save match</b> and <b>Share to WhatsApp</b> (no ratings are ever shared).</li>
+    <li><b>After the game</b> (Matches &amp; Ratings): <b>Take attendance</b> → type each team’s goals → <b>Rate players</b> (ratings, goals, assists, optional note) → pick 🏆 Player of the Match.</li>
+    <li>Everything updates at once: averages, balancing, stats, awards, and every player’s profile, XP and badges.</li></ol>`,true)}
+
+  ${sec('schedule','Season schedule',`<ul>
+    <li>Settings → <b>Season schedule</b> lists every game date, one per line (${L.length} games${L.length?`, ${new Date(L[0]+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})} to ${new Date(L[L.length-1]+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}`:''}${s.venue?' at '+esc(s.venue):''}).</li>
+    <li>Add a start time after a date if it differs from the usual (${esc(s.time)}), e.g. ${'<code>2026-11-07 7:30 PM start</code>'}. That time is used on Match Day, share cards, WhatsApp text, the link, kick-off and late-drop timing.</li>
+    <li>Match Day defaults to the next scheduled game and shows “Game N of ${L.length||'…'}”. A date not on the schedule shows a warning.</li>
+    <li>The Saturday auto-link opens the <b>next scheduled</b> game, so weeks without a game are skipped.</li>
+    <li><b>Reset to winter 2026–27</b> restores the original list. <b>Venue</b> appears on shares and in the player portal.</li></ul>`)}
 
   ${sec('squad','Squad and players',`<ul>
-    <li>Each player has a <b>name</b>, one <b>position</b> (DEF, MID or FWD), an <b>Active this season</b> tick, a <b>★ Star player</b> tick, and nine <b>starting ratings</b> from 1 to 10.</li>
-    <li><b>Add player</b> (Squad tab) creates a player with starting ratings you type; new players default to 7 in everything.</li>
-    <li>Returning players’ starting ratings are their averages from last season’s Excel sheet.</li>
-    <li>Inactive players stay in the database but are hidden from Match Day and the squad list (tick <b>Show inactive</b> to see them).</li>
-    <li>Position decides which line a player is counted in for team balance and where they go on the pitch.</li></ul>`)}
+    <li>Each player has a name, one position (DEF, MID or FWD), shirt number, nation, favourite club, photo, <b>Active this season</b>, <b>★ Star player</b>, and nine starting ratings from 1 to 10.</li>
+    <li><b>Add player</b> in Squad; new players start at 7 in everything. Returning players start from last season’s averages.</li>
+    <li>Inactive players are hidden from Match Day, the link and the portal sign-in list (tick <b>Show inactive</b> in Squad to see them).</li>
+    <li>Tap any card to edit. As admin, the same window has the player’s <b>Voting PIN</b> and <b>Profile access</b> box (see Controlling player access).</li></ul>`)}
 
-  ${sec('ratings','Ratings and scores',`<p>The nine attributes: Passing, Shooting, Defending, Ball Skill, Mindset, Team Work, Speed, Stamina, Strength.</p>
-    <p><b>Current attributes</b> = average of the starting ratings and every match rating the player has received:</p>
-    <ul><li>Starting ratings count as <b>${S.settings.baseW} matches</b> (Settings → Last season counts as), or as many matches as the player actually had last season if fewer.</li>
-    <li>A brand-new player’s starting ratings count as half a match once they have real ratings, so their true form takes over quickly.</li>
-    <li>Settings → Average over can limit this to the last 3, 5, 8 or 12 matches.</li></ul>
-    <p>From the attributes come four scores, the same formulas as last season’s sheet:</p>
-    <div class="tbl"><table><tr><th>Score</th><th>Average of</th></tr>
-    <tr><td>FWD</td><td>everything except Defending</td></tr><tr><td>MID</td><td>everything except Speed and Strength</td></tr>
-    <tr><td>DEF</td><td>everything except Ball Skill</td></tr><tr><td>PACE</td><td>Speed only</td></tr></table></div>
-    <p><b>OVR</b> = average of FWD, MID, DEF and PACE, shown out of 100 (a 7.4 average shows as 74).</p>`)}
+  ${sec('ratings','Ratings and scores',`<p>Nine attributes: Passing, Shooting, Defending, Ball Skill, Mindset, Team Work, Speed, Stamina, Strength.</p>
+    <ul><li><b>Current attributes</b> = average of starting ratings and every match rating. Starting ratings count as <b>${s.baseW} matches</b> (or fewer if the player had fewer last season). New players’ starting ratings count as half a match once real ratings exist.</li>
+    <li>Settings → <b>Average over</b> can limit to the last 3, 5, 8 or 12 matches (now: ${+s.recentN?'last '+s.recentN:'all matches'}).</li></ul>
+    <div class="tbl"><table><tr><th>Score</th><th>Average of</th></tr><tr><td>FWD</td><td>everything except Defending</td></tr><tr><td>MID</td><td>everything except Speed and Strength</td></tr><tr><td>DEF</td><td>everything except Ball Skill</td></tr><tr><td>PACE</td><td>Speed only</td></tr></table></div>
+    <p><b>OVR</b> = average of FWD, MID, DEF and PACE, out of 100 (7.4 → 74).</p>`)}
 
   ${sec('avail','Match Day: who’s in',`<ul>
-    <li>The date defaults to the next Saturday; time comes from Settings (${esc(S.settings.time)}).</li>
-    <li>Players are grouped by position with their OVR. Tap to mark in; <b>Everyone</b> and <b>Clear</b> do what they say.</li>
-    <li>Choose 2, 3 or 4 teams and how many play <b>on pitch per team</b> (keeper included). <b>Balance</b> needs at least two players per team.</li>
-    <li>Your Match Day selections are remembered on the device you made them on until you save the match.</li></ul>`)}
+    <li>Date defaults to the next scheduled game. Players are grouped by position; tap to mark in. <b>Everyone</b> / <b>Clear</b> do what they say.</li>
+    <li>Choose 2, 3 or 4 teams and <b>on pitch per team</b> (keeper included). Balance needs at least two players per team.</li>
+    <li>⚠ next to a name = 2+ late drops on record. Selections are kept on this device until you save the match.</li></ul>`)}
 
-  ${sec('link','Availability link',`<ul>
-    <li>Needs sync (signed in on the Vercel app). On Match Day press <b>Open link for [date]</b>, then <b>Copy WhatsApp message</b> and post it.</li>
-    <li>Players open the link, tap their name once (their phone remembers it) and press <b>I’m in</b> or <b>Can’t make it</b>. They can change their answer any time until you close the link.</li>
-    <li>The page shows names, positions and who’s in. It never shows ratings, and nobody can see or change your squad, matches or settings through it.</li>
-    <li>Only active squad players are on the link; guests are not. The link always shows the current squad: renaming a player, changing a position, adding, deleting or marking someone inactive updates every open link within a couple of seconds.</li>
-    <li>Each match date has its own link. It stays the same all week (even after Reset answers or closing and reopening); next week you open a new one.</li>
-    <li>Back on Match Day, <b>Refresh</b> fetches answers and <b>Use answers</b> marks every “in” as playing and every “out” as not. Players who haven’t answered keep whatever you set by hand.</li>
-    <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. <b>Reset answers</b> (tap twice) clears every answer on the link so players start fresh; the link itself stays the same. Each date gets its own link.</li>
-    <li><b>Auto link:</b> with Settings → <b>Every Saturday at 9 PM…</b> on, at 9 PM Alberta time each Saturday that week’s link closes (old links stop taking votes) and a new link for next Saturday opens. Each manager with vote alerts gets a notification with the new link to forward to WhatsApp. Every week is a new link.</li>
-    <li><b>Teams ready:</b> the first time you open Match Day for a date that has at least two confirmed players per team on the link, the app fills Who’s playing from the answers and balances the teams for you. Review, adjust, then share.</li>
-    <li><b>Waitlist:</b> set Settings → <b>Max players per night</b>. The first players to say “in” (by the time they said it) are confirmed; everyone after is on the waitlist in order. If a confirmed player drops out, the next waitlisted player moves up automatically. Re-tapping “in” never loses your place. <b>Use answers</b> takes confirmed players only.</li>
-    <li><b>Voting PINs:</b> the first time a player votes they choose a 4-digit PIN; every later vote for that name needs it, so nobody can answer for someone else. Their phone remembers it. 5 wrong tries lock that name for an hour. If someone forgets their PIN (or someone else grabbed their name first), open their card in Squad and tap <b>Reset PIN</b>.</li>
-    <li><b>Vote alerts:</b> Settings → Vote alerts sends a phone notification (via the free ntfy app) for every in/out, marked ⚠ when it’s within 24 hours of kick-off. Each manager turns on their own alerts. Optional email alerts are limited by ntfy.sh.</li></ul>`)}
+  ${sec('link','Availability link and PINs',`<ul>
+    <li><b>Open link for [date]</b>, then <b>Copy WhatsApp message</b>. Players tap their name and answer <b>I’m in</b> or <b>Can’t make it</b>; they can change until the link closes. There is no “maybe”.</li>
+    <li>The link shows names, positions and who’s in, never ratings. It always shows the current active squad (changes appear within seconds).</li>
+    <li><b>Refresh</b> fetches answers; <b>Use answers</b> marks confirmed players in and “out” players out. <b>Close / Reopen link</b> stops or allows answers. <b>Reset answers</b> (tap twice) clears every answer; the link stays the same.</li>
+    <li><b>Teams ready:</b> the first time you open Match Day for a date with enough confirmed players, the app fills Who’s playing and balances for you.</li>
+    <li><b>Waitlist:</b> with Max players per night set (${+s.maxPlayers?s.maxPlayers:'off'}), the first to say in are confirmed, the rest queue in order and move up automatically when someone drops. Use answers takes confirmed players only.</li>
+    <li><b>PINs:</b> a player’s first vote (or first portal sign-in) sets their 4-digit PIN; the same PIN is used everywhere. 5 wrong tries lock the name for an hour. <b>Reset PIN</b> on their card clears it and signs them out of the portal.</li>
+    <li><b>Activity:</b> every answer is logged with time and how long before kick-off. <b>⚠ Late drop</b> = in → out within ${lateH()} h of kick-off; <b>＋ Late join</b> = said in within ${lateH()} h.</li>
+    <li><b>Vote alerts</b> (Settings): a phone notification via the free ntfy app for every in/out, ⚠ when close to kick-off. Each manager sets their own.</li></ul>`)}
 
-  ${sec('guests','Guest players',`<ul>
-    <li><b>＋ Guest</b> on Match Day adds a one-off player with a name, position and level (Beginner 60 to Top 90). Every attribute starts at that level.</li>
-    <li>Guests are marked in straight away. If teams already exist they join the team that needs them most, like a late arrival.</li>
-    <li>Guests show only on Match Day (and in Squad with Show inactive &amp; guests). They are not on the availability link and not affected by the season roster update.</li>
-    <li>You can rate guests after the game. <b>Remove guests</b> deletes all of them; their old match ratings stop counting.</li></ul>`)}
+  ${sec('guests','Guest players',`<ul><li><b>＋ Guest</b> on Match Day adds a one-off player with a level (Beginner 60 to Top 90). They join the team that needs them most if teams exist.</li>
+    <li>Guests aren’t on the link or in the portal. You can rate them. <b>Remove guests</b> deletes all of them.</li></ul>`)}
 
-  ${sec('balance','How teams are balanced',`<p>The app tries 80 different starting splits, improves each one by swapping players between teams until no swap helps, and keeps the 8 best distinct results. <b>Another balanced option</b> steps through those 8.</p>
-    <p>Each split gets a penalty score; lower is better. What it counts, from strongest to weakest:</p>
+  ${sec('balance','How teams are balanced',`<p>80 starting splits are improved by swapping until no swap helps; the 8 best distinct results are kept. <b>Another balanced option</b> steps through them. Penalties, strongest first:</p>
     <div class="tbl"><table><tr><th>Rule</th><th>Penalty</th></tr>
     <tr><td>Team sizes differ by more than 1</td><td>1000 per extra player</td></tr>
     <tr><td>Two ★ stars with the same position on one team</td><td>800 per extra star</td></tr>
-    <tr><td>DEF, MID or FWD counts differ by more than 1 between teams</td><td>60 per extra, plus 6 per player of difference</td></tr>
-    <tr><td>Gap in team Total rating</td><td>12 per point</td></tr>
-    <tr><td>Gap in Attack, Midfield or Defence rating</td><td>3 per point each</td></tr>
-    <tr><td>Gap in Pace</td><td>1.5 per point</td></tr>
-    <tr><td>Two players who were teammates at the last saved match (if <b>Mix up last week’s teammates</b> is on)</td><td>1.2 per pair</td></tr>
-    <tr><td>Players with any late drop on record bunched on one team (if <b>Spread players with late drops</b> is on)</td><td>40 per extra player beyond a difference of 1, plus 4 per player of difference</td></tr></table></div>
-    <p><b>Team ratings</b> (the Att / Mid / Def / Pace / Total row under each team) are the average FWD, MID, DEF and PACE score of <i>all</i> players in that team, subs included, out of 100. ▲ / ▼ show how far a team is above or below the average of all teams; within 0.5 shows “=”.</p>
-    <p>The header shows the <b>Overall gap</b>: the difference between the best and worst team Total. Under 1.5 points is marked Balanced.</p>`)}
+    <tr><td>DEF/MID/FWD counts differ by more than 1</td><td>60 per extra + 6 per player of difference</td></tr>
+    <tr><td>Gap in team Total</td><td>12 per point</td></tr><tr><td>Gap in Attack, Midfield or Defence</td><td>3 per point each</td></tr><tr><td>Gap in Pace</td><td>1.5 per point</td></tr>
+    <tr><td>Last match’s teammates together (Mix up last week’s teammates)</td><td>1.2 per pair</td></tr>
+    <tr><td>Unreliable players bunched on one team: anyone with a late drop <b>or a no-show</b> (Spread players with late drops)</td><td>40 per extra beyond 1 + 4 per player of difference</td></tr></table></div>
+    <p>Team ratings are averages of all players (subs included). <b>Overall gap</b> under 1.5 points is marked Balanced.</p>`)}
 
-  ${sec('stars','Star players',`<ul><li>Tick ★ Star player on a player’s card.</li>
-    <li>Balancing never puts two stars with the same position on one team if any split avoids it. One star DEF, one star MID and one star FWD together is fine.</li>
-    <li>You can still move stars by hand. A team that ends up with two same-position stars shows a warning pill like “2 ★ DEF”.</li></ul>`)}
+  ${sec('stars','Star players',`<ul><li>Tick ★ on a card. Balancing never puts two same-position stars on one team if it can avoid it; a warning pill shows if you do it by hand. Stars get a black special card.</li></ul>`)}
 
-  ${sec('manual','Moving and locking',`<ul><li>Use the team dropdown next to a player to move them. Team ratings and the gap update immediately.</li>
-    <li>🔒 locks a player to their current team. Pressing Balance again keeps locked players where they are and balances everyone else around them.</li>
-    <li>Team name and kit colour can be changed in each team’s header.</li>
-    <li><b>Late arrivals and dropouts:</b> once teams exist, tapping a player in adds just that player to the team that needs them most (fewest players, then fewest of their position, then lowest rating). Tapping a player out removes only them. Nobody else moves. Press Balance again if you want a full reshuffle.</li></ul>`)}
+  ${sec('manual','Moving and locking',`<ul><li>Move players with the team dropdown; 🔒 keeps them there when you balance again. Team names and kit colours are in each team header.</li>
+    <li>Once teams exist, tapping a player in adds just them to the team that needs them most; tapping out removes only them.</li></ul>`)}
 
   ${sec('form','Formations and the pitch',`<ul>
-    <li><b>On pitch per team</b> (default 8) is the number of starters, keeper included. Everyone else is a sub.</li>
-    <li>Tick <b>Keeper</b> to reserve one starter as goalkeeper.</li>
-    <li>The Formation menu lists every DEF-MID-FWD shape (1–5 defenders, 1–5 midfielders, 1–4 forwards) that adds up to the outfield starters. The default shape follows the team’s own position mix.</li>
-    <li><b>Placing players:</b> each line is filled first with players of that position, best score for the line first. The keeper is the best remaining defender by DEF score. Empty spots are filled from the leftovers by that line’s score. Whoever is left becomes a sub.</li>
-    <li>Press <b>Pitch</b> to see it. Tap two players (on the pitch or in subs) to swap them.</li>
-    <li>The strip above the pitch is the <b>on-pitch rating</b>: starters only. The team list rating stays the whole squad.</li>
-    <li>Changing the team (balance, move) keeps the formation but re-places players.</li></ul>`)}
+    <li>On pitch per team = starters incl. keeper (now ${onPitch()}); the rest are subs. Tick <b>Keeper</b> to reserve a goalkeeper. Pick any DEF-MID-FWD shape.</li>
+    <li>Press <b>Pitch</b> to see the line-up card: a green perspective pitch on white, each player in a circle ringed in the <b>team’s kit colour</b>, shirt number top-left and a badge top-right. Players without a photo get a kit-coloured circle with initials.</li>
+    <li><b>🏳️ Nation / 🛡️ Club</b> (next to the Teams heading, or Settings) switches that badge between nation flag and favourite-club crest everywhere, including the player portal and share images.</li>
+    <li>Tap two players on the pitch or in subs to swap them. The strip above shows the on-pitch (starters only) rating.</li></ul>`)}
 
-  ${sec('share','Sharing to WhatsApp',`<ul><li><b>All teams</b> card: date, time, the rotation line, and each team’s players with positions.</li>
-    <li><b>Team on pitch</b> card: one team’s formation on the pitch plus subs.</li>
-    <li><b>Save as image</b> makes a picture; <b>Copy text for WhatsApp</b> copies a text version. You can also just screenshot the card.</li>
-    <li>Shared cards and text never include ratings, OVR or scores.</li></ul>`)}
+  ${sec('share','Sharing to WhatsApp',`<ul><li><b>All teams</b> card: date, time${s.venue?', venue':''}, rotation and every team. <b>Team on pitch</b>: one team’s line-up card.</li>
+    <li><b>Save as image</b> or <b>Copy text for WhatsApp</b>. Nothing shared ever contains ratings.</li></ul>`)}
 
-  ${sec('rot','Match-night rotation',(()=>{const g=+S.settings.gameMin||9,c=+(S.settings.changeMin??1),t=+S.settings.sessionMin||120,reps=Math.floor(t/((g+c)*3));
-    return `<p>One pitch, three teams: <b>A v B → B v C → C v A</b>, repeated. Each block of three games has every team playing two and resting one, so only whole blocks keep time equal.</p>
-    <p>Blocks = session ÷ ((game + changeover) × 3), rounded down. With your settings (${t} min session, ${g}-min games, ${c}-min change) that is <b>${reps} blocks</b>, ${reps*3} games, <b>${reps*2} games each</b>.</p>
-    <p>With 4 teams it uses a 6-game round (AB, CD, AC, BD, AD, BC); each team plays 3 per round. With 2 teams no rotation is shown.</p>`})())}
+  ${sec('rot','Match-night rotation',(()=>{const g=+s.gameMin||9,c=+(s.changeMin??1),t=+s.sessionMin||120,reps=Math.floor(t/((g+c)*3));
+    return `<p>Three teams: <b>A v B → B v C → C v A</b>, repeated. With ${t} min, ${g}-min games and ${c}-min changes: <b>${reps} blocks</b>, ${reps*3} games, <b>${reps*2} each</b>. Four teams use a 6-game round.</p>`})())}
 
-  ${sec('save','Saving a match',`<ul><li><b>Save match</b> stores the date, teams, kit colours, formations and line-ups.</li>
-    <li>Saving again while editing updates the same match instead of making a new one.</li>
-    <li><b>Edit teams</b> on a past match loads it back into Match Day. <b>Start a new match instead</b> clears Match Day for next week.</li></ul>`)}
+  ${sec('save','Saving a match',`<ul><li><b>Save match</b> stores teams, kits and line-ups. Saving while editing updates the same match. <b>Edit teams</b> on a past match reloads it; <b>Start a new match instead</b> clears Match Day.</li></ul>`)}
 
-  ${sec('rate','Rating after the game',`<ul><li>Open <b>Rate players</b> on the match. Each player gets one row of buttons: <b>−1, −½, =, +½, +1</b>, meaning how they played compared with their usual level. <b>=</b> is selected by default.</li>
-    <li>A button sets all nine ratings to the player’s current average plus that amount (rounded to 0.5, kept between 1 and 10).</li>
-    <li><b>All 9 ratings</b> opens the detailed boxes if you want to rate one attribute differently. Already-rated players show their saved ratings.</li>
-    <li><b>Skip</b> leaves a player unrated for this match (didn’t turn up, left injured). Skipping a rated player removes their rating for that match.</li>
-    <li><b>Save ratings</b> saves every player in the match. The badge on the match shows how many are rated.</li>
-    <li>From that moment every average, OVR, balance and card uses the new ratings.</li></ul>`)}
+  ${sec('attend','Attendance (after every game)',`<p>This is the most important step after a game: it decides appearances and reliability.</p><ul>
+    <li>Matches &amp; Ratings → <b>Take attendance</b>. Everyone in the teams starts as <b>✅ Present</b>; tap <b>⏰ Late</b> or <b>✕ No-show</b>, then Save. The button turns into “✓ Attendance”.</li>
+    <li><b>No-show:</b> no appearance (not in attendance %, W-D-L, streaks, badges), their rating for that match is removed and the rate screen marks them “not rated”, +1 in the No-shows column, lower on Most reliable, ✕ in Season attendance, −100 XP, and spread across teams when balancing.</li>
+    <li><b>Late:</b> counts as played, shows in the Late column, earns 100 XP instead of 150, and breaks the “Always On Time” badge.</li>
+    <li>Players only ever see their <b>own</b> no-shows; other players’ no-shows are removed from what their phone receives.</li>
+    <li><b>Season attendance</b> (Stats) shows every player against every scheduled date: green = played, red = missed, ✕ = no-show, grey = upcoming. A game counts once its match is saved.</li></ul>`)}
 
-  ${sec('results','Scores, wins and form',`<ul><li>Type each team’s total goals for the night on the match. Results only count once every team has a score.</li>
-    <li>The team with the most goals gets a win for each of its players; teams tied for most get a draw; everyone else a loss.</li>
-    <li>Wins, draws and losses show on player cards. They do not affect ratings or balancing.</li>
-    <li><b>🏆 Player of the Match:</b> pick one player per match from the dropdown. Their card shows 🏆 with the total. It doesn’t affect ratings.</li></ul>`)}
+  ${sec('rate','Rating, goals and notes',`<ul>
+    <li><b>Rate players</b>: one row per player: −1, −½, =, +½, +1 compared with their usual level (= is default). <b>All 9 ratings</b> opens detail. <b>Skip</b> leaves a player unrated.</li>
+    <li><b>⚽ Goals / 🅰️ Assists</b> boxes under each player feed Top scorers, Top assists, profiles, XP, badges and personal bests.</li>
+    <li><b>Note</b> (optional, 140 characters): shown only to that player on their profile, e.g. “Great pressing tonight”.</li>
+    <li><b>Save ratings</b> saves everyone; averages, balance, cards, Team of the Week and growth update immediately.</li></ul>`)}
 
-  ${sec('stats','Stats and commitment',`<ul>
-    <li><b>Stats tab:</b> season totals, players per match, balance gap per match, leaderboards and a sortable table of every player.</li>
-    <li><b>Activity log:</b> every answer on the availability link is recorded automatically with its time: said in, said out, changed to in, dropped out, and answers cleared by Reset. Open <b>Activity</b> on the Match Day link panel to see it, newest first, with how long before kick-off each change happened.</li>
-    <li><b>Kick-off</b> is the link’s date plus the start of your match time in Settings (${esc(S.settings.time)}).</li>
-    <li><b>⚠ Late drop</b> = changed from in to out within ${lateH()} h of kick-off. <b>＋ Late join</b> = said in within ${lateH()} h of kick-off. Change the window in Settings → Last minute means.</li>
-    <li><b>Answered</b> = links a player answered ÷ links they were on. <b>Notice</b> = average time between their first answer and kick-off.</li>
-    <li><b>Most reliable</b> ranks by answer rate, minus 20 points per late drop and 2 per changed answer.</li>
-    <li>Players with 2 or more late drops show ⚠ and the count next to their name on Match Day.</li>
-    <li><b>Att.</b> = matches played ÷ matches saved this season. <b>±</b> = current OVR minus their starting OVR. <b>Balance gap</b> is saved when you save a match; older matches use today’s ratings.</li>
-    <li>Answer and last-minute stats need the Vercel app signed in; the Claude link shows match stats only.</li></ul>`)}
+  ${sec('results','Scores, wins and Player of the Match',`<ul><li>Type each team’s total goals; results count once every team has a score. Most goals = win, tied top = draw, others lose.</li>
+    <li><b>🏆 Player of the Match</b>: pick one per match. Players can also vote from their portal for 3 days after the game; <b>Players voted: …</b> shows the top picks next to your dropdown. Your pick is the official one.</li></ul>`)}
 
-  ${sec('awards','Awards',`<ul>
-    <li>Stats → <b>Awards</b>: pick This month, Last month or Season, then <b>Open awards card</b> to share it (Save as image or Copy text). It never shows ratings.</li>
-    <li><b>Player of the Month</b>: most 🏆 Player of the Match awards in the period; ties go to the best average match rating, then wins, then appearances.</li>
-    <li><b>Team of the Month</b>: your on-pitch number of players (${onPitch()}), shaped by position like the squad, choosing the best average match rating in the period at each position (players without ratings count their current level, slightly lower).</li>
-    <li>Also shown: Ever-present (most appearances) and Most wins.</li></ul>`)}
+  ${sec('stats','Stats and reliability',`<ul>
+    <li>Tiles, charts (players per match, balance gap), leaderboards (Top rated, Most improved, ⚽ Top scorers, 🅰️ Top assists, Ever-present, POTM, Winners, Most reliable, ✕ No-shows, Late drops, Late joins) and a sortable table.</li>
+    <li>Table columns: OVR, ± since start, Apps, ⚽, 🅰️, Att. (played ÷ matches), Win %, 🏆, Answered, No-shows, Late, Late drops, Late joins, Notice (average time between first answer and kick-off).</li>
+    <li><b>Most reliable</b> = answer rate − 20 per late drop − 40 per no-show − 5 per late arrival − 2 per changed answer.</li></ul>`)}
 
-  ${sec('cards','Player cards',`<ul><li>Cards follow the EA FC layout: <b>gold</b> OVR 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below. ★ star players get a black-and-gold special card.</li>
-    <li>Top-left: OVR, position, shirt number (if set) and ★. Middle: photo. Then the name, the six stats, and the nation flag (if set) with the club crest. Trophies, apps and form live on the player’s page and the Stats tab.</li>
-    <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
-    <li><b>Apps</b> = matches the player was picked for. W-D-L as above.</li>
-    <li><b>Photo:</b> tap a card → Add photo, then drag and pinch it into the frame: eyes on the gold line, face inside the oval. Best source: head and shoulders, facing the camera, plain background, good light, at least 800 × 800 px. Tap <b>✨ Remove background</b> for the EA cut-out look (first use downloads a ~40 MB tool; works on the Vercel app). It’s saved as a small square image, synced with the player, and fades softly into the card. It also appears on the pitch. Without one, the card shows a grey empty player outline.</li>
-    <li><b>Favourite club:</b> pick from about 70 clubs (top clubs in England, Spain, Italy, Germany, France, MLS and more). The card shows the club’s crest next to the flag. European crests are built into the app; the others load from the internet and show a colour badge if they can’t.</li>
-    <li><b>▲</b> / <b>▼</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
-    <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
+  ${sec('awards','Awards',`<ul><li>Stats → Awards: This month, Last month or Season → share card. Player of the Month (most 🏆, then rating, wins, apps), Team of the Month (${onPitch()} best by position), Ever-present, Most wins. No-shows don’t count as appearances.</li></ul>`)}
 
-  ${sec('data','Where data lives and sync',`<ul>
-    <li><b>Privacy:</b> the Vercel app opens to a manager sign-in screen. Without your email and password nothing loads: no squad, no ratings, no roster file. There is no sign-up button. Players only ever see WhatsApp cards and the availability page, which shows names and positions.</li>
-    <li><b>Forgot password?</b> on the sign-in screen emails you a reset link; opening it lets you set a new password.</li>
-    <li><b>Signed in:</b> squad, matches and settings are stored in your private Supabase database and appear on every device signed in with the same email within a second or two. Nobody else can read them.</li>
-    <li>The first time a device signs in and the cloud is empty, that device’s squad and matches are uploaded.</li>
-    <li><b>Not signed in:</b> everything stays in that browser only. Clearing Safari data erases it, so use Export backup.</li>
-    <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
-    <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li>
-    <li><b>Offline:</b> on the Vercel app the screens load even with no signal at the gym. Changes made offline may not save; you’ll see a message when the connection drops and when it’s back.</li>
-    <li><b>Hide ratings:</b> tap <b>👁</b> in the header to switch to <b>🙈</b>. Every rating on screen (cards, chips, team lists, team and pitch ratings, Stats) is blurred out, safe for screenshots (the blurred number is always 99, never the real one), cards all turn gold, and lists sort by name so nobody can work out the order. Rating boxes and the detailed rating inputs are hidden. Balancing and saving still use the real ratings. It’s remembered per device; tap again to show.</li>
-    <li><b>Theme:</b> the ◐ button in the header cycles Auto (follows your phone, ◐), Dark (●) and Light (○). It’s remembered per device.</li></ul>`)}
+  ${sec('cards','Player cards and photos',`<ul><li><b>Gold</b> 78+, <b>silver</b> 71–77, <b>bronze</b> 70 and below; ★ stars get a black special card. Six stats: PAC = Speed, SHO = Shooting, PAS = Passing, DRI = Ball Skill, DEF = Defending, PHY = Strength + Stamina.</li>
+    <li><b>Photo:</b> tap a card → Add photo → drag and pinch into the frame (eyes on the gold line). <b>✨ Remove background</b> gives the cut-out look. A small thumbnail is made automatically for pitches and players’ phones.</li>
+    <li><b>Nation</b> and <b>Favourite club</b> (about 70 clubs, official crests) show on the card and pitch.</li>
+    <li><b>👁 / 🙈</b> in the header blurs every rating for safe screenshots (cards turn gold, lists sort by name).</li></ul>`)}
 
-  ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
-    <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
+  ${sec('portal','The player portal',`<ul>
+    <li>Players open the <b>same app link</b>, tap <b>Player</b>, choose their name and enter their PIN. They stay signed in on that phone.</li>
+    <li><b>Me</b>: next game (countdown, going count, in/out buttons, waitlist), their card, level and XP, Player of the Match vote, your note, weekly focus, Team of the Week, badges, growth, numbers (matches, W-D-L, win rate, goals, assists, G+A per match, POTM, attendance, streaks), personal bests, teammates, last match and reliability.</li>
+    <li><b>Matches</b>: every match they played with scores, their line-up card and other teams. <b>Availability</b>: the season schedule marked Played / Missed / No-show / answer, and their link history. <b>Leaders</b>: Most improved (ranks only), Top scorers, Top assists, appearances, win rate, POTM. <b>Account</b>: edit card (if allowed), change PIN, sign out. <b>Guide</b>: a player-friendly help page.</li>
+    <li>They never see anyone else’s ratings or no-shows. Their own ratings stay hidden unless you allow them.</li>
+    <li><b>Managers who play:</b> tap <b>My profile</b> (last tab), pick your name and PIN; <b>↩ Manager</b> switches back without signing out. The PIN is asked every time.</li></ul>`)}
 
-  ${sec('players','Player sign-in',`<ul>
-    <li>Players open the main app link, tap <b>Player</b>, pick their name and enter the same 4-digit PIN they vote with. First time, the PIN they type becomes theirs.</li>
-    <li>They see only their own profile: card, next match (with In / Out buttons), matches, W-D-L, win rate, Player of the Match, attendance, streaks, teammates, answer history and leaderboards (appearances, win rate, POTM).</li>
-    <li><b>Managers who also play:</b> tap <b>My profile</b> (last tab), pick your name and enter your PIN. You stay signed in as a manager; tap <b>↩ Manager</b> to switch back. The PIN is asked every time you switch to your profile.</li>
-    <li><b>Motivation features</b> (Settings → “Players see their growth”): card colour upgrades (bronze → silver → gold, with an animation), an <b>In-Form</b> card after Player of the Match or Team of the Week, a weekly <b>focus</b> (their weakest area for their position, with a tip and ✅ when they beat it), growth arrows per attribute, 13 <b>badges</b>, personal bests, <b>Team of the Week</b> (best by position from the last rated match), a <b>Most improved</b> board (ranks only), and <b>Player of the Match voting</b> for 3 days after each game (you see the votes next to the POTM picker).</li>
-    <li><b>Notes from the managers:</b> when rating, type a short note under any player. Only that player sees it, on their profile.</li>
-    <li><b>Season schedule:</b> Settings → Season schedule holds the winter dates (Genesis Centre, Nov games at 7:30 PM). Match Day defaults to the next game, the auto-link skips weeks without a game and uses that date’s start time, and Stats → Season attendance shows everyone’s played / missed games.</li>
-    <li><b>See what a player sees:</b> Squad → tap a player → <b>👁 View as player</b> (admin only; also in Managers → Player activity). Nothing you tap in the preview changes anything. The same box shows how many devices they’re signed in on, lets you <b>Sign out everywhere</b>, and untick <b>Can sign in</b> to block their profile.</li>
-    <li><b>Goals and assists:</b> enter them per player in <b>Rate players</b>. They feed Top scorers / Top assists, player profiles, badges and personal bests.</li>
-    <li><b>Players edit their own card:</b> tick “Players can set their own shirt number, nation and favourite club” in Settings. Shirt numbers stay one per active player.</li>
-    <li><b>Attendance (important):</b> after each game, Matches & Ratings → <b>Take attendance</b>. Everyone starts Present; tap Late or No-show. No-shows lose the appearance and their rating, count in No-shows and reliability, show as ✕ in Season attendance, cost 100 XP, and are spread across teams when balancing. Players only see their own no-shows.</li>
-    <li><b>Player home and XP:</b> the Me tab opens with the next game (countdown, in/out, how many are going) and their level. XP: play +150 (late +100), win +50, draw +20, goal +40, assist +25, Player of the Match +200, Team of the Week +100, answering early +50, badge +100, no-show −100.</li>
-    <li>They never see other players’ ratings. Their own ratings stay hidden unless you tick <b>Players can see their own ratings</b> in Settings.</li>
-    <li>5 wrong PINs locks the name for an hour. Resetting a PIN (Squad → tap the player → Voting PIN) signs that player out everywhere. Untick <b>Players can sign in</b> in Settings to turn it off for everyone.</li></ul>`)}
-  ${sec('managers','Managers and access',`<ul>
-    <li><b>Admin:</b> ${ADMIN_EMAIL} is the only account that sees the <b>Managers</b> tab and can add, reset or remove managers.</li>
-    <li><b>Add manager:</b> type a username; a strong password is suggested (or type your own, 8+ characters). The login details are copied so you can send them privately.</li>
-    <li>Managers sign in with their <b>username</b> and password. They see and change the same squad, ratings, matches, settings and availability links as you, live.</li>
-    <li><b>Player activity</b> (below the managers): every player’s sign-ins, pages viewed, matches opened, in/out answers (profile and link), PIN changes, and wrong-PIN attempts (⚠). Search a player and tap to see their full log.</li>
-    <li><b>Activity:</b> each manager shows <b>Active … ago</b> (the last time they used the app, not just when they signed in) and an <b>Activity</b> list: opened the app, added/edited/deleted players, balanced teams, saved or updated matches and ratings, opened/closed/reset links, used answers, reset PINs and changed settings. Kept for 90 days; only you can see it.</li>
-    <li><b>Set password</b> replaces a manager’s password. <b>Remove</b> deletes their login immediately; everything they changed stays.</li>
-    <li>Managers can’t use Forgot password; they ask you to set a new one. Their logins have no real email address, so no reset email can ever be sent for them.</li>
-    <li>Players never need an account: they only get WhatsApp cards and the availability link.</li></ul>`)}
+  ${sec('motiv','Growth, XP and badges',`<ul>
+    <li><b>Card colour</b> reflects their real level even when ratings are hidden, with a “% of the way to Silver/Gold” bar and an upgrade animation. After Player of the Match or Team of the Week they get a glowing <b>In-Form</b> card.</li>
+    <li><b>Weekly focus</b>: their weakest area for their position, with a coaching tip; ✅ when they beat their usual in that area.</li>
+    <li><b>Growth arrows</b>: each attribute, last 3 rated matches vs the 3 before (or their start).</li>
+    <li><b>Team of the Week</b>: best match rating per position from the latest rated match. <b>Most improved</b>: recent form vs start, ranks only.</li>
+    <li><b>XP</b>: play +150 (late +100), win +50, draw +20, goal +40, assist +25, POTM +200, Team of the Week +100, answer 2+ days early +50 (else +20), each badge +100, no-show −100. Levels: Rookie → Squad Player → Regular → Starter → Key Player → Fan Favourite → Captain Material → Club Legend → Icon. XP is personal, never ranked.</li>
+    <li><b>Badges</b>: First Goal, Hat-trick, Double Figures, Goal Machine, Playmaker, Provider, On Fire, Unstoppable, Iron Man, Regular, Veteran, Match Winner, Hat-trick Hero, Team of the Week, Early Bird, Rock Solid, Always On Time, Perfect Month, Winner, On the Rise.</li>
+    <li>Turn growth features off with Settings → “Players see their growth”.</li></ul>`)}
 
-  ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves one file with the squad, matches and settings. <b>Import backup</b> adds or replaces players and matches with the same IDs; it does not delete anything else.</li>
-    <li><b>Delete player</b> removes them from the squad and today’s teams. Their past ratings stay inside old matches but no longer count anywhere.</li>
-    <li><b>Delete match</b> removes the match and every rating in it, so player averages change.</li>
-    <li>Both deletes ask for a second tap. A deleted player can be brought back with <b>Undo</b> for a few seconds; a deleted match cannot.</li></ul>`)}`;
+  ${sec('control','Controlling player access (admin)',`<ul>
+    <li>Squad → tap a player → <b>Profile access</b> box: devices signed in, last seen, locked or no PIN yet.</li>
+    <li><b>👁 View as player</b> opens their portal exactly as they see it (also in Managers → Player activity). Buttons do nothing in preview; <b>Exit preview</b> returns.</li>
+    <li><b>Sign out everywhere</b> ends all their sessions. Untick <b>Can sign in to their player profile</b> and save to block them (they’re signed out on their next refresh). <b>Reset PIN</b> clears their PIN.</li>
+    <li>Settings → untick <b>Players can sign in</b> to switch the portal off for everyone.</li></ul>`)}
+
+  ${sec('managers','Managers and activity',`<ul>
+    <li><b>Admin</b> (${ADMIN_EMAIL}) is the only account with the <b>Managers</b> tab. Add a manager with a username and password (8+ characters); send the login privately. <b>Set password</b> replaces it, <b>Remove</b> deletes the login (their changes stay). Managers can’t use Forgot password.</li>
+    <li>Managers see and change everything except the Managers tab and player access controls.</li>
+    <li><b>Manager activity</b>: “Active … ago” and a log (opened app, players, teams, matches, ratings, attendance, links, PINs, settings, schedule), 90 days.</li>
+    <li><b>Player activity</b>: sign-ins, pages viewed, matches opened, in/out answers (profile and link), POTM votes, card edits, PIN changes, wrong PINs and lock-outs (⚠), admin sign-outs. 180 days. Search a player and tap to open their log.</li></ul>`)}
+
+  ${sec('settings','Every setting explained',`<div class="tbl"><table><tr><th>Setting</th><th>What it does</th></tr>
+    <tr><td>Last season counts as</td><td>How many matches the starting ratings weigh (now ${s.baseW})</td></tr>
+    <tr><td>Average over</td><td>All matches or only the last N</td></tr>
+    <tr><td>Last minute means</td><td>Window for late drops and late joins (now ${lateH()} h)</td></tr>
+    <tr><td>Match time</td><td>Usual time; a schedule line can override it</td></tr>
+    <tr><td>Session / Game / Break</td><td>Minutes used for the rotation</td></tr>
+    <tr><td>Max players per night</td><td>Turns on the waitlist</td></tr>
+    <tr><td>Spread players with late drops</td><td>Balancing spreads late droppers and no-shows</td></tr>
+    <tr><td>Every Saturday at 9 PM…</td><td>Auto close/open links following the schedule</td></tr>
+    <tr><td>Players can sign in</td><td>Player portal on/off for everyone</td></tr>
+    <tr><td>Players can see their own ratings</td><td>Shows their OVR and attributes (off = blurred)</td></tr>
+    <tr><td>Players can set their own number, nation, club</td><td>Self-edit in Account; numbers stay unique</td></tr>
+    <tr><td>Players see their growth</td><td>Card colour, focus, arrows, upgrades, bests</td></tr>
+    <tr><td>Badge next to each player</td><td>Nation flag or club crest on pitches</td></tr>
+    <tr><td>Mix up last week’s teammates</td><td>Avoids repeating last match’s pairs</td></tr>
+    <tr><td>Season schedule / Venue</td><td>Game dates, special start times, location</td></tr>
+    <tr><td>Vote alerts</td><td>Your phone notifications for answers</td></tr></table></div>`)}
+
+  ${sec('data','Privacy, sync and devices',`<ul>
+    <li>The app opens to a sign-in screen with <b>Player</b> and <b>Manager</b>. Without signing in nothing loads. Anyone with the link can see the list of squad names on the Player tab, nothing else.</li>
+    <li>Managers’ data lives in your private Supabase database and syncs to every signed-in device within seconds. Players’ phones only receive their own profile plus names, positions, numbers, nations, clubs and small photos of the squad, never other players’ ratings, notes or no-shows.</li>
+    <li><b>Forgot password?</b> (admin) emails a reset link. The app works offline at the gym for viewing; changes need a connection.</li>
+    <li><b>Theme</b> ◐ cycles Auto, Dark and Light per device.</li></ul>`)}
+
+  ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves squad, matches and settings to one file; <b>Import backup</b> adds or replaces by ID.</li>
+    <li><b>Delete player</b> (Undo for a few seconds) and <b>Delete match</b> (removes its ratings, goals and attendance) both need a second tap.</li></ul>`)}`;
 }
+function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details class="gsec" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
+  return `<h2>Your player guide</h2><p class="gintro">Everything about your Airdrie United profile in two minutes.</p>
+  ${sec('in','Signing in and your PIN',`<ul><li>Open the team app link, tap <b>Player</b>, choose your name and type your 4-digit PIN. You stay signed in on your phone.</li>
+    <li>It’s the <b>same PIN</b> as the WhatsApp availability link. First time? The PIN you type becomes yours.</li>
+    <li>5 wrong PINs locks your name for an hour. Forgot it? Ask a manager to reset it, then pick a new one. Change it any time in <b>Account</b>.</li></ul>`,true)}
+  ${sec('home','Your home screen',`<ul><li>The top card shows the <b>next game</b>: date, time, ${d.settings.venue?esc(d.settings.venue)+', ':''}a countdown and how many are going.</li>
+    <li>Tap <b>I’m in</b> or <b>Can’t make it</b>. There’s no maybe. You can change your answer until the link closes.</li>
+    <li>If the night is full you go on the <b>waitlist</b> and move up automatically when someone drops out.</li>
+    <li>Please answer early and don’t drop out last minute: managers see late changes and it affects your reliability.</li></ul>`)}
+  ${sec('show','Turning up (attendance)',`<ul><li>After each game the managers mark everyone <b>Present</b>, <b>Late</b> or <b>No-show</b>.</li>
+    <li>A <b>no-show</b> (you said in but didn’t come) costs you the appearance and 100 XP, and shows in your Reliability. Late still counts as played but earns less XP.</li>
+    <li>Only you can see your own no-shows.</li></ul>`)}
+  ${sec('card','Your card',`<ul><li>Your card colour shows your level: <b>bronze</b>, <b>silver</b>, <b>gold</b>. ${g?'The bar under it shows how close you are to the next colour, and you get an upgrade animation when you move up.':''}</li>
+    <li>A glowing <b>IN-FORM</b> card appears after you win Player of the Match or make Team of the Week.</li>
+    <li>${d.showRatings?'You can see your own ratings.':'Your exact ratings are private. The card colour and growth arrows show how you’re doing.'} Nobody else can see your ratings either.</li>
+    ${d.canEdit?'<li>Tap <b>✏️ Edit my card</b> to set your shirt number, nation and favourite club. Each number belongs to one player.</li>':''}</ul>`)}
+  ${sec('xp','Level and XP',`<p>Earn XP by playing and helping the team. Levels go Rookie → Squad Player → Regular → Starter → Key Player → Fan Favourite → Captain Material → Club Legend → Icon.</p>
+    <div class="tbl"><table>${XPRULES.map(([l,v])=>`<tr><td>${l}</td><td class="num"><b>${typeof v==='number'?(v>0?'+':'')+v:v}</b></td></tr>`).join('')}</table></div><p class="small muted">XP is just for you. There’s no XP ranking.</p>`)}
+  ${g?sec('focus','Weekly focus and growth',`<ul><li><b>This week’s focus</b> is your weakest area for your position, with a tip. Beat your usual in that area and you get a ✅.</li>
+    <li><b>Your growth</b> arrows compare your last 3 rated matches with the 3 before.</li>
+    <li><b>Personal bests</b> track your best match, streaks and goals; “New PB!” appears when you beat one.</li></ul>`):''}
+  ${sec('badges','Badges',`<div class="bdg">${badgeList().map(b=>`<div class="bd got"><span class="bi">${b.ic}</span><b>${esc(b.n)}</b><span class="small muted">${esc(b.desc)}</span></div>`).join('')}</div>`)}
+  ${sec('totw','Team of the Week and Player of the Match',`<ul><li><b>Team of the Week</b> is the best performer in each position from the last rated match. Get picked and you earn XP, a badge and an In-Form card.</li>
+    <li>For 3 days after each game you can <b>vote for Player of the Match</b> (not yourself). Managers see the votes and make the final pick.</li></ul>`)}
+  ${sec('tabs','The other tabs',`<ul><li><b>Matches</b>: every game you played, the score, your team on the pitch, the other teams, and any note from the managers.</li>
+    <li><b>Availability</b>: the whole season schedule marked Played, Missed, No-show or your answer, plus your answer history.</li>
+    <li><b>Leaders</b>: Most improved, Top scorers, Top assists, appearances, win rate and Player of the Match. Never ratings.</li>
+    <li><b>Account</b>: ${d.canEdit?'edit your card, ':''}change your PIN, theme and sign out.</li></ul>`)}
+  ${sec('priv','Privacy',`<ul><li>Only you see your profile, XP, focus, notes and no-shows. Managers can see your profile to help you.</li>
+    <li>Teammates only see names, positions, numbers, nations, clubs and photos, plus leaderboards.</li></ul>`)}`}
 
 let ntf=null,ntfLoading=false;
 async function loadNtf(){if(ntfLoading)return;ntfLoading=true;const {data}=await supa.from('atb_notify').select('topic,email,enabled').eq('member',supaUser.id).eq('team',teamOwner).maybeSingle();ntf=data||{none:true};ntfLoading=false;if(view==='settings')render()}
@@ -1413,12 +1420,12 @@ function vSettings(){
 
 /* ---------- Player accounts: a player signs in with their name + 4-digit PIN and sees only their own profile ---------- */
 let PM=null;// {tok,team,id,name,data,loading,err,season}
-const PTABS=[['me','Me'],['games','Matches'],['avail','Availability'],['leaders','Leaders'],['acct','Account']];
+const PTABS=[['me','Me'],['games','Matches'],['avail','Availability'],['leaders','Leaders'],['acct','Account'],['pguide','Guide']];
 function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
 function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
-  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(!['me','games','avail','leaders','acct'].includes(view))view='me';
+  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(!['me','games','avail','leaders','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   await loadPlayer();
@@ -1666,12 +1673,12 @@ function vpAcct(){const me=PM.data.me;
     <div class="fgrid g2"><label class="f">Current PIN<input id="po" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label><label class="f">New PIN<input id="pn2" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label></div>
     <div class="row"><button class="btn primary" data-a="psetpin">Change PIN</button><span class="small muted" id="pmsg" role="status"></span></div>
     <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
-  <h2>Help</h2><div class="panel small"><ul style="margin:0;padding-left:18px"><li><b>Me</b>: your card, next match, and season numbers.</li><li><b>Matches</b>: every team you played on, scores and line-ups.</li><li><b>Availability</b>: say in or out for the next match, and see your answer history.</li><li><b>Leaders</b>: appearances, win rate and Player of the Match for everyone.</li><li>Only you can see your profile. Managers set ratings and teams.</li></ul></div>
+  <h2>Help</h2><div class="panel small">New here? Open the <button class="linkb" data-a="goguide">player guide</button> for everything about your profile, XP, badges and attendance.</div>
   <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">${supaUser?'Sign out of profile':'Sign out'}</button></div>`}
 function renderPlayer(){document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
-  m.innerHTML=(PM.preview?`<div class="prevbar">👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything. <button class="btn small" data-a="exitprev">Exit preview</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():vpMe())}
+  m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small" data-a="exitprev">Exit preview</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():vpMe())}
 
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
   <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your 4-digit PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
@@ -1697,6 +1704,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(!PM)return;
   if(a==='exitprev'){ls('atb_view','squad');location.reload();return}
   if(PM.preview&&['pvote','ppotm','psetpin','psignout','pedit'].includes(a)){toast('Preview only: this works on the player’s own phone');return}
+  if(a==='goguide'){view='pguide';render();window.scrollTo(0,0);return}
   if(a==='gofocus'){document.getElementById('focus')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='goacct'){view='acct';render();window.scrollTo(0,0);return}
   if(a==='preload'){loadPlayer();return}
