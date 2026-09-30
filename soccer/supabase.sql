@@ -68,3 +68,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- Waitlist + auto-open (migration atb_waitlist_and_auto_open): atb_polls.max_players; atb_vote keeps a player's queue position on repeat taps;
 -- pg_cron job 'atb-auto-open' (Mon 03:00 UTC = Sunday evening Alberta) runs private.atb_auto_open() for teams with settings.autoLink.
+
+-- Player sign-in (migration atb_player_logins): private.atb_player_sessions (sha256 token hashes, 180-day sliding expiry),
+-- RPCs atb_player_roster / atb_player_login / atb_player_logout / atb_player_data / atb_player_vote / atb_player_setpin (anon-callable, security definer).
+-- atb_player_data returns only the signed-in player's profile; other players' ratings are never returned, own ratings only when settings.playerRatings.

@@ -70,7 +70,7 @@ function render(){
       <input id="pin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" value="${esc(ls('aufc_pin_'+me)||'')}">
       <div class="btns"><button class="bin" data-s="in" aria-pressed="${rs[me]==='in'}">I’m in</button><button class="bout" data-s="out" aria-pressed="${rs[me]==='out'}">Can’t make it</button></div>
       ${rs[me]==='in'&&q.wait.includes(me)?`<p class="pmsg">You’re #${q.wait.indexOf(me)+1} on the waitlist. You’ll move up automatically if someone drops out.</p>`:''}${msg?`<p class="pmsg" role="alert">${msg}</p>`:''}
-      <button class="link" id="notme">Not ${esc(mp.name)}?</button></div>`
+      <button class="link" id="notme">Not ${esc(mp.name)}?</button><a class="link" id="prof" href="./" style="display:block;margin-top:6px">See your matches, teams and stats →</a></div>`
      :`<div class="me"><h2>Tap your name</h2><input id="q" placeholder="Search your name" autocomplete="off"></div>`}
   <ul id="list">${poll.players.map(p=>`<li data-n="${esc(p.name.toLowerCase())}"><span class="pos">${esc(p.pos)}</span><button class="pick" data-id="${esc(p.id)}">${esc(p.name)}</button>${rs[p.id]?(q.wait.includes(p.id)?`<span class="st wt">Wait ${q.wait.indexOf(p.id)+1}</span>`:`<span class="st ${rs[p.id]}">${rs[p.id]==='in'?'In':'Out'}</span>`):''}</li>`).join('')}</ul>`;
   $('#q')?.addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#list li').forEach(li=>li.hidden=!li.dataset.n.includes(q))});
@@ -86,6 +86,7 @@ async function load(){const {data,error}=await sb.from('atb_polls').select('id,t
   me=ls('aufc_me');if(!poll.players.some(p=>p.id===me))me=null;return true}
 app.addEventListener('click',async e=>{
   const pick=e.target.closest('.pick');if(pick){me=pick.dataset.id;ls('aufc_me',me);msg='';await loadPin();render();scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.id==='prof'){try{localStorage.setItem('atb_plast',JSON.stringify(me));localStorage.setItem('atb_lrole',JSON.stringify('player'))}catch(x){}return}
   if(e.target.id==='notme'){me=null;ls('aufc_me',null);msg='';render();return}
   const b=e.target.closest('[data-s]');if(b&&me&&!busy){const pin=($('#pin')?.value||'').trim();const name=poll.players.find(p=>p.id===me)?.name||'';
     if(!/^[0-9]{4}$/.test(pin)){msg='Enter a 4-digit PIN first.';render();$('#pin')?.focus();return}

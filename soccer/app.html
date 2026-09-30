@@ -351,6 +351,27 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100
 input[type=date]::-webkit-date-and-time-value{text-align:left}
 .mwhen{font-size:14px;color:var(--muted)}
 .btn.wide{width:100%}
+.lseg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lseg button{background:none;border:0;padding:10px;font:inherit;font-weight:700;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
+.lseg button[aria-selected=true]{background:var(--accent);color:#111}
+.pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.phero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}@media(max-width:520px){.phero{justify-content:center;text-align:center}.phero .form{justify-content:center}}.pcard{width:170px;flex:none}
+.form{gap:6px;align-items:center}
+.res{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;font-weight:800;font-size:13px;background:var(--surface2);color:var(--muted);flex:none}
+.res.rW{background:var(--good);color:#fff}.res.rD{background:var(--warn);color:#111}.res.rL{background:var(--bad);color:#fff}
+.nm{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;border-left:4px solid var(--accent)}.nmb{flex:1 1 200px;justify-content:flex-end}.nmb .btn{flex:1 1 120px}.nmb .btn.on{outline:2px solid var(--accent);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:6px}.kpis.k2{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi b{font-family:var(--f-display);font-size:24px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kpi span{font-size:12px;color:var(--muted)}
+.spick{width:auto;min-width:0;padding:6px 10px}
+.game{margin-bottom:8px}.game>summary{list-style:none;cursor:pointer}.game>summary::-webkit-details-marker{display:none}
+.gh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.scs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.sc{border:1px solid var(--line);border-left:4px solid var(--k);border-radius:8px;padding:4px 10px;font-size:13px}.sc.mine{background:color-mix(in srgb,var(--accent) 12%,transparent);font-weight:700}
+.pitchwrap{max-width:420px;margin:10px auto 0}.others{margin-top:8px}
+.ptbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}.ptbl th,.ptbl td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}.ptbl .num{text-align:right}
+.lb{list-style:none;margin:0;padding:0}.lb li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line)}.lb li:last-child{border:0}
+.lb .rk{width:24px;color:var(--muted);text-align:right}.lb .nm{flex:1;min-width:0;border:0;margin:0;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb li.me{background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:8px}
+.avl li .who{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .mgrh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.mgrh .pill{white-space:nowrap;flex:none}
 .wl2{border:1px dashed var(--line);border-radius:6px;padding:8px 12px}.wl2 ol{margin:6px 0 0;padding-left:22px;font-size:14px}
 .phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phead .pcount{margin-left:auto;font-size:15px}
@@ -625,14 +646,22 @@ function supaDB(client,uid){
   };
 }
 
-function showLogin(err){
-  $('#tabs').hidden=true;$('#sync').textContent='';$('#sub').textContent='Manager sign-in';
-  $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest"><h2 style="margin:0">Manager sign-in</h2>
-    <p class="small muted" style="margin:0">This app is private. Players get team sheets and the availability link through WhatsApp.</p>
-    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:`<form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>
+function showLogin(err,info,role){role=role||ls('atb_lrole')||'player';ls('atb_lrole',role);
+  $('#tabs').hidden=true;$('#sync').textContent='';$('#sub').textContent=role==='player'?'Player sign-in':'Manager sign-in';$('#rbtn').hidden=true;
+  const seg=`<div class="lseg" role="tablist"><button type="button" role="tab" data-a="lrole" data-r="player" aria-selected="${role==='player'}">Player</button><button type="button" role="tab" data-a="lrole" data-r="mgr" aria-selected="${role!=='player'}">Manager</button></div>`;
+  $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest">${supa?seg:''}
+    ${info?`<p class="small" style="margin:0;color:var(--warn)">${esc(info)}</p>`:''}
+    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:role==='player'?`<h2 style="margin:0">Your player profile</h2>
+    <p class="small muted" style="margin:0">See your matches, teams, results and availability. Use the same 4-digit PIN as the availability link. First time? Pick a PIN now.</p>
+    <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
+    <label class="f">PIN<input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>
+    <div class="row"><button class="btn primary" data-a="plogin" type="submit">Sign in</button></div><span class="small muted" id="plmsg" role="status"></span></form>`
+    :`<h2 style="margin:0">Manager sign-in</h2>
+    <form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>
     <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required></label>
     <div class="row"><button class="btn primary" data-a="signin" type="submit">Sign in</button><button class="btn ghost" type="button" data-a="forgot">Forgot password?</button></div><span class="small muted" id="smsg" role="status"></span></form>`}</div>`;
   $('#lform')?.addEventListener('submit',e=>e.preventDefault());
+  if(role==='player'&&!err)pLoadRoster();
 }
 function newPasswordModal(){openModal(`<div class="mh"><h2>Set a new password</h2></div><div class="stack"><label class="f">New password<input id="np" type="password" autocomplete="new-password"></label>
   <div class="row"><button class="btn primary" data-a="setpw">Save password</button><span class="small muted" id="npmsg"></span></div></div>`)}
@@ -653,6 +682,7 @@ async function boot(){
       if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>')}
   }
   // The hosted app is manager-only: without a signed-in session nothing loads, not even the roster file.
+  const psaved=ls('atb_player');if(!db&&!window.claude&&supa&&psaved&&psaved.tok){bootPlayer(psaved);return}
   if(!db&&!window.claude){showLogin(supa?'':'Can’t reach the sign-in service. Check your connection and reload.');return}
   if(db){
     mode='db';
@@ -770,6 +800,7 @@ function sortTeam(t){const o={DEF:0,MID:1,FWD:2};return t.slice().sort((a,b)=>o[
 
 /* ---------- views ---------- */
 function render(){
+  if(PM){renderPlayer();return}
   if(!loaded)return;
   CACHE=compute();commitCache=null;
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));
@@ -1048,7 +1079,7 @@ function vGuide(){
   const code=x=>`<code>${x}</code>`;
   return `<h2>How the app works</h2>
   <p class="gintro">Every rule the app uses, from adding a player to sharing the line-up. Numbers here are the live defaults; the ones you can change are in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['stats','Stats and commitment'],['awards','Awards'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['managers','Managers and access'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  <nav class="gtoc">${[['life','The weekly cycle'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['rate','Rating after the game'],['results','Scores, wins and Player of the Match'],['stats','Stats and commitment'],['awards','Awards'],['cards','Player cards'],['data','Where data lives and sync'],['season','New season roster'],['players','Player sign-in'],['managers','Managers and access'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
     <li><b>Before Saturday:</b> open Match Day, tap everyone who is coming, press <b>Balance</b>.</li>
@@ -1200,6 +1231,11 @@ function vGuide(){
   ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
     <li>After that, adding or deleting players by hand is never overridden.</li></ul>`)}
 
+  ${sec('players','Player sign-in',`<ul>
+    <li>Players open the main app link, tap <b>Player</b>, pick their name and enter the same 4-digit PIN they vote with. First time, the PIN they type becomes theirs.</li>
+    <li>They see only their own profile: card, next match (with In / Out buttons), matches, W-D-L, win rate, Player of the Match, attendance, streaks, teammates, answer history and leaderboards (appearances, win rate, POTM).</li>
+    <li>They never see other players’ ratings. Their own ratings stay hidden unless you tick <b>Players can see their own ratings</b> in Settings.</li>
+    <li>5 wrong PINs locks the name for an hour. Resetting a PIN (Squad → tap the player → Voting PIN) signs that player out everywhere. Untick <b>Players can sign in</b> in Settings to turn it off for everyone.</li></ul>`)}
   ${sec('managers','Managers and access',`<ul>
     <li><b>Admin:</b> ${ADMIN_EMAIL} is the only account that sees the <b>Managers</b> tab and can add, reset or remove managers.</li>
     <li><b>Add manager:</b> type a username; a strong password is suggested (or type your own, 8+ characters). The login details are copied so you can send them privately.</li>
@@ -1247,6 +1283,8 @@ function vSettings(){
     <div class="fgrid g2"><label class="f">Max players per night<select id="mxp" data-a="set" data-k="maxPlayers">${[0,14,16,18,20,21,22,24,26,28,30,33].map(n=>`<option value="${n}" ${n==(+s.maxPlayers||0)?'selected':''}>${n?n+' players (waitlist after)':'No limit'}</option>`).join('')}</select></label></div>
     <label class="small row chk"><input type="checkbox" id="sl" data-a="set" data-k="spreadLate" ${s.spreadLate!==false?'checked':''}> Spread players with late drops across teams</label>
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
+    ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="plg" data-a="set" data-k="playerLogin" ${s.playerLogin!==false?'checked':''}> Players can sign in to see their own profile, matches and availability</label>
+    <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>`:''}
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
   </div>
@@ -1258,6 +1296,146 @@ function vSettings(){
   <h2>Backup</h2><div class="panel stack"><p class="small muted" style="margin:0">${mode==='db'?'Your squad and matches are synced, so they follow you across devices.':'Data is kept in this browser only. Export a backup now and then.'}</p>
     <div class="row"><button class="btn" data-a="export">Export backup (.json)</button><label class="btn" for="imp">Import backup</label><input type="file" id="imp" accept=".json,application/json" hidden data-a="import"></div></div>`;
 }
+
+/* ---------- Player accounts: a player signs in with their name + 4-digit PIN and sees only their own profile ---------- */
+let PM=null;// {tok,team,id,name,data,loading,err,season}
+const PTABS=[['me','Me'],['games','Matches'],['avail','Availability'],['leaders','Leaders'],['acct','Account']];
+async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
+function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}PM=null;showLogin('',msg,'player')}
+async function bootPlayer(saved){
+  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(!['me','games','avail','leaders','acct'].includes(view))view='me';
+  $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('');$('#tabs').hidden=false;
+  $('#rbtn').hidden=true;$('#sync').textContent='Player · '+saved.name;
+  await loadPlayer();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer()});
+  setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer()},90000);
+}
+async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
+  try{const d=await prpc('atb_player_data',{p_token:PM.tok});
+    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
+    PM.data=d;PM.err='';
+    S.players=[{...d.me},...d.players];S.matches=d.matches;Object.assign(S.settings,d.settings);
+    hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
+    $('#sub').textContent='Player profile';
+    loaded=true}catch(e){PM.err=navigator.onLine?'Could not load your profile. Pull to refresh or try again.':'You’re offline.'}
+  PM.loading=false;render()}
+
+// Everything below is from this player's point of view.
+function pSeasons(){return [...new Set(S.matches.map(m=>m.date.slice(0,4)))].sort().reverse()}
+function pMatches(all){const y=PM.season;return S.matches.filter(m=>all||y==='all'||m.date.startsWith(y)).slice().sort((a,b)=>a.date<b.date?1:-1)}
+function resultOf(m,ti){const gs=m.teams.map(t=>t.goals);if(gs.some(g=>g===''||g==null))return null;const mine=+gs[ti],best=Math.max(...gs.map(Number));
+  return mine===best?(gs.filter(g=>+g===best).length===1?'W':'D'):'L'}
+function myGames(ms){const me=PM.data.me.id;return ms.map(m=>{const ti=m.teams.findIndex(t=>t.players.includes(me));return ti<0?null:{m,ti,t:m.teams[ti],res:resultOf(m,ti),potm:m.potm===me}}).filter(Boolean)}
+function pSummary(){const ms=pMatches(),g=myGames(ms),me=PM.data.me.id;
+  const W=g.filter(x=>x.res==='W').length,D=g.filter(x=>x.res==='D').length,L=g.filter(x=>x.res==='L').length,res=W+D+L;
+  const gf=g.reduce((s,x)=>s+(+x.t.goals||0),0);
+  // streaks (chronological)
+  let cur='',n=0,bestW=0,run=0,unb=0,bestUnb=0;g.slice().reverse().forEach(x=>{if(!x.res)return;run=x.res==='W'?run+1:0;bestW=Math.max(bestW,run);unb=x.res!=='L'?unb+1:0;bestUnb=Math.max(bestUnb,unb)});
+  for(const x of g){if(!x.res)continue;if(!cur){cur=x.res;n=1}else if(x.res===cur)n++;else break}
+  // teammates
+  const mates={};g.forEach(x=>x.t.players.forEach(id=>{if(id===me)return;const o=mates[id]=mates[id]||{id,n:0,w:0,r:0};o.n++;if(x.res){o.r++;if(x.res==='W')o.w++}}));
+  const ml=Object.values(mates).filter(o=>pById(o.id));
+  const most=ml.slice().sort((a,b)=>b.n-a.n)[0];const best=ml.filter(o=>o.r>=2&&o.w>0).sort((a,b)=>b.w/b.r-a.w/a.r||b.r-a.r)[0];
+  const kits={};g.forEach(x=>{const k=x.t.kit||'';kits[k]=(kits[k]||0)+1});
+  return {g,ms,apps:g.length,W,D,L,res,win:res?W/res:null,gf,potm:g.filter(x=>x.potm).length,att:ms.length?g.length/ms.length:null,streak:cur?cur+n:'',bestW,bestUnb,mates:ml,most,best,kits}}
+function pAvail(){const kick=p=>p.kickoff||kickoffISO(p.match_date);const y=PM.season;
+  const ps=PM.data.polls.filter(p=>y==='all'||String(p.match_date).startsWith(y));let answered=0,ins=0,drops=0,joins=0,lead=[];
+  const rows=ps.map(p=>{const log=p.log||[],first=log.find(l=>l.status!=='cleared');const tags=log.map(l=>classify({...l},kick(p)).tag).filter(Boolean);
+    if(first){answered++;lead.push((new Date(kick(p))-new Date(first.at))/36e5)}if(p.mine==='in')ins++;drops+=tags.filter(t=>t==='drop').length;joins+=tags.filter(t=>t==='join').length;
+    return {p,first,final:p.mine,late:tags.includes('drop'),log}});
+  return {rows,asked:ps.length,answered,ins,drops,joins,lead:lead.length?avg(lead):null}}
+const hrs=h=>h==null?'–':h>=48?Math.round(h/24)+' days':Math.round(h)+' h';
+const kpi=(v,l,cls='')=>`<div class="kpi ${cls}"><b class="num">${v}</b><span>${l}</span></div>`;
+const resPill=r=>r?`<span class="res r${r}">${r}</span>`:'<span class="res">–</span>';
+function seasonPick(){const ys=pSeasons();if(ys.length<1)return '';return `<select class="spick" data-a="pseason" aria-label="Season"><option value="all">All time</option>${ys.map(y=>`<option value="${y}" ${PM.season===y?'selected':''}>${y} season</option>`).join('')}</select>`}
+
+function nextMatchPanel(){const open=PM.data.polls.filter(p=>p.open).sort((a,b)=>a.match_date<b.match_date?-1:1)[0];const me=PM.data.me.id;
+  if(!open)return `<div class="panel nm"><div><div class="small muted">Next match</div><b>No availability link open right now</b><div class="small muted">A new link opens every Saturday night after the game.</div></div></div>`;
+  const rs=open.rsvp||[];const inQ=rs.filter(r=>r.status==='in').sort((a,b)=>a.updated_at<b.updated_at?-1:1);const pos=inQ.findIndex(r=>r.player_id===me);
+  const cap=+open.max_players||0;const wl=cap&&pos>=cap?pos-cap+1:0;const d=open.match_date;
+  const st=open.mine==='in'?(wl?`<span class="pill meh">Waitlist #${wl}</span>`:`<span class="pill ok">You’re IN</span>`):open.mine==='out'?`<span class="pill bad">You’re OUT</span>`:`<span class="pill meh">Not answered</span>`;
+  return `<div class="panel nm"><div style="flex:1 1 200px"><div class="small muted">Next match</div><b>${fmtDate(d)}</b><div class="small muted">${esc(open.time_label||S.settings.time||'')} · ${inQ.length}${cap?' / '+cap:''} in</div><div style="margin-top:6px">${st}</div></div>
+    <div class="row nmb"><button class="btn primary${open.mine==='in'?' on':''}" data-a="pvote" data-id="${open.id}" data-s="in">I’m in</button><button class="btn${open.mine==='out'?' on':''}" data-a="pvote" data-id="${open.id}" data-s="out">Can’t make it</button></div></div>`}
+
+function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me.id);
+  const last=s.g[0];const club=me.club&&CLUB[me.club];
+  const form=s.g.slice(0,5).map(x=>resPill(x.res)).join('');
+  return `<div class="phero"><div class="pcard">${cardHTML(me,{btn:false})}</div><div class="stack" style="flex:1 1 220px;min-width:0">
+      <h2 style="margin:0">${esc(titleName(me.name))}</h2>
+      <div class="small muted">${me.pos}${me.number?' · #'+esc(me.number):''}${me.nation?' · '+esc((NATIONS.find(n=>n[0]===me.nation)||[])[1]||''):''}${club?' · supports '+esc(club.n):''}</div>
+      ${form?`<div class="row form" aria-label="Last five results"><span class="small muted">Form</span>${form}</div>`:''}
+      ${!d.showRatings?'<p class="small muted" style="margin:0">Ratings are kept private by the managers.</p>':''}
+    </div></div>
+  ${nextMatchPanel()}
+  <div class="row" style="justify-content:space-between;align-items:center"><h2>Your numbers</h2>${seasonPick()}</div>
+  <div class="kpis">${kpi(s.apps,'Matches')}${kpi(`${s.W}-${s.D}-${s.L}`,'W-D-L')}${kpi(pct(s.win),'Win rate')}${kpi(s.potm,'🏆 Player of the match')}
+    ${kpi(pct(s.att),'Attendance')}${kpi(s.gf,'Team goals')}${kpi(s.streak||'–','Current run')}${kpi(s.bestW,'Best win streak')}</div>
+  ${d.showRatings&&r.hist.length>1?`<h2>Rating by match</h2><div class="panel row" style="align-items:center"><div>${spark(r.hist.map(x=>x.ovr))}</div><div class="small muted">OVR ${r.hist[0].ovr} → ${r.ovr} over ${r.hist.length} rated matches</div></div>`:''}
+  <h2>Teammates</h2><div class="kpis k2">${kpi(s.most?esc(shortName(pById(s.most.id).name)):'–','Played with most'+(s.most?` · ${s.most.n}×`:''))}${kpi(s.best?esc(shortName(pById(s.best.id).name)):'–','Best partner'+(s.best?` · ${pct(s.best.w/s.best.r)} wins`:''))}</div>
+  ${s.mates.length?`<details class="panel"><summary><b>Everyone you’ve played with</b> · ${s.mates.length}</summary><table class="ptbl"><thead><tr><th>Player</th><th class="num">Games</th><th class="num">Win %</th></tr></thead><tbody>${s.mates.sort((a,b)=>b.n-a.n).map(o=>`<tr><td>${esc(pById(o.id).name)}</td><td class="num">${o.n}</td><td class="num">${o.r?pct(o.w/o.r):'–'}</td></tr>`).join('')}</tbody></table></details>`:''}
+  <h2>Reliability</h2><div class="kpis">${kpi(a.asked?pct(a.answered/a.asked):'–','Answered the link')}${kpi(a.lead==null?'–':hrs(a.lead),'Usual answer before kick-off')}${kpi(a.drops,'Late drop-outs')}${kpi(a.joins,'Late join-ins')}</div>
+  ${last?`<h2>Last match</h2>${gameCard(last,true)}`:''}`}
+
+function gameCard(x,open){const m=x.m,me=PM.data.me.id;
+  const score=m.teams.map((t,i)=>`<span class="sc${i===x.ti?' mine':''}" style="--k:${KITHEX[t.kit]||'#555'}">${esc(t.name||'Team '+(i+1))} <b class="num">${t.goals??'–'}</b></span>`).join('');
+  const lu=getLU(x.t.players.filter(id=>pById(id)),x.t.lu);
+  return `<details class="panel game"${open?' open':''}><summary><div class="gh"><div><b>${fmtDate(m.date)}</b><div class="small muted">${esc(x.t.name||'')}${x.potm?' · 🏆 Player of the match':''}</div></div>${resPill(x.res)}</div></summary>
+    <div class="scs">${score}</div>
+    ${m.potm&&pById(m.potm)?`<p class="small muted" style="margin:6px 0">Player of the match: <b>${esc(pById(m.potm).name)}</b></p>`:''}
+    <div class="pitchwrap">${pitchHTML(x.t,lu,x.ti,false)}</div>
+    <details class="others"><summary class="small">Other teams</summary>${m.teams.map((t,i)=>i===x.ti?'':`<p class="small"><b style="color:${KITHEX[t.kit]||'inherit'}">${esc(t.name||'Team '+(i+1))}</b>: ${t.players.map(id=>esc(pById(id)?.name||'Guest')).join(', ')}</p>`).join('')}</details>
+  </details>`}
+function vpGames(){const s=pSummary();
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Your matches</h2>${seasonPick()}</div>
+  ${s.g.length?`<p class="small muted">${s.apps} matches · ${s.W} won · ${s.D} drawn · ${s.L} lost</p>${s.g.map((x,i)=>gameCard(x,false)).join('')}`:'<div class="panel muted">No matches yet. Your teams show up here after the managers save a match night.</div>'}`}
+function vpAvail(){const a=pAvail(),stTxt={in:'IN',out:'OUT'};
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Availability</h2>${seasonPick()}</div>
+  ${nextMatchPanel()}
+  <div class="kpis">${kpi(a.asked,'Links sent')}${kpi(a.ins,'Said IN')}${kpi(a.asked?pct(a.answered/a.asked):'–','Answered')}${kpi(a.drops,'Late drop-outs')}</div>
+  <h2>History</h2>${a.rows.length?`<div class="panel"><ol class="alog avl">${a.rows.map(r=>`<li><span class="at num">${fmtDate(r.p.match_date).replace(/, \d{4}$/,'')}</span><span class="who">${r.final?`<span class="pill ${r.final==='in'?'ok':'bad'}">${stTxt[r.final]}</span>`:'<span class="pill meh">No answer</span>'}${r.late?' <span class="pill meh">late drop</span>':''}${r.first?` <span class="small muted">answered ${hrs((new Date(r.p.kickoff||kickoffISO(r.p.match_date))-new Date(r.first.at))/36e5)} before</span>`:''}${r.log.length>1?` <span class="small muted">· changed ${r.log.length-1}×</span>`:''}</span></li>`).join('')}</ol></div>`:'<div class="panel muted">No availability links yet.</div>'}`}
+function vpLeaders(){const ms=pMatches(),me=PM.data.me.id,o={};
+  ms.forEach(m=>m.teams.forEach((t,ti)=>{const res=resultOf(m,ti);t.players.forEach(id=>{if(!pById(id)||pById(id).guest)return;const x=o[id]=o[id]||{id,n:0,w:0,r:0,potm:0};x.n++;if(res){x.r++;if(res==='W')x.w++}})}));
+  ms.forEach(m=>{if(m.potm&&o[m.potm])o[m.potm].potm++});const L=Object.values(o);
+  const board=(title,rows,val)=>`<h2>${title}</h2><div class="panel"><ol class="lb">${rows.length?rows.map((x,i)=>`<li class="${x.id===me?'me':''}"><span class="rk num">${i+1}</span><span class="nm">${esc(pById(x.id).name)}${x.id===me?' <span class="small muted">(you)</span>':''}</span><b class="num">${val(x)}</b></li>`).join(''):'<li class="muted">No matches yet</li>'}</ol></div>`;
+  const top=(arr,k)=>{const s=arr.slice(0,10);const mi=arr.findIndex(x=>x.id===me);if(mi>=10)s.push({...arr[mi],_rank:mi});return s};
+  const apps=L.slice().sort((a,b)=>b.n-a.n),wins=L.filter(x=>x.r>=3).sort((a,b)=>b.w/b.r-a.w/a.r||b.r-a.r),potm=L.filter(x=>x.potm).sort((a,b)=>b.potm-a.potm);
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Leaderboards</h2>${seasonPick()}</div><p class="small muted">Based on matches played. Ratings are never shown here.</p>
+    ${board('Most appearances',top(apps),x=>x.n)}${board('Best win rate <span class="small muted">(3+ results)</span>',top(wins),x=>pct(x.w/x.r))}${board('🏆 Player of the match',top(potm),x=>x.potm)}`}
+function vpAcct(){const me=PM.data.me;
+  return `<h2>Account</h2><div class="panel stack"><p style="margin:0">Signed in as <b>${esc(me.name)}</b>. Your PIN is the same one you use on the availability link.</p>
+    <div class="fgrid g2"><label class="f">Current PIN<input id="po" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label><label class="f">New PIN<input id="pn2" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label></div>
+    <div class="row"><button class="btn primary" data-a="psetpin">Change PIN</button><span class="small muted" id="pmsg" role="status"></span></div>
+    <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
+  <h2>Help</h2><div class="panel small"><ul style="margin:0;padding-left:18px"><li><b>Me</b>: your card, next match, and season numbers.</li><li><b>Matches</b>: every team you played on, scores and line-ups.</li><li><b>Availability</b>: say in or out for the next match, and see your answer history.</li><li><b>Leaders</b>: appearances, win rate and Player of the Match for everyone.</li><li>Only you can see your profile. Managers set ratings and teams.</li></ul></div>
+  <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">Sign out</button></div>`}
+function renderPlayer(){document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');
+  if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
+  CACHE=compute();
+  m.innerHTML=(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():vpMe())}
+
+async function pLoadRoster(){const sel=$('#plname');if(!sel)return;try{const r=await prpc('atb_player_roster',{});const t=r[0];
+    if(!t){sel.innerHTML='<option value="">Player sign-in is off</option>';return}
+    sel.dataset.team=t.team;const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('')}
+  catch(e){sel.innerHTML='<option value="">Can’t load names. Check your connection</option>'}}
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
+  if(a==='lrole'){showLogin('','',el.dataset.r);return}
+  if(a==='plogin'){e.preventDefault();const sel=$('#plname'),pin=$('#plpin').value.trim(),msg=$('#plmsg');
+    if(!sel.value){msg.textContent='Choose your name.';return}if(!/^\d{4}$/.test(pin)){msg.textContent='Your PIN is 4 digits.';return}
+    el.disabled=true;msg.textContent='Signing in…';
+    try{const r=await prpc('atb_player_login',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
+      if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);
+        if(r.new)toast('PIN saved. Use it here and on the availability link');view='me';bootPlayer(saved);return}
+      msg.textContent=r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
+    catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
+  if(!PM)return;
+  if(a==='preload'){loadPlayer();return}
+  if(a==='psignout'){try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}location.reload();return}
+  if(a==='pvote'){const s=el.dataset.s;el.disabled=true;try{const r=await prpc('atb_player_vote',{p_token:PM.tok,p_poll:el.dataset.id,p_status:s});
+      if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
+  if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4}$/.test(n)){msg.textContent='New PIN must be 4 digits.';return}
+    try{const r=await prpc('atb_player_setpin',{p_token:PM.tok,p_old:o,p_new:n});msg.textContent=r==='ok'?'PIN changed. Other devices are signed out.':r==='wrong_pin'?'Current PIN is wrong.':'Could not change PIN.';if(r==='ok'){$('#po').value='';$('#pn2').value=''}}catch(err){msg.textContent='Could not change PIN.'}return}
+});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- modals ---------- */
 function openModal(html){document.documentElement.style.overflow='hidden';document.body.classList.add('mopen');$('#modal').innerHTML=`<div class="scrim" data-a="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
