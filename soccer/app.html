@@ -1944,7 +1944,7 @@ let tSlot=null;
 const tLU=t=>getLU((t.squad||[]).filter(pById),{n:onPitch(),...(t.lu||{})});
 const sameLU=(a,b)=>!!b&&a.f===b.f&&!!a.gk===!!b.gk&&+a.n===+b.n&&JSON.stringify(a.order)===JSON.stringify(b.order||null);
 function vTourn(){if(tSel&&S.tourns.find(t=>t.id===tSel))return vTournOne(S.tourns.find(t=>t.id===tSel));
-  const up=S.tourns.filter(t=>t.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1),past=S.tourns.filter(t=>t.date<todayISO()).sort((a,b)=>a.date<b.date?1:-1);
+  const up=S.tourns.filter(t=>t.date>=todayISO()).sort((a,b)=>a.date<b.date?1:-1),past=S.tourns.filter(t=>t.date<todayISO()).sort((a,b)=>a.date<b.date?1:-1);
   const row=t=>`<button class="panel trow" data-a="topen" data-id="${t.id}"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.venue?' · '+esc(t.venue):''} · ${ruleTxt(t)}</div></div><div class="small">${t.place?placeTxt(t.place):`${(t.squad||[]).length} picked`} · ${t.status==='draft'?'<span class="pill meh">🔒 Not published</span>':`<span class="pill ok">🌐 ${({club:'Club',squad:'Squad',pick:'Chosen'})[t.see||'club']}</span>`}</div></button>`;
   return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Tournaments</h2><div class="row" style="gap:6px"><button class="btn" data-a="tnewpast">＋ Past tournament</button><button class="btn primary" data-a="tnew">＋ New tournament</button></div></div>
     <p class="small muted">Build one squad from the whole club for tournaments against other clubs. Set an age rule, open an availability link, pick the squad, then record results. Add past tournaments too: squad, opponents and scores. Nothing shows in the player portal until you publish it, and you choose who can see each one.</p>
@@ -2011,7 +2011,7 @@ function tShareText(t){const sq=(t.squad||[]).filter(pById);return `🏆 *${t.na
 function myTourns(){const me=PM.data.me.id;return S.tourns.filter(t=>(t.squad||[]).includes(me)).sort((a,b)=>a.date<b.date?1:-1)}
 function tCareer(){const me=PM.data.me.id,L=myTourns().filter(t=>t.date<=todayISO());const o={n:L.length,champ:L.filter(t=>t.place==='champ').length,runner:L.filter(t=>t.place==='runner').length,g:0,a:0,W:0,D:0,L:0,cap:L.filter(t=>t.captain===me).length};
   L.forEach(t=>{const r=tRecord(t);o.W+=r.W;o.D+=r.D;o.L+=r.L;o.g+=+t.stats?.[me]?.g||0;o.a+=+t.stats?.[me]?.a||0});return o}
-function vpTourn(){const me=pById(PM.data.me.id),t0=todayISO(),up=S.tourns.filter(t=>t.date>=t0).sort((a,b)=>a.date<b.date?-1:1),c=tCareer();
+function vpTourn(){const me=pById(PM.data.me.id),t0=todayISO(),up=S.tourns.filter(t=>t.date>=t0).sort((a,b)=>a.date<b.date?1:-1),c=tCareer();
   const poll=t=>PM.data.polls.find(p=>p.id===t.poll&&p.open);
   const card=t=>{const e=eligible(t,me),inSq=(t.squad||[]).includes(me.id),pl=poll(t);
     return `<div class="panel tcard"><div class="row" style="justify-content:space-between"><div><b>🏆 ${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}${t.format?' · '+esc(t.format):''}</div></div><span class="pill">${ruleTxt(t)}</span></div>
