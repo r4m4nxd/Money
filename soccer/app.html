@@ -135,7 +135,7 @@ body.mopen #main,body.mopen header.top{pointer-events:none;user-select:none}
 .modal{background:var(--bg);color:var(--ink);border-radius:14px;width:100%;max-width:760px;padding:16px;border:1px solid var(--line)}
 .modal .mh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .modal .mh h2{margin:0}
-.modal .mh .x{margin-left:auto}
+.modal .mh .x{margin-left:auto}.modal .mh .mhb{margin-left:auto;display:flex;gap:6px;flex:none;align-items:center}.modal .mh .mhb .x{margin-left:0}
 .attrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
 .attrs input{width:100%}
 .rate{border-top:1px solid var(--line);padding-block:10px;display:flex;flex-direction:column;gap:6px}
@@ -181,18 +181,18 @@ button.tok{cursor:pointer}
 .tok .dot{width:32px;height:32px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.02em;box-shadow:0 2px 4px rgba(0,0,0,.35)}
 .tok .tn{font-size:10px;line-height:1.15;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:1px 4px;border-radius:4px;max-width:100%;text-align:center;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
-.pitch.p2{aspect-ratio:1/1.04;max-width:460px;border:0;border-radius:14px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.pitch.p2{container-type:inline-size;aspect-ratio:1/1.04;max-width:460px;border:0;border-radius:14px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18)}
 .p2 .ptitle{position:absolute;top:4%;left:0;right:0;text-align:center;color:#111;font-family:var(--f-display);font-weight:900;font-size:clamp(17px,5.4vw,26px);letter-spacing:.01em;text-transform:uppercase;z-index:1;pointer-events:none;line-height:1}
 .p2 .ptitle i{display:block;width:34px;height:4px;border-radius:2px;margin:6px auto 0}
 .p2 .tok{gap:4px;color:#fff}.p2 .dw{position:relative;display:block}
-.p2 .tok .dot{position:relative;width:clamp(42px,12.5vw,60px);height:clamp(42px,12.5vw,60px);border:3px solid var(--kc);background:#fff;color:#fff;font-size:clamp(13px,4vw,19px);box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.p2 .tok .dot{position:relative;width:clamp(30px,11cqw,50px);height:clamp(30px,11cqw,50px);border:2.5px solid var(--kc);background:#fff;color:#fff;font-size:clamp(11px,3.6cqw,17px);box-shadow:0 3px 8px rgba(0,0,0,.3)}
 .p2 .tok .dot.ini{background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--kc) 70%,#fff),var(--kc) 70%);border-color:#fff;box-shadow:0 0 0 2.5px var(--kc),0 3px 8px rgba(0,0,0,.3)}
 .p2 .dot.ini .sil{position:absolute;inset:18% 12% 0;width:76%;height:82%;fill:rgba(255,255,255,.28)}
 .p2 .dot.ini b{position:relative;font-family:var(--f-display);font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .p2 .tok .dot img{object-position:50% 18%}
-.p2 .nb{position:absolute;top:-3px;left:-8px;min-width:19px;height:19px;padding:0 3px;border-radius:99px;background:#fff;color:#111;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.p2 .fg{position:absolute;top:-3px;right:-8px;width:19px;height:19px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.3)}
-.p2 .tok .tn{background:none;color:#fff;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(9px,2.6vw,13px);padding:0;text-shadow:0 1px 2px rgba(0,0,0,.55);-webkit-line-clamp:1;white-space:nowrap;max-width:none;overflow:visible}
+.p2 .nb{position:absolute;top:-4px;left:-7px;min-width:17px;height:17px;padding:0 3px;border-radius:99px;background:#fff;color:#111;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.p2 .fg{position:absolute;top:-4px;right:-7px;width:17px;height:17px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.3)}
+.p2 .tok .tn{background:none;color:#fff;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(8px,2.7cqw,12px);padding:0;text-shadow:0 1px 2px rgba(0,0,0,.55);display:block;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .p2 .fgc{background:#fff;display:grid;place-items:center;overflow:hidden}.p2 .fgc .cb{width:80%;height:80%;object-fit:contain}
 .p2 .tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
 .subs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:8px;font-size:13px}
@@ -379,7 +379,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .lseg button{background:none;border:0;padding:10px;font:inherit;font-weight:700;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
 .lseg button[aria-selected=true]{background:var(--accent);color:#111}.lseg.sm button{padding:6px 10px;font-size:12px}
 .pill.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
-.mtop{display:flex;flex-direction:column-reverse;gap:4px}.mcol{min-width:0}@media(min-width:900px){.mtop{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;margin-bottom:6px}.mtop .phero{flex-direction:column;text-align:center;margin:0}.mtop .phero .pcard{width:220px}.mtop .phero .form,.mtop .phero .row{justify-content:center}}
+.mtop{display:flex;flex-direction:column-reverse;gap:4px;margin-top:16px}.mcol{min-width:0}@media(min-width:900px){.mtop{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;margin:22px 0 6px}.mtop .mcol{padding-top:4px}.mtop .phero{flex-direction:column;text-align:center;margin:0}.mtop .phero .pcard{width:220px}.mtop .phero .form,.mtop .phero .row{justify-content:center}}
 .phero{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}@media(max-width:520px){.phero{justify-content:center;text-align:center}.phero .form{justify-content:center}}.pcard{width:170px;flex:none}
 .form{gap:6px;align-items:center}
 .res{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;font-weight:800;font-size:13px;background:var(--surface2);color:var(--muted);flex:none}
@@ -411,7 +411,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .pcard{position:relative}.pcard.glow .fut{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--accent) 70%,transparent))}.inform{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);background:var(--accent);color:#111;font-weight:800;font-size:11px;letter-spacing:.12em;padding:3px 10px;border-radius:99px}
 .upg{text-align:center}.upg .pcard{width:190px;margin:10px auto;animation:upg 1.2s ease-out}@keyframes upg{0%{transform:scale(.6) rotateY(180deg);opacity:0}60%{transform:scale(1.08) rotateY(0)}100%{transform:scale(1)}}
 .totwme{border-left:4px solid #E0B84A;margin-bottom:8px}.avl li.nx{background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:8px}
-.prevbar{background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid var(--accent);border-radius:12px;padding:6px 6px 6px 12px;margin-bottom:12px;font-size:13px;flex-wrap:nowrap!important;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.prevbar .btn{margin-left:auto}
+.prevbar{background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid var(--accent);border-radius:12px;padding:6px 6px 6px 12px;margin:14px 0 4px;font-size:13px;flex-wrap:nowrap!important;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.prevbar .btn{margin-left:auto}
 .accbox{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
 .home{border-left:4px solid var(--accent);margin-bottom:14px;display:flex;flex-direction:column;gap:10px}.hh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .hdt{font-family:var(--f-display);font-size:24px;line-height:1.1;display:block}.cd{background:var(--surface2);border-radius:99px;padding:4px 12px;font-weight:800;font-size:13px;white-space:nowrap}.cd.now{background:var(--accent);color:#111}
@@ -421,13 +421,32 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .xpg{display:grid;gap:10px;margin-top:8px}.xpr{list-style:none;margin:0;padding:0;font-size:13px}.xpr li{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed var(--line)}.lvl .alog li b{margin-left:auto}.lvl b.neg{color:var(--bad)}
 .clubhero{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}.clubhero>img{width:84px;height:84px;border-radius:50%;box-shadow:0 0 0 3px var(--accent)}.clubhero>div{flex:1 1 220px}
 .grounds{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:14px}
-.kits{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.kitcard{border:1px solid var(--line);background:linear-gradient(160deg,var(--surface),var(--surface2));border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:4px;text-align:left;color:var(--ink);font:inherit}button.kitcard,button.gearcard{cursor:pointer}
-.kimg{aspect-ratio:1;display:grid;place-items:center;border-radius:10px;background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 70%);overflow:hidden}.kimg img{width:100%;height:100%;object-fit:cover}.jsy{width:86%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
-.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.gearcard{display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;text-align:left;color:var(--ink);font:inherit}.gearcard img{width:56px;height:56px;border-radius:8px;object-fit:cover}.gi2{font-size:34px;width:56px;text-align:center}
+.jsy{width:86%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.cab{margin:14px 0 10px;padding:10px 10px 4px;border-radius:16px;background:linear-gradient(180deg,#3a2716,#23170c);box-shadow:inset 0 0 0 3px #4d331c,inset 0 0 0 6px #1a1008,0 10px 30px rgba(0,0,0,.35)}
+.shelf{position:relative;margin-bottom:10px;border-radius:10px;background:radial-gradient(120% 90% at 50% 0,rgba(255,236,200,.16),transparent 60%),linear-gradient(180deg,#141a24,#0b0f16);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 8px rgba(0,0,0,.5);overflow:hidden}
+.shh{display:flex;align-items:center;gap:8px;padding:9px 12px 0;color:#F3E3C3;font-family:var(--f-display);font-size:15px;letter-spacing:.04em;text-transform:uppercase}.shh span{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);border-radius:99px;padding:1px 7px;color:#E8D6B4}
+.shrow{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x proximity;padding:8px 10px 0;position:relative;align-items:flex-end;scrollbar-width:thin;min-height:170px}
+.shrow::after{content:'';flex:0 0 1px}
+.shelf::after{content:'';position:absolute;left:0;right:0;bottom:0;height:14px;background:linear-gradient(180deg,#a8743f,#7a4f27 45%,#4f3218);box-shadow:0 -3px 8px rgba(0,0,0,.45);pointer-events:none}
+.citem{flex:0 0 112px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0 0 22px;color:#fff;font:inherit;cursor:pointer;position:relative}
+div.citem{cursor:default}
+.cimg{position:relative;width:104px;height:104px;display:grid;place-items:center}.cimg img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;filter:drop-shadow(0 8px 8px rgba(0,0,0,.55))}.cimg svg{width:92%;height:92%;filter:drop-shadow(0 8px 8px rgba(0,0,0,.5))}
+.cemo{font-size:52px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.5))}.cnt{position:absolute;right:2px;top:2px;font:800 10px/1 var(--f-display);background:rgba(0,0,0,.65);border-radius:99px;padding:3px 6px;font-style:normal}
+.cplq{display:flex;flex-direction:column;align-items:center;max-width:108px;padding:3px 8px;border-radius:4px;background:linear-gradient(180deg,#e9cf8c,#b8923f);color:#2b1d0a;box-shadow:0 1px 2px rgba(0,0,0,.5);line-height:1.15;text-align:center}.cplq b{font-size:11px;font-weight:800;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cplq small{font-size:10px;font-weight:600}
+.citem.add .cimg{border:2px dashed rgba(255,255,255,.25);border-radius:12px;width:88px;height:88px;margin:8px 0}.citem.add .cemo{font-size:34px;color:#E8D6B4}.citem.add .cplq{background:rgba(255,255,255,.12);color:#E8D6B4}
+.cempty{color:#C9B89A;align-self:center;margin:0 0 40px 6px}
+@media(hover:hover){button.citem:hover .cimg{transform:translateY(-3px);transition:transform .15s}}
+.gview{display:flex;flex-direction:column;gap:10px}.gvimg{display:grid;place-items:center;min-height:240px;max-height:60vh;border-radius:14px;background:radial-gradient(circle at 50% 30%,#2a3445,#0e131b);padding:10px}.gvimg img{max-width:100%;max-height:56vh;object-fit:contain;border-radius:8px}.gvimg svg{width:min(260px,70%)}.gvimg .cemo{font-size:110px}
+.gvth{display:flex;gap:6px;justify-content:center}.gvth button{width:60px;height:60px;padding:0;border-radius:8px;border:2px solid transparent;overflow:hidden;background:var(--surface2);cursor:pointer}.gvth button.on{border-color:var(--accent)}.gvth img{width:100%;height:100%;object-fit:cover}.gvinfo{display:flex;gap:6px;flex-wrap:wrap}
+.gm .o-kit,.gm .o-trophy,.gm .o-cols{display:none}.gm.c-kit .o-kit,.gm.c-trophy .o-trophy{display:grid}.gm.c-bibs .o-cols,.gm.c-cones .o-cols,.gm.c-other .o-cols{display:flex}.gm.c-kit .o-qty,.gm.c-trophy .o-qty{display:none}
+.gthumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.gth{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;background:var(--surface2);border:1px solid var(--line)}.gth img{width:100%;height:100%;object-fit:cover}.gth button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:11px;cursor:pointer;padding:0}.gth .gfirst{right:auto;left:3px}
+.gadd{display:flex;flex-direction:column;align-items:center;justify-content:center;border-style:dashed;cursor:pointer;font-size:22px;color:var(--muted)}.gadd small{font-size:10px}
 .sw{display:flex;gap:4px;margin-top:4px}.sw i{width:16px;height:16px;border-radius:4px;border:1px solid var(--line)}
 .trow{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;color:var(--ink);font:inherit;cursor:pointer;margin-bottom:8px}
 .tlist{display:flex;flex-direction:column;gap:4px;max-height:520px;overflow:auto}.tp{display:grid;grid-template-columns:22px auto minmax(0,1fr) auto auto auto;align-items:center;gap:8px;background:none;border:1px solid transparent;border-radius:10px;padding:6px 8px;color:var(--ink);font:inherit;text-align:left;cursor:pointer;flex-wrap:wrap}
 .tp.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}.tp .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;font-weight:900;color:#111}.tp.on .ck{background:var(--accent);border-color:var(--accent)}.tp .o{margin-left:auto}.tp b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tp .small{white-space:nowrap}.tp .pill{white-space:nowrap}.tsep{margin:8px 0 2px}.tsh{margin:22px 0 8px}
+.tpub{margin-top:12px;display:flex;flex-direction:column;gap:8px;border-left:4px solid var(--warn,#E0A526)}.tpub.live{border-left-color:var(--good)}.tpubh{display:grid;grid-template-columns:1fr minmax(0,240px) auto;gap:10px;align-items:end}.tpubh .f{margin:0}@media(max-width:620px){.tpubh{grid-template-columns:1fr auto}.tpubh>div{grid-column:1/-1}}
+.tseel{max-height:220px;overflow:auto}
 .tg{display:grid;grid-template-columns:110px 1fr 56px auto 56px auto;gap:6px;align-items:center}@media(max-width:520px){.tg{grid-template-columns:1fr 1fr;}.tg span{display:none}}
 .tga{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}.tga label{display:flex;gap:4px;align-items:center;font-size:13px}.tga label span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tga input{width:48px;padding:4px 6px}
 .tcard{border-left:4px solid #E0B84A;margin-bottom:10px}.tban{display:flex;gap:10px;align-items:center;width:100%;text-align:left;color:var(--ink);font:inherit;font-size:22px;cursor:pointer;border-left:4px solid #E0B84A;margin-bottom:12px}.tban div{flex:1;font-size:15px}
@@ -436,13 +455,15 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ppchips{display:flex;flex-wrap:wrap;gap:8px 14px;font-weight:700;color:var(--good);font-size:14px}.ppchips span{display:flex;align-items:center;gap:6px}.ppchips .cb,.ppchips .flag{width:20px;height:20px;object-fit:contain;border-radius:3px}
 .tierc.t-gold{color:#E0B84A}.tierc.t-silver{color:#C9CED6}.tierc.t-bronze{color:#C98A54}
 .ppfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;border-top:1px solid var(--line);padding-top:10px}.ppfacts i{display:block;font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.ppfacts .stars{color:#F5C451;letter-spacing:1px}
-.ppstyles{display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);padding-top:10px}.pst{display:flex;flex-direction:column;align-items:center;gap:2px;width:78px;text-align:center}.pst span{width:44px;height:44px;display:grid;place-items:center;font-size:22px;background:var(--surface2);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}.pst.plus span{background:linear-gradient(135deg,#F5C451,#C9892A)}.pst small{font-size:11px;color:var(--muted)}.pstgrid .pst{opacity:.35;filter:grayscale(1)}.pstgrid .pst.on{opacity:1;filter:none}.pst.on span{background:#fff;color:#111}.pst.on small{color:var(--ink);font-weight:700}
-.psgrid{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}.psrow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:6px}.psrow>i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.psrow>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}@media(max-width:520px){.psrow{grid-template-columns:1fr}}
+.psb{width:46px;height:50px;display:grid;place-items:center;color:#5d6878;background:linear-gradient(160deg,#2a3242,#1b212c);clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);flex:none}.psb svg{width:25px;height:25px}
+.psb.on{color:#062a24;background:linear-gradient(160deg,#7ff5d8,#23c8a4 60%,#139a7e)}.psb.plus{color:#3a2400;background:linear-gradient(160deg,#ffe9a6,#f5c451 55%,#c9892a)}
+.psx{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}.psx small{font-size:11px;line-height:1.15;color:var(--muted);opacity:.7}.psx.on small{color:var(--ink);font-weight:700;opacity:1}.psx:not(.on) .psb{opacity:.55}
+.psgrid .gh2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.psgrid{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}.psrow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:6px}.psrow>i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.psrow>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px}@media(max-width:520px){.psrow{grid-template-columns:1fr}}
 .ppnums{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;border-top:1px solid var(--line);padding-top:10px;text-align:center}.ppnums b{display:block;font-family:var(--f-display);font-size:22px}.ppnums i{font-style:normal;font-size:11px;color:var(--muted)}@media(max-width:520px){.ppnums{grid-template-columns:repeat(3,1fr)}}
 .ppgrid{display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start}@media(max-width:760px){.ppgrid{grid-template-columns:1fr}}
 .ppstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
-.psed{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.pse{display:grid;grid-template-columns:28px 1fr;grid-template-rows:auto auto;column-gap:6px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.pse span{grid-row:span 2;font-size:20px}.pse i{font-style:normal;font-size:11px;font-weight:600}
-.pse.auto.on{color:var(--ink)}.pse.give{border-color:var(--good);color:var(--ink);background:color-mix(in srgb,var(--good) 14%,transparent)}.pse.take{border-color:var(--bad);color:var(--muted);text-decoration:line-through;background:color-mix(in srgb,var(--bad) 8%,transparent)}
+.psed{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}.pse{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;cursor:pointer}.pse .psb{grid-row:span 2;width:34px;height:37px}.pse .psb svg{width:19px;height:19px}.pse b{font-weight:700;align-self:end}.pse i{font-style:normal;font-size:11px;font-weight:600;align-self:start}.pse:not(.on) .psb{opacity:.5}
+.pse.on{color:var(--ink)}.pse.give{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}.pse.take{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent)}.pse.take b{text-decoration:line-through}
 .fcg .gh2{display:flex;justify-content:space-between;font-size:17px}.fcg .pbar{height:6px;margin:6px 0 8px}.fcg .pbar i{background:var(--good)}.fcg .sub{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;padding:2px 0}
 .num.hi{color:var(--good)}.num.md{color:#C6D94A}.num.lo{color:var(--warn)}
 .pprpp{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}.rpp{position:relative;aspect-ratio:1/1.04;border-radius:12px;overflow:hidden}.rpp .mk{position:absolute;inset:0;width:100%;height:100%}
@@ -1229,7 +1250,9 @@ function vGuide(){
     <li>The Saturday auto-link opens the next scheduled game across all seasons, skipping weeks without a game. Season attendance counts the current season.</li></ul>`)}
 
   ${sec('tourn','Tournaments',`<ol>
-    <li><b>Tournaments</b> tab → <b>＋ New tournament</b>: name, date, time, venue, format, squad size and age rule (Open, minimum age, maximum age, or between two ages; counted on the tournament date unless you pick another date). Untick “Show to players” to plan privately.</li>
+    <li><b>Tournaments</b> tab → <b>＋ New tournament</b>: name, date, time, venue, format, squad size and age rule (Open, minimum age, maximum age, or between two ages; counted on the tournament date unless you pick another date).</li>
+    <li><b>Publishing:</b> every new tournament starts <b>🔒 Hidden</b>. Players see nothing until you press <b>Publish</b> on the tournament page. Choose who can see each one: <b>Whole club</b>, <b>Squad only</b> or <b>Chosen players</b> (tick names; “Add the whole squad” fills them in). <b>Unpublish</b> hides it again. This is enforced on the server, so players can’t see hidden ones.</li>
+    <li><b>＋ Past tournament</b> records one that already happened: date, venue, the age rule, then tick <b>who played</b> (inactive players are listed too), add each game with the opponent club and score, the final placing, goals and assists. Save, then Publish (it defaults to squad only).</li>
     <li><b>Open availability link</b> sends a separate link (🏆 in the title) only to eligible players plus anyone you’ve added. Players without a date of birth are included so they can answer. <b>Copy WhatsApp message</b>, Refresh, Close/Reopen as usual. It closes itself the day after.</li>
     <li><b>Pick the squad</b>: players are listed eligible first, with age, answer (In/Out) and OVR. Tap to select. <b>Auto-pick best available</b> fills the squad with available players by position mix and rating. Players outside the age rule are listed separately; tapping one adds them anyway (you’re warned).</li>
     <li>Choose a <b>captain</b>, formation and keeper, then <b>Share squad</b> as an image or text.</li>
@@ -1238,16 +1261,19 @@ function vGuide(){
     <p><b>Date of birth</b> is on each player’s card (Squad) and players can add their own in the portal (Settings → “Players can enter their own date of birth”). Only managers see it.</p>`)}
 
   ${sec('club','Club, kits and equipment',`<ul><li><b>Club</b> tab: crest, founding year, home ground (Bayview, Airdrie) and winter venue (Genesis Centre), squad and match counts, trophies. <b>Edit</b> changes the club info.</li>
-    <li><b>Kits</b>: home, away, third, goalkeeper and training. Add a photo when the jerseys arrive; until then each kit is drawn in its main and trim colours with the crest.</li>
-    <li><b>Equipment</b>: balls, training bibs (with colour swatches), nets, cones and anything else, with quantity, notes and an optional photo. Tap an item to edit or delete.</li>
-    <li><b>Trophy cabinet</b>: tournaments you won or finished runner-up. Players see the whole Club page (read-only).</li></ul>`)}
+    <li>Everything sits in a <b>wooden cabinet</b> with shelves: Trophy cabinet, Kits, Balls, Training gear (bibs, cones), Nets and goals, Other. Swipe a shelf sideways when it fills up.</li>
+    <li><b>＋ Add</b> on any shelf adds an item with <b>up to 4 photos</b> (the first one stands on the shelf; ★ makes another photo the first). Tap an item to see its photos; <b>Edit</b> changes or deletes it.</li>
+    <li><b>Kits</b>: home, away, third, goalkeeper and training. Without a photo, each kit is drawn in its main and trim colours with the crest.</li>
+    <li><b>Trophies and medals</b>: add a photo, the result (winners, runners-up, third, award), the year and the tournament it came from. Tournaments you won or finished runner-up show a cup automatically until you add the real trophy photo; tap that cup to add it.</li>
+    <li>Players see the whole Club page and can open photos, but can’t change anything.</li></ul>`)}
 
   ${sec('ppage','Player pages and PlayStyles',`<ul><li>Tap a player → <b>📄 Player page</b> for an EA FC-style page: card, nation, club, tier, position with best position, age, foot, height, skill and weak-foot stars, shirt number, apps, goals, assists, POTM, tournaments and titles.</li>
     <li><b>Stats</b>: Pace, Shooting, Passing, Dribbling, Defending and Physical, each with its bar and the real attributes underneath (out of 100). <b>Rating per position</b> shows their level at ST, LW/RW, CAM, LM/RM, CM, CDM, LB/RB and CB on a pitch; gold = best.</li>
     <li><b>PlayStyles</b> unlock from real match ratings, e.g. Finesse Shot (Shooting 78+), Tiki Taka (Passing and Team Work 78+), Anticipate (Defending 82+), Technical (Ball Skill 78+), Rapid (Speed 82+), Relentless (Stamina 80+ and Mindset 78+). “+” versions need 88+. Hover or long-press to see what each needs.</li>
     <li>Players open their own page from Me → <b>📄 My player page</b>. Numbers there follow “Players can see their own ratings”; bars and PlayStyles still show their strengths.</li>
     <li>Set <b>Foot, Height, Skills ★ and Weak foot ★</b> on the player’s card. Only managers can set these, ratings and PlayStyles; players can’t change any of them.</li>
-    <li><b>Award or remove PlayStyles:</b> on the player’s card, tap a PlayStyle to cycle <b>Auto</b> (earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>, then Save player. Awarded ones show even if the ratings aren’t there yet; removed ones stay hidden.</li></ul>`)}
+    <li><b>Award or remove PlayStyles:</b> on the player’s card, tap a PlayStyle to cycle <b>Auto</b> (earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>, then Save player. Awarded ones show even if the ratings aren’t there yet; removed ones stay grey.</li>
+    <li>Only awarded PlayStyles are <b>coloured</b> (teal, or gold for elite “+”); the rest are grey, for you and for the player. Want them to come only from you? Untick <b>Settings → PlayStyles: also award automatically from match ratings</b>.</li></ul>`)}
 
   ${sec('security','Security',`<ul><li>Nothing loads without signing in. Managers use passwords; players use their own PIN (4–6 digits; 6 is safer).</li>
     <li><b>PIN protection:</b> 5 wrong PINs lock a name for 1 hour, 10 for 24 hours. If the whole team sees more than 30 wrong PINs in a day, every wrong PIN locks that name for 24 hours. Managers with vote alerts get a notification for every lock and for unusual activity. Everything shows in Player activity.</li>
@@ -1422,8 +1448,8 @@ function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details cl
   ${sec('totw','Team of the Week and Player of the Match',`<ul><li><b>Team of the Week</b> is the best performer in each position from the last rated match. Get picked and you earn XP, a badge and an In-Form card.</li>
     <li>For 3 days after each game you can <b>vote for Player of the Match</b> (not yourself). Managers see the votes and make the final pick.</li></ul>`)}
   ${sec('tourns','Tournaments and your career',`<ul><li>The <b>Tournaments</b> tab shows upcoming tournaments against other clubs, the age rule and whether you’re eligible. Answer I’m in / Can’t make it right there.</li><li>Add your <b>date of birth</b> in Account so managers can check age groups (only managers see it).</li><li>Get picked and you’ll see the squad on the pitch, your captaincy, and a <b>tournament career</b>: tournaments, titles, results, goals and assists. Squads earn +200 XP, winners +500.</li></ul>`)}
-  ${sec('page','Your player page and PlayStyles',`<ul><li>Me → <b>📄 My player page</b>: your FC-style page with your details, apps, goals and titles, your six stat groups, your rating in every position on a pitch, and your <b>PlayStyles</b>.</li><li>PlayStyles unlock when your match ratings reach a level (e.g. Rapid at Speed 82+), or when the managers award one; “+” is elite. Locked ones are dimmed so you know what to chase. Only managers set ratings, skills and PlayStyles.</li></ul>`)}
-  ${sec('club','The Club page',`<ul><li>See the club’s home and away kits, training bibs, balls and nets, our grounds (Bayview in summer, Genesis Centre in winter) and the trophy cabinet.</li></ul>`)}
+  ${sec('page','Your player page and PlayStyles',`<ul><li>Me → <b>📄 My player page</b>: your FC-style page with your details, apps, goals and titles, your six stat groups, your rating in every position on a pitch, and your <b>PlayStyles</b>.</li><li>PlayStyles unlock when your match ratings reach a level (e.g. Rapid at Speed 82+), or when the managers award one. Awarded ones are coloured (gold = elite “+”); the grey ones are still to earn. Only managers set ratings, skills and PlayStyles.</li></ul>`)}
+  ${sec('club','The Club page',`<ul><li>The club cabinet: trophies, kits, balls, training gear and nets on shelves. Tap anything to see its photos. Also our grounds: Bayview in summer, Genesis Centre in winter.</li><li>The Tournaments tab shows the tournaments the managers have shared with you, including past ones you played in.</li></ul>`)}
   ${sec('tabs','The other tabs',`<ul><li><b>Matches</b>: every game you played, the score, your team on the pitch, the other teams, and any note from the managers.</li>
     <li><b>Availability</b>: the whole season schedule marked Played, Missed, No-show or your answer, plus your answer history.</li>
     <li><b>Leaders</b>: Most improved, Top scorers, Top assists, appearances, win rate and Player of the Match. Never ratings.</li>
@@ -1465,6 +1491,7 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" id="sl" data-a="set" data-k="spreadLate" ${s.spreadLate!==false?'checked':''}> Spread players with late drops across teams</label>
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
     <label class="f" style="max-width:320px">Badge next to each player on the pitch<select id="pbsel" data-a="setpb"><option value="nation" ${(s.pitchBadge||'nation')==='nation'?'selected':''}>Nation flag</option><option value="club" ${s.pitchBadge==='club'?'selected':''}>Favourite club crest</option></select></label>
+    <label class="small row chk"><input type="checkbox" id="psa" data-a="set" data-k="psAuto" ${s.psAuto!==false?'checked':''}> PlayStyles: also award automatically from match ratings (untick so only the ones you award by hand light up)</label>
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
     ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="small row chk"><input type="checkbox" id="plg" data-a="set" data-k="playerLogin" ${s.playerLogin!==false?'checked':''}> Players can sign in to see their own profile, matches and availability</label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
@@ -1824,34 +1851,59 @@ function seedGear(){[{cat:'kit',kit:'home',name:'Home kit',c1:'#16244A',c2:'#F28
 function jerseySVG(c1,c2,num){return `<svg class="jsy" viewBox="0 0 100 100" aria-hidden="true"><path d="M31 9L19 14 4 32l12 12 9-6v54h50V38l9 6 12-12-15-18-12-5c-3 7-10 11-19 11s-16-4-19-11z" fill="${c1}" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
   <path d="M19 14 4 32l12 12 9-6zM81 14l15 18-12 12-9-6z" fill="${c2}"/><path d="M31 9c3 7 10 11 19 11s16-4 19-11" fill="none" stroke="${c2}" stroke-width="4"/>
   <image href="icons/crest-640.jpg" x="58" y="28" width="12" height="12" preserveAspectRatio="xMidYMid slice"/>${num?`<text x="50" y="72" text-anchor="middle" font-family="Saira Condensed,Arial Narrow,sans-serif" font-weight="800" font-size="26" fill="${c2}">${esc(num)}</text>`:''}</svg>`}
-const GEARICON={kit:'👕',ball:'⚽',bibs:'🎽',nets:'🥅',cones:'🔺',other:'🧰'};
-
-function vClub(){const c=S.settings.club||{},mgr=!PM;const kits=S.gear.filter(g=>g.cat==='kit').sort((a,b)=>(a.order||0)-(b.order||0)),eq=S.gear.filter(g=>g.cat!=='kit').sort((a,b)=>(a.order||0)-(b.order||0));
-  const past=S.tourns.filter(t=>t.place==='champ'||t.place==='runner').sort((a,b)=>a.date<b.date?1:-1);
-  const nPl=S.players.filter(p=>!p.guest&&p.active!==false).length;const me=PM?.data?.me;
+const GEARICON={kit:'👕',ball:'⚽',trophy:'🏆',bibs:'🎽',nets:'🥅',cones:'🔺',other:'🧰'};
+const GEARCAT={trophy:'Trophy / medal',kit:'Kit / jersey',ball:'Ball',bibs:'Training bibs',cones:'Cones / markers',nets:'Nets / goals',other:'Other'};
+const SHELVES=[['trophy','🏆 Trophy cabinet'],['kit','👕 Kits'],['ball','⚽ Balls'],['train','🎽 Training gear',['bibs','cones']],['nets','🥅 Nets and goals'],['other','🧰 Other']];
+const gImgs=g=>(g.imgs&&g.imgs.length?g.imgs:g.img?[g.img]:[]);
+const ballSVG=`<svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="bg1" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cfd5dd"/></radialGradient></defs><circle cx="50" cy="50" r="44" fill="url(#bg1)" stroke="#9aa3ae" stroke-width="1.5"/><path d="M50 30l15 11-6 18H41l-6-18z" fill="#16244A"/><path d="M50 30V8M65 41l20-8M59 59l13 18M41 59 28 77M35 41l-20-8" stroke="#16244A" stroke-width="2.5" fill="none"/><path d="M14 30l8 12-5 14M86 30l-8 12 5 14M36 88l6-10h16l6 10M50 8l-9 5M50 8l9 5" fill="none" stroke="#16244A" stroke-width="2"/></svg>`;
+const cupSVG=(place)=>{const c=place==='champ'?['#FFE9A6','#F5C451','#B7791F']:place==='runner'?['#F4F6F8','#C3CAD3','#7D8894']:['#F3C8A2','#CD8A52','#8A5022'];
+  return `<svg viewBox="0 0 100 120" aria-hidden="true"><defs><linearGradient id="cg${place}" x1="0" x2="1"><stop offset="0" stop-color="${c[2]}"/><stop offset=".45" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs>
+  <path d="M26 10h48v26c0 17-10 30-24 30S26 53 26 36z" fill="url(#cg${place})"/><path d="M26 18H12c0 16 8 24 18 26M74 18h14c0 16-8 24-18 26" fill="none" stroke="${c[1]}" stroke-width="5"/>
+  <path d="M44 66h12v16H44z" fill="${c[2]}"/><path d="M32 82h36l4 12H28z" fill="url(#cg${place})"/><rect x="24" y="94" width="52" height="16" rx="2" fill="#2b1d12"/><rect x="34" y="99" width="32" height="6" rx="1" fill="${c[1]}"/></svg>`};
+function cabItem(g,mgr){const im=gImgs(g)[0];const vis=im?`<img src="${im}" alt="${esc(g.name)}" loading="lazy">`:g.cat==='kit'?jerseySVG(g.c1||'#16244A',g.c2||'#F28C28',PM?.data?.me?.number||'10'):g.cat==='ball'?ballSVG:g.cat==='trophy'?cupSVG(g.place||'champ'):`<span class="cemo">${GEARICON[g.cat]||'🧰'}</span>`;
+  const sub=g.cat==='trophy'?(g.year||''):g.cat==='kit'?({home:'Home',away:'Away',third:'Third',gk:'Goalkeeper',training:'Training'}[g.kit]||''):g.qty?'×'+(+g.qty):'';
+  return `<button class="citem" data-a="gearview" data-id="${g.id}"><span class="cimg">${vis}${gImgs(g).length>1?`<i class="cnt">${gImgs(g).length}</i>`:''}</span><span class="cplq"><b>${esc(g.name)}</b>${sub?`<small>${esc(String(sub))}</small>`:''}</span></button>`}
+function vClub(){const c=S.settings.club||{},mgr=!PM;const byOrd=(a,b)=>(a.order||0)-(b.order||0);
+  const linked=new Set(S.gear.filter(g=>g.cat==='trophy'&&g.tourn).map(g=>g.tourn));
+  const autoT=S.tourns.filter(t=>['champ','runner'].includes(t.place)&&!linked.has(t.id)).sort((a,b)=>a.date<b.date?1:-1);
+  const nPl=S.players.filter(p=>!p.guest&&p.active!==false).length;
+  const shelf=([k,title,cats])=>{const items=S.gear.filter(g=>(cats||[k]).includes(g.cat==='kit'||GEARCAT[g.cat]?g.cat:'other')).sort(byOrd);
+    const auto=k==='trophy'?autoT.map(t=>`<${mgr?'button':'div'} class="citem" ${mgr?`data-a="gearadd" data-v="trophy" data-t="${t.id}"`:''}><span class="cimg">${cupSVG(t.place)}</span><span class="cplq"><b>${esc(t.name)}</b><small>${t.place==='champ'?'Champions':'Runners-up'} · ${esc(t.date.slice(0,4))}</small></span></${mgr?'button':'div'}>`).join(''):'';
+    if(!items.length&&!auto&&!mgr)return '';
+    return `<div class="shelf"><div class="shh"><b>${title}</b>${items.length?`<span>${items.length}</span>`:''}</div><div class="shrow">${items.map(g=>cabItem(g,mgr)).join('')}${auto}
+      ${mgr?`<button class="citem add" data-a="gearadd" data-v="${cats?cats[0]:k}"><span class="cimg"><span class="cemo">＋</span></span><span class="cplq"><b>Add</b><small>${k==='trophy'?'trophy / medal':'with photos'}</small></span></button>`:''}
+      ${!items.length&&!auto&&k==='trophy'?'<p class="small cempty">Win a tournament to fill the cabinet.</p>':''}</div></div>`};
   return `<div class="clubhero"><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h2 style="margin:0">${esc(c.name||'Airdrie United')}</h2><div class="small muted">Est. ${esc(c.founded||'2025')} · Airdrie, Alberta</div>
       <div class="grounds"><span>🌳 <b>Home ground</b> ${esc(c.home||'Bayview, Airdrie')} <span class="muted">(outdoor, summer)</span></span><span>🏟️ <b>Winter</b> ${esc(c.indoor||'Genesis Centre, Airdrie')} <span class="muted">(indoor)</span></span></div></div>
       ${mgr?'<button class="btn ghost small" data-a="clubedit">Edit</button>':''}</div>
-    <div class="kpis">${kpi(nPl,'Squad players')}${kpi(S.matches.length,'Club matches')}${kpi(S.tourns.filter(t=>t.date<=todayISO()).length,'Tournaments')}${kpi(S.tourns.filter(t=>t.place==='champ').length,'🏆 Trophies')}</div>
-    <div class="row" style="justify-content:space-between;align-items:center"><h2>Kits</h2>${mgr?'<button class="btn small" data-a="gearadd" data-v="kit">＋ Add kit</button>':''}</div>
-    <div class="kits">${kits.map(k=>`<${mgr?'button':'div'} class="kitcard" ${mgr?`data-a="gearedit" data-id="${k.id}"`:''}><div class="kimg">${k.img?`<img src="${k.img}" alt="${esc(k.name)}">`:jerseySVG(k.c1||'#16244A',k.c2||'#F28C28',me?.number||'10')}</div>
-      <b>${esc(k.name)}</b><span class="small muted">${esc({home:'Home',away:'Away',third:'Third',gk:'Goalkeeper',training:'Training'}[k.kit]||'Kit')}${k.desc?' · '+esc(k.desc):''}</span></${mgr?'button':'div'}>`).join('')||'<p class="small muted">No kits yet.</p>'}</div>
-    <div class="row" style="justify-content:space-between;align-items:center"><h2>Equipment</h2>${mgr?'<button class="btn small" data-a="gearadd" data-v="ball">＋ Add item</button>':''}</div>
-    <div class="gear">${eq.map(g=>`<${mgr?'button':'div'} class="gearcard" ${mgr?`data-a="gearedit" data-id="${g.id}"`:''}>${g.img?`<img src="${g.img}" alt="">`:`<span class="gi2">${GEARICON[g.cat]||'🧰'}</span>`}
-      <div><b>${esc(g.name)}</b>${g.qty?` <span class="pill">×${+g.qty}</span>`:''}${(g.colors||[]).length?`<div class="sw">${g.colors.map(x=>`<i style="background:${esc(x)}"></i>`).join('')}</div>`:''}${g.desc?`<div class="small muted">${esc(g.desc)}</div>`:''}</div></${mgr?'button':'div'}>`).join('')||'<p class="small muted">No equipment yet.</p>'}</div>
-    <h2>Trophy cabinet</h2><div class="panel">${past.length?`<ol class="plb">${past.map(t=>`<li><span>${t.place==='champ'?'🏆':'🥈'}</span><span class="nm">${esc(t.name)} <span class="small muted">${new Date(t.date+'T12:00').toLocaleDateString(undefined,{month:'short',year:'numeric'})}</span></span></li>`).join('')}</ol>`:'<p class="small muted" style="margin:0">Win a tournament to fill the cabinet.</p>'}</div>`}
+    <div class="kpis">${kpi(nPl,'Squad players')}${kpi(S.matches.length,'Club matches')}${kpi(S.tourns.filter(t=>t.date<=todayISO()).length,'Tournaments')}${kpi(S.tourns.filter(t=>t.place==='champ').length+S.gear.filter(g=>g.cat==='trophy'&&!g.tourn&&(g.place||'champ')==='champ').length,'🏆 Trophies')}</div>
+    <div class="cab">${SHELVES.map(shelf).join('')}</div>
+    ${mgr?'<p class="small muted" style="text-align:center">Tap an item to see its photos. Tap ＋ Add on any shelf to add a new item with up to 4 photos.</p>':''}`}
 
-function gearModal(id,cat){const g=id?S.gear.find(x=>x.id===id):{cat:cat||'ball',name:'',qty:'',c1:'#16244A',c2:'#F28C28',colors:[]};pendGear=undefined;
-  openModal(`<div class="mh"><h2>${id?'Edit item':'Add item'}</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
-    <div class="fgrid g2"><label class="f">Type<select id="gcat">${Object.entries({kit:'Kit / jersey',ball:'Balls',bibs:'Training bibs',nets:'Nets / goals',cones:'Cones',other:'Other'}).map(([k,l])=>`<option value="${k}" ${g.cat===k?'selected':''}>${l}</option>`).join('')}</select></label>
-    <label class="f">Name<input id="gname" value="${esc(g.name||'')}" placeholder="e.g. Home kit 2026"></label></div>
-    <div class="fgrid f3"><label class="f">Kit<select id="gkit">${['home','away','third','gk','training'].map(k=>`<option ${g.kit===k?'selected':''} value="${k}">${k[0].toUpperCase()+k.slice(1)}</option>`).join('')}</select></label>
+function gearView(id){const g=S.gear.find(x=>x.id===id);if(!g)return;const ims=gImgs(g),t=g.tourn&&S.tourns.find(x=>x.id===g.tourn);
+  openModal(`<div class="mh"><h2>${esc(g.name)}</h2><div class="mhb">${!PM?`<button class="btn small" data-a="gearedit" data-id="${id}">Edit</button>`:''}<button class="btn ghost x" data-a="close">Close</button></div></div>
+  <div class="gview"><div class="gvimg" id="gvimg">${ims[0]?`<img src="${ims[0]}" alt="">`:g.cat==='kit'?jerseySVG(g.c1||'#16244A',g.c2||'#F28C28',PM?.data?.me?.number||'10'):g.cat==='ball'?ballSVG:g.cat==='trophy'?cupSVG(g.place||'champ'):`<span class="cemo">${GEARICON[g.cat]||'🧰'}</span>`}</div>
+    ${ims.length>1?`<div class="gvth">${ims.map((u,i)=>`<button data-a="gvsel" data-i="${i}" data-id="${id}" class="${i?'':'on'}"><img src="${u}" alt=""></button>`).join('')}</div>`:''}
+    <div class="gvinfo"><span class="pill">${GEARCAT[g.cat]||'Item'}</span>${g.cat==='kit'&&g.kit?`<span class="pill">${esc(g.kit[0].toUpperCase()+g.kit.slice(1))}</span>`:''}${g.year?`<span class="pill">${esc(g.year)}</span>`:''}${g.qty?`<span class="pill">× ${+g.qty}</span>`:''}${t?`<span class="pill ok">${esc(t.name)}</span>`:''}</div>
+    ${(g.colors||[]).length?`<div class="sw">${g.colors.map(x=>`<i style="background:${esc(x)}"></i>`).join('')}</div>`:''}${g.desc?`<p style="margin:0">${esc(g.desc)}</p>`:''}</div>`)}
+
+function gearModal(id,cat,tid){const t0=tid&&S.tourns.find(t=>t.id===tid);const g=id?S.gear.find(x=>x.id===id):{cat:cat||'ball',name:t0?t0.name:'',qty:'',c1:'#16244A',c2:'#F28C28',colors:[],tourn:tid||'',place:t0?.place||'champ',year:t0?t0.date.slice(0,4):''};
+  pendGear=gImgs(g).slice();
+  const past=S.tourns.filter(t=>t.date<=todayISO()).sort((a,b)=>a.date<b.date?1:-1);
+  openModal(`<div class="mh"><h2>${id?'Edit item':'Add to the cabinet'}</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack gm c-${esc(g.cat)}" id="gm">
+    <div class="fgrid g2"><label class="f">Type<select id="gcat" data-a="gcat">${Object.entries(GEARCAT).map(([k,l])=>`<option value="${k}" ${g.cat===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label class="f">Name<input id="gname" maxlength="50" value="${esc(g.name||'')}" placeholder="e.g. Home kit 2026"></label></div>
+    <div class="gph"><div class="small muted">Photos (up to 4, first one shows on the shelf)</div><div class="gthumbs" id="gthumbs"></div></div>
+    <div class="fgrid f3 o-kit"><label class="f">Kit<select id="gkit">${['home','away','third','gk','training'].map(k=>`<option ${g.kit===k?'selected':''} value="${k}">${k[0].toUpperCase()+k.slice(1)}</option>`).join('')}</select></label>
     <label class="f">Main colour<input id="gc1" type="color" value="${esc(g.c1||'#16244A')}"></label><label class="f">Trim colour<input id="gc2" type="color" value="${esc(g.c2||'#F28C28')}"></label></div>
-    <div class="fgrid g2"><label class="f">Quantity<input id="gqty" type="number" min="0" inputmode="numeric" value="${esc(g.qty??'')}"></label>
-    <label class="f">Colours (bibs etc.)<input id="gcols" value="${esc((g.colors||[]).join(' '))}" placeholder="#2F6FD6 #1E9A52 or blue green"></label></div>
+    <div class="fgrid f3 o-trophy"><label class="f">Result<select id="gplace">${[['champ','🏆 Winners'],['runner','🥈 Runners-up'],['third','🥉 Third'],['award','🎖️ Award']].map(([k,l])=>`<option value="${k}" ${(g.place||'champ')===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label class="f">Year<input id="gyear" inputmode="numeric" maxlength="4" value="${esc(g.year||'')}"></label>
+    <label class="f">Tournament<select id="gtourn"><option value="">None</option>${past.map(t=>`<option value="${t.id}" ${g.tourn===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label></div>
+    <div class="fgrid g2 o-qty"><label class="f">Quantity<input id="gqty" type="number" min="0" inputmode="numeric" value="${esc(g.qty??'')}"></label>
+    <label class="f o-cols">Colours<input id="gcols" value="${esc((g.colors||[]).join(' '))}" placeholder="blue green #F28C28"></label></div>
     <label class="f">Notes<input id="gdesc" maxlength="120" value="${esc(g.desc||'')}" placeholder="Sizes, sponsor, where it's stored…"></label>
-    <div class="row"><label class="btn" for="gimg">${g.img?'Change photo':'Add photo'}</label><input type="file" id="gimg" accept="image/*" hidden data-a="gearphoto"><span class="small muted" id="gimgmsg">${g.img?'Photo added':'Optional. Without a photo, kits are drawn in your colours.'}</span></div>
-    <div class="row"><button class="btn primary" data-a="gearsave" data-id="${id||''}">Save</button>${id?`<button class="btn danger" data-a="geardel" data-id="${id}" style="margin-left:auto">Delete</button>`:''}</div></div>`)}
+    <div class="row"><button class="btn primary" data-a="gearsave" data-id="${id||''}">Save</button>${id?`<button class="btn danger" data-a="geardel" data-id="${id}" style="margin-left:auto">Delete</button>`:''}</div></div>`);gThumbs()}
+function gThumbs(){const el=$('#gthumbs');if(!el)return;el.innerHTML=pendGear.map((u,i)=>`<span class="gth"><img src="${u}" alt=""><button type="button" data-a="gimgdel" data-i="${i}" aria-label="Remove photo">✕</button>${i?`<button type="button" class="gfirst" data-a="gimgfirst" data-i="${i}" aria-label="Show first">★</button>`:''}</span>`).join('')+(pendGear.length<4?`<label class="gth gadd" for="gimg">＋<small>Add photo</small></label><input type="file" id="gimg" accept="image/*" multiple hidden data-a="gearphoto">`:'')}
 let pendGear,pendPS={};
 function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};img.onerror=()=>res(null);img.src=u})}
 
@@ -1859,20 +1911,25 @@ function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObje
 let tSel=null,tPoll={},lastTShare=null;
 function vTourn(){if(tSel&&S.tourns.find(t=>t.id===tSel))return vTournOne(S.tourns.find(t=>t.id===tSel));
   const up=S.tourns.filter(t=>t.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1),past=S.tourns.filter(t=>t.date<todayISO()).sort((a,b)=>a.date<b.date?1:-1);
-  const row=t=>`<button class="panel trow" data-a="topen" data-id="${t.id}"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.venue?' · '+esc(t.venue):''} · ${ruleTxt(t)}</div></div><div class="small">${t.place?placeTxt(t.place):`${(t.squad||[]).length} picked`}${t.status==='draft'?' · <span class="pill meh">hidden</span>':''}</div></button>`;
-  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Tournaments</h2><button class="btn primary" data-a="tnew">＋ New tournament</button></div>
-    <p class="small muted">Build one squad from the whole club for tournaments against other clubs. Set an age rule, open an availability link for eligible players, pick the squad, then record results. Players see it all in their portal.</p>
+  const row=t=>`<button class="panel trow" data-a="topen" data-id="${t.id}"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.venue?' · '+esc(t.venue):''} · ${ruleTxt(t)}</div></div><div class="small">${t.place?placeTxt(t.place):`${(t.squad||[]).length} picked`} · ${t.status==='draft'?'<span class="pill meh">🔒 Not published</span>':`<span class="pill ok">🌐 ${({club:'Club',squad:'Squad',pick:'Chosen'})[t.see||'club']}</span>`}</div></button>`;
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Tournaments</h2><div class="row" style="gap:6px"><button class="btn" data-a="tnewpast">＋ Past tournament</button><button class="btn primary" data-a="tnew">＋ New tournament</button></div></div>
+    <p class="small muted">Build one squad from the whole club for tournaments against other clubs. Set an age rule, open an availability link, pick the squad, then record results. Add past tournaments too: squad, opponents and scores. Nothing shows in the player portal until you publish it, and you choose who can see each one.</p>
     <h3>Upcoming</h3>${up.map(row).join('')||'<div class="panel small muted">No upcoming tournaments.</div>'}
     <h3>Past</h3>${past.map(row).join('')||'<div class="panel small muted">None yet.</div>'}`}
-function tDetailsModal(t){t=t||{name:'',date:nextSat(),time:'',venue:'',format:'',size:10,rule:{type:'open'},status:'live'};const r=t.rule||{};
-  openModal(`<div class="mh"><h2>${t.id?'Tournament details':'New tournament'}</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
+const TSEE=[['draft','🔒 Hidden (managers only)'],['club','Whole club'],['squad','Squad only'],['pick','Chosen players']];
+const tSeeKey=t=>t.status==='draft'?'draft':(t.see||'club');
+// past tournaments default to squad-only once published; upcoming ones to the whole club (so eligible players can answer)
+const tSeeVal=(v,old,date)=>v==='draft'?{status:'draft',see:old?.see||((date||'')<todayISO()?'squad':'club')}:{status:'live',see:v,seeIds:v==='pick'&&!(old?.seeIds||[]).length?[...(old?.squad||[])]:(old?.seeIds||[])};
+const tSeeTxt=t=>({draft:'Hidden from players',club:'Visible to the whole club',squad:'Visible to the squad only',pick:`Visible to ${(t.seeIds||[]).length} chosen players`})[tSeeKey(t)];
+function tDetailsModal(t){t=t||{name:'',date:nextSat(),time:'',venue:'',format:'',size:10,rule:{type:'open'},status:'draft',see:'club'};const r=t.rule||{};
+  openModal(`<div class="mh"><h2>${t.id?'Tournament details':t.past?'Add a past tournament':'New tournament'}</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
     <label class="f">Name<input id="tn" value="${esc(t.name)}" placeholder="e.g. Calgary Cup 2027"></label>
-    <div class="fgrid f3"><label class="f">Date<input id="td" type="date" value="${esc(t.date)}"></label><label class="f">Time<input id="tt" value="${esc(t.time||'')}" placeholder="9:00 AM"></label><label class="f">Squad size<input id="tsz" type="number" min="5" max="25" value="${+t.size||10}"></label></div>
+    <div class="fgrid f3"><label class="f">Date<input id="td" type="date" value="${esc(t.date)}" ${t.past?`max="${todayISO()}"`:''}></label><label class="f">Time<input id="tt" value="${esc(t.time||'')}" placeholder="9:00 AM"></label><label class="f">Squad size<input id="tsz" type="number" min="5" max="40" value="${+t.size||10}"></label></div>
     <div class="fgrid g2"><label class="f">Venue<input id="tv" value="${esc(t.venue||'')}"></label><label class="f">Format<input id="tf" value="${esc(t.format||'')}" placeholder="7-a-side, 2×15 min"></label></div>
     <div class="fgrid f3"><label class="f">Age rule<select id="tr">${[['open','Open (any age)'],['min','Minimum age'],['max','Maximum age'],['range','Between two ages']].map(([k,l])=>`<option value="${k}" ${(r.type||'open')===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <label class="f">Min age<input id="tmin" type="number" min="5" max="80" value="${esc(r.min??'')}"></label><label class="f">Max age<input id="tmax" type="number" min="5" max="80" value="${esc(r.max??'')}"></label></div>
     <label class="f">Age counted on<input id="tas" type="date" value="${esc(r.asOf||'')}"><span class="small muted">Leave empty to use the tournament date.</span></label>
-    <label class="small row chk"><input type="checkbox" id="tpub" ${t.status!=='draft'?'checked':''}> Show to players in their portal</label>
+    <label class="f">Who can see it in the player portal<select id="tsee">${TSEE.map(([k,l])=>`<option value="${k}" ${tSeeKey(t)===k?'selected':''}>${l}</option>`).join('')}</select><span class="small muted">Hidden until you publish. For “Chosen players”, tick them on the tournament page.</span></label>
     <div class="row"><button class="btn primary" data-a="tsave" data-id="${t.id||''}">Save</button>${t.id?`<button class="btn danger" data-a="tdel" data-id="${t.id}" style="margin-left:auto">Delete tournament</button>`:''}</div></div>`)}
 async function loadTPoll(t){if(!t.poll||cloud!=='supa')return;const k=t.poll;if(tPoll[k]?.loading)return;tPoll[k]={loading:true,rs:{}};
   const [a,b]=await Promise.all([supa.from('atb_polls').select('open').eq('id',k).maybeSingle(),supa.from('atb_rsvp').select('player_id,status').eq('poll_id',k)]);
@@ -1883,7 +1940,7 @@ function tAutoPick(t){const pool=S.players.filter(p=>!p.guest&&p.active!==false&
   ['DEF','MID','FWD'].forEach(pos=>pool.filter(p=>p.pos===pos&&rsIn(p.id)).slice(0,want[pos]).forEach(p=>pick.push(p.id)));
   pool.forEach(p=>{if(pick.length<n&&!pick.includes(p.id)&&(rsIn(p.id)||!t.poll))pick.push(p.id)});pool.forEach(p=>{if(pick.length<n&&!pick.includes(p.id))pick.push(p.id)});return pick}
 function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);const P=t.poll?tPoll[t.poll]:null,rs=P?.rs||{};
-  const squad=(t.squad||[]).filter(pById),all=S.players.filter(p=>!p.guest&&p.active!==false);
+  const squad=(t.squad||[]).filter(pById),all=S.players.filter(p=>!p.guest&&p.active!==false),inact=S.players.filter(p=>!p.guest&&p.active===false),isPast=t.date<todayISO();
   const el=all.filter(p=>eligible(t,p)===true),unk=all.filter(p=>eligible(t,p)===null),no=all.filter(p=>eligible(t,p)===false);
   const ans=id=>rs[id]==='in'?'<span class="pill ok">In</span>':rs[id]==='out'?'<span class="pill bad">Out</span>':t.poll?'<span class="pill">–</span>':'';
   const prow=(p,warn)=>{const on=squad.includes(p.id),a=ageAt(p.dob,(t.rule||{}).asOf||t.date);return `<button class="tp${on?' on':''}" data-a="tpick" data-id="${p.id}"><span class="ck">${on?'✓':''}</span><span class="pos ${p.pos}">${p.pos}</span><b>${esc(p.name)}</b><span class="small muted">${a==null?'no DOB':a+' yrs'}</span>${ans(p.id)}${warn?`<span class="pill meh">${warn}</span>`:''}<span class="num o">${rv(R(p.id).ovr)}</span></button>`};
@@ -1891,14 +1948,18 @@ function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);c
   const lu=getLU(squad,t.lu);const g=t.games||[],rec=tRecord(t),mix={DEF:0,MID:0,FWD:0};squad.forEach(id=>mix[posOf(id)]++);
   return `<button class="btn ghost small" data-a="tback">← All tournaments</button>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:8px"><div><h2 style="margin:0">${esc(t.name)}</h2><div class="small muted">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}${t.format?' · '+esc(t.format):''}</div>
-    <div style="margin-top:6px"><span class="pill">${ruleTxt(t)}</span> ${t.status==='draft'?'<span class="pill meh">Hidden from players</span>':'<span class="pill ok">Visible to players</span>'}</div></div><button class="btn" data-a="tedit" data-id="${t.id}">Edit details</button></div>
-  <h3 class="tsh">1 · Availability</h3><div class="panel stack">${t.poll?`<div class="row"><b>${Object.values(rs).filter(x=>x==='in').length} in · ${Object.values(rs).filter(x=>x==='out').length} out</b> <span class="small muted">of ${el.length+unk.length+(t.extras||[]).length} asked</span>${P?.open===false?'<span class="pill">Closed</span>':''}</div>
+    <div style="margin-top:6px"><span class="pill">${ruleTxt(t)}</span>${isPast?' <span class="pill">Past tournament</span>':''}</div></div><button class="btn" data-a="tedit" data-id="${t.id}">Edit details</button></div>
+  <div class="panel tpub${t.status==='draft'?'':' live'}"><div class="tpubh"><div><b>${t.status==='draft'?'🔒 Not published':'🌐 Published'}</b><div class="small muted">${tSeeTxt(t)}${t.status==='draft'?'. Players can’t see it yet.':''}</div></div>
+      <label class="f">Who can see it<select data-a="tsee" data-id="${t.id}">${TSEE.map(([k,l])=>`<option value="${k}" ${tSeeKey(t)===k?'selected':''}>${l}</option>`).join('')}</select></label>
+      ${t.status==='draft'?`<button class="btn primary" data-a="tpublish" data-id="${t.id}">Publish</button>`:`<button class="btn ghost" data-a="tunpub" data-id="${t.id}">Unpublish</button>`}</div>
+    ${(t.see==='pick')?`<div class="small muted">${t.status==='draft'?'When published, only these players will see it':'Only these players can see it'} (tap to add or remove):</div><div class="chips tseel">${S.players.filter(p=>!p.guest).sort((a,b)=>(squad.includes(b.id)-squad.includes(a.id))||a.name.localeCompare(b.name)).map(p=>`<button class="chip" aria-pressed="${(t.seeIds||[]).includes(p.id)}" data-a="tseeid" data-id="${p.id}" data-t="${t.id}">${esc(p.name)}${squad.includes(p.id)?' ·  squad':''}</button>`).join('')}</div>${squad.length?`<div class="row"><button class="btn small ghost" data-a="tseesq" data-id="${t.id}">Add the whole squad</button></div>`:''}`:''}</div>
+  ${isPast&&!t.poll?`<h3 class="tsh">1 · Availability</h3><div class="panel small muted">Past tournament, so no availability link. Tick who played in step 2.</div>`:`<h3 class="tsh">1 · Availability</h3><div class="panel stack">${t.poll?`<div class="row"><b>${Object.values(rs).filter(x=>x==='in').length} in · ${Object.values(rs).filter(x=>x==='out').length} out</b> <span class="small muted">of ${el.length+unk.length+(t.extras||[]).length} asked</span>${P?.open===false?'<span class="pill">Closed</span>':''}</div>
       <div class="row"><button class="btn primary" data-a="tcopy" data-id="${t.id}">Copy WhatsApp message</button><button class="btn" data-a="trefresh" data-id="${t.id}">Refresh</button><button class="btn ghost" data-a="${P?.open===false?'topenlink':'tcloselink'}" data-id="${t.id}">${P?.open===false?'Reopen link':'Close link'}</button></div>`
-    :`<p class="small muted" style="margin:0">Opens a link for eligible players${(t.extras||[]).length?' plus the ones you added':''}. Players without a date of birth are included so they can answer; ask them to add it in their portal.</p><div class="row"><button class="btn primary" data-a="tlink" data-id="${t.id}">Open availability link</button></div>`}</div>
-  <h3 class="tsh">2 · Pick the squad <span class="small muted">${squad.length}/${+t.size||10} · ${mix.DEF} DEF · ${mix.MID} MID · ${mix.FWD} FWD</span></h3>
+    :`<p class="small muted" style="margin:0">Opens a link for eligible players${(t.extras||[]).length?' plus the ones you added':''}. Players without a date of birth are included so they can answer; ask them to add it in their portal.</p><div class="row"><button class="btn primary" data-a="tlink" data-id="${t.id}">Open availability link</button></div>`}</div>`}
+  <h3 class="tsh">2 · ${isPast?'Who played':'Pick the squad'} <span class="small muted">${squad.length}/${+t.size||10} · ${mix.DEF} DEF · ${mix.MID} MID · ${mix.FWD} FWD</span></h3>
   <div class="row" style="margin-bottom:8px"><button class="btn" data-a="tauto" data-id="${t.id}">Auto-pick best available</button>${squad.length?`<button class="btn ghost" data-a="tclear" data-id="${t.id}">Clear</button>`:''}
     <label class="small">Captain <select data-a="tcapt" data-id="${t.id}"><option value="">None</option>${squad.map(id=>`<option value="${id}" ${t.captain===id?'selected':''}>${esc(pById(id).name)}</option>`).join('')}</select></label></div>
-  <div class="panel tlist">${ord(el).map(p=>prow(p)).join('')}${unk.length?`<div class="small muted tsep">No date of birth yet</div>${ord(unk).map(p=>prow(p,'check age')).join('')}`:''}${no.length?`<div class="small muted tsep">Not eligible by age: tap to add anyway</div>${ord(no).map(p=>prow(p,'age rule')).join('')}`:''}</div>
+  <div class="panel tlist">${ord(el).map(p=>prow(p)).join('')}${unk.length?`<div class="small muted tsep">No date of birth yet</div>${ord(unk).map(p=>prow(p,'check age')).join('')}`:''}${no.length?`<div class="small muted tsep">Not eligible by age: tap to add anyway</div>${ord(no).map(p=>prow(p,'age rule')).join('')}`:''}${inact.length?`<div class="small muted tsep">Inactive players (for past tournaments)</div>${ord(inact).map(p=>prow(p,'inactive')).join('')}`:''}</div>
   ${squad.length?`<h3 class="tsh">3 · Line-up</h3><div class="row" style="margin-bottom:8px"><label class="small">Formation <select data-a="tform" data-id="${t.id}">${formOpts(squad,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
       <label class="small row chk"><input type="checkbox" data-a="tgk" data-id="${t.id}" ${lu.gk?'checked':''}> Keeper</label><button class="btn" data-a="tshare" data-id="${t.id}">Share squad</button></div>
     <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,false,t.name)}</div>`:''}
@@ -1936,8 +1997,40 @@ const PSTYLES=[['Finishing',[['🎯','Finesse Shot',{sho:78}],['💥','Power Sho
   ['Ball control',[['✨','Technical',{bal:78}],['🧲','First Touch',{bal:82}],['🎩','Trickster',{bal:80,spd:78}],['🛡️','Press Proven',{bal:76,str:76}]]],
   ['Physical',[['⚡','Rapid',{spd:82}],['👟','Quick Step',{spd:78}],['🔥','Relentless',{sta:80,min:78}],['🦾','Bruiser',{str:82}],['🪖','Enforcer',{str:78,def:75}]]],
   ['Team',[['🤝','Team Player',{tea:80}],['©️','Leader',{min:82,tea:76}],['🔋','Engine',{sta:84}]]]];
+const BALL='<circle cx="12" cy="12" r="4.2"/><path d="M12 9.6l1.9 1.4-.7 2.2h-2.4l-.7-2.2z" fill="currentColor" stroke="none"/>';
+const PSICON={
+ 'Finesse Shot':'<path d="M4 19c2-9 8-13 15-13"/><path d="M15 3.5l4 2.5-3 3.6"/><circle cx="4.5" cy="19.5" r="1.8" fill="currentColor" stroke="none"/>',
+ 'Power Shot':'<circle cx="16" cy="12" r="4.2"/><path d="M2.5 8h7M1.5 12h8M2.5 16h7"/>',
+ 'Chip Shot':'<path d="M3 20c3-13 13-13 18 0"/><path d="M8 20h8M12 15v5"/><circle cx="12" cy="7" r="2" fill="currentColor" stroke="none"/>',
+ 'Low Driven':'<path d="M2 19h20"/><path d="M3 15h14"/><path d="M14 11.5l4 3.5-4 3.5"/>',
+ 'Incisive Pass':'<path d="M5 3v7M5 14v7M19 3v7M19 14v7"/><path d="M1.5 12h19"/><path d="M17 8.5l3.5 3.5-3.5 3.5"/>',
+ 'Tiki Taka':'<circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6.3 15 10.7 6.8M13.3 6.8 17.7 15M7 17h10"/>',
+ 'Pinged Pass':'<path d="M2 12h14"/><path d="M12 8l4 4-4 4"/><circle cx="19.5" cy="12" r="2.5"/>',
+ 'Long Ball':'<path d="M2 20C5 5 17 5 21 17"/><path d="M17.5 15.5l3.5 2 1-4"/>',
+ 'Whipped Pass':'<path d="M3 18c4 0 5-12 11-12 3 0 5 2 6 4"/><path d="M16.5 10.5 20 10l.2-3.6"/>',
+ 'Jockey':'<path d="M3 12h18"/><path d="M6.5 8.5 3 12l3.5 3.5M17.5 8.5 21 12l-3.5 3.5"/><circle cx="12" cy="6" r="2"/><path d="M12 8v8"/>',
+ 'Block':'<path d="M12 2.5 20 6v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M8 12h8M12 8v8"/>',
+ 'Intercept':'<path d="M2 17 22 7"/><path d="M12 3v18"/><path d="M9 6l3-3 3 3"/>',
+ 'Anticipate':'<path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>',
+ 'Slide Tackle':'<path d="M3 19h18"/><path d="M4 16l9-4 4 2"/><circle cx="7" cy="8" r="2"/><circle cx="19.5" cy="15" r="2" fill="currentColor" stroke="none"/>',
+ 'Technical':BALL+'<path d="M12 3a9 9 0 0 1 9 9M12 21a9 9 0 0 1-9-9"/><path d="M19 9.5l2 2.5 2.5-2M5 14.5 3 12 .5 14"/>',
+ 'First Touch':BALL+'<path d="M12 2v3.5M12 18.5V22M2 12h3.5M18.5 12H22"/>',
+ 'Trickster':BALL+'<path d="M4 4l2.5 2.5M20 4l-2.5 2.5M4 20l2.5-2.5M20 20l-2.5-2.5"/><path d="M12 1.5l1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2-1.5-1.4 2-.3z" fill="currentColor" stroke="none"/>',
+ 'Press Proven':BALL+'<path d="M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/><path d="M2.5 8.5 5 5l3 2.2M21.5 8.5 19 5l-3 2.2"/>',
+ 'Rapid':'<path d="M13.5 2 5 13.5h6L9.5 22 19 9.5h-6z" fill="currentColor" stroke="none"/>',
+ 'Quick Step':'<path d="M4 6l6 6-6 6M12 6l6 6-6 6"/>',
+ 'Relentless':'<path d="M12 12c-2.5-3.5-4-4.5-6-4.5a4.5 4.5 0 0 0 0 9c2 0 3.5-1 6-4.5s4-4.5 6-4.5a4.5 4.5 0 0 1 0 9c-2 0-3.5-1-6-4.5z"/>',
+ 'Bruiser':'<path d="M6 11V7.5a1.5 1.5 0 0 1 3 0V11M9 10V6a1.5 1.5 0 0 1 3 0v4M12 10V6.5a1.5 1.5 0 0 1 3 0V11M15 11V8.5a1.5 1.5 0 0 1 3 0V14c0 4-2.5 7-6.5 7S6 18.5 6 15v-4"/>',
+ 'Enforcer':'<path d="M3 13a9 9 0 0 1 18 0v2H3z"/><path d="M12 4v11M2 18h20"/>',
+ 'Team Player':'<circle cx="8" cy="8" r="2.6"/><circle cx="16" cy="8" r="2.6"/><path d="M2.5 19c0-3.5 2.5-5.5 5.5-5.5s5.5 2 5.5 5.5M10.5 19c0-3.5 2.5-5.5 5.5-5.5s5.5 2 5.5 5.5"/>',
+ 'Leader':'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M15 9.2a3.6 3.6 0 1 0 0 5.6"/>',
+ 'Engine':'<path d="M2 12h4l2-5 3.5 10 2.5-7 1.5 2H22"/>'};
+const psIcon=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PSICON[n]||BALL}</svg>`;
+const psEdBtn=(n,o,au)=>{const on=o===true||(o===undefined&&au);return `<button type="button" class="pse${on?' on':''}${o===true?' give':''}${o===false?' take':''}" data-a="psset" data-n="${esc(n)}" data-au="${au?1:0}">${psBadge(n,on?'on':'')}<b>${esc(n)}</b><i>${o===true?'✓ Awarded':o===false?'✕ Removed':au?'Auto · earned':S.settings.psAuto!==false?'Auto · not earned':'Not awarded'}</i></button>`};
+// FC-style badge; st: '' (greyed), 'on' (awarded), 'plus' (elite)
+const psBadge=(n,st)=>`<span class="psb${st?' '+st:''}">${psIcon(n)}</span>`;
 const psAuto=(a,req)=>Object.entries(req).every(([k,v])=>a[k]>=v);
-let psCur=null;const psEarned=(a,req,name)=>{const o=psCur?.[name];return o===true?true:o===false?false:psAuto(a,req)};const psPlus=(a,req)=>Object.entries(req).every(([k,v])=>a[k]>=Math.max(88,v+8));
+let psCur=null;const psEarned=(a,req,name)=>{const o=psCur?.[name];return o===true?true:o===false?false:S.settings.psAuto!==false&&psAuto(a,req)};const psPlus=(a,req)=>Object.entries(req).every(([k,v])=>a[k]>=Math.max(88,v+8));
 const PSTYLE={pas:['🎯','Tiki Taka'],sho:['💥','Power Shot'],def:['🛡️','Intercept'],bal:['✨','Technical'],min:['🔥','Relentless'],tea:['🤝','Press Proven'],spd:['⚡','Rapid'],sta:['🔋','Engine'],str:['🦾','Bruiser']};
 const PITCHFULL=`<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true">${[...Array(11)].map((_,i)=>`<rect y="${i*30}" width="300" height="30" fill="${i%2?'#2C7A36':'#338A3E'}"/>`).join('')}<g fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4"><rect x="8" y="8" width="284" height="314"/><path d="M8 165H292"/><circle cx="150" cy="165" r="34"/><rect x="80" y="8" width="140" height="52"/><rect x="80" y="270" width="140" height="52"/></g></svg>`;
 const FCGROUPS=[['Pace',['spd']],['Shooting',['sho']],['Passing',['pas','tea']],['Dribbling',['bal','min']],['Defending',['def']],['Physical',['str','sta']]];
@@ -1959,7 +2052,7 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
           <div><i>Foot</i><b>${esc(p.foot||'–')}</b></div><div><i>Height</i><b>${p.height?esc(p.height)+' cm':'–'}</b></div><div><i>Skills</i><b class="stars">${star(+p.skills)}</b></div><div><i>Weak foot</i><b class="stars">${star(+p.wf)}</b></div>
           ${p.number?`<div><i>Shirt</i><b>#${esc(p.number)}</b></div>`:''}</div>
         <div class="ppnums"><div><b>${ms.length}</b><i>Apps</i></div><div><b>${g}</b><i>Goals</i></div><div><b>${as}</b><i>Assists</i></div><div><b>${potm}</b><i>POTM</i></div><div><b>${tr.length}</b><i>Tournaments</i></div><div><b>${tr.filter(x=>x.place==='champ').length}</b><i>Titles</i></div></div></div></div>
-    <div class="psgrid"><b>PlayStyles</b><span class="small muted">${earned.length} unlocked. Lit = earned (from match ratings or awarded by the managers), ＋ = elite.</span>${PSTYLES.map(([cat,l])=>`<div class="psrow"><i>${cat}</i><div>${l.map(x=>{const on=psEarned(a,x[2],x[1]),pl=on&&psPlus(a,x[2]);return `<div class="pst${on?' on':''}${pl?' plus':''}" title="${esc(x[1])}: needs ${Object.entries(x[2]).map(([k,v])=>KL[k]+' '+v+'+').join(', ')}"><span>${x[0]}</span><small>${x[1]}${pl?'+':''}</small></div>`}).join('')}</div></div>`).join('')}</div>
+    <div class="psgrid"><div class="gh2"><b>PlayStyles</b><span class="small muted">${earned.length} of ${PSTYLES.flatMap(([,l])=>l).length} awarded</span></div>${PSTYLES.map(([cat,l])=>`<div class="psrow"><i>${cat}</i><div>${l.map(x=>{const on=psEarned(a,x[2],x[1]),pl=on&&psPlus(a,x[2]);return `<div class="psx${on?' on':''}" title="${esc(x[1])}${on?' · awarded':' · not awarded yet'}">${psBadge(x[1],on?(pl?'plus':'on'):'')}<small>${x[1]}${pl?'+':''}</small></div>`}).join('')}</div></div>`).join('')}<p class="small muted" style="margin:2px 0 0">Coloured = awarded by the managers${S.settings.psAuto!==false?' or earned from match ratings':''}. Grey = not yet. Gold = elite (＋).</p></div>
     <div class="ppgrid">
       <div class="ppstats">${FCGROUPS.map(([nm,ks])=>{const gv=Math.round(ks.reduce((n,k)=>n+a[k],0)/ks.length);return `<div class="fcg"><div class="gh2"><b>${nm}</b><b class="num ${gv>=80?'hi':gv>=70?'md':'lo'}">${v(gv)}</b></div><div class="pbar"><i style="width:${show?gv:50}%"></i></div>${ks.map(k=>`<div class="sub"><span>${esc(KL[k])}</span><b class="num ${a[k]>=80?'hi':a[k]>=70?'md':'lo'}">${v(a[k])}</b></div>`).join('')}</div>`}).join('')}</div>
       <div class="pprpp"><b>Rating per position</b><div class="rpp">${PITCHFULL}${Object.entries(PP).map(([pos,[x,y]])=>`<span class="rp${pos===best&&show?' best':''}" style="left:${x}%;top:${y}%"><small>${pos}</small>${v(PR[pos])}</span>`).join('')}</div></div>
@@ -1974,9 +2067,9 @@ function closeModal(){document.documentElement.style.overflow='';document.body.c
 function playerModal(id){pendPhoto=undefined;
   const p=id?pById(id):{id:'',name:'',pos:'MID',base:Object.fromEntries(K.map(k=>[k,7])),baseN:0,active:true};
   const r=id?R(id):null;
-  openModal(`<div class="mh"><h2>${id?esc(p.name):'New player'}</h2><button class="btn ghost x" data-a="close">Close</button></div>${id?`<div class="row" style="justify-content:center;margin-bottom:6px"><button class="btn small" data-a="ppage" data-id="${id}">📄 Open player page</button></div>`:''}
+  openModal(`<div class="mh"><h2>${id?esc(p.name):'New player'}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="stack">
-    <div class="pphoto">${id?`<div class="cardprev">${cardHTML(p,{btn:false})}</div>`:''}<div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}<span class="small muted" style="flex-basis:100%">Best photo: head and shoulders, facing the camera, plain background, good light, at least 800 × 800 px. You’ll position it in a frame before saving.</span></div></div>
+    <div class="pphoto">${id?`<div class="cardprev">${cardHTML(p,{btn:false})}</div>`:''}<div class="face" id="pface">${face(p)}</div><div class="row">${id?`<button class="btn primary" data-a="ppage" data-id="${id}">📄 Player page</button>`:''}<label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}<span class="small muted" style="flex-basis:100%">Best photo: head and shoulders, facing the camera, plain background, good light, at least 800 × 800 px. You’ll position it in a frame before saving.</span></div></div>
     <label class="f">Name<input id="pn" value="${esc(p.name)}" autocomplete="off"></label>
     <div class="fgrid g2"><label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
     <label class="f">Shirt no.<input id="pno" inputmode="numeric" maxlength="2" value="${esc(p.number||'')}"></label>
@@ -1990,8 +2083,8 @@ function playerModal(id){pendPhoto=undefined;
     <div class="row" style="gap:18px"><label class="small row chk"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
     <label class="small row chk"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
-    ${id?(()=>{const a=Object.fromEntries(K.map(k=>[k,Math.round((R(id).a[k]||7)*10)]));pendPS={...(p.ps||{})};return `<h3>PlayStyles</h3><p class="small muted" style="margin:0">Tap to cycle: <b>Auto</b> (earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>. Players can’t change these.</p>
-      <div class="psed">${PSTYLES.flatMap(([,l])=>l).map(x=>{const o=pendPS[x[1]],au=psAuto(a,x[2]);return `<button type="button" class="pse ${o===true?'give':o===false?'take':au?'auto on':'auto'}" data-a="psset" data-n="${esc(x[1])}" data-au="${au?1:0}"><span>${x[0]}</span>${esc(x[1])}<i>${o===true?'✓ Awarded':o===false?'✕ Removed':au?'Auto · earned':'Auto'}</i></button>`}).join('')}</div>`})():''}
+    ${id?(()=>{const a=Object.fromEntries(K.map(k=>[k,Math.round((R(id).a[k]||7)*10)]));pendPS={...(p.ps||{})};return `<h3>PlayStyles</h3><p class="small muted" style="margin:0">${S.settings.psAuto!==false?'Tap to cycle: <b>Auto</b> (lit when earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>.':'Tap to award (✓) or take away. Auto-awarding is off in Settings.'} Only coloured ones show as awarded. Players can’t change these.</p>
+      <div class="psed">${PSTYLES.flatMap(([,l])=>l).map(x=>{const o=pendPS[x[1]],au=S.settings.psAuto!==false&&psAuto(a,x[2]);return psEdBtn(x[1],o,au)}).join('')}</div>`})():''}
     <h3>${id?'Starting ratings':'Starting ratings (1–10)'}</h3>
     <p class="small muted" style="margin:0">${id&&p.baseN?`From ${p.baseN} matches last season. `:''}Match ratings you enter later are averaged on top of these.</p>
     ${id&&hideR?'<p class="small muted" style="margin:0">Ratings are hidden. Tap <b>🙈</b> in the header to see or edit them.</p>':`<div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="pb_${k}" value="${r1(p.base?.[k]??7)}"></label>`).join('')}</div>`}
@@ -2069,11 +2162,13 @@ const PITCH2=(()=>{const T=84,B=330,xl=y=>36-44*(y-T)/(B-T),xr=y=>300-xl(y);cons
   return `<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="330" fill="#FFFFFF"/>${bands}
   <g fill="none" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="1.3"><path d="M${xl(T)} ${T}H${xr(T)}L${xr(B)} ${B}H${xl(B)}Z"/><path d="M92 ${T}L89 116H211L208 ${T}"/><path d="M${xl(206)} 206H${xr(206)}"/><ellipse cx="150" cy="206" rx="44" ry="20"/><path d="M60 ${B}L68 268H232L240 ${B}"/></g></svg>`})();
 function pitchHTML(t,lu,ti,interactive,title){
-  const g=splitLU(lu);const Y=g.GK.length?{GK:87,DEF:67,MID:47,FWD:26}:{DEF:77,MID:52,FWD:26};const col=KITHEX[t.kit]||'#C9A227';const sel=draft.sel;
+  const g=splitLU(lu);const Y=g.GK.length?{GK:89,DEF:72,MID:55,FWD:37}:{DEF:80,MID:59,FWD:37};const col=KITHEX[t.kit]||'#C9A227';const sel=draft.sel;
   const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;const ph=p?.thumb||p?.photo;
     return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot${ph?'':' ini'}" style="--kc:${col}">${ph?`<img src="${ph}" alt="">`:`${SIL}<b>${esc(initials(p?.name))}</b>`}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${S.settings.pitchBadge==='club'?(p?.club&&CLUB[p.club]?`<span class="fg fgc">${clubBadge(p.club,'cb')}</span>`:''):p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
-  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?96:90)/Math.max(k,1));ids.forEach((id,i)=>{const x=k>=4?12+i*76/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-4:4):0);html+=tok(id,role,x,y,idx++,w)})}
+  // straight lines per formation row; x kept inside the grass at that depth (perspective edge + half a circle)
+  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role],k=ids.length,y=Y[role],edge=(36-44*(y*3.3-84)/246)/3,lo=Math.max(12,edge+9),sp=100-2*lo;
+    const w=k>=4?sp/(k-1):Math.min(30,sp/Math.max(k,1));ids.forEach((id,i)=>{const x=k>=4?lo+i*sp/(k-1):lo+sp*(i+.5)/k;html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   let rate='';if(interactive){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
@@ -2198,12 +2293,16 @@ document.addEventListener('click',async e=>{
     await putMatch(m);logAct('Took attendance',fmtDate(m.date)+(ns?` · ${ns} no-show`:'')+(lt?` · ${lt} late`:''));closeModal();toast(`Attendance saved${ns?` · ${ns} no-show${ns>1?'s':''}`:''}${lt?` · ${lt} late`:''}`);return}
   if(a==='pbadge'){S.settings.pitchBadge=el.dataset.v;await putSettings();render();return}
   if(a==='tnew'){tDetailsModal(null);return}
+  if(a==='tnewpast'){tDetailsModal({name:'',date:'',time:'',venue:'',format:'',size:10,rule:{type:'open'},status:'draft',see:'squad',past:true});return}
+  if(a==='tpublish'||a==='tunpub'){const t={...S.tourns.find(x=>x.id===id)};t.status=a==='tpublish'?'live':'draft';if(t.see==='pick'&&!(t.seeIds||[]).length)t.seeIds=[...(t.squad||[])];await putDoc('tournaments',id,t);logAct(a==='tpublish'?'Published tournament':'Unpublished tournament',t.name);toast(a==='tpublish'?'Published. '+tSeeTxt(t):'Hidden from players');return}
+  if(a==='tseeid'){const t={...S.tourns.find(x=>x.id===el.dataset.t)};const s=new Set(t.seeIds||[]);s.has(id)?s.delete(id):s.add(id);t.seeIds=[...s];await putDoc('tournaments',t.id,t);return}
+  if(a==='tseesq'){const t={...S.tourns.find(x=>x.id===id)};t.seeIds=[...new Set([...(t.seeIds||[]),...(t.squad||[])])];await putDoc('tournaments',id,t);return}
   if(a==='topen'){tSel=id;render();window.scrollTo(0,0);return}
   if(a==='tback'){tSel=null;render();return}
   if(a==='tedit'){tDetailsModal(S.tourns.find(t=>t.id===id));return}
-  if(a==='tsave'){const name=$('#tn').value.trim();if(!name){toast('Enter a name');return}const old=id?S.tourns.find(t=>t.id===id):null,nid=id||'t'+uid();
+  if(a==='tsave'){const name=$('#tn').value.trim();if(!name){toast('Enter a name');return}if(!$('#td').value){toast('Pick the date');return}const old=id?S.tourns.find(t=>t.id===id):null,nid=id||'t'+uid();
     const rule={type:$('#tr').value,min:$('#tmin').value===''?'':+$('#tmin').value,max:$('#tmax').value===''?'':+$('#tmax').value,asOf:$('#tas').value||''};
-    const t={...(old||{squad:[],games:[],stats:{}}),name:name.slice(0,60),date:$('#td').value||todayISO(),time:$('#tt').value.trim().slice(0,20),venue:$('#tv').value.trim().slice(0,60),format:$('#tf').value.trim().slice(0,40),size:Math.max(5,Math.min(25,+$('#tsz').value||10)),rule,status:$('#tpub').checked?'live':'draft'};
+    const t={...(old||{squad:[],games:[],stats:{}}),name:name.slice(0,60),date:$('#td').value||todayISO(),time:$('#tt').value.trim().slice(0,20),venue:$('#tv').value.trim().slice(0,60),format:$('#tf').value.trim().slice(0,40),size:Math.max(5,Math.min(40,+$('#tsz').value||10)),rule,...tSeeVal($('#tsee').value,old,$('#td').value)};
     await putDoc('tournaments',nid,t);logAct(id?'Edited tournament':'Created tournament',name);closeModal();tSel=nid;render();return}
   if(a==='tdel'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to delete';return}const t=S.tourns.find(x=>x.id===id);if(t?.poll)await supa.from('atb_polls').update({open:false}).eq('id',t.poll);await delDoc('tournaments',id);logAct('Deleted tournament',t?.name);closeModal();tSel=null;render();return}
   if(a==='tlink'){const t=S.tourns.find(x=>x.id===id);if(!t||cloud!=='supa')return;el.disabled=true;
@@ -2235,12 +2334,16 @@ document.addEventListener('click',async e=>{
       <label class="f">Home ground (outdoor)<input id="ch" value="${esc(c.home||'Bayview, Airdrie')}"></label><label class="f">Winter venue (indoor)<input id="ci" value="${esc(c.indoor||'Genesis Centre, Airdrie')}"></label>
       <div class="row"><button class="btn primary" data-a="clubsave">Save</button></div></div>`);return}
   if(a==='clubsave'){S.settings.club={name:$('#cn').value.trim().slice(0,40),founded:$('#cf').value.trim().slice(0,10),home:$('#ch').value.trim().slice(0,60),indoor:$('#ci').value.trim().slice(0,60)};await putSettings();closeModal();render();return}
-  if(a==='gearadd'){gearModal(null,el.dataset.v);return}
+  if(a==='gearadd'){gearModal(null,el.dataset.v,el.dataset.t);return}
+  if(a==='gearview'){gearView(id);return}
+  if(a==='gvsel'){const g=S.gear.find(x=>x.id===id);$('#gvimg').innerHTML=`<img src="${gImgs(g)[+el.dataset.i]}" alt="">`;document.querySelectorAll('.gvth button').forEach(b=>b.classList.toggle('on',b===el));return}
+  if(a==='gimgdel'){pendGear.splice(+el.dataset.i,1);gThumbs();return}
+  if(a==='gimgfirst'){const [x]=pendGear.splice(+el.dataset.i,1);pendGear.unshift(x);gThumbs();return}
   if(a==='gearedit'){gearModal(id);return}
   if(a==='gearsave'){const old=id?S.gear.find(x=>x.id===id):null,name=$('#gname').value.trim();if(!name){toast('Enter a name');return}
     const cols=$('#gcols').value.split(/[\s,]+/).filter(Boolean).map(c=>KITHEX[c.toLowerCase()]||c).filter(c=>/^#[0-9a-f]{3,8}$/i.test(c)||/^[a-z]+$/i.test(c)).slice(0,12);
-    const g={...(old||{order:S.gear.length}),cat:$('#gcat').value,name:name.slice(0,50),kit:$('#gkit').value,c1:$('#gc1').value,c2:$('#gc2').value,qty:$('#gqty').value===''?'':Math.max(0,+$('#gqty').value),colors:cols,desc:$('#gdesc').value.trim().slice(0,120)};
-    if(pendGear!==undefined)g.img=pendGear;await putDoc('gear',id||'g'+uid(),g);logAct(id?'Edited equipment':'Added equipment',name);closeModal();return}
+    const g={...(old||{order:S.gear.length}),cat:$('#gcat').value,name:name.slice(0,50),kit:$('#gkit').value,c1:$('#gc1').value,c2:$('#gc2').value,qty:$('#gqty').value===''?'':Math.max(0,+$('#gqty').value),colors:cols,desc:$('#gdesc').value.trim().slice(0,120),
+      place:$('#gplace').value,year:$('#gyear').value.replace(/\D/g,'').slice(0,4),tourn:$('#gtourn').value,imgs:pendGear.slice(0,4)};delete g.img;await putDoc('gear',id||'g'+uid(),g);logAct(id?'Edited equipment':'Added equipment',name);closeModal();return}
   if(a==='geardel'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to delete';return}await delDoc('gear',id);closeModal();return}
   if(a==='hider'){hideR=!hideR;ls('atb_hide',hideR?1:0);applyHide();render();toast(hideR?'Ratings hidden':'Ratings visible');return}
   if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
@@ -2293,8 +2396,8 @@ document.addEventListener('click',async e=>{
   if(a==='addp'){playerModal(null);return}
   if(a==='editp'){playerModal(id);return}
   if(a==='ppage'){playerPage(id);return}
-  if(a==='psset'){const n=el.dataset.n,o=pendPS[n],au=el.dataset.au==='1';const nx=o===undefined?true:o===true?false:undefined;if(nx===undefined)delete pendPS[n];else pendPS[n]=nx;
-    el.className='pse '+(nx===true?'give':nx===false?'take':au?'auto on':'auto');el.querySelector('i').textContent=nx===true?'✓ Awarded':nx===false?'✕ Removed':au?'Auto · earned':'Auto';return}
+  if(a==='psset'){const n=el.dataset.n,o=pendPS[n],au=el.dataset.au==='1';const nx=S.settings.psAuto===false?(o===true?undefined:true):o===undefined?true:o===true?false:undefined;if(nx===undefined)delete pendPS[n];else pendPS[n]=nx;
+    el.outerHTML=psEdBtn(n,nx,au);return}
   if(a==='pview'){startPreview(id);return}
   if(a==='psout'){await loadAcc(id,true);toast('Signed out on every device');return}
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
@@ -2318,7 +2421,9 @@ document.addEventListener('change',async e=>{
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);if(k==='autoLink'&&el.checked)S.settings.appUrl=location.origin+location.pathname.replace(/[^/]*$/,'');if(k==='maxPlayers')syncOpenPolls();await putSettings();return}
   if(a==='tcapt'||a==='tform'||a==='tgk'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===el.dataset.id)));const sq=(t.squad||[]).filter(pById);
     if(a==='tcapt')t.captain=el.value;if(a==='tform'){const lu=getLU(sq,t.lu);t.lu={f:el.value,gk:lu.gk}}if(a==='tgk')t.lu={gk:el.checked};await putDoc('tournaments',t.id,t);return}
-  if(a==='gearphoto'){const f=el.files[0];if(!f)return;pendGear=await resizeImg(f);$('#gimgmsg').textContent=pendGear?'Photo ready. Press Save':'Could not read that photo';return}
+  if(a==='gearphoto'){for(const f of [...el.files].slice(0,4-pendGear.length)){const u=await resizeImg(f,640);if(u)pendGear.push(u)}gThumbs();return}
+  if(a==='gcat'){$('#gm').className='stack gm c-'+el.value;return}
+  if(a==='tsee'){const t={...S.tourns.find(x=>x.id===el.dataset.id)};Object.assign(t,tSeeVal(el.value,t,t.date));await putDoc('tournaments',t.id,t);logAct('Tournament visibility',t.name+': '+tSeeTxt(t));return}
   if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
   if(a==='ntfen'){const {error}=await supa.from('atb_notify').update({enabled:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(!error){ntf.enabled=el.checked;toast(el.checked?'Alerts resumed':'Alerts paused')}return}

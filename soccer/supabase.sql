@@ -77,3 +77,9 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- voting page reads a single link via public.atb_poll_view(uuid) (anon open-poll/rsvp SELECT policies removed);
 -- PINs 4-6 digits via private.atb_pin_check: 5 wrong = 1 h lock, 10 = 24 h, >30 team-wide wrong/24 h = 24 h lock per wrong try, ntfy alerts.
 -- Tournaments: atb_polls.kind ('match'|'tournament') + tournament id; docs cols 'tournaments' and 'gear'.
+
+-- Tournament visibility (applied as migration atb_tournament_visibility):
+-- private.atb_player_payload only returns tournaments with status <> 'draft' AND
+--   see = 'club' (default), or see = 'squad' and the player is in data->'squad',
+--   or see = 'pick' and the player is in data->'seeIds'. seeIds is stripped from the payload.
+-- Settings payload also carries psAuto (auto-award PlayStyles from ratings).
