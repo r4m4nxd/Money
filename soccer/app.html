@@ -142,6 +142,7 @@ body.mopen #main,body.mopen header.top{pointer-events:none;user-select:none}
 .atgrid{display:flex;flex-direction:column;gap:6px}.atrow{display:grid;grid-template-columns:minmax(90px,1fr) auto;gap:2px 10px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
 .atrow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.atn{font-size:13px;color:var(--muted);text-align:right}.ads{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px}
 .ad{width:10px;height:10px;border-radius:3px;display:inline-block}.ad.on{background:var(--good)}.ad.off{background:var(--bad);opacity:.75}.ad.na{background:var(--line)}.ad.up{border:1px solid var(--line)}
+.gai{display:flex;gap:10px}.gai label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.gai input{width:64px;padding:6px 8px}
 .fbin{font-size:14px;padding:6px 10px}
 .rate .attrs{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
 .rate .attrs label{font-size:10px}
@@ -175,6 +176,15 @@ button.tok{cursor:pointer}
 .tok .dot{width:32px;height:32px;border-radius:50%;border:2px solid #fff;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.02em;box-shadow:0 2px 4px rgba(0,0,0,.35)}
 .tok .tn{font-size:10px;line-height:1.15;font-weight:700;color:#fff;background:rgba(0,0,0,.45);padding:1px 4px;border-radius:4px;max-width:100%;text-align:center;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
+.pitch.p2{aspect-ratio:10/11;max-width:440px;border:1px solid #E6DDBF;border-radius:16px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.p2 .ptitle{position:absolute;top:2.5%;left:0;right:0;text-align:center;font-family:var(--f-display);font-weight:800;font-size:clamp(16px,5.2vw,24px);letter-spacing:.04em;text-transform:uppercase;z-index:1;pointer-events:none}
+.p2 .tok{gap:3px;color:#C29A2A}.p2 .dw{position:relative;display:block}
+.p2 .tok .dot{width:clamp(40px,13.5vw,60px);height:clamp(40px,13.5vw,60px);border:2px solid #DCC47A;background:#fff;color:#C29A2A;font-size:clamp(13px,4vw,18px);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.p2 .tok .dot img{object-position:50% 20%}
+.p2 .nb{position:absolute;top:-4px;left:-6px;min-width:20px;height:20px;padding:0 3px;border-radius:99px;background:#fff;border:1.5px solid #DCC47A;color:#222;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1}
+.p2 .fg{position:absolute;top:-4px;right:-6px;width:20px;height:20px;border-radius:50%;object-fit:cover;border:1.5px solid #fff;box-shadow:0 0 0 1px #DCC47A}
+.p2 .tok .tn{background:none;color:#C29A2A;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:clamp(9px,2.7vw,13px);padding:0;text-shadow:none;-webkit-line-clamp:1;white-space:nowrap}
+.p2 .tok.sel .dot{outline:3px solid #2F6FD6;outline-offset:2px}
 .subs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:8px;font-size:13px}
 .subs>span:first-child{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .subb{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:13px}
@@ -390,6 +400,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .pcard{position:relative}.pcard.glow .fut{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--accent) 70%,transparent))}.inform{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);background:var(--accent);color:#111;font-weight:800;font-size:11px;letter-spacing:.12em;padding:3px 10px;border-radius:99px}
 .upg{text-align:center}.upg .pcard{width:190px;margin:10px auto;animation:upg 1.2s ease-out}@keyframes upg{0%{transform:scale(.6) rotateY(180deg);opacity:0}60%{transform:scale(1.08) rotateY(0)}100%{transform:scale(1)}}
 .totwme{border-left:4px solid #E0B84A;margin-bottom:8px}.avl li.nx{background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:8px}
+.prevbar{background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.prevbar .btn{margin-left:auto}
+.accbox{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
 .mgrh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.mgrh .pill{white-space:nowrap;flex:none}
 .wl2{border:1px dashed var(--line);border-radius:6px;padding:8px 12px}.wl2 ol{margin:6px 0 0;padding-left:22px;font-size:14px}
 .phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phead .pcount{margin-left:auto;font-size:15px}
@@ -528,6 +540,8 @@ function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();
   c.getContext('2d').drawImage(img,sx,sy,cw,ch,0,0,W,H);URL.revokeObjectURL(img.src);res(c.toDataURL('image/jpeg',.82))};
   img.onerror=rej;img.src=URL.createObjectURL(file)})}
 /* Photo positioner: drag / pinch / slider inside a square frame that matches the card's photo window. Exports a 640×640 JPEG. */
+function makeThumb(src,cut){return new Promise(res=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=112;const x=c.getContext('2d');
+  const s=Math.min(img.width,img.height);x.drawImage(img,(img.width-s)/2,0,s,s,0,0,112,112);res(c.toDataURL(cut?'image/webp':'image/jpeg',.82))};img.onerror=()=>res(null);img.src=src})}
 function cropPhoto(file){return new Promise(resolve=>{const url=URL.createObjectURL(file),img=new Image();
   img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that photo');resolve(null)};
   img.onload=()=>{const ov=document.createElement('div');ov.className='crop';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Position photo');
@@ -721,7 +735,8 @@ async function boot(){
       if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
       await syncRoster();if(cloud==='supa'&&!Array.isArray(S.settings.schedule)){S.settings.schedule=WINTER;S.settings.venue=S.settings.venue||'Genesis Centre, Airdrie';await putSettings()}
       if(sched().length&&!draft.teams&&!draft.editing&&!schedAt(draft.date)&&nextGame()){draft.date=nextGame();saveDraft()}
-      quietLog=false;loaded=true;render();if(cloud==='supa'){loadStats();syncOpenPolls();logAct('Opened app')}};
+      quietLog=false;loaded=true;render();
+      if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();logAct('Opened app')}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
     db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}done('s')},()=>{done('s')});
@@ -956,7 +971,8 @@ function commitment(){const out={},by={};st.logs.forEach(l=>(by[l.poll_id]=by[l.
 function playerStats(){const C=st.loaded?commitment():{};const nM=S.matches.length;
   return S.players.filter(p=>!p.guest).map(p=>{const r=R(p.id),c=C[p.id]||{asked:0,answered:0,drops:0,joins:0,changes:0,lead:[]};
     const start=scores(Object.fromEntries(K.map(k=>[k,+(p.base?.[k]??7)]))).ovr;const res=r.W+r.D+r.L;
-    return {p,ovr:r.ovr,delta:r.hist.length?r.ovr-start:0,apps:r.apps,att:nM?r.apps/nM:null,W:r.W,D:r.D,L:r.L,win:res?r.W/res:null,res,motm:r.motm,
+    const ga=S.matches.reduce((o,m)=>{const x=m.stats?.[p.id];if(x){o.g+=+x.g||0;o.a+=+x.a||0}return o},{g:0,a:0});
+    return {p,g:ga.g,a:ga.a,ovr:r.ovr,delta:r.hist.length?r.ovr-start:0,apps:r.apps,att:nM?r.apps/nM:null,W:r.W,D:r.D,L:r.L,win:res?r.W/res:null,res,motm:r.motm,
       asked:c.asked,resp:c.asked?c.answered/c.asked:null,drops:c.drops,joins:c.joins,changes:c.changes,lead:c.lead.length?avg(c.lead):null}})}
 const pct=x=>x==null?'–':Math.round(x*100)+'%';
 // Single-series bar chart: one accent hue, rounded data-ends, 2px gaps, recessive grid, per-bar hover tooltip, selective labels.
@@ -1030,7 +1046,7 @@ function vStats(){
   const top=(arr,key,fmt,filter=()=>true,n=5,dir=-1)=>arr.filter(filter).sort((a,b)=>dir*((a[key]??-1e9)-(b[key]??-1e9))).slice(0,n)
     .map((x,i)=>`<li><span class="rk num">${i+1}</span><span class="nm">${esc(x.p.name)}</span><b class="num">${fmt(x[key],x)}</b></li>`).join('')||'<li class="muted small">Not enough data yet</li>';
   const board=(t,sub,list)=>`<div class="panel lb"><h3>${t}</h3><div class="small muted">${sub}</div><ol>${list}</ol></div>`;
-  const cols=[['p','Player'],['ovr','OVR'],['delta','±'],['apps','Apps'],['att','Att.'],['win','Win %'],['motm','🏆'],['resp','Answered'],['drops','Late drops'],['joins','Late joins'],['lead','Notice']];
+  const cols=[['p','Player'],['ovr','OVR'],['delta','±'],['apps','Apps'],['g','⚽'],['a','🅰️'],['att','Att.'],['win','Win %'],['motm','🏆'],['resp','Answered'],['drops','Late drops'],['joins','Late joins'],['lead','Notice']];
   const sorted=PS.slice().sort((a,b)=>{const k=hideR&&(statsSort.k==='ovr'||statsSort.k==='delta')?'p':statsSort.k;if(k==='p')return statsSort.d*a.p.name.localeCompare(b.p.name);return statsSort.d*((a[k]??-1e9)-(b[k]??-1e9))});
   const noLink=cloud!=='supa';
   return `${awardsPanel()}${seasonAttPanel()}<h2>Season stats</h2>
@@ -1050,6 +1066,8 @@ function vStats(){
   <div class="lbs">
     ${hideR?'':board('Top rated','Current OVR',top(PS,'ovr',v=>v))}
     ${hideR?'':board('Most improved','OVR change since season start',top(PS,'delta',v=>'+'+v,x=>x.delta>0))}
+    ${board('⚽ Top scorers','Goals',top(PS,'g',(v,x)=>v+(x.a?` <span class="small muted">+${x.a}🅰️</span>`:''),x=>x.g>0))}
+    ${board('🅰️ Top assists','Assists',top(PS,'a',v=>v,x=>x.a>0))}
     ${board('Ever-present','Matches played',top(PS,'apps',v=>v,x=>x.apps>0))}
     ${board('🏆 Player of the Match','Awards',top(PS,'motm',v=>v,x=>x.motm>0))}
     ${board('Winners','Win % (3+ results)',top(PS,'win',v=>pct(v),x=>x.res>=3))}
@@ -1059,7 +1077,7 @@ function vStats(){
   </div>
   <h2>All players</h2>
   <div class="panel tbl stbl"><table><thead><tr>${cols.map(([k,l])=>`<th><button class="sortb" data-a="ssort" data-k="${k}" aria-sort="${statsSort.k===k?(statsSort.d<0?'descending':'ascending'):'none'}">${l}${statsSort.k===k?(statsSort.d<0?' ▼':' ▲'):''}</button></th>`).join('')}</tr></thead>
-  <tbody>${sorted.map(x=>`<tr><td><button class="linkb" data-a="editp" data-id="${x.p.id}">${esc(x.p.name)}</button> <span class="pos ${x.p.pos}">${x.p.pos}</span></td><td>${rv(x.ovr)}</td><td class="${hideR?'':x.delta>0?'up':x.delta<0?'dn':''}">${hideR?'–':(x.delta>0?'+':'')+(x.delta||'–')}</td><td>${x.apps}</td><td>${pct(x.att)}</td><td>${pct(x.win)}</td><td>${x.motm||'–'}</td><td>${noLink?'–':pct(x.resp)}</td><td>${noLink?'–':x.drops?`<span class="tag bad">⚠ ${x.drops}</span>`:'0'}</td><td>${noLink?'–':x.joins}</td><td>${x.lead==null?'–':fmtHB(x.lead).replace(' before','')}</td></tr>`).join('')}</tbody></table></div>
+  <tbody>${sorted.map(x=>`<tr><td><button class="linkb" data-a="editp" data-id="${x.p.id}">${esc(x.p.name)}</button> <span class="pos ${x.p.pos}">${x.p.pos}</span></td><td>${rv(x.ovr)}</td><td class="${hideR?'':x.delta>0?'up':x.delta<0?'dn':''}">${hideR?'–':(x.delta>0?'+':'')+(x.delta||'–')}</td><td>${x.apps}</td><td>${x.g||'–'}</td><td>${x.a||'–'}</td><td>${pct(x.att)}</td><td>${pct(x.win)}</td><td>${x.motm||'–'}</td><td>${noLink?'–':pct(x.resp)}</td><td>${noLink?'–':x.drops?`<span class="tag bad">⚠ ${x.drops}</span>`:'0'}</td><td>${noLink?'–':x.joins}</td><td>${x.lead==null?'–':fmtHB(x.lead).replace(' before','')}</td></tr>`).join('')}</tbody></table></div>
   <p class="small muted">Att. = matches played ÷ matches this season. Answered = links answered ÷ links they were on. Notice = how long before kick-off their first answer came, on average. Tap a column to sort.</p>`;
 }
 
@@ -1070,6 +1088,7 @@ function vHistory(){
     return `<div class="panel stack"><div class="mrow"><h3>${fmtDate(m.date)}</h3><span class="pill ${rated>=tot?'ok':'meh'}">${rated}/${tot} rated</span>
       <span class="row" style="margin-left:auto"><button class="btn primary" data-a="rate" data-id="${m.id}">Rate players</button><button class="btn" data-a="editm" data-id="${m.id}">Edit teams</button><button class="btn" data-a="sharem" data-id="${m.id}">Share</button><button class="btn danger" data-a="delm" data-id="${m.id}">Delete</button></span></div>
       <label class="small row" style="gap:6px">🏆 Player of the Match <select id="potm${m.id}" data-a="potm" data-id="${m.id}"><option value="">Not picked</option>${m.teams.flatMap(t=>t.players).filter(id=>pById(id)).sort((a,b)=>pById(a).name.localeCompare(pById(b).name)).map(id=>`<option value="${id}" ${m.potm===id?'selected':''}>${esc(pById(id).name)}</option>`).join('')}</select></label>${st.pv?.[m.id]?`<span class="small muted">Players voted: ${Object.entries(st.pv[m.id]).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id,n])=>esc(pById(id)?.name||id)+' ('+n+')').join(', ')}</span>`:''}
+      ${m.stats&&Object.keys(m.stats).length?`<div class="small">⚽ ${Object.entries(m.stats).filter(([id,x])=>x.g&&pById(id)).sort((a,b)=>b[1].g-a[1].g).map(([id,x])=>esc(pById(id).name)+(x.g>1?' ×'+x.g:'')).join(', ')||'–'}${Object.values(m.stats).some(x=>x.a)?` · 🅰️ ${Object.entries(m.stats).filter(([id,x])=>x.a&&pById(id)).map(([id,x])=>esc(pById(id).name)+(x.a>1?' ×'+x.a:'')).join(', ')}`:''}</div>`:''}
       <div class="score">${m.teams.map((t,i)=>`<label class="srow"><span class="k" style="background:${KITHEX[t.kit]||'#888'}"></span><span class="sn">${esc(t.name)}</span><input class="num" id="g${m.id}_${i}" type="number" min="0" inputmode="numeric" placeholder="–" value="${t.goals??''}" data-a="goal" data-id="${m.id}" data-i="${i}" aria-label="Goals ${esc(t.name)}"></label>`).join('')}</div>
     </div>`}).join('')}</div>`;
 }
@@ -1128,6 +1147,7 @@ function playerActPanel(when){const acts=mgrs.pact;
   <input id="pactq" data-a="pactq" placeholder="Search a player" value="${esc(pactQ)}" style="margin:10px 0">
   <div class="mlist">${roster.filter(r=>!q||r.p.name.toLowerCase().includes(q)).map(({p,acts:a})=>{const last=a[0],ins=a.filter(x=>x.action==='Signed in').length,wr=a.filter(x=>/Wrong|Locked/.test(x.action)&&new Date(x.at)>wk).length;
     return `<details class="panel pact"><summary><div class="mgrh"><div><b>${esc(p.name)}</b><div class="small muted">${ins} sign-in${ins===1?'':'s'}${wr?` · <span style="color:var(--bad)">${wr} wrong PIN${wr===1?'':'s'} this week</span>`:''}</div></div><span class="pill ${last?(Date.now()-new Date(last.at)<864e5?'ok':'meh'):''}">${last?'Active '+ago(last.at):'Never'}</span></div></summary>
+      <div class="row" style="margin-top:8px"><button class="btn small" data-a="pview" data-id="${p.id}">👁 View as player</button><button class="btn small" data-a="editp" data-id="${p.id}">Access & PIN</button>${p.noLogin?'<span class="pill bad">Access off</span>':''}</div>
       ${a.length?`<ol class="alog">${a.slice(0,60).map(row).join('')}</ol>`:'<p class="small muted">No activity yet.</p>'}</details>`}).join('')}</div>`}
 
 function vGuide(){
@@ -1294,6 +1314,9 @@ function vGuide(){
     <li><b>Motivation features</b> (Settings → “Players see their growth”): card colour upgrades (bronze → silver → gold, with an animation), an <b>In-Form</b> card after Player of the Match or Team of the Week, a weekly <b>focus</b> (their weakest area for their position, with a tip and ✅ when they beat it), growth arrows per attribute, 13 <b>badges</b>, personal bests, <b>Team of the Week</b> (best by position from the last rated match), a <b>Most improved</b> board (ranks only), and <b>Player of the Match voting</b> for 3 days after each game (you see the votes next to the POTM picker).</li>
     <li><b>Notes from the managers:</b> when rating, type a short note under any player. Only that player sees it, on their profile.</li>
     <li><b>Season schedule:</b> Settings → Season schedule holds the winter dates (Genesis Centre, Nov games at 7:30 PM). Match Day defaults to the next game, the auto-link skips weeks without a game and uses that date’s start time, and Stats → Season attendance shows everyone’s played / missed games.</li>
+    <li><b>See what a player sees:</b> Squad → tap a player → <b>👁 View as player</b> (admin only; also in Managers → Player activity). Nothing you tap in the preview changes anything. The same box shows how many devices they’re signed in on, lets you <b>Sign out everywhere</b>, and untick <b>Can sign in</b> to block their profile.</li>
+    <li><b>Goals and assists:</b> enter them per player in <b>Rate players</b>. They feed Top scorers / Top assists, player profiles, badges and personal bests.</li>
+    <li><b>Players edit their own card:</b> tick “Players can set their own shirt number, nation and favourite club” in Settings. Shirt numbers stay one per active player.</li>
     <li>They never see other players’ ratings. Their own ratings stay hidden unless you tick <b>Players can see their own ratings</b> in Settings.</li>
     <li>5 wrong PINs locks the name for an hour. Resetting a PIN (Squad → tap the player → Voting PIN) signs that player out everywhere. Untick <b>Players can sign in</b> in Settings to turn it off for everyone.</li></ul>`)}
   ${sec('managers','Managers and access',`<ul>
@@ -1346,6 +1369,7 @@ function vSettings(){
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="plg" data-a="set" data-k="playerLogin" ${s.playerLogin!==false?'checked':''}> Players can sign in to see their own profile, matches and availability</label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
+    <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="plgw" data-a="set" data-k="playerGrowth" ${s.playerGrowth!==false?'checked':''}> Players see their growth: trends, weekly focus, card upgrades and personal bests (no ratings shown unless the box above is ticked)</label>`:''}
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
@@ -1378,9 +1402,13 @@ async function bootPlayer(saved){
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer()});
   setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer()},90000);
 }
+function startPreview(id){const p=pById(id);if(!p)return;closeModal();PM={preview:true,id,name:p.name,data:null,season:'all'};view='me';
+  $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+'<button role="tab" data-v="tomgr"><span>✕ Exit preview</span></button>';
+  $('#rbtn').hidden=true;$('#sync').textContent='Preview · '+p.name;window.scrollTo(0,0);render();loadPlayer()}
 async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
-  try{const d=await prpc('atb_player_data',{p_token:PM.tok});
-    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
+  try{const d=PM.preview?await prpc('atb_admin_player_view',{p_player:PM.id}):await prpc('atb_player_data',{p_token:PM.tok});
+    if(d.err&&PM.preview){toast('Could not open this profile');location.reload();return}
+    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
     PM.data=d;PM.err='';
     S.players=[{...d.me},...d.players];S.matches=d.matches;Object.assign(S.settings,d.settings);
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
@@ -1393,7 +1421,7 @@ function pSeasons(){return [...new Set(S.matches.map(m=>m.date.slice(0,4)))].sor
 function pMatches(all){const y=PM.season;return S.matches.filter(m=>all||y==='all'||m.date.startsWith(y)).slice().sort((a,b)=>a.date<b.date?1:-1)}
 function resultOf(m,ti){const gs=m.teams.map(t=>t.goals);if(gs.some(g=>g===''||g==null))return null;const mine=+gs[ti],best=Math.max(...gs.map(Number));
   return mine===best?(gs.filter(g=>+g===best).length===1?'W':'D'):'L'}
-function myGames(ms){const me=PM.data.me.id;return ms.map(m=>{const ti=m.teams.findIndex(t=>t.players.includes(me));return ti<0?null:{m,ti,t:m.teams[ti],res:resultOf(m,ti),potm:m.potm===me}}).filter(Boolean)}
+function myGames(ms){const me=PM.data.me.id;return ms.map(m=>{const ti=m.teams.findIndex(t=>t.players.includes(me));return ti<0?null:{m,ti,t:m.teams[ti],res:resultOf(m,ti),potm:m.potm===me,g:+m.stats?.[me]?.g||0,a:+m.stats?.[me]?.a||0}}).filter(Boolean)}
 function pSummary(){const ms=pMatches(),g=myGames(ms),me=PM.data.me.id;
   const W=g.filter(x=>x.res==='W').length,D=g.filter(x=>x.res==='D').length,L=g.filter(x=>x.res==='L').length,res=W+D+L;
   const gf=g.reduce((s,x)=>s+(+x.t.goals||0),0);
@@ -1405,7 +1433,8 @@ function pSummary(){const ms=pMatches(),g=myGames(ms),me=PM.data.me.id;
   const ml=Object.values(mates).filter(o=>pById(o.id));
   const most=ml.slice().sort((a,b)=>b.n-a.n)[0];const best=ml.filter(o=>o.r>=2&&o.w>0).sort((a,b)=>b.w/b.r-a.w/a.r||b.r-a.r)[0];
   const kits={};g.forEach(x=>{const k=x.t.kit||'';kits[k]=(kits[k]||0)+1});
-  return {g,ms,apps:g.length,W,D,L,res,win:res?W/res:null,gf,potm:g.filter(x=>x.potm).length,att:ms.length?g.length/ms.length:null,streak:cur?cur+n:'',bestW,bestUnb,mates:ml,most,best,kits}}
+  const goals=g.reduce((n,x)=>n+x.g,0),assists=g.reduce((n,x)=>n+x.a,0);
+  return {goals,assists,g,ms,apps:g.length,W,D,L,res,win:res?W/res:null,gf,potm:g.filter(x=>x.potm).length,att:ms.length?g.length/ms.length:null,streak:cur?cur+n:'',bestW,bestUnb,mates:ml,most,best,kits}}
 function pAvail(){const kick=p=>p.kickoff||kickoffISO(p.match_date);const y=PM.season;
   const ps=PM.data.polls.filter(p=>y==='all'||String(p.match_date).startsWith(y));let answered=0,ins=0,drops=0,joins=0,lead=[];
   const rows=ps.map(p=>{const log=p.log||[],first=log.find(l=>l.status!=='cleared');const tags=log.map(l=>classify({...l},kick(p)).tag).filter(Boolean);
@@ -1447,10 +1476,11 @@ function runs(){const me=PM.data.me.id,ms=S.matches.slice().sort((a,b)=>a.date<b
 function bestsInfo(){const g=allGames(),rs=myRated();const s=pSummaryOf(g);let bm=null,tg=null;
   rs.forEach(x=>{const o=scores(Object.fromEntries(K.map(k=>[k,+x.r[k]||7]))).ovr;if(!bm||o>bm.o)bm={o,date:x.m.date}});
   g.slice().reverse().forEach(x=>{const n=+x.t.goals;if(x.t.goals!=null&&x.t.goals!==''&&(!tg||n>tg.n))tg={n,date:x.m.date}});
+  let mg=null;g.slice().reverse().forEach(x=>{if(x.g&&(!mg||x.g>mg.n))mg={n:x.g,date:x.m.date}});
   const pm={};g.filter(x=>x.potm).forEach(x=>{const k=x.m.date.slice(0,7);pm[k]=(pm[k]||0)+1});const mp=Math.max(0,...Object.values(pm));
-  return {bm,tg,bestW:s.bestW,bestUnb:s.bestUnb,run:runs().best,mp,last:g[0]?.m.date}}
+  return {bm,tg,mg,bestW:s.bestW,bestUnb:s.bestUnb,run:runs().best,mp,last:g[0]?.m.date}}
 function pSummaryOf(g){let bestW=0,run=0,unb=0,bestUnb=0;g.slice().reverse().forEach(x=>{if(!x.res)return;run=x.res==='W'?run+1:0;bestW=Math.max(bestW,run);unb=x.res!=='L'?unb+1:0;bestUnb=Math.max(bestUnb,unb)});
-  const res=g.filter(x=>x.res),W=res.filter(x=>x.res==='W').length;return {bestW,bestUnb,res:res.length,W,potm:g.filter(x=>x.potm).length,apps:g.length}}
+  const res=g.filter(x=>x.res),W=res.filter(x=>x.res==='W').length;return {bestW,bestUnb,res:res.length,W,potm:g.filter(x=>x.potm).length,apps:g.length,goals:g.reduce((n,x)=>n+x.g,0),assists:g.reduce((n,x)=>n+x.a,0),maxG:Math.max(0,...g.map(x=>x.g))}}
 function badgeList(){const g=allGames(),s=pSummaryOf(g),rn=runs(),me=PM.data.me.id,d=PM.data;
   const polls=d.polls.slice().sort((a,b)=>a.match_date<b.match_date?-1:1);let eb=0,ebBest=0;
   polls.filter(p=>!p.open).forEach(p=>{const f=(p.log||[]).find(l=>l.status!=='cleared');const lead=f?(new Date(p.kickoff||kickoffISO(p.match_date))-new Date(f.at))/36e5:-1;eb=lead>=48?eb+1:0;ebBest=Math.max(ebBest,eb)});
@@ -1459,15 +1489,17 @@ function badgeList(){const g=allGames(),s=pSummaryOf(g),rn=runs(),me=PM.data.me.
   const perfect=Object.values(months).filter(ds=>ds.every(x=>x<today)&&ds.filter(x=>A.byDate[x]).length>=3&&ds.filter(x=>A.byDate[x]).every(x=>A.byDate[x].teams.some(t=>t.players.includes(me)))).length;
   const totwN=(ls('atb_totw_'+me)||[]).length,start=scores(baseA()).ovr,gain=d.growth?R(me).ovr-start:0;
   const B=(ic,n,desc,have,need)=>({ic,n,desc,got:have>=need,have:Math.min(have,need),need});
-  return [B('🔥','On Fire','Win 3 in a row',s.bestW,3),B('⚡','Unstoppable','Win 5 in a row',s.bestW,5),B('🧱','Iron Man','Play 10 matches in a row',rn.best,10),
-    B('🎯','Regular','Play 10 matches',s.apps,10),B('⭐','Veteran','Play 25 matches',s.apps,25),B('🏆','Match Winner','Win Player of the Match',s.potm,1),B('🎩','Hat-trick Hero','3× Player of the Match',s.potm,3),
+  return [B('⚽','First Goal','Score your first goal',s.goals,1),B('🎯','Hat-trick','Score 3 in one match',s.maxG,3),B('🔟','Double Figures','Score 10 goals',s.goals,10),B('🚀','Goal Machine','Score 25 goals',s.goals,25),
+    B('🅰️','Playmaker','Get your first assist',s.assists,1),B('🪄','Provider','10 assists',s.assists,10),
+    B('🔥','On Fire','Win 3 in a row',s.bestW,3),B('⚡','Unstoppable','Win 5 in a row',s.bestW,5),B('🧱','Iron Man','Play 10 matches in a row',rn.best,10),
+    B('📅','Regular','Play 10 matches',s.apps,10),B('⭐','Veteran','Play 25 matches',s.apps,25),B('🏆','Match Winner','Win Player of the Match',s.potm,1),B('🎩','Hat-trick Hero','3× Player of the Match',s.potm,3),
     B('🌟','Team of the Week','Get picked in the Team of the Week',totwN,1),B('⏰','Early Bird','Answer 2+ days early, 5 weeks running',ebBest,5),
     B('💯','Rock Solid','Answer 8 links with no late drop-out',drops?0:answered,8),B('👑','Perfect Month','Play every game in a month',perfect,1),
     B('🥇','Winner','60% wins over 8+ results',s.res>=8&&s.W/s.res>=.6?1:0,1),...(d.growth?[B('📈','On the Rise','Climb 3+ OVR from where you started',Math.max(0,gain),3)]:[])]}
 
 function tierPanel(me,r){if(!PM.data.growth)return '';const t=tier(r.ovr),i=TIERS.indexOf(t);const lo=[60,71,78][i],hi=[71,78,90][i];const p=Math.max(0,Math.min(1,(r.ovr-lo)/(hi-lo)));
   return `<div class="tierbar"><div class="small"><b class="tn t-${t}">${t[0].toUpperCase()+t.slice(1)} card</b>${i<2?` · ${Math.round(p*100)}% of the way to <b>${TIERS[i+1][0].toUpperCase()+TIERS[i+1].slice(1)}</b>`:' · top tier'}</div><div class="bar"><i style="width:${Math.round((i<2?p:1)*100)}%"></i></div></div>`}
-function checkUpgrade(me,r){if(!PM.data.growth||!myRated().length)return;const t=tier(r.ovr),k='atb_ptier_'+me.id,prev=ls(k);ls(k,t);
+function checkUpgrade(me,r){if(PM.preview||!PM.data.growth||!myRated().length)return;const t=tier(r.ovr),k='atb_ptier_'+me.id,prev=ls(k);ls(k,t);
   if(prev&&TIERS.indexOf(t)>TIERS.indexOf(prev))setTimeout(()=>openModal(`<div class="mh"><h2>Card upgraded!</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="upg"><div class="pcard glow">${cardHTML(me,{btn:false,tier:t})}</div><p>You’ve moved up from <b>${prev}</b> to <b>${t}</b>. Keep it going!</p></div>`),400)}
 function focusPanel(){if(!PM.data.growth)return '';const f=focusInfo(),last=f.hist[f.hist.length-1];const L=KL[f.k];
   return `<h2>This week’s focus</h2><div class="panel focus"><div class="fk">🎯 <b>${esc(L)}</b></div><p style="margin:4px 0">${TIPS[f.k]||''}</p>
@@ -1483,6 +1515,7 @@ function bestsPanel(){const b=bestsInfo();const nd=d=>d?new Date(d+'T12:00').toL
   const row=(ic,l,v,sub)=>`<li><span>${ic}</span><span class="nm">${l}${sub||''}</span><b class="num">${v}</b></li>`;
   return `<h2>Personal bests</h2><div class="panel"><ol class="pbs">
     ${PM.data.growth&&b.bm?row('⭐','Best match',PM.data.showRatings?b.bm.o:nd(b.bm.date),`${PM.data.showRatings?` <span class="small muted">${nd(b.bm.date)}</span>`:''}${newpb(b.bm.date)}`):''}
+    ${b.mg?row('⚽','Most goals in a match',b.mg.n,` <span class="small muted">${nd(b.mg.date)}</span>${newpb(b.mg.date)}`):''}
     ${row('🔥','Longest win streak',b.bestW)}${row('🛡️','Longest unbeaten run',b.bestUnb)}${row('🧱','Matches in a row',b.run)}
     ${b.tg?row('⚽','Most team goals in a match',b.tg.n,` <span class="small muted">${nd(b.tg.date)}</span>${newpb(b.tg.date)}`):''}${row('🏆','Most POTM in a month',b.mp)}</ol></div>`}
 function badgesPanel(){const L=badgeList(),got=L.filter(x=>x.got);
@@ -1492,10 +1525,10 @@ function seasonPanel(){const A=seasonAtt();if(!A.L.length)return '';const me=PM.
     <div class="bar big"><i style="width:${Math.round(A.held.length/A.L.length*100)}%"></i><i class="me" style="width:${Math.round(pl/A.L.length*100)}%"></i></div>
     <div class="small muted">You’ve played <b>${pl}</b> of ${A.held.length} games so far${A.held.length?` (${Math.round(pl/A.held.length*100)}%)`:''} · ${A.L.length} in the season</div></div>`}
 function totwPanel(){const T=PM.data.totw;if(!T||!T.order||!T.order.length)return '';const me=PM.data.me.id,inIt=T.order.includes(me);
-  if(inIt){const k='atb_totw_'+me,l=ls(k)||[];if(!l.includes(T.match)){l.push(T.match);ls(k,l)}}
+  if(inIt&&!PM.preview){const k='atb_totw_'+me,l=ls(k)||[];if(!l.includes(T.match)){l.push(T.match);ls(k,l)}}
   return `<h2>Team of the Week <span class="small muted">${new Date(T.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span></h2>
     ${inIt?'<div class="panel totwme">🌟 <b>You made the Team of the Week!</b> Screenshot it for the group chat.</div>':'<p class="small muted">The best performers from the last match. Could you be in it next week?</p>'}
-    <div class="pitchwrap totw">${pitchHTML({kit:'black',players:T.order},{f:T.f,gk:false,order:T.order},0,false)}</div>`}
+    <div class="pitchwrap totw">${pitchHTML({kit:'',players:T.order},{f:T.f,gk:false,order:T.order},0,false,'Team of the Week')}</div>`}
 function potmVotePanel(){const me=PM.data.me.id,t=todayISO(),lim=new Date(Date.now()-3*864e5).toISOString().slice(0,10);
   const x=allGames().find(g=>g.m.date<=t&&g.m.date>=lim);if(!x)return '';const ids=x.m.teams.flatMap(tm=>tm.players).filter(id=>id!==me&&pById(id));
   return `<div class="panel pv"><b>🗳️ Vote Player of the Match</b><div class="small muted">${fmtDate(x.m.date)} · open for 3 days · managers see the votes</div>
@@ -1510,6 +1543,7 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
   return `<div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
       <h2 style="margin:0">${esc(titleName(me.name))}</h2>
       <div class="small muted">${me.pos}${me.number?' · #'+esc(me.number):''}${me.nation?' · '+esc((NATIONS.find(n=>n[0]===me.nation)||[])[1]||''):''}${club?' · supports '+esc(club.n):''}</div>
+      ${d.canEdit?'<div><button class="btn ghost small" data-a="goacct">✏️ Edit my card</button></div>':''}
       ${form?`<div class="row form" aria-label="Last five results"><span class="small muted">Form</span>${form}</div>`:''}
       ${tierPanel(me,r)}
       ${!d.showRatings?'<p class="small muted" style="margin:0">Ratings are private. Your card colour and arrows show how you’re growing.</p>':''}
@@ -1519,7 +1553,7 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
   ${focusPanel()}${totwPanel()}${badgesPanel()}${growthPanel()}
   <div class="row" style="justify-content:space-between;align-items:center"><h2>Your numbers</h2>${seasonPick()}</div>
   <div class="kpis">${kpi(s.apps,'Matches')}${kpi(`${s.W}-${s.D}-${s.L}`,'W-D-L')}${kpi(pct(s.win),'Win rate')}${kpi(s.potm,'🏆 Player of the match')}
-    ${kpi(pct(s.att),'Attendance')}${kpi(s.gf,'Team goals')}${kpi(s.streak||'–','Current run')}${kpi(s.bestW,'Best win streak')}</div>
+    ${kpi(s.goals,'⚽ Goals')}${kpi(s.assists,'🅰️ Assists')}${kpi(s.apps?(Math.round((s.goals+s.assists)/s.apps*10)/10):'–','G+A per match')}${kpi(pct(s.att),'Attendance')}${kpi(s.gf,'Team goals')}${kpi(s.streak||'–','Current run')}${kpi(s.bestW,'Best win streak')}</div>
   ${d.showRatings&&r.hist.length>1?`<h2>Rating by match</h2><div class="panel row" style="align-items:center"><div>${spark(r.hist.map(x=>x.ovr))}</div><div class="small muted">OVR ${r.hist[0].ovr} → ${r.ovr} over ${r.hist.length} rated matches</div></div>`:''}
   ${bestsPanel()}
   <h2>Teammates</h2><div class="kpis k2">${kpi(s.most?esc(shortName(pById(s.most.id).name)):'–','Played with most'+(s.most?` · ${s.most.n}×`:''))}${kpi(s.best?esc(shortName(pById(s.best.id).name)):'–','Best partner'+(s.best?` · ${pct(s.best.w/s.best.r)} wins`:''))}</div>
@@ -1530,11 +1564,11 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
 function gameCard(x,open){const m=x.m,me=PM.data.me.id;
   const score=m.teams.map((t,i)=>`<span class="sc${i===x.ti?' mine':''}" style="--k:${KITHEX[t.kit]||'#555'}">${esc(t.name||'Team '+(i+1))} <b class="num">${t.goals??'–'}</b></span>`).join('');
   const lu=getLU(x.t.players.filter(id=>pById(id)),x.t.lu);
-  return `<details class="panel game"${open?' open data-auto':''}><summary><div class="gh"><div><b>${fmtDate(m.date)}</b><div class="small muted">${esc(x.t.name||'')}${x.potm?' · 🏆 Player of the match':''}</div></div>${resPill(x.res)}</div></summary>
+  return `<details class="panel game"${open?' open data-auto':''}><summary><div class="gh"><div><b>${fmtDate(m.date)}</b><div class="small muted">${esc(x.t.name||'')}${x.potm?' · 🏆 Player of the match':''}${x.g?` · ⚽${x.g>1?'×'+x.g:''}`:''}${x.a?` · 🅰️${x.a>1?'×'+x.a:''}`:''}</div></div>${resPill(x.res)}</div></summary>
     <div class="scs">${score}</div>
     ${m.potm&&pById(m.potm)?`<p class="small muted" style="margin:6px 0">Player of the match: <b>${esc(pById(m.potm).name)}</b></p>`:''}${m.pvote&&pById(m.pvote)?`<p class="small muted" style="margin:6px 0">Players’ pick: <b>${esc(pById(m.pvote).name)}</b>${m.myvote?` · you voted ${esc(pById(m.myvote)?.name||'')}`:''}</p>`:''}
     ${m.myfb?`<p class="fbk small" style="margin:6px 0">💬 ${esc(m.myfb)}</p>`:''}
-    <div class="pitchwrap">${pitchHTML(x.t,lu,x.ti,false)}</div>
+    <div class="pitchwrap">${pitchHTML(x.t,lu,x.ti,false,x.t.name)}</div>
     <details class="others"><summary class="small">Other teams</summary>${m.teams.map((t,i)=>i===x.ti?'':`<p class="small"><b style="color:${KITHEX[t.kit]||'inherit'}">${esc(t.name||'Team '+(i+1))}</b>: ${t.players.map(id=>esc(pById(id)?.name||'Guest')).join(', ')}</p>`).join('')}</details>
   </details>`}
 function vpGames(){const s=pSummary();
@@ -1553,15 +1587,21 @@ function vpAvail(){const a=pAvail(),stTxt={in:'IN',out:'OUT'};
   <h2>Link history</h2>${a.rows.length?`<div class="panel"><ol class="alog avl">${a.rows.map(r=>`<li><span class="at num">${fmtDate(r.p.match_date).replace(/, \d{4}$/,'')}</span><span class="who">${r.final?`<span class="pill ${r.final==='in'?'ok':'bad'}">${stTxt[r.final]}</span>`:'<span class="pill meh">No answer</span>'}${r.late?' <span class="pill meh">late drop</span>':''}${r.first?` <span class="small muted">answered ${hrs((new Date(r.p.kickoff||kickoffISO(r.p.match_date))-new Date(r.first.at))/36e5)} before</span>`:''}${r.log.length>1?` <span class="small muted">· changed ${r.log.length-1}×</span>`:''}</span></li>`).join('')}</ol></div>`:'<div class="panel muted">No availability links yet.</div>'}`}
 function vpLeaders(){const ms=pMatches(),me=PM.data.me.id,o={};
   ms.forEach(m=>m.teams.forEach((t,ti)=>{const res=resultOf(m,ti);t.players.forEach(id=>{if(!pById(id)||pById(id).guest)return;const x=o[id]=o[id]||{id,n:0,w:0,r:0,potm:0};x.n++;if(res){x.r++;if(res==='W')x.w++}})}));
-  ms.forEach(m=>{if(m.potm&&o[m.potm])o[m.potm].potm++});const L=Object.values(o);
+  ms.forEach(m=>{if(m.potm&&o[m.potm])o[m.potm].potm++;Object.entries(m.stats||{}).forEach(([id,x])=>{if(o[id]){o[id].g=(o[id].g||0)+(+x.g||0);o[id].a=(o[id].a||0)+(+x.a||0)}})});const L=Object.values(o);
   const board=(title,rows,val)=>`<h2>${title}</h2><div class="panel"><ol class="lb">${rows.length?rows.map((x,i)=>`<li class="${x.id===me?'me':''}"><span class="rk num">${i+1}</span><span class="nm">${esc(pById(x.id).name)}${x.id===me?' <span class="small muted">(you)</span>':''}</span><b class="num">${val(x)}</b></li>`).join(''):'<li class="muted">No matches yet</li>'}</ol></div>`;
   const top=(arr,k)=>{const s=arr.slice(0,10);const mi=arr.findIndex(x=>x.id===me);if(mi>=10)s.push({...arr[mi],_rank:mi});return s};
   const apps=L.slice().sort((a,b)=>b.n-a.n),wins=L.filter(x=>x.r>=3).sort((a,b)=>b.w/b.r-a.w/a.r||b.r-a.r),potm=L.filter(x=>x.potm).sort((a,b)=>b.potm-a.potm);
-  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Leaderboards</h2>${seasonPick()}</div><p class="small muted">Based on matches played. Ratings are never shown here.</p>
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>Leaderboards</h2>${seasonPick()}</div><p class="small muted">Based on matches played, goals and assists. Ratings are never shown here.</p>
     ${PM.data.improved?.length?board('📈 Most improved <span class="small muted">(recent form vs start)</span>',top(PM.data.improved.filter(x=>pById(x.id))),x=>x.up?'▲':'＝'):''}
+    ${L.some(x=>x.g)?board('⚽ Top scorers',top(L.filter(x=>x.g).sort((a,b)=>b.g-a.g)),x=>x.g):''}${L.some(x=>x.a)?board('🅰️ Top assists',top(L.filter(x=>x.a).sort((a,b)=>b.a-a.a)),x=>x.a):''}
     ${board('Most appearances',top(apps),x=>x.n)}${board('Best win rate <span class="small muted">(3+ results)</span>',top(wins),x=>pct(x.w/x.r))}${board('🏆 Player of the match',top(potm),x=>x.potm)}`}
 function vpAcct(){const me=PM.data.me;
-  return `<h2>Account</h2><div class="panel stack"><p style="margin:0">Signed in as <b>${esc(me.name)}</b>. Your PIN is the same one you use on the availability link.</p>
+  return `${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
+    <div class="fgrid f3"><label class="f">Shirt no.<input id="mno" inputmode="numeric" maxlength="2" value="${esc(me.number||'')}"></label>
+    <label class="f">Nation<select id="mnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(me.nation||'')?'selected':''}>${n}</option>`).join('')}</select></label>
+    <label class="f">Favourite club<span class="clubsel"><span id="pcbadge">${clubBadge(me.club)||'<span class="cb"></span>'}</span><select id="pclub" data-a="clubprev"><option value="">None</option>${Object.entries(CLUBS).map(([lg,a])=>`<optgroup label="${lg}">${a.map(([cid,n])=>`<option value="${cid}" ${cid===me.club?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></span></label></div>
+    <div class="row"><button class="btn primary" data-a="pedit">Save my card</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}
+  <h2>Account</h2><div class="panel stack"><p style="margin:0">Signed in as <b>${esc(me.name)}</b>. Your PIN is the same one you use on the availability link.</p>
     <div class="fgrid g2"><label class="f">Current PIN<input id="po" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label><label class="f">New PIN<input id="pn2" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></label></div>
     <div class="row"><button class="btn primary" data-a="psetpin">Change PIN</button><span class="small muted" id="pmsg" role="status"></span></div>
     <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
@@ -1570,7 +1610,7 @@ function vpAcct(){const me=PM.data.me;
 function renderPlayer(){document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
-  m.innerHTML=(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():vpMe())}
+  m.innerHTML=(PM.preview?`<div class="prevbar">👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything. <button class="btn small" data-a="exitprev">Exit preview</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():vpMe())}
 
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
   <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your 4-digit PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
@@ -1591,15 +1631,20 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
         if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
         if(r.new)toast('PIN saved. Use it here and on the availability link');view='me';bootPlayer(saved);return}
-      msg.textContent=r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
+      msg.textContent=r.err==='blocked'?'Your profile access is turned off. Ask a manager.':r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
     catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
   if(!PM)return;
+  if(a==='exitprev'){ls('atb_view','squad');location.reload();return}
+  if(PM.preview&&['pvote','ppotm','psetpin','psignout','pedit'].includes(a)){toast('Preview only: this works on the player’s own phone');return}
+  if(a==='goacct'){view='acct';render();window.scrollTo(0,0);return}
   if(a==='preload'){loadPlayer();return}
   if(a==='psignout'){try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}if(supaUser){ls('atb_mode','mgr');ls('atb_view','match')}location.reload();return}
   if(a==='pvote'){const s=el.dataset.s;el.disabled=true;try{const r=await prpc('atb_player_vote',{p_token:PM.tok,p_poll:el.dataset.id,p_status:s});
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
       toast(r==='ok'?'Vote saved 🗳️':r==='closed'?'Voting has closed for this match':'Could not save your vote');await loadPlayer()}catch(err){toast('Could not save your vote');el.disabled=false}return}
+  if(a==='pedit'){const msg=$('#pemsg');el.disabled=true;try{const r=await prpc('atb_player_update',{p_token:PM.tok,p_number:$('#mno').value.trim(),p_club:$('#pclub').value,p_nation:$('#mnat').value});
+      if(r==='ok'){msg.textContent='Saved. Your card is updated.';toast('Card updated');await loadPlayer()}else msg.textContent=r.startsWith('taken:')?`#${$('#mno').value.trim()} is already ${r.slice(6)}’s number. Pick another.`:r==='disabled'?'Editing is turned off by the managers.':r==='bad_number'?'Shirt number must be 0–99.':'Could not save.'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
   if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4}$/.test(n)){msg.textContent='New PIN must be 4 digits.';return}
     try{const r=await prpc('atb_player_setpin',{p_token:PM.tok,p_old:o,p_new:n});msg.textContent=r==='ok'?'PIN changed. Other devices are signed out.':r==='wrong_pin'?'Current PIN is wrong.':'Could not change PIN.';if(r==='ok'){$('#po').value='';$('#pn2').value=''}}catch(err){msg.textContent='Could not change PIN.'}return}
 });
@@ -1631,10 +1676,16 @@ function playerModal(id){pendPhoto=undefined;
     ${r&&!hideR?`<h3>Current (averaged)</h3><div class="tbl"><table><tr>${K.map(k=>`<th>${KL[k]}</th>`).join('')}</tr><tr>${K.map(k=>`<td>${r1(r.a[k])}</td>`).join('')}</tr></table></div>
     ${r.hist.length?`<h3>Form</h3><div class="tbl"><table><tr><th>Match</th><th>OVR</th></tr>${r.hist.slice().reverse().map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.ovr}</td></tr>`).join('')}</table></div>`:''}`:''}
     ${id&&cloud==='supa'&&!p.guest?(()=>{const k=st.pins[id];return `<div class="pinrow"><div><b>Voting PIN</b><div class="small muted">${k?(k.locked_until&&new Date(k.locked_until)>new Date()?'Locked after wrong tries':'Set')+' · '+new Date(k.set_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'Not set yet. They choose one the first time they vote.'}</div></div>${k?`<button class="btn" data-a="pinreset" data-id="${id}">Reset PIN</button>`:''}</div>`})():''}
+    ${id&&isAdmin&&cloud==='supa'&&!p.guest?`<div class="accbox"><div><b>Profile access</b> <span class="small muted" id="accinfo">Checking…</span></div>
+      <label class="small row chk"><input type="checkbox" id="pacc" ${p.noLogin?'':'checked'}> Can sign in to their player profile</label>
+      <div class="row"><button class="btn" data-a="pview" data-id="${p.id}">👁 View as player</button><button class="btn" data-a="psout" data-id="${p.id}">Sign out everywhere</button></div></div>`:''}
     <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button>${id?`<button class="btn danger" data-a="delp" data-id="${p.id}" style="margin-left:auto">Delete player</button>`:''}</div>
     ${id?'<p class="small muted" style="margin:0">Deleting removes the player from the squad. Their past match ratings stay in match history. To keep them but hide them, untick Active this season.</p>':''}
   </div>`);
+  if(id&&isAdmin&&cloud==='supa'&&!p.guest)loadAcc(id);
 }
+async function loadAcc(id,signout){try{const {data:r,error}=await supa.rpc('atb_admin_player_access',{p_player:id,p_signout:!!signout});if(error)throw error;const el=$('#accinfo');if(!el)return;
+  el.textContent=(r.devices?`Signed in on ${r.devices} device${r.devices>1?'s':''}`:'Not signed in anywhere')+(r.last_seen?` · last seen ${ago(r.last_seen)}`:'')+(r.locked?' · 🔒 locked after wrong PINs':'')+(!r.pin?' · no PIN yet':'')}catch(e){const el=$('#accinfo');if(el)el.textContent='Could not check'}}
 
 function rateModal(mid){
   const m=S.matches.find(x=>x.id===mid);if(!m)return;
@@ -1644,6 +1695,7 @@ function rateModal(mid){
     const av0=R(id).a;
     return `<div class="rate" data-pid="${id}"><div class="row"><span class="pos ${posOf(id)}">${posOf(id)}</span><b>${esc(p.name)}</b>${cur?'<span class="pill ok">rated</span>':''}</div>
       <div class="qr" role="group" aria-label="Rate ${esc(p.name)}">${[[-1,'−1'],[-0.5,'−½'],[0,'='],[0.5,'+½'],[1,'+1']].map(([d,l])=>`<button class="qb" data-a="qr" data-d="${d}" data-id="${id}" aria-pressed="${!cur&&d===0}">${l}</button>`).join('')}<button class="qb skip" data-a="qskip" data-id="${id}" aria-pressed="false">Skip</button></div>
+      <div class="gai"><label>⚽ Goals<input class="gin num" type="number" min="0" max="30" inputmode="numeric" id="gg_${id}" value="${m.stats?.[id]?.g||''}" placeholder="0"></label><label>🅰️ Assists<input class="gin num" type="number" min="0" max="30" inputmode="numeric" id="ga_${id}" value="${m.stats?.[id]?.a||''}" placeholder="0"></label></div>
       <input class="fbin" id="fb_${id}" maxlength="140" placeholder="Note for ${esc(p.name.split(' ')[0])} (optional, only they see it)" value="${esc(m.fb?.[id]||'')}">
       <details class="more"><summary class="small muted">All 9 ratings</summary><div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="r_${id}_${k}" data-b="${av0[k]}" value="${Math.round((+base[k]||7)*2)/2}"></label>`).join('')}</div></details></div>`}).join('')}`).join('')}
   <div class="row" style="position:sticky;bottom:0;background:var(--bg);padding-block:10px"><button class="btn primary" data-a="saverate" data-id="${m.id}">Save ratings</button><span class="small muted">Saves every player in this match.</span></div>`);
@@ -1682,17 +1734,20 @@ function splitLU(lu){const L=lu.f.split('-').map(Number);let i=lu.gk?1:0;const o
 const shortName=n=>{n=String(n||'?');const w=n.split(/\s+/);return n.length>10&&w.length>1?w[0]+' '+w[w.length-1][0]+'.':n};
 const initials=n=>String(n||'?').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
 const PITCH_SVG=`<svg class="mk" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="400" fill="#2F8F52"/>${[0,2,4,6,8].map(i=>`<rect y="${i*40}" width="300" height="40" fill="#2A8249"/>`).join("")}<g fill="none" stroke="#FFFFFF" stroke-opacity=".75" stroke-width="2"><rect x="8" y="8" width="284" height="384" rx="16"/><line x1="8" y1="200" x2="292" y2="200"/><circle cx="150" cy="200" r="36"/><path d="M78 8 Q78 72 150 72 Q222 72 222 8"/><path d="M78 392 Q78 328 150 328 Q222 328 222 392"/></g><circle cx="150" cy="200" r="3" fill="#FFFFFF" fill-opacity=".8"/><rect x="122" y="1" width="56" height="7" rx="2" fill="#FFFFFF"/><rect x="122" y="392" width="56" height="7" rx="2" fill="#FFFFFF"/></svg>`;
-function pitchHTML(t,lu,ti,interactive){
-  const g=splitLU(lu);const Y={GK:90,DEF:71,MID:49,FWD:26};const col=KITHEX[t.kit]||'#555';let k=0;const sel=draft.sel;
-  const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;
-    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dot" style="background:${col}">${p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name))}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
+// Light "line-up card" pitch: white turf, gold perspective lines, round photos with shirt number and flag, gold names.
+const PITCH2=`<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="330" fill="#FFFFFF"/>${[1,3,5,7,9].map(i=>`<rect y="${i*30}" width="300" height="30" fill="#F3F3F0"/>`).join('')}
+  <g fill="none" stroke="#DCC47A" stroke-width="1.4"><path d="M22 44 H278"/><path d="M66 44 V88 H234 V44"/><path d="M114 44 V62 H186 V44"/><path d="M40 88 L8 196 M260 88 L292 196"/><ellipse cx="150" cy="186" rx="46" ry="24"/><path d="M70 330 L84 262 H216 L230 330"/><path d="M118 330 V304 H182 V330"/></g></svg>`;
+function pitchHTML(t,lu,ti,interactive,title){
+  const g=splitLU(lu);const Y={GK:89,DEF:71,MID:50,FWD:29};const col=KITHEX[t.kit]||'#C9A227';const sel=draft.sel;
+  const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;const ph=p?.thumb||p?.photo;
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot" style="border-color:${col}">${ph?`<img src="${ph}" alt="">`:esc(initials(p?.name))}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
-  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?150:94)/k);ids.forEach((id,i)=>{const x=k>=4?13+i*74/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-5:4):0);html+=tok(id,role,x,y,idx++,w)})}
+  for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?96:90)/Math.max(k,1));ids.forEach((id,i)=>{const x=k>=4?12+i*76/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-4:4):0);html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   let rate='';if(interactive){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
     rate=`<div class="prate num"><span>On pitch (${st.n})</span><span>Att <b>${hideR?99:r1(st.atk)}</b></span><span>Mid <b>${hideR?99:r1(st.mid)}</b></span><span>Def <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`}
-  return `${rate}<div class="pitch">${PITCH_SVG}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
+  return `${rate}<div class="pitch p2">${PITCH2}${title?`<div class="ptitle" style="color:${t.kit==='black'||!KITHEX[t.kit]?'#C9A227':col}">${esc(title)}</div>`:''}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
 }
 function teamLU(i){const t=draft.teams[i];draft.lu=draft.lu||[];const lu=getLU(t,draft.lu[i]);draft.lu[i]=lu;return lu}
 
@@ -1704,7 +1759,7 @@ function shareModal(m,sel){
   const d=shareData(m);lastShare=d;shareSel=sel??'all';
   const one=shareSel!=='all'?d.teams[+shareSel]:null;
   const card=one?`<div id="sharecard" class="sharecard one"><div style="display:flex;gap:10px;align-items:center"><span class="kitsw" style="background:${KITHEX[one.kit]}"></span><div style="min-width:0"><div class="sh">${esc(one.name)}</div><div class="sd" style="margin:2px 0 0">${fmtDate(d.date)} · ${esc(S.settings.time)}</div></div><span class="fbadge">${one.lu.gk?'GK · ':''}${one.lu.f}</span></div>
-      <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false)}</div></div>`
+      <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false,one.name)}</div></div>`
     :`<div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(timeFor(d.date))}</div>${rotLine(d,false)}
     <div class="sg">${d.teams.map(t=>`<div class="st"><h4 style="background:${KITHEX[t.kit]}">${esc(t.name)}<small>${t.lu.f}</small></h4><ol>${t.players.map(p=>`<li>${esc(p.name)}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>`;
   openModal(`<div class="mh"><h2>Share</h2><button class="btn ghost x" data-a="close">Close</button></div>
@@ -1795,6 +1850,7 @@ document.addEventListener('click',async e=>{
   if(a==='bump'){const d=+el.dataset.d;K.forEach(k=>{const i=$(`#r_${CSS.escape(id)}_${k}`);i.value=Math.min(10,Math.max(1,(+i.value||7)+d))});return}
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;if(row.dataset.skip==='1'){delete m.ratings[pid];return}const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
+    m.stats=m.stats||{};document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid,g=Math.max(0,Math.min(30,+$(`#gg_${CSS.escape(pid)}`).value||0)),a=Math.max(0,Math.min(30,+$(`#ga_${CSS.escape(pid)}`).value||0));if(g||a)m.stats[pid]={g,a};else delete m.stats[pid]});
     m.fb=m.fb||{};document.querySelectorAll('.fbin').forEach(i=>{const pid=i.id.slice(3),v=i.value.trim();if(v)m.fb[pid]=v;else delete m.fb[pid]});
     await putMatch(m);closeModal();toast('Ratings saved');return}
   if(a==='savesched'||a==='winter'){let list=WINTER,bad=[];
@@ -1852,10 +1908,12 @@ document.addEventListener('click',async e=>{
   if(a==='sf'){squadFilter=el.dataset.f;render();return}
   if(a==='addp'){playerModal(null);return}
   if(a==='editp'){playerModal(id);return}
+  if(a==='pview'){startPreview(id);return}
+  if(a==='psout'){await loadAcc(id,true);toast('Signed out on every device');return}
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut}else{delete rec.photo;delete rec.photoCut}}
+    const acc=$('#pacc');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
