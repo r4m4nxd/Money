@@ -183,7 +183,10 @@ button.tok{cursor:pointer}
 .p2 .ptitle{position:absolute;top:4%;left:0;right:0;text-align:center;color:#111;font-family:var(--f-display);font-weight:900;font-size:clamp(17px,5.4vw,26px);letter-spacing:.01em;text-transform:uppercase;z-index:1;pointer-events:none;line-height:1}
 .p2 .ptitle i{display:block;width:34px;height:4px;border-radius:2px;margin:6px auto 0}
 .p2 .tok{gap:4px;color:#fff}.p2 .dw{position:relative;display:block}
-.p2 .tok .dot{width:clamp(42px,12.5vw,60px);height:clamp(42px,12.5vw,60px);border:0;background:#fff;color:#1d5e2a;font-size:clamp(13px,4vw,19px);box-shadow:0 0 0 2px rgba(255,255,255,.9),0 3px 8px rgba(0,0,0,.28)}
+.p2 .tok .dot{position:relative;width:clamp(42px,12.5vw,60px);height:clamp(42px,12.5vw,60px);border:3px solid var(--kc);background:#fff;color:#fff;font-size:clamp(13px,4vw,19px);box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.p2 .tok .dot.ini{background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--kc) 70%,#fff),var(--kc) 70%);border-color:#fff;box-shadow:0 0 0 2.5px var(--kc),0 3px 8px rgba(0,0,0,.3)}
+.p2 .dot.ini .sil{position:absolute;inset:18% 12% 0;width:76%;height:82%;fill:rgba(255,255,255,.28)}
+.p2 .dot.ini b{position:relative;font-family:var(--f-display);font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .p2 .tok .dot img{object-position:50% 18%}
 .p2 .nb{position:absolute;top:-3px;left:-8px;min-width:19px;height:19px;padding:0 3px;border-radius:99px;background:#fff;color:#111;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .p2 .fg{position:absolute;top:-3px;right:-8px;width:19px;height:19px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.3)}
@@ -1805,7 +1808,7 @@ const PITCH2=(()=>{const T=84,B=330,xl=y=>36-44*(y-T)/(B-T),xr=y=>300-xl(y);cons
 function pitchHTML(t,lu,ti,interactive,title){
   const g=splitLU(lu);const Y=g.GK.length?{GK:87,DEF:67,MID:47,FWD:26}:{DEF:77,MID:52,FWD:26};const col=KITHEX[t.kit]||'#C9A227';const sel=draft.sel;
   const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;const ph=p?.thumb||p?.photo;
-    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot">${ph?`<img src="${ph}" alt="">`:esc(initials(p?.name))}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot${ph?'':' ini'}" style="--kc:${col}">${ph?`<img src="${ph}" alt="">`:`${SIL}<b>${esc(initials(p?.name))}</b>`}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
   for(const role of ['GK','DEF','MID','FWD']){const ids=g[role];const k=ids.length,w=Math.min(30,(k>=4?96:90)/Math.max(k,1));ids.forEach((id,i)=>{const x=k>=4?12+i*76/(k-1):(i+1)/(k+1)*100;const y=Y[role]+(k>=4?(i%2?-4:4):0);html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
