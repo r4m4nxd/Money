@@ -199,13 +199,13 @@ button.tok{cursor:pointer}
 .p2 .ptitle i{display:block;width:34px;height:4px;border-radius:2px;margin:6px auto 0}
 .p2 .tok{gap:4px;color:#fff}.p2 .dw{position:relative;display:block}
 .p2 .tok .dot{position:relative;width:clamp(30px,11cqw,50px);height:clamp(30px,11cqw,50px);border:2.5px solid var(--kc);background:#fff;color:#fff;font-size:clamp(11px,3.6cqw,17px);box-shadow:0 3px 8px rgba(0,0,0,.3)}
-.p2 .tok .dot.ini{background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--kc) 70%,#fff),var(--kc) 70%);border-color:#fff;box-shadow:0 0 0 2.5px var(--kc),0 3px 8px rgba(0,0,0,.3)}
+.p2 .tok .dot.ini{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.3),rgba(255,255,255,0) 70%),var(--kc);border-color:#fff;box-shadow:0 0 0 2.5px var(--kc),0 3px 8px rgba(0,0,0,.3)}
 .p2 .dot.ini .sil{position:absolute;inset:18% 12% 0;width:76%;height:82%;fill:rgba(255,255,255,.28)}
 .p2 .dot.ini b{position:relative;font-family:var(--f-display);font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .p2 .tok .dot img{object-position:50% 18%}
 .p2 .nb{position:absolute;top:-4px;left:-7px;min-width:17px;height:17px;padding:0 3px;border-radius:99px;background:#fff;color:#111;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .p2 .fg{position:absolute;top:-4px;right:-7px;width:17px;height:17px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.3)}
-.p2 .tok .tn{background:none;color:#fff;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(8px,2.7cqw,12px);padding:0;text-shadow:0 1px 2px rgba(0,0,0,.55);display:block;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.p2 .tok .tn{background:none;color:#fff;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(8px,2.7cqw,12px);line-height:1.35;padding:0 1px;text-shadow:0 1px 2px rgba(0,0,0,.55);display:block;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .p2 .fgc{background:#fff;display:grid;place-items:center;overflow:hidden}.p2 .fgc .cb{width:80%;height:80%;object-fit:contain}
 .p2 .tok.sel .dot{outline:3px solid #FFD54A;outline-offset:2px}
 .subs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:8px;font-size:13px}
@@ -468,14 +468,15 @@ div.citem{cursor:default}
 .ppchips{display:flex;flex-wrap:wrap;gap:8px 14px;font-weight:700;color:var(--good);font-size:14px}.ppchips span{display:flex;align-items:center;gap:6px}.ppchips .cb,.ppchips .flag{width:20px;height:20px;object-fit:contain;border-radius:3px}
 .tierc.t-gold{color:#E0B84A}.tierc.t-silver{color:#C9CED6}.tierc.t-bronze{color:#C98A54}
 .ppfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;border-top:1px solid var(--line);padding-top:10px}.ppfacts i{display:block;font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.ppfacts .stars{color:#F5C451;letter-spacing:1px}
-.psb{width:46px;height:50px;display:grid;place-items:center;color:#5d6878;background:linear-gradient(160deg,#2a3242,#1b212c);clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);flex:none}.psb svg{width:25px;height:25px}
-.psb.on{color:#062a24;background:linear-gradient(160deg,#7ff5d8,#23c8a4 60%,#139a7e)}.psb.plus{color:#3a2400;background:linear-gradient(160deg,#ffe9a6,#f5c451 55%,#c9892a)}
-.psx{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}.psx small{font-size:11px;line-height:1.15;color:var(--muted);opacity:.7}.psx.on small{color:var(--ink);font-weight:700;opacity:1}.psx:not(.on) .psb{opacity:.55}
+.psb{width:46px;height:46px;display:grid;place-items:center;flex:none}.psb img{width:100%;height:100%;object-fit:contain}
+.psb:not(.on):not(.plus) img{filter:grayscale(1) brightness(.5);opacity:.45}
+.psup summary{cursor:pointer}.psupg{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px;margin-top:10px}.psupi{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer}.psupi small{font-size:11px;line-height:1.15}.psupi i{position:absolute;top:0;right:10px;font-style:normal;font-size:11px;background:var(--good);color:#fff;border-radius:99px;width:17px;height:17px;display:grid;place-items:center}
+.psx{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}.psx small{font-size:11px;line-height:1.15;color:var(--muted);opacity:.7}.psx.on small{color:var(--ink);font-weight:700;opacity:1}
 .psgrid .gh2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.psgrid{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px}.psrow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:6px}.psrow>i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.psrow>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px}@media(max-width:520px){.psrow{grid-template-columns:1fr}}
 .ppnums{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;border-top:1px solid var(--line);padding-top:10px;text-align:center}.ppnums b{display:block;font-family:var(--f-display);font-size:22px}.ppnums i{font-style:normal;font-size:11px;color:var(--muted)}@media(max-width:520px){.ppnums{grid-template-columns:repeat(3,1fr)}}
 .ppgrid{display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start}@media(max-width:760px){.ppgrid{grid-template-columns:1fr}}
 .ppstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
-.psed{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}.pse{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;cursor:pointer}.pse .psb{grid-row:span 2;width:34px;height:37px}.pse .psb svg{width:19px;height:19px}.pse b{font-weight:700;align-self:end}.pse i{font-style:normal;font-size:11px;font-weight:600;align-self:start}.pse:not(.on) .psb{opacity:.5}
+.psed{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}.pse{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;cursor:pointer}.pse .psb{grid-row:span 2;width:36px;height:36px}.pse b{font-weight:700;align-self:end}.pse i{font-style:normal;font-size:11px;font-weight:600;align-self:start}
 .pse.on{color:var(--ink)}.pse.give{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}.pse.take{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent)}.pse.take b{text-decoration:line-through}
 .fcg .gh2{display:flex;justify-content:space-between;font-size:17px}.fcg .pbar{height:6px;margin:6px 0 8px}.fcg .pbar i{background:var(--good)}.fcg .sub{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;padding:2px 0}
 .num.hi{color:var(--good)}.num.md{color:#C6D94A}.num.lo{color:var(--warn)}
@@ -1282,7 +1283,7 @@ function vGuide(){
 
   ${sec('ppage','Player pages and PlayStyles',`<ul><li>Tap a player → <b>📄 Player page</b> for an EA FC-style page: card, nation, club, tier, position with best position, age, foot, height, skill and weak-foot stars, shirt number, apps, goals, assists, POTM, tournaments and titles.</li>
     <li><b>Stats</b>: Pace, Shooting, Passing, Dribbling, Defending and Physical, each with its bar and the real attributes underneath (out of 100). <b>Rating per position</b> shows their level at ST, LW/RW, CAM, LM/RM, CM, CDM, LB/RB and CB on a pitch; gold = best.</li>
-    <li><b>PlayStyles</b> unlock from real match ratings, e.g. Finesse Shot (Shooting 78+), Tiki Taka (Passing and Team Work 78+), Anticipate (Defending 82+), Technical (Ball Skill 78+), Rapid (Speed 82+), Relentless (Stamina 80+ and Mindset 78+). “+” versions need 88+. Hover or long-press to see what each needs.</li>
+    <li><b>PlayStyles</b> are the 36 from EA FC 26 with their real icons: Finishing, Passing, Defending, Ball control, Physical and Goalkeeper. White icon = PlayStyle, gold icon = PlayStyle+ (elite, 88+). They can unlock from match ratings, e.g. Finesse Shot (Shooting 78+ and Ball Skill 74+), Tiki Taka (Passing and Team Work 78+), Anticipate (Defending 82+), First Touch (Ball Skill 82+), Quick Step (Speed 78+), Relentless (Stamina 80+ and Mindset 78+). Goalkeeper PlayStyles are only ever awarded by you.</li>
     <li>Players open their own page from Me → <b>📄 My player page</b>. Numbers there follow “Players can see their own ratings”; bars and PlayStyles still show their strengths.</li>
     <li>Set <b>Foot, Height, Skills ★ and Weak foot ★</b> on the player’s card. Only managers can set these, ratings and PlayStyles; players can’t change any of them.</li>
     <li><b>Award or remove PlayStyles:</b> on the player’s card, tap a PlayStyle to cycle <b>Auto</b> (earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>, then Save player. Awarded ones show even if the ratings aren’t there yet; removed ones stay grey.</li>
@@ -1505,6 +1506,10 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
     <label class="f" style="max-width:320px">Badge next to each player on the pitch<select id="pbsel" data-a="setpb"><option value="nation" ${(s.pitchBadge||'nation')==='nation'?'selected':''}>Nation flag</option><option value="club" ${s.pitchBadge==='club'?'selected':''}>Favourite club crest</option></select></label>
     <label class="small row chk"><input type="checkbox" id="psa" data-a="set" data-k="psAuto" ${s.psAuto!==false?'checked':''}> PlayStyles: also award automatically from match ratings (untick so only the ones you award by hand light up)</label>
+    <details class="panel psup"><summary><b>PlayStyle icons</b> <span class="small muted">${Object.keys(s.psIcons||{}).length} of ${PSTYLES.flatMap(([,l])=>l).length} custom</span></summary>
+      <p class="small muted">The EA FC 26 icons are built in. To swap any of them (e.g. when a new game comes out), upload PNGs: <b>Upload several</b> matches files by name (e.g. <i>finesse-shot.png</i>, <i>TikiTaka.png</i>), or tap one icon to replace just that one.</p>
+      <div class="row"><label class="btn primary" for="psbulk">Upload several</label><input type="file" id="psbulk" accept="image/*" multiple hidden data-a="psbulk">${Object.keys(s.psIcons||{}).length?'<button class="btn ghost" data-a="psreset">Use the built-in EA icons</button>':''}<span class="small muted" id="psmsg"></span></div>
+      <div class="psupg">${PSTYLES.flatMap(([,l])=>l).map(x=>`<label class="psupi" title="Replace ${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small>${s.psIcons?.[x[1]]?'<i>✓</i>':''}<input type="file" accept="image/*" hidden data-a="psone" data-n="${esc(x[1])}"></label>`).join('')}</div></details>
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
     ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="small row chk"><input type="checkbox" id="plg" data-a="set" data-k="playerLogin" ${s.playerLogin!==false?'checked':''}> Players can sign in to see their own profile, matches and availability</label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
@@ -1918,6 +1923,17 @@ function gearModal(id,cat,tid){const t0=tid&&S.tourns.find(t=>t.id===tid);const 
     <div class="row"><button class="btn primary" data-a="gearsave" data-id="${id||''}">Save</button>${id?`<button class="btn danger" data-a="geardel" data-id="${id}" style="margin-left:auto">Delete</button>`:''}</div></div>`);gThumbs()}
 function gThumbs(){const el=$('#gthumbs');if(!el)return;el.innerHTML=pendGear.map((u,i)=>`<span class="gth"><img src="${u}" alt=""><button type="button" data-a="gimgdel" data-i="${i}" aria-label="Remove photo">✕</button>${i?`<button type="button" class="gfirst" data-a="gimgfirst" data-i="${i}" aria-label="Show first">★</button>`:''}</span>`).join('')+(pendGear.length<4?`<label class="gth gadd" for="gimg">＋<small>Add photo</small></label><input type="file" id="gimg" accept="image/*" multiple hidden data-a="gearphoto">`:'')}
 let pendGear,pendPS={};
+// small transparent PNG for icons
+function iconImg(file,max=96){return new Promise(res=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/png'))};img.onerror=()=>res(null);img.src=u})}
+// html2canvas draws <img src=*.svg> at the wrong size and ignores object-fit: swap each for a PNG cropped like the screen shows it
+async function snapCard(el){const map=new Map();
+  await Promise.all([...el.querySelectorAll('img')].filter(i=>/\.svg(\?|$)/i.test(i.src)||getComputedStyle(i).objectFit==='cover').map(async i=>{const r=i.getBoundingClientRect();if(!r.width)return;
+    const w=Math.round(r.width*3),h=Math.round(r.height*3);const im=new Image();im.crossOrigin='anonymous';im.src=i.src;try{await im.decode()}catch(e){return}
+    let iw=im.naturalWidth||640,ih=im.naturalHeight||480;if(/\.svg/i.test(i.src)&&!im.naturalWidth){iw=640;ih=480}
+    const c=document.createElement('canvas');c.width=w;c.height=h;const k=Math.max(w/iw,h/ih),pos=getComputedStyle(i).objectPosition.split(' ').map(v=>parseFloat(v)/100);
+    c.getContext('2d').drawImage(im,(w-iw*k)*(isNaN(pos[0])?.5:pos[0]),(h-ih*k)*(isNaN(pos[1])?.5:pos[1]),iw*k,ih*k);try{map.set(i,c.toDataURL('image/png'))}catch(e){}}));
+  const list=[...el.querySelectorAll('img')].map(i=>map.get(i)||null);
+  return html2canvas(el,{backgroundColor:'#0F1B2B',scale:2,onclone:doc=>{const cl=doc.querySelector('#sharecard');[...cl.querySelectorAll('img')].forEach((i,k)=>{if(list[k]){i.src=list[k];i.style.objectFit='fill'}})}})}
 function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};img.onerror=()=>res(null);img.src=u})}
 
 /* ----- Manager: tournaments ----- */
@@ -2004,46 +2020,22 @@ function vpTourn(){const me=pById(PM.data.me.id),t0=todayISO(),up=S.tourns.filte
 
 /* ---------- FC-style player page (managers: any player; players: themselves) ---------- */
 // PlayStyles earned from real match ratings (out of 100); a "+" version at 88+
-const PSTYLES=[['Finishing',[['🎯','Finesse Shot',{sho:78}],['💥','Power Shot',{sho:80,str:72}],['🪶','Chip Shot',{sho:75,bal:76}],['🔫','Low Driven',{sho:83}]]],
-  ['Passing',[['🗝️','Incisive Pass',{pas:80,min:75}],['🔁','Tiki Taka',{pas:78,tea:78}],['📐','Pinged Pass',{pas:82}],['🚀','Long Ball',{pas:76,str:72}],['🌀','Whipped Pass',{pas:76,spd:76}]]],
-  ['Defending',[['🧤','Jockey',{def:75,spd:72}],['🧱','Block',{def:80}],['✂️','Intercept',{def:78,min:75}],['👁️','Anticipate',{def:82}],['🦵','Slide Tackle',{def:78,sta:78}]]],
-  ['Ball control',[['✨','Technical',{bal:78}],['🧲','First Touch',{bal:82}],['🎩','Trickster',{bal:80,spd:78}],['🛡️','Press Proven',{bal:76,str:76}]]],
-  ['Physical',[['⚡','Rapid',{spd:82}],['👟','Quick Step',{spd:78}],['🔥','Relentless',{sta:80,min:78}],['🦾','Bruiser',{str:82}],['🪖','Enforcer',{str:78,def:75}]]],
-  ['Team',[['🤝','Team Player',{tea:80}],['©️','Leader',{min:82,tea:76}],['🔋','Engine',{sta:84}]]]];
-const BALL='<circle cx="12" cy="12" r="4.2"/><path d="M12 9.6l1.9 1.4-.7 2.2h-2.4l-.7-2.2z" fill="currentColor" stroke="none"/>';
-const PSICON={
- 'Finesse Shot':'<path d="M4 19c2-9 8-13 15-13"/><path d="M15 3.5l4 2.5-3 3.6"/><circle cx="4.5" cy="19.5" r="1.8" fill="currentColor" stroke="none"/>',
- 'Power Shot':'<circle cx="16" cy="12" r="4.2"/><path d="M2.5 8h7M1.5 12h8M2.5 16h7"/>',
- 'Chip Shot':'<path d="M3 20c3-13 13-13 18 0"/><path d="M8 20h8M12 15v5"/><circle cx="12" cy="7" r="2" fill="currentColor" stroke="none"/>',
- 'Low Driven':'<path d="M2 19h20"/><path d="M3 15h14"/><path d="M14 11.5l4 3.5-4 3.5"/>',
- 'Incisive Pass':'<path d="M5 3v7M5 14v7M19 3v7M19 14v7"/><path d="M1.5 12h19"/><path d="M17 8.5l3.5 3.5-3.5 3.5"/>',
- 'Tiki Taka':'<circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/><circle cx="12" cy="5" r="2"/><path d="M6.3 15 10.7 6.8M13.3 6.8 17.7 15M7 17h10"/>',
- 'Pinged Pass':'<path d="M2 12h14"/><path d="M12 8l4 4-4 4"/><circle cx="19.5" cy="12" r="2.5"/>',
- 'Long Ball':'<path d="M2 20C5 5 17 5 21 17"/><path d="M17.5 15.5l3.5 2 1-4"/>',
- 'Whipped Pass':'<path d="M3 18c4 0 5-12 11-12 3 0 5 2 6 4"/><path d="M16.5 10.5 20 10l.2-3.6"/>',
- 'Jockey':'<path d="M3 12h18"/><path d="M6.5 8.5 3 12l3.5 3.5M17.5 8.5 21 12l-3.5 3.5"/><circle cx="12" cy="6" r="2"/><path d="M12 8v8"/>',
- 'Block':'<path d="M12 2.5 20 6v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M8 12h8M12 8v8"/>',
- 'Intercept':'<path d="M2 17 22 7"/><path d="M12 3v18"/><path d="M9 6l3-3 3 3"/>',
- 'Anticipate':'<path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>',
- 'Slide Tackle':'<path d="M3 19h18"/><path d="M4 16l9-4 4 2"/><circle cx="7" cy="8" r="2"/><circle cx="19.5" cy="15" r="2" fill="currentColor" stroke="none"/>',
- 'Technical':BALL+'<path d="M12 3a9 9 0 0 1 9 9M12 21a9 9 0 0 1-9-9"/><path d="M19 9.5l2 2.5 2.5-2M5 14.5 3 12 .5 14"/>',
- 'First Touch':BALL+'<path d="M12 2v3.5M12 18.5V22M2 12h3.5M18.5 12H22"/>',
- 'Trickster':BALL+'<path d="M4 4l2.5 2.5M20 4l-2.5 2.5M4 20l2.5-2.5M20 20l-2.5-2.5"/><path d="M12 1.5l1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2-1.5-1.4 2-.3z" fill="currentColor" stroke="none"/>',
- 'Press Proven':BALL+'<path d="M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/><path d="M2.5 8.5 5 5l3 2.2M21.5 8.5 19 5l-3 2.2"/>',
- 'Rapid':'<path d="M13.5 2 5 13.5h6L9.5 22 19 9.5h-6z" fill="currentColor" stroke="none"/>',
- 'Quick Step':'<path d="M4 6l6 6-6 6M12 6l6 6-6 6"/>',
- 'Relentless':'<path d="M12 12c-2.5-3.5-4-4.5-6-4.5a4.5 4.5 0 0 0 0 9c2 0 3.5-1 6-4.5s4-4.5 6-4.5a4.5 4.5 0 0 1 0 9c-2 0-3.5-1-6-4.5z"/>',
- 'Bruiser':'<path d="M6 11V7.5a1.5 1.5 0 0 1 3 0V11M9 10V6a1.5 1.5 0 0 1 3 0v4M12 10V6.5a1.5 1.5 0 0 1 3 0V11M15 11V8.5a1.5 1.5 0 0 1 3 0V14c0 4-2.5 7-6.5 7S6 18.5 6 15v-4"/>',
- 'Enforcer':'<path d="M3 13a9 9 0 0 1 18 0v2H3z"/><path d="M12 4v11M2 18h20"/>',
- 'Team Player':'<circle cx="8" cy="8" r="2.6"/><circle cx="16" cy="8" r="2.6"/><path d="M2.5 19c0-3.5 2.5-5.5 5.5-5.5s5.5 2 5.5 5.5M10.5 19c0-3.5 2.5-5.5 5.5-5.5s5.5 2 5.5 5.5"/>',
- 'Leader':'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M15 9.2a3.6 3.6 0 1 0 0 5.6"/>',
- 'Engine':'<path d="M2 12h4l2-5 3.5 10 2.5-7 1.5 2H22"/>'};
-const psIcon=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PSICON[n]||BALL}</svg>`;
+const PSTYLES=[['Finishing',[['','Finesse Shot',{sho:78,bal:74}],['','Chip Shot',{sho:75,bal:76}],['','Power Shot',{sho:80,str:72}],['','Dead Ball',{sho:76,pas:78}],['','Precision Header',{sho:76,str:76}],['','Acrobatic',{sho:76,bal:78}],['','Low Driven Shot',{sho:83}],['','Gamechanger',{sho:80,bal:80,min:76}]]],
+  ['Passing',[['','Incisive Pass',{pas:80,min:75}],['','Pinged Pass',{pas:82}],['','Long Ball Pass',{pas:76,str:72}],['','Tiki Taka',{pas:78,tea:78}],['','Whipped Pass',{pas:76,spd:76}],['','Inventive',{pas:80,bal:78}]]],
+  ['Defending',[['','Jockey',{def:75,spd:72}],['','Block',{def:80}],['','Intercept',{def:78,min:75}],['','Anticipate',{def:82}],['','Slide Tackle',{def:78,sta:78}],['','Aerial Fortress',{def:78,str:78}]]],
+  ['Ball control',[['','Technical',{bal:78}],['','Rapid',{spd:82,bal:74}],['','First Touch',{bal:82}],['','Trickster',{bal:80,spd:78}],['','Press Proven',{bal:76,str:76}]]],
+  ['Physical',[['','Quick Step',{spd:78}],['','Relentless',{sta:80,min:78}],['','Long Throw',{str:78,pas:70}],['','Bruiser',{str:82}],['','Enforcer',{str:78,def:75}]]],
+  // goalkeeper ones are never automatic: managers award them
+  ['Goalkeeper',[['','Far Throw',null],['','Footwork',null],['','Cross Claimer',null],['','Rush Out',null],['','Far Reach',null],['','Deflector',null]]]];
+const PSOLD={'Low Driven Shot':'Low Driven','Long Ball Pass':'Long Ball'};
+const psSlug=n=>n.toLowerCase().replace(/\s+/g,'-');
+// EA FC icons: white = PlayStyle, gold = PlayStyle+ (a manager-uploaded icon wins)
+const psIcon=(n,plus)=>`<img src="${S.settings.psIcons?.[n]||`icons/ps/${psSlug(n)}${plus?'+':''}.png`}" alt="" loading="lazy">`;
 const psEdBtn=(n,o,au)=>{const on=o===true||(o===undefined&&au);return `<button type="button" class="pse${on?' on':''}${o===true?' give':''}${o===false?' take':''}" data-a="psset" data-n="${esc(n)}" data-au="${au?1:0}">${psBadge(n,on?'on':'')}<b>${esc(n)}</b><i>${o===true?'✓ Awarded':o===false?'✕ Removed':au?'Auto · earned':S.settings.psAuto!==false?'Auto · not earned':'Not awarded'}</i></button>`};
-// FC-style badge; st: '' (greyed), 'on' (awarded), 'plus' (elite)
-const psBadge=(n,st)=>`<span class="psb${st?' '+st:''}">${psIcon(n)}</span>`;
-const psAuto=(a,req)=>Object.entries(req).every(([k,v])=>a[k]>=v);
-let psCur=null;const psEarned=(a,req,name)=>{const o=psCur?.[name];return o===true?true:o===false?false:S.settings.psAuto!==false&&psAuto(a,req)};const psPlus=(a,req)=>Object.entries(req).every(([k,v])=>a[k]>=Math.max(88,v+8));
+// st: '' (greyed), 'on' (awarded), 'plus' (elite)
+const psBadge=(n,st)=>`<span class="psb${st?' '+st:''}">${psIcon(n,st==='plus')}</span>`;
+const psAuto=(a,req)=>!!req&&Object.entries(req).every(([k,v])=>a[k]>=v);
+let psCur=null;const psEarned=(a,req,name)=>{const o=psCur?.[name]??psCur?.[PSOLD[name]];return o===true?true:o===false?false:S.settings.psAuto!==false&&psAuto(a,req)};const psPlus=(a,req)=>!!req&&Object.entries(req).every(([k,v])=>a[k]>=Math.max(88,v+8));
 const PSTYLE={pas:['🎯','Tiki Taka'],sho:['💥','Power Shot'],def:['🛡️','Intercept'],bal:['✨','Technical'],min:['🔥','Relentless'],tea:['🤝','Press Proven'],spd:['⚡','Rapid'],sta:['🔋','Engine'],str:['🦾','Bruiser']};
 const PITCHFULL=`<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true">${[...Array(11)].map((_,i)=>`<rect y="${i*30}" width="300" height="30" fill="${i%2?'#2C7A36':'#338A3E'}"/>`).join('')}<g fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4"><rect x="8" y="8" width="284" height="314"/><path d="M8 165H292"/><circle cx="150" cy="165" r="34"/><rect x="80" y="8" width="140" height="52"/><rect x="80" y="270" width="140" height="52"/></g></svg>`;
 const FCGROUPS=[['Pace',['spd']],['Shooting',['sho']],['Passing',['pas','tea']],['Dribbling',['bal','min']],['Defending',['def']],['Physical',['str','sta']]];
@@ -2340,7 +2332,7 @@ document.addEventListener('click',async e=>{
     openModal(`<div class="mh"><h2>Share squad</h2><button class="btn ghost x" data-a="close">Close</button></div><div id="sharecard" class="sharecard one"><div class="sh">🏆 ${esc(t.name)}</div><div class="sd">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}</div>
       <div style="margin-top:12px">${pitchHTML({kit:t.kit||'',players:sq},getLU(sq,t.lu),0,false,'Airdrie United')}</div></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" data-a="tshareimg">Save as image</button><button class="btn" data-a="tsharetxt">Copy text for WhatsApp</button></div>`);return}
-  if(a==='tshareimg'){if(!window.html2canvas){toast('Take a screenshot instead');return}try{const c=await html2canvas($('#sharecard'),{backgroundColor:'#0F1B2B',scale:2});const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('squad-'+lastTShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}return}
+  if(a==='tshareimg'){if(!window.html2canvas){toast('Take a screenshot instead');return}try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('squad-'+lastTShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}return}
   if(a==='tsharetxt'){try{await navigator.clipboard.writeText(tShareText(lastTShare));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}return}
   if(a==='clubedit'){const c=S.settings.club||{};openModal(`<div class="mh"><h2>Club info</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
       <label class="f">Club name<input id="cn" value="${esc(c.name||'Airdrie United')}"></label><label class="f">Founded<input id="cf" value="${esc(c.founded||'2025')}"></label>
@@ -2349,6 +2341,7 @@ document.addEventListener('click',async e=>{
   if(a==='clubsave'){S.settings.club={name:$('#cn').value.trim().slice(0,40),founded:$('#cf').value.trim().slice(0,10),home:$('#ch').value.trim().slice(0,60),indoor:$('#ci').value.trim().slice(0,60)};await putSettings();closeModal();render();return}
   if(a==='gearadd'){gearModal(null,el.dataset.v,el.dataset.t);return}
   if(a==='gearview'){gearView(id);return}
+  if(a==='psreset'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to remove uploaded icons';return}delete S.settings.psIcons;await putSettings();render();return}
   if(a==='gvsel'){const g=S.gear.find(x=>x.id===id);$('#gvimg').innerHTML=`<img src="${gImgs(g)[+el.dataset.i]}" alt="">`;document.querySelectorAll('.gvth button').forEach(b=>b.classList.toggle('on',b===el));return}
   if(a==='gimgdel'){pendGear.splice(+el.dataset.i,1);gThumbs();return}
   if(a==='gimgfirst'){const [x]=pendGear.splice(+el.dataset.i,1);pendGear.unshift(x);gThumbs();return}
@@ -2420,7 +2413,7 @@ document.addEventListener('click',async e=>{
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
-    el.disabled=true;try{const c=await html2canvas($('#sharecard'),{backgroundColor:'#0F1B2B',scale:2});const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('teams-'+lastShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
+    el.disabled=true;try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('teams-'+lastShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
   if(a==='export'){await saveFile('airdrie-teams-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(S,null,1),'application/json');return}
 });
 document.addEventListener('change',async e=>{
@@ -2437,6 +2430,9 @@ document.addEventListener('change',async e=>{
   if(a==='gearphoto'){for(const f of [...el.files].slice(0,4-pendGear.length)){const u=await resizeImg(f,640);if(u)pendGear.push(u)}gThumbs();return}
   if(a==='gcat'){$('#gm').className='stack gm c-'+el.value;return}
   if(a==='tsee'){const t={...S.tourns.find(x=>x.id===el.dataset.id)};Object.assign(t,tSeeVal(el.value,t,t.date));await putDoc('tournaments',t.id,t);logAct('Tournament visibility',t.name+': '+tSeeTxt(t));return}
+  if(a==='psone'||a==='psbulk'){const all=PSTYLES.flatMap(([,l])=>l).map(x=>x[1]),key=v=>v.toLowerCase().replace(/\.[a-z0-9]+$/,'').replace(/[^a-z]/g,'');const ic={...(S.settings.psIcons||{})};let n=0,miss=[];
+    for(const f of el.files){const nm=a==='psone'?el.dataset.n:all.find(x=>key(f.name).includes(key(x)))||all.find(x=>key(x).includes(key(f.name))&&key(f.name).length>3);if(!nm){miss.push(f.name);continue}const u=await iconImg(f);if(u){ic[nm]=u;n++}}
+    S.settings.psIcons=ic;await putSettings();render();toast(`${n} icon${n===1?'':'s'} updated`+(miss.length?`. Not matched: ${miss.slice(0,4).join(', ')}${miss.length>4?'…':''}`:''));return}
   if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
   if(a==='ntfen'){const {error}=await supa.from('atb_notify').update({enabled:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(!error){ntf.enabled=el.checked;toast(el.checked?'Alerts resumed':'Alerts paused')}return}
