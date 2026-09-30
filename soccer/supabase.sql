@@ -65,3 +65,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- atb_player_pins (bcrypt PIN per player, 5 wrong tries = 1 h lock), public.atb_vote(poll, player, status, pin) is the only way to answer,
 -- public.atb_pin_status(poll, player); direct insert/update on atb_rsvp revoked for anon.
 -- atb_notify (per-manager ntfy.sh topic + optional email); trigger on atb_rsvp_log posts to https://ntfy.sh via pg_net (schema extensions).
+
+-- Waitlist + auto-open (migration atb_waitlist_and_auto_open): atb_polls.max_players; atb_vote keeps a player's queue position on repeat taps;
+-- pg_cron job 'atb-auto-open' (Mon 03:00 UTC = Sunday evening Alberta) runs private.atb_auto_open() for teams with settings.autoLink.
