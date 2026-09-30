@@ -1398,7 +1398,7 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
 function gameCard(x,open){const m=x.m,me=PM.data.me.id;
   const score=m.teams.map((t,i)=>`<span class="sc${i===x.ti?' mine':''}" style="--k:${KITHEX[t.kit]||'#555'}">${esc(t.name||'Team '+(i+1))} <b class="num">${t.goals??'–'}</b></span>`).join('');
   const lu=getLU(x.t.players.filter(id=>pById(id)),x.t.lu);
-  return `<details class="panel game"${open?' open':''}><summary><div class="gh"><div><b>${fmtDate(m.date)}</b><div class="small muted">${esc(x.t.name||'')}${x.potm?' · 🏆 Player of the match':''}</div></div>${resPill(x.res)}</div></summary>
+  return `<details class="panel game"${open?' open data-auto':''}><summary><div class="gh"><div><b>${fmtDate(m.date)}</b><div class="small muted">${esc(x.t.name||'')}${x.potm?' · 🏆 Player of the match':''}</div></div>${resPill(x.res)}</div></summary>
     <div class="scs">${score}</div>
     ${m.potm&&pById(m.potm)?`<p class="small muted" style="margin:6px 0">Player of the match: <b>${esc(pById(m.potm).name)}</b></p>`:''}
     <div class="pitchwrap">${pitchHTML(x.t,lu,x.ti,false)}</div>
@@ -1454,7 +1454,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4}$/.test(n)){msg.textContent='New PIN must be 4 digits.';return}
     try{const r=await prpc('atb_player_setpin',{p_token:PM.tok,p_old:o,p_new:n});msg.textContent=r==='ok'?'PIN changed. Other devices are signed out.':r==='wrong_pin'?'Current PIN is wrong.':'Could not change PIN.';if(r==='ok'){$('#po').value='';$('#pn2').value=''}}catch(err){msg.textContent='Could not change PIN.'}return}
 });
-document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open)plog('Opened match',d.querySelector('b')?.textContent)},true);
+document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open&&!d.hasAttribute('data-auto'))plog('Opened match',d.querySelector('b')?.textContent)},true);
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- modals ---------- */
