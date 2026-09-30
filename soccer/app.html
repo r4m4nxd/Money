@@ -1923,7 +1923,10 @@ async function loadForSnap(src){let url=src,tmp=null;
   return {im,done:()=>tmp&&URL.revokeObjectURL(tmp)}}
 async function snapCard(el){const imgs=[...el.querySelectorAll('img')];
   const list=await Promise.all(imgs.map(async i=>{const r=i.getBoundingClientRect(),src=i.currentSrc||i.src;if(!r.width||!r.height||!src)return null;
-    const L=await loadForSnap(src);if(!L)return null;const {im}=L,cs=getComputedStyle(i),fit=cs.objectFit;
+    // other sites' crests block canvas copies: retry through an image proxy that allows it, else draw our colour badge
+    let L=await loadForSnap(src);if(!L&&!src.startsWith('data:')&&new URL(src,location.href).origin!==location.origin)L=await loadForSnap('https://wsrv.nl/?url='+encodeURIComponent(src)+'&output=png');
+    if(!L&&i.dataset.club){const t=colourBadge(i.dataset.club,'x').replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" width="40" height="46"');L=await loadForSnap('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(t))}
+    if(!L)return null;const {im}=L,cs=getComputedStyle(i),fit=cs.objectFit;
     const w=Math.round(r.width*3),h=Math.round(r.height*3),iw=im.naturalWidth||im.width||640,ih=im.naturalHeight||im.height||480;
     const k=fit==='cover'?Math.max(w/iw,h/ih):fit==='contain'||fit==='scale-down'?Math.min(w/iw,h/ih):0;const pos=cs.objectPosition.split(' ').map(v=>parseFloat(v)/100);
     const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
