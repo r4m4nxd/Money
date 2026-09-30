@@ -372,6 +372,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .lb{list-style:none;margin:0;padding:0}.lb li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line)}.lb li:last-child{border:0}
 .lb .rk{width:24px;color:var(--muted);text-align:right}.lb .nm{flex:1;min-width:0;border:0;margin:0;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb li.me{background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:8px}
 .avl li .who{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.kpi.warnk b{color:var(--bad)}.pact>summary{list-style:none;cursor:pointer}.pact>summary::-webkit-details-marker{display:none}.pact .alog{margin-top:10px}
 .mgrh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.mgrh .pill{white-space:nowrap;flex:none}
 .wl2{border:1px dashed var(--line);border-radius:6px;padding:8px 12px}.wl2 ol{margin:6px 0 0;padding-left:22px;font-size:14px}
 .phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phead .pcount{margin-left:auto;font-size:15px}
@@ -1052,7 +1053,8 @@ function vSquad(){
 let mgrs={list:null,loading:false,err:''};
 async function mgrCall(body){const {data,error}=await supa.functions.invoke('atb-managers',{body});
   if(error){let m=error.message;try{const j=await error.context.json();m=j.error||m}catch(e){}throw new Error(m)}if(data&&data.error)throw new Error(data.error);return data}
-async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers;const a=await supa.from('atb_activity').select('member,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(500);mgrs.act=a.data||[]}catch(e){mgrs.err=e.message}mgrs.loading=false;if(view==='managers')render()}
+async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers;const a=await supa.from('atb_activity').select('member,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(500);mgrs.act=a.data||[]}catch(e){mgrs.err=e.message}
+  try{const b=await supa.from('atb_player_activity').select('player_id,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(3000);mgrs.pact=b.data||[]}catch(e){mgrs.pact=[]}mgrs.loading=false;if(view==='managers')render()}
 const genPw=()=>{const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';const b=new Uint32Array(12);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('')};
 const ago=t=>{const s=(Date.now()-new Date(t))/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'};
 function vManagers(){
@@ -1071,8 +1073,23 @@ function vManagers(){
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
-      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`;
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+playerActPanel(when);
 }
+let pactQ='';
+function playerActPanel(when){const acts=mgrs.pact;
+  if(!acts)return `<h2>Player activity</h2><div class="panel muted">Loading…</div>`;
+  const by={};acts.forEach(x=>(by[x.player_id]=by[x.player_id]||[]).push(x));const wk=Date.now()-7*864e5;
+  const roster=S.players.filter(p=>!p.guest).map(p=>({p,acts:by[p.id]||[]})).sort((a,b)=>(b.acts[0]?.at||'').localeCompare(a.acts[0]?.at||'')||a.p.name.localeCompare(b.p.name));
+  const q=pactQ.toLowerCase();const icon=a=>/Wrong|Locked|blocked/.test(a)?'⚠ ':'';
+  const row=x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${icon(x.action)}${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`;
+  const signed=roster.filter(r=>r.acts.some(a=>a.action==='Signed in')).length,bad=acts.filter(a=>/Wrong|Locked/.test(a.action)&&new Date(a.at)>wk).length;
+  return `<h2>Player activity</h2><p class="small muted">What each player did after signing in with their PIN, plus answers and wrong PINs on the availability link. Kept 180 days; only you can see it.</p>
+  <div class="kpis">${kpi(signed+' / '+roster.length,'Players who signed in')}${kpi(roster.filter(r=>r.acts[0]&&Date.now()-new Date(r.acts[0].at)<7*864e5).length,'Active this week')}${kpi(bad,'Wrong PINs this week',bad?'warnk':'')}</div>
+  <details class="panel"><summary><b>Latest from everyone</b></summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who"><b>${esc(pById(x.player_id)?.name||x.player_id)}</b> ${icon(x.action)}${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')||'<li class="muted">Nothing yet</li>'}</ol></details>
+  <input id="pactq" data-a="pactq" placeholder="Search a player" value="${esc(pactQ)}" style="margin:10px 0">
+  <div class="mlist">${roster.filter(r=>!q||r.p.name.toLowerCase().includes(q)).map(({p,acts:a})=>{const last=a[0],ins=a.filter(x=>x.action==='Signed in').length,wr=a.filter(x=>/Wrong|Locked/.test(x.action)&&new Date(x.at)>wk).length;
+    return `<details class="panel pact"><summary><div class="mgrh"><div><b>${esc(p.name)}</b><div class="small muted">${ins} sign-in${ins===1?'':'s'}${wr?` · <span style="color:var(--bad)">${wr} wrong PIN${wr===1?'':'s'} this week</span>`:''}</div></div><span class="pill ${last?(Date.now()-new Date(last.at)<864e5?'ok':'meh'):''}">${last?'Active '+ago(last.at):'Never'}</span></div></summary>
+      ${a.length?`<ol class="alog">${a.slice(0,60).map(row).join('')}</ol>`:'<p class="small muted">No activity yet.</p>'}</details>`}).join('')}</div>`}
 
 function vGuide(){
   const sec=(id,t,body,open)=>`<details class="gsec" id="g-${id}" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
@@ -1240,6 +1257,7 @@ function vGuide(){
     <li><b>Admin:</b> ${ADMIN_EMAIL} is the only account that sees the <b>Managers</b> tab and can add, reset or remove managers.</li>
     <li><b>Add manager:</b> type a username; a strong password is suggested (or type your own, 8+ characters). The login details are copied so you can send them privately.</li>
     <li>Managers sign in with their <b>username</b> and password. They see and change the same squad, ratings, matches, settings and availability links as you, live.</li>
+    <li><b>Player activity</b> (below the managers): every player’s sign-ins, pages viewed, matches opened, in/out answers (profile and link), PIN changes, and wrong-PIN attempts (⚠). Search a player and tap to see their full log.</li>
     <li><b>Activity:</b> each manager shows <b>Active … ago</b> (the last time they used the app, not just when they signed in) and an <b>Activity</b> list: opened the app, added/edited/deleted players, balanced teams, saved or updated matches and ratings, opened/closed/reset links, used answers, reset PINs and changed settings. Kept for 90 days; only you can see it.</li>
     <li><b>Set password</b> replaces a manager’s password. <b>Remove</b> deletes their login immediately; everything they changed stays.</li>
     <li>Managers can’t use Forgot password; they ask you to set a new one. Their logins have no real email address, so no reset email can ever be sent for them.</li>
@@ -1300,6 +1318,7 @@ function vSettings(){
 /* ---------- Player accounts: a player signs in with their name + 4-digit PIN and sees only their own profile ---------- */
 let PM=null;// {tok,team,id,name,data,loading,err,season}
 const PTABS=[['me','Me'],['games','Matches'],['avail','Availability'],['leaders','Leaders'],['acct','Account']];
+function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
 function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
@@ -1435,6 +1454,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4}$/.test(n)){msg.textContent='New PIN must be 4 digits.';return}
     try{const r=await prpc('atb_player_setpin',{p_token:PM.tok,p_old:o,p_new:n});msg.textContent=r==='ok'?'PIN changed. Other devices are signed out.':r==='wrong_pin'?'Current PIN is wrong.':'Could not change PIN.';if(r==='ok'){$('#po').value='';$('#pn2').value=''}}catch(err){msg.textContent='Could not change PIN.'}return}
 });
+document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open)plog('Opened match',d.querySelector('b')?.textContent)},true);
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- modals ---------- */
@@ -1570,7 +1590,7 @@ async function saveFile(name,data,mime){
 
 /* ---------- events ---------- */
 document.addEventListener('click',async e=>{
-  const tab=e.target.closest('#tabs button');if(tab){view=tab.dataset.v;ls('atb_view',view);render();window.scrollTo(0,0);const nav=$('#tabs');nav.scrollTo({left:tab.offsetLeft-nav.clientWidth/2+tab.clientWidth/2,behavior:'smooth'});return}
+  const tab=e.target.closest('#tabs button');if(tab){view=tab.dataset.v;if(PM)plog('Viewed '+tab.textContent.trim());ls('atb_view',view);render();window.scrollTo(0,0);const nav=$('#tabs');nav.scrollTo({left:tab.offsetLeft-nav.clientWidth/2+tab.clientWidth/2,behavior:'smooth'});return}
   const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,id=el.dataset.id;
   if(el.tagName==='SELECT'||el.tagName==='INPUT'&&el.type!=='checkbox')return;
   if(a==='scrim'&&e.target===el){const m=el.firstElementChild;m.classList.remove('nudge');void m.offsetWidth;m.classList.add('nudge');return}
@@ -1704,6 +1724,7 @@ document.addEventListener('change',async e=>{
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
       for(const p of j.players)await putPlayer(p);for(const m of j.matches||[])await putMatch(m);if(j.settings){Object.assign(S.settings,j.settings);await putSettings()}toast('Imported '+j.players.length+' players, '+(j.matches||[]).length+' matches')}catch(err){toast('That file is not a Team Builder backup')}el.value='';return}
 });
+document.addEventListener('input',e=>{if(e.target.id!=='pactq')return;pactQ=e.target.value;const pos=e.target.selectionStart;render();const i=$('#pactq');if(i){i.focus();i.setSelectionRange(pos,pos)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pphoto'))closeModal()});
 (function(){const sp=$('#splash');let seen=false;try{seen=sessionStorage.getItem('atb_splash')==='1';sessionStorage.setItem('atb_splash','1')}catch(e){}
   if(seen){sp.remove();return}
