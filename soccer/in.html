@@ -66,8 +66,8 @@ function render(){
   app.innerHTML=head()+`<div class="count"><div class="in"><b>${ins.length}${poll.max_players?`<small>/${poll.max_players}</small>`:''}</b>In</div>${q.wait.length?`<div class="wt2"><b>${q.wait.length}</b>Waitlist</div>`:''}<div class="out"><b>${outs.length}</b>Out</div><div><b>${poll.players.length-ins.length-q.wait.length-outs.length}</b>No answer</div></div>
   ${poll.max_players&&ins.length>=poll.max_players?`<p class="full">This week is full (${poll.max_players} players). Say you’re in to join the waitlist; you move up automatically if someone drops out.</p>`:''}
   ${mp?`<div class="me"><h2>${esc(mp.name)}, are you in?</h2>
-      <label class="pinl" for="pin">${pinState[me]==='none'?'First time? Choose a 4-digit PIN. You’ll use it every week, so only you can answer for your name.':'Your 4-digit PIN'}</label>
-      <input id="pin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" value="${esc(ls('aufc_pin_'+me)||'')}">
+      <label class="pinl" for="pin">${pinState[me]==='none'?'First time? Choose a PIN (4–6 digits; 6 is safer). You’ll use it every week, so only you can answer for your name.':'Your PIN'}</label>
+      <input id="pin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="••••" value="${esc(ls('aufc_pin_'+me)||'')}">
       <div class="btns"><button class="bin" data-s="in" aria-pressed="${rs[me]==='in'}">I’m in</button><button class="bout" data-s="out" aria-pressed="${rs[me]==='out'}">Can’t make it</button></div>
       ${rs[me]==='in'&&q.wait.includes(me)?`<p class="pmsg">You’re #${q.wait.indexOf(me)+1} on the waitlist. You’ll move up automatically if someone drops out.</p>`:''}${msg?`<p class="pmsg" role="alert">${msg}</p>`:''}
       <button class="link" id="notme">Not ${esc(mp.name)}?</button><a class="link" id="prof" href="./" style="display:block;margin-top:6px">See your matches, teams and stats →</a></div>`
@@ -80,16 +80,16 @@ function until(){if(!poll.kickoff)return '';const ms=new Date(poll.kickoff)-Date
 const head=()=>`<header><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h1>${esc(poll.title||'Saturday Soccer')}</h1><div class="sub">Airdrie United</div></div></header>
   <div class="when"><div class="wd">${fmt(poll.match_date)}</div><div class="wt">${esc(poll.time_label||'')}</div><div class="wc">${until()}</div></div>`;
 async function loadPin(){if(!me||pinState[me])return;const {data}=await sb.rpc('atb_pin_status',{p_poll:pid,p_player:me});pinState[me]=data||'set'}
-async function load(){const {data,error}=await sb.from('atb_polls').select('id,title,match_date,time_label,kickoff,players,open,max_players').eq('id',pid).maybeSingle();
+async function load(){const {data,error}=await sb.rpc('atb_poll_view',{p_poll:pid});
   if(error||!data){app.innerHTML='<p class="msg">This link doesn’t work any more. Ask in the group chat for the new one.</p>';return false}
-  poll=data;const r=await sb.from('atb_rsvp').select('player_id,status,updated_at').eq('poll_id',pid);rs={};at={};(r.data||[]).forEach(x=>{rs[x.player_id]=x.status;at[x.player_id]=x.updated_at});
+  poll=data;poll.players=poll.players||[];rs={};at={};(data.rsvp||[]).forEach(x=>{rs[x.player_id]=x.status;at[x.player_id]=x.updated_at});
   me=ls('aufc_me');if(!poll.players.some(p=>p.id===me))me=null;return true}
 app.addEventListener('click',async e=>{
   const pick=e.target.closest('.pick');if(pick){me=pick.dataset.id;ls('aufc_me',me);msg='';await loadPin();render();scrollTo({top:0,behavior:'smooth'});return}
   if(e.target.id==='prof'){try{localStorage.setItem('atb_plast',JSON.stringify(me));localStorage.setItem('atb_lrole',JSON.stringify('player'))}catch(x){}return}
   if(e.target.id==='notme'){me=null;ls('aufc_me',null);msg='';render();return}
   const b=e.target.closest('[data-s]');if(b&&me&&!busy){const pin=($('#pin')?.value||'').trim();const name=poll.players.find(p=>p.id===me)?.name||'';
-    if(!/^[0-9]{4}$/.test(pin)){msg='Enter a 4-digit PIN first.';render();$('#pin')?.focus();return}
+    if(!/^[0-9]{4,6}$/.test(pin)){msg='Enter your 4–6 digit PIN first.';render();$('#pin')?.focus();return}
     busy=true;b.disabled=true;const status=b.dataset.s;
     const {data,error}=await sb.rpc('atb_vote',{p_poll:pid,p_player:me,p_status:status,p_pin:pin});busy=false;
     if(error){msg='Could not save. Check your signal and try again.';render();return}
@@ -97,7 +97,7 @@ app.addEventListener('click',async e=>{
     else if(data==='wrong_pin'){ls('aufc_pin_'+me,null);msg=`That PIN doesn’t match ${esc(name)}’s. If you forgot it, ask the manager to reset it.`}
     else if(data==='locked'){msg='Too many wrong PINs. Voting for this name is locked for an hour, or until the manager resets it.'}
     else if(data==='closed'){msg='This link is closed or your name isn’t on it. Ask in the group chat.'}
-    else msg='Enter a 4-digit PIN.';
+    else msg='Enter a 4–6 digit PIN.';
     render()}
 });
 (async()=>{if(!pid||!window.supabase){app.innerHTML='<p class="msg">Open the link from the group chat.</p>';return}

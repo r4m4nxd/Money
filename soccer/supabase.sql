@@ -72,3 +72,8 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Player sign-in (migration atb_player_logins): private.atb_player_sessions (sha256 token hashes, 180-day sliding expiry),
 -- RPCs atb_player_roster / atb_player_login / atb_player_logout / atb_player_data / atb_player_vote / atb_player_setpin (anon-callable, security definer).
 -- atb_player_data returns only the signed-in player's profile; other players' ratings are never returned, own ratings only when settings.playerRatings.
+
+-- Security hardening (migration atb_security_hardening): private.atb_teams allow-list; atb_is_team requires a registered team;
+-- voting page reads a single link via public.atb_poll_view(uuid) (anon open-poll/rsvp SELECT policies removed);
+-- PINs 4-6 digits via private.atb_pin_check: 5 wrong = 1 h lock, 10 = 24 h, >30 team-wide wrong/24 h = 24 h lock per wrong try, ntfy alerts.
+-- Tournaments: atb_polls.kind ('match'|'tournament') + tournament id; docs cols 'tournaments' and 'gear'.
