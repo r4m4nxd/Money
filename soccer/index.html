@@ -1267,6 +1267,7 @@ function vGuide(){
   ${sec('tourn','Tournaments',`<ol>
     <li><b>Tournaments</b> tab → <b>＋ New tournament</b>: name, date, time, venue, format, squad size and age rule (Open, minimum age, maximum age, or between two ages; counted on the tournament date unless you pick another date).</li>
     <li><b>Publishing:</b> every new tournament starts <b>🔒 Hidden</b>. Players see nothing until you press <b>Publish</b> on the tournament page. Choose who can see each one: <b>Whole club</b>, <b>Squad only</b> or <b>Chosen players</b> (tick names; “Add the whole squad” fills them in). <b>Unpublish</b> hides it again. This is enforced on the server, so players can’t see hidden ones.</li>
+    <li><b>Line-up:</b> choose how many are <b>on the pitch</b> (5–11), the formation and a keeper, then tap two players to swap them (on the pitch, or with a sub). Everyone who can see the tournament sees exactly this line-up and bench.</li>
     <li><b>＋ Past tournament</b> records one that already happened: date, venue, the age rule, then tick <b>who played</b> (inactive players are listed too), add each game with the opponent club and score, the final placing, goals and assists. Save, then Publish (it defaults to squad only).</li>
     <li><b>Open availability link</b> sends a separate link (🏆 in the title) only to eligible players plus anyone you’ve added. Players without a date of birth are included so they can answer. <b>Copy WhatsApp message</b>, Refresh, Close/Reopen as usual. It closes itself the day after.</li>
     <li><b>Pick the squad</b>: players are listed eligible first, with age, answer (In/Out) and OVR. Tap to select. <b>Auto-pick best available</b> fills the squad with available players by position mix and rating. Players outside the age rule are listed separately; tapping one adds them anyway (you’re warned).</li>
@@ -1951,6 +1952,10 @@ function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObje
 
 /* ----- Manager: tournaments ----- */
 let tSel=null,tPoll={},lastTShare=null;
+// one saved line-up per tournament (count on pitch, formation, keeper, order) so players see exactly what managers set
+let tSlot=null;
+const tLU=t=>getLU((t.squad||[]).filter(pById),{n:onPitch(),...(t.lu||{})});
+const sameLU=(a,b)=>!!b&&a.f===b.f&&!!a.gk===!!b.gk&&+a.n===+b.n&&JSON.stringify(a.order)===JSON.stringify(b.order||null);
 function vTourn(){if(tSel&&S.tourns.find(t=>t.id===tSel))return vTournOne(S.tourns.find(t=>t.id===tSel));
   const up=S.tourns.filter(t=>t.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1),past=S.tourns.filter(t=>t.date<todayISO()).sort((a,b)=>a.date<b.date?1:-1);
   const row=t=>`<button class="panel trow" data-a="topen" data-id="${t.id}"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.venue?' · '+esc(t.venue):''} · ${ruleTxt(t)}</div></div><div class="small">${t.place?placeTxt(t.place):`${(t.squad||[]).length} picked`} · ${t.status==='draft'?'<span class="pill meh">🔒 Not published</span>':`<span class="pill ok">🌐 ${({club:'Club',squad:'Squad',pick:'Chosen'})[t.see||'club']}</span>`}</div></button>`;
@@ -1987,7 +1992,7 @@ function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);c
   const ans=id=>rs[id]==='in'?'<span class="pill ok">In</span>':rs[id]==='out'?'<span class="pill bad">Out</span>':t.poll?'<span class="pill">–</span>':'';
   const prow=(p,warn)=>{const on=squad.includes(p.id),a=ageAt(p.dob,(t.rule||{}).asOf||t.date);return `<button class="tp${on?' on':''}" data-a="tpick" data-id="${p.id}"><span class="ck">${on?'✓':''}</span><span class="pos ${p.pos}">${p.pos}</span><b>${esc(p.name)}</b><span class="small muted">${a==null?'no DOB':a+' yrs'}</span>${ans(p.id)}${warn?`<span class="pill meh">${warn}</span>`:''}<span class="num o">${rv(R(p.id).ovr)}</span></button>`};
   const ord=l=>l.slice().sort((a,b)=>(rs[b.id]==='in')-(rs[a.id]==='in')||(rs[a.id]==='out')-(rs[b.id]==='out')||a.name.localeCompare(b.name));
-  const lu=getLU(squad,t.lu);const g=t.games||[],rec=tRecord(t),mix={DEF:0,MID:0,FWD:0};squad.forEach(id=>mix[posOf(id)]++);
+  const lu=tLU(t);if(squad.length&&!PM&&!sameLU(lu,t.lu))setTimeout(()=>putDoc('tournaments',t.id,{...S.tourns.find(x=>x.id===t.id),lu}),0);const g=t.games||[],rec=tRecord(t),mix={DEF:0,MID:0,FWD:0};squad.forEach(id=>mix[posOf(id)]++);
   return `<button class="btn ghost small" data-a="tback">← All tournaments</button>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:8px"><div><h2 style="margin:0">${esc(t.name)}</h2><div class="small muted">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}${t.format?' · '+esc(t.format):''}</div>
     <div style="margin-top:6px"><span class="pill">${ruleTxt(t)}</span>${isPast?' <span class="pill">Past tournament</span>':''}</div></div><button class="btn" data-a="tedit" data-id="${t.id}">Edit details</button></div>
@@ -2002,9 +2007,11 @@ function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);c
   <div class="row" style="margin-bottom:8px"><button class="btn" data-a="tauto" data-id="${t.id}">Auto-pick best available</button>${squad.length?`<button class="btn ghost" data-a="tclear" data-id="${t.id}">Clear</button>`:''}
     <label class="small">Captain <select data-a="tcapt" data-id="${t.id}"><option value="">None</option>${squad.map(id=>`<option value="${id}" ${t.captain===id?'selected':''}>${esc(pById(id).name)}</option>`).join('')}</select></label></div>
   <div class="panel tlist">${ord(el).map(p=>prow(p)).join('')}${unk.length?`<div class="small muted tsep">No date of birth yet</div>${ord(unk).map(p=>prow(p,'check age')).join('')}`:''}${no.length?`<div class="small muted tsep">Not eligible by age: tap to add anyway</div>${ord(no).map(p=>prow(p,'age rule')).join('')}`:''}${inact.length?`<div class="small muted tsep">Inactive players (for past tournaments)</div>${ord(inact).map(p=>prow(p,'inactive')).join('')}`:''}</div>
-  ${squad.length?`<h3 class="tsh">3 · Line-up</h3><div class="row" style="margin-bottom:8px"><label class="small">Formation <select data-a="tform" data-id="${t.id}">${formOpts(squad,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
+  ${squad.length?`<h3 class="tsh">3 · Line-up <span class="small muted">${Math.min(lu.n,squad.length)} on the pitch · ${Math.max(0,squad.length-lu.n)} subs</span></h3><div class="row tlu" style="margin-bottom:8px">
+      <label class="small">On pitch <select data-a="tonp" data-id="${t.id}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n} players</option>`).join('')}</select></label>
+      <label class="small">Formation <select data-a="tform" data-id="${t.id}">${formOpts(squad,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
       <label class="small row chk"><input type="checkbox" data-a="tgk" data-id="${t.id}" ${lu.gk?'checked':''}> Keeper</label><button class="btn" data-a="tshare" data-id="${t.id}">Share squad</button></div>
-    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,false,t.name)}</div>`:''}
+    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,true,t.name,{a:'tslot',sel:tSlot&&tSlot.t===t.id?{t:0,k:tSlot.k}:null})}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap them, on the pitch or with a sub. Players see exactly this line-up.</p></div>`:''}
   <h3 class="tsh">4 · Results</h3><div class="panel stack">
     ${g.map((x,i)=>`<div class="tg"><select id="tgs_${i}">${['Group','Round of 16','Quarter-final','Semi-final','Final','Friendly'].map(k=>`<option ${x.stage===k?'selected':''}>${k}</option>`).join('')}</select><input id="tgo_${i}" value="${esc(x.opp||'')}" placeholder="Opponent"><input id="tgf_${i}" class="num" type="number" min="0" value="${esc(x.gf??'')}" placeholder="Us"><span>–</span><input id="tga_${i}" class="num" type="number" min="0" value="${esc(x.ga??'')}" placeholder="Them"><button class="btn ghost small" data-a="tgdel" data-id="${t.id}" data-i="${i}">✕</button></div>`).join('')}
     <div class="row"><button class="btn" data-a="tgadd" data-id="${t.id}">＋ Add game</button><span class="small muted">${rec.n?`W${rec.W} D${rec.D} L${rec.L} · ${rec.GF}–${rec.GA}`:''}</span></div>
@@ -2023,13 +2030,13 @@ function vpTourn(){const me=pById(PM.data.me.id),t0=todayISO(),up=S.tourns.filte
     return `<div class="panel tcard"><div class="row" style="justify-content:space-between"><div><b>🏆 ${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}${t.format?' · '+esc(t.format):''}</div></div><span class="pill">${ruleTxt(t)}</span></div>
       <div style="margin-top:8px">${inSq?`<span class="pill ok">✅ You’re in the squad${t.captain===me.id?' · Captain (C)':''}</span>`:e===false?'<span class="pill bad">Not eligible by age</span>':e===null?'<span class="pill meh">Add your date of birth in Account to check eligibility</span>':'<span class="pill ok">You’re eligible</span>'}</div>
       ${pl?`<div class="row nmb" style="margin-top:8px"><span class="small muted" style="flex-basis:100%">Can you play? ${pl.mine?`You said <b>${pl.mine.toUpperCase()}</b>.`:''}</span><button class="btn primary${pl.mine==='in'?' on':''}" data-a="pvote" data-id="${pl.id}" data-s="in">I’m in</button><button class="btn${pl.mine==='out'?' on':''}" data-a="pvote" data-id="${pl.id}" data-s="out">Can’t make it</button></div>`:''}
-      ${inSq&&(t.squad||[]).length>=3?`<div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:t.squad},getLU(t.squad.filter(pById),t.lu),0,false,t.name)}</div>`:''}</div>`};
-  const hist=myTourns().filter(t=>t.date<t0);
+      ${(t.squad||[]).length>=3?`<div class="small muted" style="margin-top:10px">Squad · ${Math.min(tLU(t).n,t.squad.length)} on the pitch, ${Math.max(0,t.squad.length-tLU(t).n)} subs</div><div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:t.squad},tLU(t),0,false,t.name)}</div>`:''}</div>`};
+  const hist=S.tourns.filter(t=>t.date<t0).sort((a,b)=>a.date<b.date?1:-1);
   return `<h2>Tournaments</h2>${up.map(card).join('')||'<div class="panel small muted">No upcoming tournaments right now.</div>'}
     <h2>Your tournament career</h2><div class="kpis">${kpi(c.n,'Tournaments')}${kpi(c.champ,'🏆 Titles')}${kpi(c.runner,'🥈 Runner-up')}${kpi(`${c.W}-${c.D}-${c.L}`,'W-D-L')}${kpi(c.g,'⚽ Goals')}${kpi(c.a,'🅰️ Assists')}${c.cap?kpi(c.cap,'Captain'):''}</div>
-    ${hist.map(t=>{const r=tRecord(t),st=t.stats?.[me.id]||{};return `<details class="panel game"><summary><div class="gh"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${st.g?` · ⚽${st.g>1?'×'+st.g:''}`:''}${st.a?` · 🅰️${st.a>1?'×'+st.a:''}`:''}${t.captain===me.id?' · (C)':''}</div></div><span class="pill ${t.place==='champ'?'ok':''}">${placeTxt(t.place)||'–'}</span></div></summary>
+    ${hist.length?'<h2>Past tournaments</h2>':''}${hist.map(t=>{const r=tRecord(t),st=t.stats?.[me.id]||{};return `<details class="panel game"><summary><div class="gh"><div><b>${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${st.g?` · ⚽${st.g>1?'×'+st.g:''}`:''}${st.a?` · 🅰️${st.a>1?'×'+st.a:''}`:''}${t.captain===me.id?' · (C)':''}${(t.squad||[]).includes(me.id)?' · <span class="pill ok">You played</span>':''}</div></div><span class="pill ${t.place==='champ'?'ok':''}">${placeTxt(t.place)||'–'}</span></div></summary>
       ${(t.games||[]).length?`<ol class="plb">${t.games.map(x=>`<li><span class="small muted">${esc(x.stage||'')}</span><span class="nm">v ${esc(x.opp||'?')}</span><b class="num">${x.gf??'–'}–${x.ga??'–'}</b></li>`).join('')}</ol><p class="small muted">Record: W${r.W} D${r.D} L${r.L} · ${r.GF}–${r.GA}</p>`:''}
-      <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:t.squad||[]},getLU((t.squad||[]).filter(pById),t.lu),0,false,t.name)}</div></details>`}).join('')||'<p class="small muted">Get picked for a tournament squad to start your career.</p>'}`}
+      ${(t.squad||[]).length?`<div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:t.squad||[]},tLU(t),0,false,t.name)}</div>`:''}</details>`}).join('')}${c.n?'':'<p class="small muted">Get picked for a tournament squad to start your career.</p>'}`}
 
 /* ---------- FC-style player page (managers: any player; players: themselves) ---------- */
 // PlayStyles earned from real match ratings (out of 100); a "+" version at 88+
@@ -2145,15 +2152,15 @@ function rateModal(mid){
 const fsum=f=>f.split('-').reduce((s,x)=>s+ +x,0);
 const onPitch=()=>+S.settings.onPitch||8;
 // outfield players to place: the pitch limit (keeper counts toward it), never more than the team has
-const target=(ids,gk)=>Math.max(1,Math.min(onPitch(),ids.length)-(gk?1:0));
-function autoForm(ids,gk){const T=target(ids,gk);const c={DEF:0,MID:0,FWD:0};ids.forEach(id=>c[posOf(id)]++);const n=ids.length||1;
+const target=(ids,gk,n)=>Math.max(1,Math.min(+n||onPitch(),ids.length)-(gk?1:0));
+function autoForm(ids,gk,np){const T=target(ids,gk,np);const c={DEF:0,MID:0,FWD:0};ids.forEach(id=>c[posOf(id)]++);const n=ids.length||1;
   const want=POS.map(p=>c[p]/n*T);const out=want.map(x=>Math.max(T>=3?1:0,Math.floor(x)));
   while(out.reduce((a,b)=>a+b,0)<T){let bi=0,bv=-1;want.forEach((w,i)=>{const r=w-out[i];if(r>bv){bv=r;bi=i}});out[bi]++}
   while(out.reduce((a,b)=>a+b,0)>T){let bi=0;out.forEach((v,i)=>{if(v-want[i]>out[bi]-want[bi])bi=i});out[bi]--}
   return out.join('-')}
-function formOpts(ids,gk){const T=target(ids,gk);const o=[];
+function formOpts(ids,gk,n){const T=target(ids,gk,n);const o=[];
   for(let d=1;d<=5;d++)for(let m=1;m<=5;m++){const f=T-d-m;if(f>=1&&f<=4)o.push(d+'-'+m+'-'+f)}
-  const a=autoForm(ids,gk);if(!o.includes(a))o.push(a);return o.sort((x,y)=>x<y?1:-1)}
+  const a=autoForm(ids,gk,n);if(!o.includes(a))o.push(a);return o.sort((x,y)=>x<y?1:-1)}
 function autoOrder(ids,f,gk){
   const L=f.split('-').map(Number);const lines=[['DEF',L[0],'def'],['MID',L[1],'mid'],['FWD',L[2],'fwd']];
   let pool=ids.slice();const got={DEF:[],MID:[],FWD:[]};
@@ -2164,10 +2171,10 @@ function autoOrder(ids,f,gk){
   return [...g,...got.DEF,...got.MID,...got.FWD,...pool];
 }
 function getLU(ids,lu){
-  let gk=!!(lu&&lu.gk)&&ids.length>1;let f=lu&&lu.f;const cap=ids.length-(gk?1:0);
-  if(!f||fsum(f)!==target(ids,gk))f=autoForm(ids,gk);
-  if(lu&&lu.f===f&&!!lu.gk===gk&&lu.order&&lu.order.length===ids.length&&ids.every(id=>lu.order.includes(id)))return {f,gk,order:lu.order.slice()};
-  return {f,gk,order:autoOrder(ids,f,gk)};
+  let gk=!!(lu&&lu.gk)&&ids.length>1;let f=lu&&lu.f;const n=lu&&lu.n?+lu.n:undefined,x=n?{n}:{};
+  if(!f||fsum(f)!==target(ids,gk,n))f=autoForm(ids,gk,n);
+  if(lu&&lu.f===f&&!!lu.gk===gk&&lu.order&&lu.order.length===ids.length&&ids.every(id=>lu.order.includes(id)))return {f,gk,...x,order:lu.order.slice()};
+  return {f,gk,...x,order:autoOrder(ids,f,gk)};
 }
 function splitLU(lu){const L=lu.f.split('-').map(Number);let i=lu.gk?1:0;const o=lu.order;
   const r={GK:lu.gk?o.slice(0,1):[],DEF:o.slice(i,i+=L[0]),MID:o.slice(i,i+=L[1]),FWD:o.slice(i,i+=L[2])};r.SUB=o.slice(i);return r}
@@ -2179,17 +2186,17 @@ const PITCH2=(()=>{const T=84,B=330,xl=y=>36-44*(y-T)/(B-T),xr=y=>300-xl(y);cons
   let bands='';const n=8,h=(B-T)/n;for(let k=0;k<n;k++)bands+=band(T+k*h,T+(k+1)*h,k%2?'#2C7A36':'#338A3E');
   return `<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="330" fill="#FFFFFF"/>${bands}
   <g fill="none" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="1.3"><path d="M${xl(T)} ${T}H${xr(T)}L${xr(B)} ${B}H${xl(B)}Z"/><path d="M92 ${T}L89 116H211L208 ${T}"/><path d="M${xl(206)} 206H${xr(206)}"/><ellipse cx="150" cy="206" rx="44" ry="20"/><path d="M60 ${B}L68 268H232L240 ${B}"/></g></svg>`})();
-function pitchHTML(t,lu,ti,interactive,title){
-  const g=splitLU(lu);const Y=g.GK.length?{GK:89,DEF:72,MID:55,FWD:37}:{DEF:80,MID:59,FWD:37};const col=KITHEX[t.kit]||'#C9A227';const sel=draft.sel;
+function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
+  const g=splitLU(lu);const Y=g.GK.length?{GK:89,DEF:72,MID:55,FWD:37}:{DEF:80,MID:59,FWD:37};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const tok=(id,role,x,y,idx,w)=>{const p=pById(id);const on=interactive&&sel&&sel.t===ti&&sel.k===idx;const ph=p?.thumb||p?.photo;
-    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="slot" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot${ph?'':' ini'}" style="--kc:${col}">${ph?`<img src="${ph}" alt="">`:`${SIL}<b>${esc(initials(p?.name))}</b>`}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${S.settings.pitchBadge==='club'?(p?.club&&CLUB[p.club]?`<span class="fg fgc">${clubBadge(p.club,'cb')}</span>`:''):p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
+    return `<${interactive?'button':'div'} class="tok${on?' sel':''}" style="left:${x}%;top:${y}%;width:${w}%" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}><span class="dw"><span class="dot${ph?'':' ini'}" style="--kc:${col}">${ph?`<img src="${ph}" alt="">`:`${SIL}<b>${esc(initials(p?.name))}</b>`}</span>${p?.number?`<span class="nb">${esc(p.number)}</span>`:''}${S.settings.pitchBadge==='club'?(p?.club&&CLUB[p.club]?`<span class="fg fgc">${clubBadge(p.club,'cb')}</span>`:''):p?.nation?`<img class="fg" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}</span><span class="tn">${esc(shortName(p?.name))}</span></${interactive?'button':'div'}>`};
   let html='';let idx=0;
   // straight lines per formation row; x kept inside the grass at that depth (perspective edge + half a circle)
   for(const role of ['GK','DEF','MID','FWD']){const ids=g[role],k=ids.length,y=Y[role],edge=(36-44*(y*3.3-84)/246)/3,lo=Math.max(12,edge+9),sp=100-2*lo;
     const w=k>=4?sp/(k-1):Math.min(30,sp/Math.max(k,1));ids.forEach((id,i)=>{const x=k>=4?lo+i*sp/(k-1):lo+sp*(i+.5)/k;html+=tok(id,role,x,y,idx++,w)})}
   const subs=g.SUB.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
-    return interactive?`<button class="subb${on?' sel':''}" data-a="slot" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
-  let rate='';if(interactive){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
+    return interactive?`<button class="subb${on?' sel':''}" data-a="${A}" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
+  let rate='';if(interactive&&!opt){const st=teamStats([...g.GK,...g.DEF,...g.MID,...g.FWD]);
     rate=`<div class="prate num"><span>On pitch (${st.n})</span><span>Att <b>${hideR?99:r1(st.atk)}</b></span><span>Mid <b>${hideR?99:r1(st.mid)}</b></span><span>Def <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`}
   return `${rate}<div class="pitch p2">${PITCH2}${title?`<div class="ptitle">${esc(title)}</div>`:''}${html}</div>${subs?`<div class="subs"><span>Subs</span>${subs}</div>`:''}`;
 }
@@ -2270,6 +2277,9 @@ document.addEventListener('click',async e=>{
   if(a==='rate'){rateModal(id);return}
   if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
+  if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const k=+el.dataset.k;
+    if(tSlot&&tSlot.t===t.id&&tSlot.k!==k){const lu=tLU(t);[lu.order[tSlot.k],lu.order[k]]=[lu.order[k],lu.order[tSlot.k]];t.lu=lu;tSlot=null;await putDoc('tournaments',t.id,t);return}
+    tSlot=tSlot&&tSlot.t===t.id&&tSlot.k===k?null:{t:t.id,k};render();return}
   if(a==='slot'){const i=+el.dataset.i,k=+el.dataset.k;const s=draft.sel;
     if(s&&s.t===i&&s.k!==k){const lu=teamLU(i);[lu.order[s.k],lu.order[k]]=[lu.order[k],lu.order[s.k]];draft.sel=null}else draft.sel=s&&s.t===i&&s.k===k?null:{t:i,k};saveDraft();render();return}
   if(a==='shareteam'){shareModal(draftAsMatch(),String(el.dataset.i));return}
@@ -2343,7 +2353,7 @@ document.addEventListener('click',async e=>{
     await putDoc('tournaments',t.id,t);if(a==='tressave'){logAct('Saved tournament results',t.name);toast('Results saved')}return}
   if(a==='tshare'){const t=S.tourns.find(x=>x.id===id),sq=(t.squad||[]).filter(pById);lastTShare=t;
     openModal(`<div class="mh"><h2>Share squad</h2><button class="btn ghost x" data-a="close">Close</button></div><div id="sharecard" class="sharecard one"><div class="sh">🏆 ${esc(t.name)}</div><div class="sd">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}</div>
-      <div style="margin-top:12px">${pitchHTML({kit:t.kit||'',players:sq},getLU(sq,t.lu),0,false,'Airdrie United')}</div></div>
+      <div style="margin-top:12px">${pitchHTML({kit:t.kit||'',players:sq},tLU(t),0,false,'Airdrie United')}</div></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" data-a="tshareimg">Save as image</button><button class="btn" data-a="tsharetxt">Copy text for WhatsApp</button></div>`);return}
   if(a==='tshareimg'){if(!window.html2canvas){toast('Take a screenshot instead');return}try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('squad-'+lastTShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}return}
   if(a==='tsharetxt'){try{await navigator.clipboard.writeText(tShareText(lastTShare));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}return}
@@ -2438,8 +2448,8 @@ document.addEventListener('change',async e=>{
   if(a==='move'){const to=+el.value,id=el.dataset.id;draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));draft.teams[to].push(id);if(draft.locks[id]!=null)draft.locks[id]=to;draft.alts=[draft.teams];saveDraft();render();return}
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);if(k==='autoLink'&&el.checked)S.settings.appUrl=location.origin+location.pathname.replace(/[^/]*$/,'');if(k==='maxPlayers')syncOpenPolls();await putSettings();return}
-  if(a==='tcapt'||a==='tform'||a==='tgk'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===el.dataset.id)));const sq=(t.squad||[]).filter(pById);
-    if(a==='tcapt')t.captain=el.value;if(a==='tform'){const lu=getLU(sq,t.lu);t.lu={f:el.value,gk:lu.gk}}if(a==='tgk')t.lu={gk:el.checked};await putDoc('tournaments',t.id,t);return}
+  if(a==='tcapt'||a==='tform'||a==='tgk'||a==='tonp'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===el.dataset.id)));const sq=(t.squad||[]).filter(pById);
+    if(a==='tcapt')t.captain=el.value;const cur=tLU(t);if(a==='tform')t.lu={n:cur.n,f:el.value,gk:cur.gk};if(a==='tgk')t.lu={n:cur.n,gk:el.checked};if(a==='tonp')t.lu={n:+el.value,gk:cur.gk};if(a!=='tcapt'){t.lu=tLU(t);tSlot=null}await putDoc('tournaments',t.id,t);return}
   if(a==='gearphoto'){for(const f of [...el.files].slice(0,4-pendGear.length)){const u=await resizeImg(f,640);if(u)pendGear.push(u)}gThumbs();return}
   if(a==='gcat'){$('#gm').className='stack gm c-'+el.value;return}
   if(a==='tsee'){const t={...S.tourns.find(x=>x.id===el.dataset.id)};Object.assign(t,tSeeVal(el.value,t,t.date));await putDoc('tournaments',t.id,t);logAct('Tournament visibility',t.name+': '+tSeeTxt(t));return}
