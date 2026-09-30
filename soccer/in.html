@@ -31,6 +31,9 @@ h1{font:800 26px/1 var(--f-display);text-transform:uppercase;letter-spacing:.05e
 .btns button{flex:1;padding:14px;font:800 18px var(--f-display);text-transform:uppercase;letter-spacing:.05em;border:0;cursor:pointer;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
 .bin{background:var(--good);color:#032014}.bout{background:#2A3A55;color:var(--ink)}
 .btns button[aria-pressed="true"]{outline:3px solid #fff;outline-offset:-3px}
+.pinl{display:block;font-size:13px;color:#C9D4E5;margin:2px 0 6px}
+.pin{width:140px;font:800 26px var(--f-display);letter-spacing:.4em;text-align:center;margin-bottom:12px}
+.pmsg{margin:10px 0 0;font-size:14px;color:#F2C46B}
 .link{background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;cursor:pointer;padding:6px 0 0}
 input{width:100%;padding:12px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);margin-bottom:10px}
 ul{list-style:none;margin:0;padding:0}
@@ -51,14 +54,19 @@ const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}};
 const pid=new URLSearchParams(location.search).get('p');
-let sb,poll,rs={},me=null,busy=false;
+let sb,poll,rs={},me=null,busy=false,pinState={},msg='';
 const fmt=d=>new Date(d+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 function render(){
   if(!poll.open){app.innerHTML=head()+`<p class="msg">This link is closed. Ask in the group chat.</p>`;return}
   const ins=poll.players.filter(p=>rs[p.id]==='in'),outs=poll.players.filter(p=>rs[p.id]==='out');
   const mp=poll.players.find(p=>p.id===me);
   app.innerHTML=head()+`<div class="count"><div class="in"><b>${ins.length}</b>In</div><div class="out"><b>${outs.length}</b>Out</div><div><b>${poll.players.length-ins.length-outs.length}</b>No answer</div></div>
-  ${mp?`<div class="me"><h2>${esc(mp.name)}, are you in?</h2><div class="btns"><button class="bin" data-s="in" aria-pressed="${rs[me]==='in'}">I’m in</button><button class="bout" data-s="out" aria-pressed="${rs[me]==='out'}">Can’t make it</button></div><button class="link" id="notme">Not ${esc(mp.name)}?</button></div>`
+  ${mp?`<div class="me"><h2>${esc(mp.name)}, are you in?</h2>
+      <label class="pinl" for="pin">${pinState[me]==='none'?'First time? Choose a 4-digit PIN. You’ll use it every week, so only you can answer for your name.':'Your 4-digit PIN'}</label>
+      <input id="pin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" value="${esc(ls('aufc_pin_'+me)||'')}">
+      <div class="btns"><button class="bin" data-s="in" aria-pressed="${rs[me]==='in'}">I’m in</button><button class="bout" data-s="out" aria-pressed="${rs[me]==='out'}">Can’t make it</button></div>
+      ${msg?`<p class="pmsg" role="alert">${msg}</p>`:''}
+      <button class="link" id="notme">Not ${esc(mp.name)}?</button></div>`
      :`<div class="me"><h2>Tap your name</h2><input id="q" placeholder="Search your name" autocomplete="off"></div>`}
   <ul id="list">${poll.players.map(p=>`<li data-n="${esc(p.name.toLowerCase())}"><span class="pos">${esc(p.pos)}</span><button class="pick" data-id="${esc(p.id)}">${esc(p.name)}</button>${rs[p.id]?`<span class="st ${rs[p.id]}">${rs[p.id]==='in'?'In':'Out'}</span>`:''}</li>`).join('')}</ul>`;
   $('#q')?.addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#list li').forEach(li=>li.hidden=!li.dataset.n.includes(q))});
@@ -67,20 +75,29 @@ function until(){if(!poll.kickoff)return '';const ms=new Date(poll.kickoff)-Date
   const h=Math.floor(ms/36e5),d=Math.floor(h/24);return 'Kick-off in '+(d?d+' day'+(d>1?'s':'')+' ':'')+(h%24)+' h'+(d?'':' '+Math.floor(ms/6e4)%60+' min')}
 const head=()=>`<header><img src="icons/crest-640.jpg" alt="Airdrie United crest"><div><h1>${esc(poll.title||'Saturday Soccer')}</h1><div class="sub">Airdrie United</div></div></header>
   <div class="when"><div class="wd">${fmt(poll.match_date)}</div><div class="wt">${esc(poll.time_label||'')}</div><div class="wc">${until()}</div></div>`;
+async function loadPin(){if(!me||pinState[me])return;const {data}=await sb.rpc('atb_pin_status',{p_poll:pid,p_player:me});pinState[me]=data||'set'}
 async function load(){const {data,error}=await sb.from('atb_polls').select('id,title,match_date,time_label,kickoff,players,open').eq('id',pid).maybeSingle();
   if(error||!data){app.innerHTML='<p class="msg">This link doesn’t work any more. Ask in the group chat for the new one.</p>';return false}
   poll=data;const r=await sb.from('atb_rsvp').select('player_id,status').eq('poll_id',pid);rs={};(r.data||[]).forEach(x=>rs[x.player_id]=x.status);
   me=ls('aufc_me');if(!poll.players.some(p=>p.id===me))me=null;return true}
 app.addEventListener('click',async e=>{
-  const pick=e.target.closest('.pick');if(pick){me=pick.dataset.id;ls('aufc_me',me);render();scrollTo({top:0,behavior:'smooth'});return}
-  if(e.target.id==='notme'){me=null;ls('aufc_me',null);render();return}
-  const b=e.target.closest('[data-s]');if(b&&me&&!busy){busy=true;const status=b.dataset.s;
-    const {error}=await sb.from('atb_rsvp').upsert({poll_id:pid,player_id:me,status,updated_at:new Date().toISOString()});
-    busy=false;if(error){alert('Could not save. Check your signal and try again.');return}rs[me]=status;render()}
+  const pick=e.target.closest('.pick');if(pick){me=pick.dataset.id;ls('aufc_me',me);msg='';await loadPin();render();scrollTo({top:0,behavior:'smooth'});return}
+  if(e.target.id==='notme'){me=null;ls('aufc_me',null);msg='';render();return}
+  const b=e.target.closest('[data-s]');if(b&&me&&!busy){const pin=($('#pin')?.value||'').trim();const name=poll.players.find(p=>p.id===me)?.name||'';
+    if(!/^[0-9]{4}$/.test(pin)){msg='Enter a 4-digit PIN first.';render();$('#pin')?.focus();return}
+    busy=true;b.disabled=true;const status=b.dataset.s;
+    const {data,error}=await sb.rpc('atb_vote',{p_poll:pid,p_player:me,p_status:status,p_pin:pin});busy=false;
+    if(error){msg='Could not save. Check your signal and try again.';render();return}
+    if(data==='ok'){ls('aufc_pin_'+me,pin);pinState[me]='set';rs[me]=status;msg=status==='in'?'You’re in. See you there!':'Got it, you’re out this week.'}
+    else if(data==='wrong_pin'){ls('aufc_pin_'+me,null);msg=`That PIN doesn’t match ${esc(name)}’s. If you forgot it, ask the manager to reset it.`}
+    else if(data==='locked'){msg='Too many wrong PINs. Voting for this name is locked for an hour, or until the manager resets it.'}
+    else if(data==='closed'){msg='This link is closed or your name isn’t on it. Ask in the group chat.'}
+    else msg='Enter a 4-digit PIN.';
+    render()}
 });
 (async()=>{if(!pid||!window.supabase){app.innerHTML='<p class="msg">Open the link from the group chat.</p>';return}
-  sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}});if(await load())render();
-  setInterval(async()=>{if(document.visibilityState==='visible'&&!busy&&await load())render()},20000)})();
+  sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:false}});if(await load()){await loadPin();render()}
+  setInterval(async()=>{if(document.visibilityState==='visible'&&!busy&&document.activeElement?.id!=='pin'&&await load())render()},20000)})();
 })();
 </script>
 </body></html>

@@ -60,3 +60,8 @@ alter table public.atb_rsvp_log enable row level security;
 create policy "atb rsvp log team read" on public.atb_rsvp_log for select to authenticated
   using (exists (select 1 from public.atb_polls p where p.id = poll_id and private.atb_is_team(p.owner)));
 -- trigger function private.atb_log_rsvp() (security definer) inserts on insert/update(status change)/delete of atb_rsvp
+
+-- Voting PINs + vote alerts (see migration atb_vote_pins_and_notify):
+-- atb_player_pins (bcrypt PIN per player, 5 wrong tries = 1 h lock), public.atb_vote(poll, player, status, pin) is the only way to answer,
+-- public.atb_pin_status(poll, player); direct insert/update on atb_rsvp revoked for anon.
+-- atb_notify (per-manager ntfy.sh topic + optional email); trigger on atb_rsvp_log posts to https://ntfy.sh via pg_net (schema extensions).

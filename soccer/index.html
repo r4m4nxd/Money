@@ -307,9 +307,9 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .fut.t-special .fbody::before{background:radial-gradient(120% 80% at 70% 20%,#34343B 0,#16161A 55%,#0B0B0D 100%)}
 .fut .streak{position:absolute;background:linear-gradient(90deg,transparent,var(--glow),transparent);transform:rotate(-38deg);pointer-events:none}
 .fut .s1{width:120cqw;height:9cqw;top:14cqw;left:10cqw}.fut .s2{width:120cqw;height:3cqw;top:30cqw;left:18cqw;opacity:.8}.fut .s3{width:120cqw;height:14cqw;top:52cqw;left:34cqw;opacity:.5}
-.fut .ph{position:absolute;left:24cqw;top:7cqw;width:66cqw;height:68cqw;display:grid;place-items:end center;
+.fut .ph{position:absolute;left:24cqw;top:7cqw;width:66cqw;height:66cqw;display:grid;place-items:end center;
   -webkit-mask-image:radial-gradient(ellipse 54% 58% at 50% 40%,#000 42%,rgba(0,0,0,.55) 68%,transparent 96%);mask-image:radial-gradient(ellipse 54% 58% at 50% 40%,#000 42%,rgba(0,0,0,.55) 68%,transparent 96%)}
-.fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+.fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
 .fut .ph .sil{width:78%;fill:var(--ink2);opacity:.16;margin-bottom:4cqw}
 .fut .fl{position:absolute;left:9cqw;top:15cqw;display:flex;flex-direction:column;align-items:center;min-width:20cqw;z-index:1}
 .fut .ovr{font:800 19cqw/.9 var(--f-display);letter-spacing:-.02em}
@@ -325,10 +325,28 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .fut .fb{position:absolute;left:0;right:0;top:106cqw;display:flex;justify-content:center;align-items:center;gap:4cqw}
 .fut .fb .flag{width:8cqw;height:6cqw;object-fit:cover;border-radius:.6cqw;box-shadow:0 0 0 .3cqw rgba(0,0,0,.15)}
 .fut .fb .club{width:7.5cqw;height:7.5cqw;border-radius:50%}
+.fut .fb .cb{width:7.2cqw;height:8.3cqw}
+.clubsel{display:flex;gap:10px;align-items:center}.clubsel .cb{width:30px;height:35px;flex:none}.clubsel select{flex:1}
 @media (hover:hover) and (prefers-reduced-motion:no-preference){.fut{transition:transform .2s}.fut:hover{transform:translateY(-3px)}}
 .fut:focus-visible{outline:none;filter:drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 3px var(--accent))}
 
+/* ---- photo positioner ---- */
+.crop{position:fixed;inset:0;z-index:150;background:rgba(4,8,16,.82);display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));overflow:auto}
+.cbox{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;width:min(100%,420px);display:flex;flex-direction:column;gap:12px}
+.cstage{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:6px;background:#333;touch-action:none;cursor:grab}
+.cstage img{position:absolute;max-width:none;user-select:none;-webkit-user-select:none;pointer-events:none}
+.cguide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cz{width:100%}
+
 /* ---- phone ergonomics ---- */
+.fgrid.g2{grid-template-columns:1fr 1fr}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-height:44px;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+.mwhen{font-size:14px;color:var(--muted)}
+.btn.wide{width:100%}
+.phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phead .pcount{margin-left:auto;font-size:15px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bgrid .btn{width:100%;letter-spacing:.02em;padding-inline:8px;white-space:nowrap}
+#pollurl{width:100%;font-size:13px;color:var(--muted)}
 body{background:var(--bg)}
 .panel,.team,.gsec,.tile{clip-path:none;border-radius:6px}
 .team{overflow:hidden}
@@ -358,10 +376,14 @@ label.f input,label.f select{width:100%}
 .sharecard.one .sh{font-size:24px}
 .cardprev{margin:0 auto}
 .pphoto{justify-content:center}
+.pinrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface2)}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .pphoto>.row{flex:1 1 200px}
 .brand .themebtn+.themebtn{margin-left:-4px}
 .brand .themebtn{min-width:36px;min-height:36px;padding:4px 9px;font-size:15px;line-height:1}
 .hide-r .more{display:none}
+/* hidden ratings: the value underneath is always 99 (never the real one), shown blurred */
+.hide-r .fut .ovr,.hide-r .fut .fs b,.hide-r .chip .o,.hide-r .plist .num,.hide-r .stats b,.hide-r .prate b,.hide-r .stbl td:nth-child(2){filter:blur(5px);user-select:none;-webkit-user-select:none}
 .brand{flex-wrap:nowrap;align-items:center;gap:10px;padding-block:10px 4px}
 .bt{flex:1;min-width:0}
 .brand h1{font-size:20px;letter-spacing:.04em!important;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -457,8 +479,42 @@ function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();
   const w=img.width,h=img.height,cw=Math.min(w,h*0.8),ch=cw*1.25,sx=(w-cw)/2,sy=Math.max(0,Math.min(h-ch,h*0.03));
   c.getContext('2d').drawImage(img,sx,sy,cw,ch,0,0,W,H);URL.revokeObjectURL(img.src);res(c.toDataURL('image/jpeg',.82))};
   img.onerror=rej;img.src=URL.createObjectURL(file)})}
+/* Photo positioner: drag / pinch / slider inside a square frame that matches the card's photo window. Exports a 640×640 JPEG. */
+function cropPhoto(file){return new Promise(resolve=>{const url=URL.createObjectURL(file),img=new Image();
+  img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that photo');resolve(null)};
+  img.onload=()=>{const ov=document.createElement('div');ov.className='crop';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Position photo');
+    ov.innerHTML=`<div class="cbox"><h3>Position the photo</h3><p class="small muted" style="margin:0">Drag to move · pinch or slide to zoom. Put the eyes on the gold line and the face inside the white oval. The dim area fades out on the card.</p>
+      <div class="cstage"><img alt="" draggable="false"><svg class="cguide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><mask id="cropm"><rect width="100" height="100" fill="#fff"/><ellipse cx="50" cy="40" rx="30" ry="33" fill="#000"/></mask></defs>
+        <rect width="100" height="100" fill="rgba(6,10,20,.55)" mask="url(#cropm)"/><ellipse cx="50" cy="37" rx="15" ry="19" fill="none" stroke="#fff" stroke-width=".7" stroke-dasharray="2 1.6" vector-effect="non-scaling-stroke"/>
+        <line x1="30" x2="70" y1="34" y2="34" stroke="#F2C46B" stroke-width="1" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"/><path d="M18 100 C22 74 36 64 50 64 C64 64 78 74 82 100" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".6" stroke-dasharray="2 1.6" vector-effect="non-scaling-stroke"/></svg></div>
+      <label class="f">Zoom<input type="range" min="1" max="4" step="0.01" value="1" class="cz"></label>
+      <div class="bgrid"><button class="btn" data-c="cancel">Cancel</button><button class="btn primary" data-c="ok">Use photo</button></div></div>`;
+    document.body.appendChild(ov);const st=ov.querySelector('.cstage'),im=ov.querySelector('img'),zr=ov.querySelector('.cz');im.src=url;
+    const W=img.naturalWidth,H=img.naturalHeight;let S=st.clientWidth,base=Math.max(S/W,S/H),z=1,tx=0,ty=0;
+    const clamp=()=>{const dw=W*base*z,dh=H*base*z;tx=Math.max(-(dw-S)/2,Math.min((dw-S)/2,tx));ty=Math.max(-(dh-S)/2,Math.min((dh-S)/2,ty))};
+    const draw=()=>{clamp();const dw=W*base*z,dh=H*base*z;im.style.width=dw+'px';im.style.height=dh+'px';im.style.left=(S/2-dw/2+tx)+'px';im.style.top=(S/2-dh/2+ty)+'px'};
+    ty=(H*base-S)/2*.7;draw();
+    const pts=new Map();let last=null,pinch=null;
+    st.addEventListener('pointerdown',e=>{st.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===2){const [a,b]=[...pts.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),z}}else last=[e.clientX,e.clientY]});
+    st.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pts.size===2&&pinch){const [a,b]=[...pts.values()];z=Math.max(1,Math.min(4,pinch.z*Math.hypot(a[0]-b[0],a[1]-b[1])/pinch.d));zr.value=z;draw()}
+      else if(last){tx+=e.clientX-last[0];ty+=e.clientY-last[1];last=[e.clientX,e.clientY];draw()}});
+    const up=e=>{pts.delete(e.pointerId);pinch=null;last=pts.size===1?[...pts.values()][0]:null};st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
+    st.addEventListener('wheel',e=>{e.preventDefault();z=Math.max(1,Math.min(4,z*(e.deltaY<0?1.06:.94)));zr.value=z;draw()},{passive:false});
+    zr.addEventListener('input',()=>{z=+zr.value;draw()});
+    const done=v=>{URL.revokeObjectURL(url);ov.remove();resolve(v)};
+    ov.addEventListener('click',e=>{const c=e.target.closest('[data-c]')?.dataset.c;if(c==='cancel')done(null);
+      if(c==='ok'){const O=640,cv=document.createElement('canvas');cv.width=cv.height=O;const k=base*z,L=S/2-W*k/2+tx,T=S/2-H*k/2+ty;
+        const g=cv.getContext('2d');g.fillStyle='#777';g.fillRect(0,0,O,O);g.drawImage(img,-L/k,-T/k,S/k,S/k,0,0,O,O);done(cv.toDataURL('image/jpeg',.82))}})};
+  img.src=url})}
 const face=p=>p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name));
 let pendPhoto;
+/* Favourite clubs: colour badges (club colours + short code), not official crests, which are trademarks */
+const CLUBS={"Premier League":[["mun","Manchester United","MUN","#DA291C","#FBE122"],["mci","Manchester City","MCI","#6CABDD","#1C2C5B"],["liv","Liverpool","LIV","#C8102E","#F6EB61"],["ars","Arsenal","ARS","#EF0107","#FFFFFF"],["che","Chelsea","CHE","#034694","#FFFFFF"],["tot","Tottenham Hotspur","TOT","#FFFFFF","#132257"],["new","Newcastle United","NEW","#241F20","#FFFFFF"],["avl","Aston Villa","AVL","#670E36","#95BFE5"],["whu","West Ham United","WHU","#7A263A","#1BB1E7"],["eve","Everton","EVE","#003399","#FFFFFF"]],"La Liga":[["rma","Real Madrid","RMA","#FFFFFF","#FEBE10"],["bar","FC Barcelona","BAR","#A50044","#004D98"],["atm","Atlético Madrid","ATM","#CB3524","#272E61"],["sev","Sevilla","SEV","#FFFFFF","#D71920"],["rso","Real Sociedad","RSO","#0067B1","#FFFFFF"],["ath","Athletic Club","ATH","#EE2523","#FFFFFF"],["vil","Villarreal","VIL","#FFE667","#005187"],["bet","Real Betis","BET","#0BB363","#FFFFFF"],["val","Valencia","VAL","#FFFFFF","#EE3524"],["gir","Girona","GIR","#CD2534","#FFFFFF"]],"Serie A":[["juv","Juventus","JUV","#FFFFFF","#000000"],["int","Inter","INT","#010E80","#000000"],["mil","AC Milan","MIL","#FB090B","#000000"],["nap","Napoli","NAP","#12A0D7","#FFFFFF"],["rom","AS Roma","ROM","#8E1F2F","#F0BC42"],["laz","Lazio","LAZ","#87D8F7","#FFFFFF"],["ata","Atalanta","ATA","#1E71B8","#000000"],["fio","Fiorentina","FIO","#482E92","#FFFFFF"],["bol","Bologna","BOL","#A21C26","#1A2F48"],["tor","Torino","TOR","#8A1E03","#FFFFFF"]],"Bundesliga":[["fcb","Bayern Munich","FCB","#DC052D","#FFFFFF"],["bvb","Borussia Dortmund","BVB","#FDE100","#000000"],["b04","Bayer Leverkusen","B04","#E32221","#000000"],["rbl","RB Leipzig","RBL","#DD0741","#FFFFFF"],["vfb","VfB Stuttgart","VFB","#FFFFFF","#E32219"],["sge","Eintracht Frankfurt","SGE","#E1000F","#000000"],["wob","VfL Wolfsburg","WOB","#65B32E","#FFFFFF"],["bmg","Borussia Mönchengladbach","BMG","#FFFFFF","#00A74F"],["scf","SC Freiburg","SCF","#000000","#E2001A"],["fcu","Union Berlin","FCU","#EB1923","#FFFFFF"]],"Ligue 1":[["psg","Paris Saint-Germain","PSG","#004170","#DA291C"],["om","Olympique de Marseille","OM","#2FAEE0","#FFFFFF"],["ol","Olympique Lyonnais","OL","#FFFFFF","#DA0812"],["asm","AS Monaco","ASM","#E51B22","#FFFFFF"],["losc","Lille","LIL","#E01E13","#20325F"],["nic","OGC Nice","NIC","#C4161C","#000000"],["rcl","RC Lens","RCL","#FFD700","#E1001A"],["ren","Stade Rennais","REN","#E13327","#000000"],["fcn","FC Nantes","FCN","#FCD405","#008A4F"],["rcs","RC Strasbourg","RCS","#009FE3","#FFFFFF"]],"MLS":[["tfc","Toronto FC","TFC","#B81137","#455560"],["van","Vancouver Whitecaps","VAN","#00245E","#9DC2EA"],["mtl","CF Montréal","MTL","#0033A1","#000000"],["mia","Inter Miami","MIA","#F7B5CD","#231F20"],["lag","LA Galaxy","LAG","#00245D","#FFD200"],["lafc","LAFC","LAFC","#000000","#C39E6D"],["sea","Seattle Sounders","SEA","#5D9741","#005595"],["atl","Atlanta United","ATL","#80000A","#221F1F"],["nyc","New York City FC","NYC","#6CACE4","#041E42"],["clb","Columbus Crew","CLB","#FEDD00","#000000"]],"Portugal & Netherlands":[["slb","Benfica","SLB","#E83030","#FFFFFF"],["fcp","FC Porto","FCP","#003893","#FFFFFF"],["scp","Sporting CP","SCP","#008057","#FFFFFF"],["aja","Ajax","AJA","#D2122E","#FFFFFF"],["psv","PSV","PSV","#ED1C24","#FFFFFF"],["fey","Feyenoord","FEY","#E00012","#000000"]],"Scotland & Saudi":[["cel","Celtic","CEL","#018749","#FFFFFF"],["ran","Rangers","RAN","#1B458F","#FFFFFF"],["nas","Al Nassr","NAS","#FCE300","#0033A0"],["hil","Al Hilal","HIL","#1D4ED8","#FFFFFF"]],"South America":[["boc","Boca Juniors","BOC","#003C82","#F3B229"],["riv","River Plate","RIV","#FFFFFF","#E30613"],["fla","Flamengo","FLA","#C3281E","#000000"]],"India":[["mbsg","Mohun Bagan","MBG","#7A1F2B","#1B7F3B"],["ebfc","East Bengal","EBF","#E30613","#FDD000"],["mcfc","Mumbai City","MCI","#63B3E5","#F28C28"]]};
+const CLUB=Object.fromEntries(Object.entries(CLUBS).flatMap(([lg,a])=>a.map(([id,n,c,c1,c2])=>[id,{id,n,c,c1,c2,lg}])));
+const lum=h=>{const n=parseInt(h.slice(1),16);return (0.299*(n>>16)+0.587*(n>>8&255)+0.114*(n&255))/255};
+function clubBadge(id,cls='cb'){const c=CLUB[id];if(!c)return '';const ink=lum(c.c1)>.6?'#111':'#fff';
+  return `<svg class="${cls}" viewBox="0 0 40 46" role="img" aria-label="${esc(c.n)}"><title>${esc(c.n)}</title><path d="M20 1 L38 6 V22 C38 34 30 41 20 45 C10 41 2 34 2 22 V6 Z" fill="${c.c1}" stroke="${c.c2}" stroke-width="3"/><path d="M8 30 H32" stroke="${c.c2}" stroke-width="3"/><text x="20" y="${c.c.length>3?23:24}" text-anchor="middle" font-family="Saira Condensed,Arial Narrow,sans-serif" font-weight="800" font-size="${c.c.length>3?10:12}" fill="${ink}">${c.c}</text></svg>`}
 const NATIONS=[['','None'],['IN','India'],['CA','Canada'],['PK','Pakistan'],['GB-ENG','England'],['GB-SCT','Scotland'],['GB','United Kingdom'],['IE','Ireland'],['US','USA'],['AF','Afghanistan'],['BD','Bangladesh'],['LK','Sri Lanka'],['NP','Nepal'],['PH','Philippines'],['NG','Nigeria'],['GH','Ghana'],['KE','Kenya'],['SO','Somalia'],['ET','Ethiopia'],['ER','Eritrea'],['JM','Jamaica'],['MX','Mexico'],['BR','Brazil'],['AR','Argentina'],['CO','Colombia'],['PT','Portugal'],['ES','Spain'],['IT','Italy'],['DE','Germany'],['FR','France'],['NL','Netherlands'],['PL','Poland'],['UA','Ukraine'],['VN','Vietnam'],['CN','China'],['KR','South Korea'],['LB','Lebanon'],['SY','Syria'],['IR','Iran'],['IQ','Iraq'],['EG','Egypt'],['MA','Morocco']];
 const flag=c=>!c?'':c==='GB-ENG'?'🏴\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}':c==='GB-SCT'?'🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}':String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));
 const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></svg>`;
@@ -474,7 +530,7 @@ function cardHTML(p,{btn=true}={}){const r=R(p.id),t=p.star?'special':hideR?'gol
     <div class="fl"><b class="ovr num">${rv(r.ovr)}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
     <div class="fn${p.name.length>16?' xl':p.name.length>12?' l':''}">${esc(titleName(p.name))}</div>
     <div class="fs num">${stats.map(([l,v])=>`<span><i>${l}</i><b>${v}</b></span>`).join('')}</div>
-    <div class="fb">${flagImg(p.nation)}<img class="club" src="icons/crest-640.jpg" alt="Airdrie United"></div>
+    <div class="fb">${flagImg(p.nation)}${p.club?clubBadge(p.club,'cb'):''}<img class="club" src="icons/crest-640.jpg" alt="Airdrie United"></div>
   </div></${tag}>`}
 function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d.getDay()+7)%7));return d.toISOString().slice(0,10)}
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
@@ -727,12 +783,12 @@ function vMatch(){
           ${show?`<div class="pwrap">${pitchHTML({kit},lu,i,true)}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap their spots.</p></div>`:''}`})()}</section>`}).join('')}</div>`;
   }
   return `<h2>${draft.editing?'Editing match':'Next match'}</h2>
-  <div class="panel row" style="gap:12px;align-items:flex-end">
-    <label class="f">Date<input type="date" id="mdate" value="${draft.date}" data-a="date"></label>
-    <label class="f">Teams<select id="mn" data-a="nteams">${[2,3,4].map(n=>`<option ${n==draft.n?'selected':''}>${n}</option>`).join('')}</select></label>
-    <label class="f">On pitch per team<select id="op" data-a="set" data-k="onPitch">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n==onPitch()?'selected':''}>${n} players</option>`).join('')}</select></label>
-    <div class="small muted" style="padding-bottom:8px">${fmtDate(draft.date)} · ${esc(S.settings.time)}</div>
-    ${draft.editing?'<button class="btn ghost" data-a="newmatch" style="margin-left:auto">Start a new match instead</button>':''}
+  <div class="panel stack">
+    <label class="f">Match date<input type="date" id="mdate" value="${draft.date}" data-a="date"></label>
+    <div class="fgrid g2"><label class="f">Teams<select id="mn" data-a="nteams">${[2,3,4].map(n=>`<option value="${n}" ${n==draft.n?'selected':''}>${n} teams</option>`).join('')}</select></label>
+    <label class="f">On pitch per team<select id="op" data-a="set" data-k="onPitch">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n==onPitch()?'selected':''}>${n} players</option>`).join('')}</select></label></div>
+    <div class="mwhen">${fmtDate(draft.date)} · ${esc(S.settings.time)}</div>
+    ${draft.editing?'<button class="btn ghost" data-a="newmatch">Start a new match instead</button>':''}
   </div>
   <h2>Who’s playing</h2><p class="counts num"><b>${av.size}</b> in · ${cnt.DEF} DEF · ${cnt.MID} MID · ${cnt.FWD} FWD</p>
   ${pollPanel()}
@@ -757,11 +813,13 @@ function pollPanel(){
   if(cloud!=='supa')return `<details class="panel pollp"><summary><b>Availability link</b> <span class="muted small">Let players tap “I’m in” themselves</span></summary><p class="small muted" style="margin:8px 0 0">This needs sync. Sign in under Settings → Sync across devices on the Vercel app, then open a link here and post it in WhatsApp.</p></details>`;
   if(poll.date!==draft.date){setTimeout(()=>loadPoll(),0)}
   const ins=Object.keys(poll.rsvp).filter(k=>poll.rsvp[k]==='in'&&pById(k)),outs=Object.keys(poll.rsvp).filter(k=>poll.rsvp[k]==='out');
-  if(!poll.id)return `<div class="panel pollp row"><div style="flex:1 1 220px"><b>Availability link</b><div class="small muted">Post a link in WhatsApp; players tap their own name. You’ll see who’s in here.</div></div><button class="btn primary" data-a="pollopen" ${poll.loading?'disabled':''}>Open link for ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</button>${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
-  return `<div class="panel pollp stack"><div class="row"><b>Availability link</b><span class="pill ${poll.open?'ok':'meh'}">${poll.open?'Open':'Closed'}</span><span class="num"><b>${ins.length}</b> in · <b>${outs.length}</b> out</span>
-    <span class="row" style="margin-left:auto;gap:6px"><button class="btn" data-a="pollrefresh">Refresh</button><button class="btn primary" data-a="polluse" ${ins.length?'':'disabled'}>Use answers</button></span></div>
-    <div class="row"><input id="pollurl" readonly value="${pollUrl(poll.id)}" style="flex:1 1 220px;font-size:13px"><button class="btn" data-a="pollcopy">Copy WhatsApp message</button><button class="btn ghost" data-a="${poll.open?'pollclose':'pollreopen'}">${poll.open?'Close link':'Reopen link'}</button><button class="btn ghost danger" data-a="pollreset" ${Object.keys(poll.rsvp).length?'':'disabled'}>Reset answers</button></div>
-    ${ins.length?`<div class="small muted">In: ${ins.map(k=>esc(pById(k).name)).join(', ')}</div>`:''}
+  if(!poll.id)return `<div class="panel pollp stack"><div><b>Availability link</b><div class="small muted">Post one link in WhatsApp; each player taps their own name and votes with their PIN. Answers appear here live.</div></div><button class="btn primary wide" data-a="pollopen" ${poll.loading?'disabled':''}>Open link for ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</button>${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
+  return `<div class="panel pollp stack"><div class="phead"><b>Availability link</b><span class="pill ${poll.open?'ok':'meh'}">${poll.open?'Open':'Closed'}</span><span class="pcount num"><b>${ins.length}</b> in · <b>${outs.length}</b> out</span></div>
+    <div class="bgrid"><button class="btn" data-a="pollrefresh">Refresh</button><button class="btn primary" data-a="polluse" ${ins.length?'':'disabled'}>Use answers</button></div>
+    <input id="pollurl" readonly value="${pollUrl(poll.id)}" aria-label="Availability link">
+    <button class="btn wide" data-a="pollcopy">Copy WhatsApp message</button>
+    <div class="bgrid"><button class="btn" data-a="${poll.open?'pollclose':'pollreopen'}">${poll.open?'Close link':'Reopen link'}</button><button class="btn danger" data-a="pollreset" ${Object.keys(poll.rsvp).length?'':'disabled'}>Reset answers</button></div>
+    ${ins.length?`<details class="act"><summary><b>Who’s in</b> · ${ins.length}</summary><p class="small muted" style="margin:6px 0 0">${ins.map(k=>esc(pById(k).name)).join(', ')}</p></details>`:''}
     ${activityHTML(poll.log,poll.kickoff)}${poll.err?`<span class="small" style="color:var(--bad)">${esc(poll.err)}</span>`:''}</div>`;
 }
 
@@ -779,10 +837,11 @@ const TAG={drop:'<span class="tag bad">⚠ Late drop</span>',join:'<span class="
 function activityHTML(log,kick){if(!log||!log.length)return '';const cl=log.slice().sort((a,b)=>a.at<b.at?-1:1).map(e=>({e,...classify(e,kick)}));const late=cl.filter(x=>x.tag==='drop'||x.tag==='join').length;
   return `<details class="act"><summary><b>Activity</b> · ${log.length} change${log.length>1?'s':''}${late?` · <span class="tag bad">${late} last-minute</span>`:''}</summary>
     <ol class="alog">${cl.slice().reverse().map(({e,hb,tag})=>`<li><span class="at num">${new Date(e.at).toLocaleString(undefined,{weekday:'short',hour:'numeric',minute:'2-digit'})}</span><span class="who">${esc(pById(e.player_id)?.name||e.player_id)} ${verb(e)}</span><span class="small muted num">${fmtHB(hb)}</span>${TAG[tag]||''}</li>`).join('')}</ol></details>`}
-let st={loaded:false,loading:false,polls:[],logs:[],err:''};
+let st={loaded:false,loading:false,polls:[],logs:[],err:'',pins:{}};
 async function loadStats(){if(cloud!=='supa'||st.loading)return;st.loading=true;
   try{const a=await supa.from('atb_polls').select('id,match_date,kickoff,players').eq('owner',teamOwner);if(a.error)throw a.error;st.polls=a.data;st.logs=[];
     const ids=a.data.map(p=>p.id);if(ids.length){const b=await supa.from('atb_rsvp_log').select('poll_id,player_id,status,prev_status,at').in('poll_id',ids).order('at').limit(10000);if(b.error)throw b.error;st.logs=b.data}
+    try{const pp=await supa.from('atb_player_pins').select('player_id,set_at,locked_until').eq('owner',teamOwner);st.pins=Object.fromEntries((pp.data||[]).map(x=>[x.player_id,x]))}catch(e){}
     st.loaded=true;st.err=''}catch(e){st.err=e.message||'Could not load answer history'}st.loading=false;if(loaded)render()}
 function commitment(){const out={},by={};st.logs.forEach(l=>(by[l.poll_id]=by[l.poll_id]||[]).push(l));
   for(const p of st.polls){const logs=by[p.id]||[],kick=p.kickoff||kickoffISO(p.match_date);
@@ -951,7 +1010,8 @@ function vGuide(){
     <li>Each match date has its own link. It stays the same all week (even after Reset answers or closing and reopening); next week you open a new one.</li>
     <li>Back on Match Day, <b>Refresh</b> fetches answers and <b>Use answers</b> marks every “in” as playing and every “out” as not. Players who haven’t answered keep whatever you set by hand.</li>
     <li><b>Close link</b> stops new answers; <b>Reopen link</b> allows them again. <b>Reset answers</b> (tap twice) clears every answer on the link so players start fresh; the link itself stays the same. Each date gets its own link.</li>
-    <li>Anyone with the link can answer for any name on it, so share it only in your group.</li></ul>`)}
+    <li><b>Voting PINs:</b> the first time a player votes they choose a 4-digit PIN; every later vote for that name needs it, so nobody can answer for someone else. Their phone remembers it. 5 wrong tries lock that name for an hour. If someone forgets their PIN (or someone else grabbed their name first), open their card in Squad and tap <b>Reset PIN</b>.</li>
+    <li><b>Vote alerts:</b> Settings → Vote alerts sends a phone notification (via the free ntfy app) for every in/out, marked ⚠ when it’s within 24 hours of kick-off. Each manager turns on their own alerts. Optional email alerts are limited by ntfy.sh.</li></ul>`)}
 
   ${sec('guests','Guest players',`<ul>
     <li><b>＋ Guest</b> on Match Day adds a one-off player with a name, position and level (Beginner 60 to Top 90). Every attribute starts at that level.</li>
@@ -1031,7 +1091,8 @@ function vGuide(){
     <li>Top-left: OVR, position, shirt number (if set) and ★. Middle: photo. Then the name, the six stats, and the nation flag (if set) with the club crest. Trophies, apps and form live on the player’s page and the Stats tab.</li>
     <li>The six card stats follow the FC layout, each out of 100: <b>PAC</b> = Speed, <b>DRI</b> = Ball Skill, <b>SHO</b> = Shooting, <b>DEF</b> = Defending, <b>PAS</b> = Passing, <b>PHY</b> = average of Strength and Stamina. Mindset and Team Work still count in OVR and balancing; see them by tapping the card.</li>
     <li><b>Apps</b> = matches the player was picked for. W-D-L as above.</li>
-    <li><b>Photo:</b> tap a card → Add photo. It’s cropped tall from the top (head and chest), shrunk to a small image, synced with the player, and fades softly into the card. The photo also appears on the pitch view. Without one, the card shows a grey empty player outline.</li>
+    <li><b>Photo:</b> tap a card → Add photo, then drag and pinch it into the frame: eyes on the gold line, face inside the oval. Best source: head and shoulders, facing the camera, plain background, good light, at least 800 × 800 px. It’s saved as a 640 × 640 image, synced with the player, and fades softly into the card. It also appears on the pitch. Without one, the card shows a grey empty player outline.</li>
+    <li><b>Favourite club:</b> pick from about 70 clubs (top clubs in England, Spain, Italy, Germany, France, MLS and more). The card shows a badge in the club’s colours next to the flag.</li>
     <li><b>▲</b> / <b>▼</b> appear when the player’s latest match OVR is more than 1 point above or below their current OVR.</li>
     <li>Tap a card for the full attribute table and match-by-match form.</li></ul>`)}
 
@@ -1044,7 +1105,7 @@ function vGuide(){
     <li>The Claude-hosted version keeps its own copy in your Claude account, separate from the Vercel app.</li>
     <li>Match Day selections (who’s in, draft teams) are kept per device until you save the match.</li>
     <li><b>Offline:</b> on the Vercel app the screens load even with no signal at the gym. Changes made offline may not save; you’ll see a message when the connection drops and when it’s back.</li>
-    <li><b>Hide ratings:</b> tap <b>👁</b> in the header to switch to <b>🙈</b>. Every rating on screen (cards, chips, team lists, team and pitch ratings, Stats) shows 99, cards all turn gold, and lists sort by name so nobody can work out the order. Rating boxes and the detailed rating inputs are hidden. Balancing and saving still use the real ratings. It’s remembered per device; tap again to show.</li>
+    <li><b>Hide ratings:</b> tap <b>👁</b> in the header to switch to <b>🙈</b>. Every rating on screen (cards, chips, team lists, team and pitch ratings, Stats) is blurred out, safe for screenshots (the blurred number is always 99, never the real one), cards all turn gold, and lists sort by name so nobody can work out the order. Rating boxes and the detailed rating inputs are hidden. Balancing and saving still use the real ratings. It’s remembered per device; tap again to show.</li>
     <li><b>Theme:</b> the ◐ button in the header cycles Auto (follows your phone, ◐), Dark (●) and Light (○). It’s remembered per device.</li></ul>`)}
 
   ${sec('season','New season roster',`<ul><li>The roster file carries a season label (now ${esc(S.settings.season||'2026')}). When it changes, each device updates its squad once on next open: players not on the roster are removed, new ones added, names and positions refreshed. Ratings you’ve set are kept.</li>
@@ -1064,6 +1125,20 @@ function vGuide(){
     <li>Both deletes ask for a second tap. A deleted player can be brought back with <b>Undo</b> for a few seconds; a deleted match cannot.</li></ul>`)}`;
 }
 
+let ntf=null,ntfLoading=false;
+async function loadNtf(){if(ntfLoading)return;ntfLoading=true;const {data}=await supa.from('atb_notify').select('topic,email,enabled').eq('member',supaUser.id).eq('team',teamOwner).maybeSingle();ntf=data||{none:true};ntfLoading=false;if(view==='settings')render()}
+function notifyPanel(){if(!ntf){setTimeout(loadNtf,0);return `<h2>Vote alerts</h2><div class="panel muted">Loading…</div>`}
+  if(ntf.none)return `<h2>Vote alerts</h2><div class="panel stack"><p style="margin:0">Get a notification on your phone every time someone says they’re in or out, with a ⚠ when it’s last-minute.</p>
+    <p class="small muted" style="margin:0">Alerts go through the free ntfy app. Only someone who knows your private topic name can see them.</p><button class="btn primary wide" data-a="ntfon">Turn on vote alerts</button></div>`;
+  return `<h2>Vote alerts</h2><div class="panel stack">
+    <ol class="steps"><li>Install <b>ntfy</b>: <a href="https://apps.apple.com/app/ntfy/id1625396347" target="_blank" rel="noopener">iPhone</a> · <a href="https://play.google.com/store/apps/details?id=io.heckel.ntfy" target="_blank" rel="noopener">Android</a></li>
+    <li>Open it, tap <b>+</b> and subscribe to this topic (keep it private):</li></ol>
+    <div class="row"><input id="ntftopic" readonly value="${esc(ntf.topic)}" style="flex:1 1 200px"><button class="btn" data-a="ntfcopy">Copy</button></div>
+    <p class="small muted" style="margin:0">No app? Open <a href="https://ntfy.sh/${esc(ntf.topic)}" target="_blank" rel="noopener">ntfy.sh/${esc(ntf.topic)}</a> in a browser and allow notifications.</p>
+    <div class="bgrid"><button class="btn" data-a="ntftest">Send test alert</button><button class="btn danger" data-a="ntfoff">Turn off</button></div>
+    <label class="small row chk"><input type="checkbox" id="ntfen" data-a="ntfen" ${ntf.enabled!==false?'checked':''}> Alerts on (untick to pause)</label>
+    <label class="f">Also email me (optional)<span class="row" style="flex-wrap:nowrap"><input id="ntfem" type="email" value="${esc(ntf.email||'')}" placeholder="you@example.com" style="flex:1"><button class="btn" data-a="ntfemail">Save</button></span></label>
+    <p class="small muted" style="margin:0">Email alerts are sent by ntfy.sh’s free service, which limits how many emails it sends per day. Phone alerts are more reliable.</p></div>`}
 function vSettings(){
   const s=S.settings;
   return `<h2>Rating model</h2><div class="panel stack">
@@ -1082,6 +1157,7 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
   </div>
+  ${cloud==='supa'?notifyPanel():''}
   ${cloud!=='claude'&&supa?`<h2 id="syncsec">Sync across devices</h2><div class="panel stack">${supaUser?`<p style="margin:0">Signed in as <b>${esc(supaUser.email)}</b>. Changes appear on every device signed in with this account.</p><div class="row"><button class="btn" data-a="signout">Sign out</button></div>`
     :`<p class="small muted" style="margin:0">Sign in with the same email and password on your phone, laptop and tablet to share one squad. The first time you sign in, this device’s squad and matches are uploaded.</p>
     <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 200px">Email<input id="se" type="email" autocomplete="username"></label><label class="f" style="flex:1 1 160px">Password<input id="sp" type="password" autocomplete="current-password"></label></div>
@@ -1099,11 +1175,12 @@ function playerModal(id){pendPhoto=undefined;
   const r=id?R(id):null;
   openModal(`<div class="mh"><h2>${id?esc(p.name):'New player'}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="stack">
-    <div class="pphoto">${id?`<div class="cardprev">${cardHTML(p,{btn:false})}</div>`:''}<div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}<span class="small muted" style="flex-basis:100%">Best: a photo from the chest up, face centred. It’s cropped tall and fades into the card.</span></div></div>
+    <div class="pphoto">${id?`<div class="cardprev">${cardHTML(p,{btn:false})}</div>`:''}<div class="face" id="pface">${face(p)}</div><div class="row"><label class="btn" for="pphoto">${p.photo?'Change photo':'Add photo'}</label><input type="file" id="pphoto" accept="image/*" hidden data-a="photo">${p.photo?'<button class="btn ghost" data-a="rmphoto">Remove</button>':''}<span class="small muted" style="flex-basis:100%">Best photo: head and shoulders, facing the camera, plain background, good light, at least 800 × 800 px. You’ll position it in a frame before saving.</span></div></div>
     <label class="f">Name<input id="pn" value="${esc(p.name)}" autocomplete="off"></label>
     <div class="fgrid f3"><label class="f">Position<select id="pp">${POS.map(x=>`<option ${x===p.pos?'selected':''}>${x}</option>`).join('')}</select></label>
     <label class="f">Shirt no.<input id="pno" inputmode="numeric" maxlength="2" value="${esc(p.number||'')}"></label>
     <label class="f">Nation<select id="pnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(p.nation||'')?'selected':''}>${n}</option>`).join('')}</select></label></div>
+    <label class="f">Favourite club<span class="clubsel"><span id="pcbadge">${clubBadge(p.club)||'<span class="cb"></span>'}</span><select id="pclub" data-a="clubprev"><option value="">None</option>${Object.entries(CLUBS).map(([lg,a])=>`<optgroup label="${lg}">${a.map(([cid,n])=>`<option value="${cid}" ${cid===p.club?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></span></label>
     <div class="row" style="gap:18px"><label class="small row chk"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
     <label class="small row chk"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
@@ -1113,6 +1190,7 @@ function playerModal(id){pendPhoto=undefined;
     ${r?(()=>{const x=playerStats().find(y=>y.p.id===id);return x?`<h3>Season</h3><div class="pstat num"><span><b>${x.apps}</b>Apps</span><span><b>${x.W}-${x.D}-${x.L}</b>W-D-L</span><span><b>${x.motm}</b>🏆</span>${cloud==='supa'?`<span><b>${pct(x.resp)}</b>Answered</span><span><b>${x.drops}</b>Late drops</span><span><b>${x.joins}</b>Late joins</span>`:''}</div>${r.hist.length>1&&!hideR?`<div class="row small muted">OVR by match ${spark(r.hist.map(h=>h.ovr))}</div>`:''}`:''})():''}
     ${r&&!hideR?`<h3>Current (averaged)</h3><div class="tbl"><table><tr>${K.map(k=>`<th>${KL[k]}</th>`).join('')}</tr><tr>${K.map(k=>`<td>${r1(r.a[k])}</td>`).join('')}</tr></table></div>
     ${r.hist.length?`<h3>Form</h3><div class="tbl"><table><tr><th>Match</th><th>OVR</th></tr>${r.hist.slice().reverse().map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.ovr}</td></tr>`).join('')}</table></div>`:''}`:''}
+    ${id&&cloud==='supa'&&!p.guest?(()=>{const k=st.pins[id];return `<div class="pinrow"><div><b>Voting PIN</b><div class="small muted">${k?(k.locked_until&&new Date(k.locked_until)>new Date()?'Locked after wrong tries':'Set')+' · '+new Date(k.set_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'Not set yet. They choose one the first time they vote.'}</div></div>${k?`<button class="btn" data-a="pinreset" data-id="${id}">Reset PIN</button>`:''}</div>`})():''}
     <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button>${id?`<button class="btn danger" data-a="delp" data-id="${p.id}" style="margin-left:auto">Delete player</button>`:''}</div>
     ${id?'<p class="small muted" style="margin:0">Deleting removes the player from the squad. Their past match ratings stay in match history. To keep them but hide them, untick Active this season.</p>':''}
   </div>`);
@@ -1276,7 +1354,7 @@ document.addEventListener('click',async e=>{
   if(a==='saverate'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===id)));m.ratings=m.ratings||{};
     document.querySelectorAll('.rate[data-pid]').forEach(row=>{const pid=row.dataset.pid;if(row.dataset.skip==='1'){delete m.ratings[pid];return}const o={};K.forEach(k=>{o[k]=Math.min(10,Math.max(1,+$(`#r_${CSS.escape(pid)}_${k}`).value||7))});m.ratings[pid]=o});
     await putMatch(m);closeModal();toast('Ratings saved');return}
-  if(a==='hider'){hideR=!hideR;ls('atb_hide',hideR?1:0);applyHide();render();toast(hideR?'Ratings hidden (all 99)':'Ratings visible');return}
+  if(a==='hider'){hideR=!hideR;ls('atb_hide',hideR?1:0);applyHide();render();toast(hideR?'Ratings hidden':'Ratings visible');return}
   if(a==='theme'){theme=THEMES[(THEMES.indexOf(theme)+1)%3];ls('atb_theme',theme);applyTheme(theme);return}
   if(a==='rmphoto'){pendPhoto=null;$('#pface').textContent=initials($('#pn').value);const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=SIL;return}
   if(a==='addguest'){openModal(`<div class="mh"><h2>Add guest</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
@@ -1297,6 +1375,16 @@ document.addEventListener('click',async e=>{
   if(a==='pollcopy'){const t=`⚽ *Saturday Soccer* – ${fmtDate(draft.date)}, ${S.settings.time}\nTap your name and say if you’re in:\n${pollUrl(poll.id)}`;try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){$('#pollurl').select();toast('Copy the link from the box')}return}
   if(a==='pollreset'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to clear all answers';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Reset answers'}},3000);return}
     const {error}=await supa.from('atb_rsvp').delete().eq('poll_id',poll.id);if(error){toast('Could not reset: '+error.message);return}poll.rsvp={};render();toast('All answers cleared. Players can answer again');return}
+  if(a==='pinreset'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to reset';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Reset PIN'}},3000);return}
+    const {error}=await supa.from('atb_player_pins').delete().eq('owner',teamOwner).eq('player_id',id);if(error){toast('Could not reset: '+error.message);return}
+    delete st.pins[id];el.closest('.pinrow').querySelector('.small').textContent='Reset. They choose a new PIN on their next vote.';el.remove();toast('PIN reset');return}
+  if(a==='ntfon'){const a2='abcdefghijkmnpqrstuvwxyz23456789',b=new Uint32Array(18);crypto.getRandomValues(b);const topic='aufc-'+[...b].map(x=>a2[x%a2.length]).join('');
+    const {error}=await supa.from('atb_notify').insert({team:teamOwner,member:supaUser.id,topic});if(error){toast('Could not turn on: '+error.message);return}ntf=null;render();toast('Vote alerts on. Follow the steps to subscribe');return}
+  if(a==='ntfoff'){const {error}=await supa.from('atb_notify').delete().eq('member',supaUser.id).eq('team',teamOwner);if(error){toast('Could not turn off');return}ntf=null;render();toast('Vote alerts off');return}
+  if(a==='ntfcopy'){try{await navigator.clipboard.writeText(ntf.topic);toast('Topic copied')}catch(e){$('#ntftopic').select()}return}
+  if(a==='ntfemail'){const email=$('#ntfem').value.trim();if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast('That email doesn’t look right');return}
+    const {error}=await supa.from('atb_notify').update({email:email||null}).eq('member',supaUser.id).eq('team',teamOwner);if(error){toast('Could not save');return}ntf.email=email;toast(email?'Email alerts on':'Email alerts off');return}
+  if(a==='ntftest'){try{const r=await fetch('https://ntfy.sh/',{method:'POST',body:JSON.stringify({topic:ntf.topic,title:'Airdrie United',message:'Test alert: vote alerts are working ✅',tags:['soccer']})});toast(r.ok?'Test sent. Check your phone':'Test failed')}catch(e){toast('Test failed. Check your connection')}return}
   if(a==='mgen'){$('#mp').value=genPw();return}
   if(a==='mreload'){mgrs={list:null,loading:false,err:''};render();return}
   if(a==='madd'){const username=$('#mu').value.trim().toLowerCase(),password=$('#mp').value;const msg=$('#mmsg');el.disabled=true;msg.textContent='Adding…';
@@ -1315,7 +1403,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
+    const rec={...(old||{baseN:0}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto)rec.photo=pendPhoto;else delete rec.photo}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
@@ -1332,8 +1420,10 @@ document.addEventListener('change',async e=>{
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
+  if(a==='ntfen'){const {error}=await supa.from('atb_notify').update({enabled:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(!error){ntf.enabled=el.checked;toast(el.checked?'Alerts resumed':'Alerts paused')}return}
+  if(a==='clubprev'){$('#pcbadge').innerHTML=clubBadge(el.value)||'<span class="cb"></span>';return}
   if(a==='potm'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));m.potm=el.value||null;await putMatch(m);if(el.value)toast('🏆 '+pById(el.value).name);return}
-  if(a==='photo'){const f=el.files[0];if(!f)return;try{pendPhoto=await shrinkPhoto(f);$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`;const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
+  if(a==='photo'){const f=el.files[0];if(!f)return;try{const cp=await cropPhoto(f);if(!cp){el.value='';return}pendPhoto=cp;$('#pface').innerHTML=`<img src="${pendPhoto}" alt="">`;const pv=document.querySelector('.cardprev .ph');if(pv)pv.innerHTML=`<img src="${pendPhoto}" alt="">`}catch(err){toast('Could not read that photo')}el.value='';return}
   if(a==='form'){const i=+el.dataset.i;const lu=teamLU(i);draft.lu[i]={f:el.value,gk:lu.gk};draft.sel=null;saveDraft();render();return}
   if(a==='gk'){const i=+el.dataset.i;draft.lu[i]={gk:el.checked};draft.sel=null;saveDraft();render();return}
   if(a==='import'){const f=el.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.players))throw 0;
