@@ -688,12 +688,14 @@ async function boot(){
     try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
       supa.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')setTimeout(newPasswordModal,300)});
       const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
+    if(supaUser&&ls('atb_mode')==='player'){const ps=ls('atb_player');if(ps&&ps.tok){bootPlayer(ps);return}ls('atb_mode','mgr')}
     if(supaUser){
       // Managers work on the admin's team data; the admin's own id is the team id.
       try{const {data:mm}=await supa.from('atb_members').select('team_owner,username').eq('member',supaUser.id).maybeSingle();if(mm){teamOwner=mm.team_owner;myName=mm.username}}catch(e){}
       teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
       db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||supaUser.email);
-      if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>')}
+      if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>');
+      $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="toplayer"><span>My profile</span></button>')}
   }
   // The hosted app is manager-only: without a signed-in session nothing loads, not even the roster file.
   const psaved=ls('atb_player');if(!db&&!window.claude&&supa&&psaved&&psaved.tok){bootPlayer(psaved);return}
@@ -821,6 +823,7 @@ function render(){
   $('#sub').textContent=S.players.filter(p=>p.active!==false&&!p.guest).length+' players · '+S.matches.length+' matches';
   const m=$('#main');
   if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster. Everyone starts at 7; set each player’s ratings in Squad, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
+  if(view==='toplayer'){m.innerHTML=vSwitchPlayer();pLoadRoster();return}
   m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='guide'?vGuide():view==='managers'&&isAdmin?vManagers():vSettings();
 }
 
@@ -1264,6 +1267,7 @@ function vGuide(){
   ${sec('players','Player sign-in',`<ul>
     <li>Players open the main app link, tap <b>Player</b>, pick their name and enter the same 4-digit PIN they vote with. First time, the PIN they type becomes theirs.</li>
     <li>They see only their own profile: card, next match (with In / Out buttons), matches, W-D-L, win rate, Player of the Match, attendance, streaks, teammates, answer history and leaderboards (appearances, win rate, POTM).</li>
+    <li><b>Managers who also play:</b> tap <b>My profile</b> (last tab), pick your name and enter your PIN. You stay signed in as a manager; tap <b>↩ Manager</b> to switch back. The PIN is asked every time you switch to your profile.</li>
     <li>They never see other players’ ratings. Their own ratings stay hidden unless you tick <b>Players can see their own ratings</b> in Settings.</li>
     <li>5 wrong PINs locks the name for an hour. Resetting a PIN (Squad → tap the player → Voting PIN) signs that player out everywhere. Untick <b>Players can sign in</b> in Settings to turn it off for everyone.</li></ul>`)}
   ${sec('managers','Managers and access',`<ul>
@@ -1333,10 +1337,10 @@ let PM=null;// {tok,team,id,name,data,loading,err,season}
 const PTABS=[['me','Me'],['games','Matches'],['avail','Availability'],['leaders','Leaders'],['acct','Account']];
 function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
-function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}PM=null;showLogin('',msg,'player')}
+function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
   PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(!['me','games','avail','leaders','acct'].includes(view))view='me';
-  $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('');$('#tabs').hidden=false;
+  $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent='Player · '+saved.name;
   await loadPlayer();
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer()});
@@ -1439,12 +1443,17 @@ function vpAcct(){const me=PM.data.me;
     <div class="row"><button class="btn primary" data-a="psetpin">Change PIN</button><span class="small muted" id="pmsg" role="status"></span></div>
     <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
   <h2>Help</h2><div class="panel small"><ul style="margin:0;padding-left:18px"><li><b>Me</b>: your card, next match, and season numbers.</li><li><b>Matches</b>: every team you played on, scores and line-ups.</li><li><b>Availability</b>: say in or out for the next match, and see your answer history.</li><li><b>Leaders</b>: appearances, win rate and Player of the Match for everyone.</li><li>Only you can see your profile. Managers set ratings and teams.</li></ul></div>
-  <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">Sign out</button></div>`}
+  <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">${supaUser?'Sign out of profile':'Sign out'}</button></div>`}
 function renderPlayer(){document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
   m.innerHTML=(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():vpMe())}
 
+function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
+  <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your 4-digit PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
+  <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
+  <label class="f">PIN<input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>
+  <div class="row"><button class="btn primary" data-a="plogin" type="submit">Open my profile</button></div><span class="small muted" id="plmsg" role="status"></span></form></div>`}
 async function pLoadRoster(){const sel=$('#plname');if(!sel)return;try{const r=await prpc('atb_player_roster',{});const t=r[0];
     if(!t){sel.innerHTML='<option value="">Player sign-in is off</option>';return}
     sel.dataset.team=t.team;const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('')}
@@ -1456,12 +1465,14 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
     el.disabled=true;msg.textContent='Signing in…';
     try{const r=await prpc('atb_player_login',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
       if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);
+        const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
+        if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
         if(r.new)toast('PIN saved. Use it here and on the availability link');view='me';bootPlayer(saved);return}
       msg.textContent=r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
     catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
   if(!PM)return;
   if(a==='preload'){loadPlayer();return}
-  if(a==='psignout'){try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}location.reload();return}
+  if(a==='psignout'){try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}if(supaUser){ls('atb_mode','mgr');ls('atb_view','match')}location.reload();return}
   if(a==='pvote'){const s=el.dataset.s;el.disabled=true;try{const r=await prpc('atb_player_vote',{p_token:PM.tok,p_poll:el.dataset.id,p_status:s});
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4}$/.test(n)){msg.textContent='New PIN must be 4 digits.';return}
@@ -1603,7 +1614,8 @@ async function saveFile(name,data,mime){
 
 /* ---------- events ---------- */
 document.addEventListener('click',async e=>{
-  const tab=e.target.closest('#tabs button');if(tab){view=tab.dataset.v;if(PM)plog('Viewed '+tab.textContent.trim());ls('atb_view',view);render();window.scrollTo(0,0);const nav=$('#tabs');nav.scrollTo({left:tab.offsetLeft-nav.clientWidth/2+tab.clientWidth/2,behavior:'smooth'});return}
+  const tab=e.target.closest('#tabs button');if(tab&&tab.dataset.v==='tomgr'){ls('atb_mode','mgr');ls('atb_view','match');location.reload();return}
+  if(tab){view=tab.dataset.v;if(PM)plog('Viewed '+tab.textContent.trim());ls('atb_view',view);render();window.scrollTo(0,0);const nav=$('#tabs');nav.scrollTo({left:tab.offsetLeft-nav.clientWidth/2+tab.clientWidth/2,behavior:'smooth'});return}
   const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,id=el.dataset.id;
   if(el.tagName==='SELECT'||el.tagName==='INPUT'&&el.type!=='checkbox')return;
   if(a==='scrim'&&e.target===el){const m=el.firstElementChild;m.classList.remove('nudge');void m.offsetWidth;m.classList.add('nudge');return}
