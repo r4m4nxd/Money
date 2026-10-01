@@ -86,3 +86,5 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- Club crests not bundled in icons/crests/ (MLS, Saudi, Argentine, Brazilian, Indian clubs) are copied into the
 -- public storage bucket 'crests' as <id>.png (no write policies: only the service role can change them).
+
+-- atb_player_pin_state(team, player) -> 'set' | 'none' | 'blocked' | 'unknown': lets the sign-in screen offer "Create your PIN".

@@ -227,6 +227,7 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .qb.skip{margin-left:auto}.qb.skip[aria-pressed="true"]{background:var(--muted);border-color:var(--muted);color:var(--bg)}
 .rate[data-skip="1"] b{text-decoration:line-through;opacity:.6}
 .more summary{cursor:pointer;margin-top:4px}
+.plhint{margin:0;color:var(--muted)}.plhint.new{color:var(--ink);background:color-mix(in srgb,var(--good) 14%,transparent);border:1px solid var(--good);border-radius:10px;padding:8px 10px}.plhint.bad{color:var(--bad)}
 .login{max-width:420px;margin:32px auto;text-align:left}.lcrest{width:84px;height:84px;border-radius:50%;box-shadow:0 0 0 2px var(--accent)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
 .tile{background:var(--surface);border:1px solid var(--line);padding:10px 12px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
@@ -778,10 +779,10 @@ function showLogin(err,info,role){role=role||ls('atb_lrole')||'player';ls('atb_l
   $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest">${supa?seg:''}
     ${info?`<p class="small" style="margin:0;color:var(--warn)">${esc(info)}</p>`:''}
     ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:role==='player'?`<h2 style="margin:0">Your player profile</h2>
-    <p class="small muted" style="margin:0">See your matches, teams, results and availability. Use the same PIN as the availability link. First time? Pick a PIN now.</p>
+    <p class="small muted" style="margin:0">See your matches, teams, results and availability. Pick your name. No PIN yet? You can create one right here.</p>
     <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
-    <label class="f">PIN<input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label>
-    <div class="row"><button class="btn primary" data-a="plogin" type="submit">Sign in</button></div><span class="small muted" id="plmsg" role="status"></span></form>`
+    <label class="f"><span id="plpinl">PIN</span><input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><label class="f" id="plpin2w" hidden>Type the same PIN again<input id="plpin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><p class="small plhint" id="plhint" hidden></p>
+    <div class="row"><button class="btn primary" data-a="plogin" type="submit" id="plbtn" data-t="Sign in">Sign in</button></div><span class="small muted" id="plmsg" role="status"></span></form>`
     :`<h2 style="margin:0">Manager sign-in</h2>
     <form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>
     <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required></label>
@@ -1199,7 +1200,7 @@ function pinSetupPanel(){if(cloud!=='supa')return '';if(!st.loaded&&!st.loading)
     <h4>✅ PIN set <span class="small muted">${has.length}</span></h4><div class="pslist">${has.map(p=>{const k=st.pins[p.id],lk=k.locked_until&&new Date(k.locked_until)>new Date(),seen=pinSeen&&pinSeen[p.id];
       return `<div><span>${esc(p.name)}</span><span class="small muted">${lk?'<span class="pill bad">Locked</span> ':''}${k.set_at?'PIN '+d(k.set_at):''}${isAdmin?` · ${seen?'last in '+d(seen):'not signed in yet'}`:''}</span></div>`}).join('')||'<p class="small muted" style="margin:0">Nobody yet.</p>'}</div>
     ${off.length?`<h4>🚫 App access off <span class="small muted">${off.length}</span></h4><p class="small muted" style="margin:0">${off.map(p=>esc(p.name)).join(', ')}. Turn it on in their player card.</p>`:''}
-    <p class="small muted" style="margin:8px 0 0">A player sets their PIN the first time they sign in to the app (or answer the availability link). Tap a name to open their card.</p>`:''}
+    <p class="small muted" style="margin:8px 0 0">Players without a PIN can create one right on the app’s sign-in screen (pick their name, type a PIN twice), or on the availability link. Tap a name to open their card.</p>`:''}
   </details>`}
 function vSquad(){
   let ps=S.players.filter(p=>showOff||(p.active!==false&&!p.guest));
@@ -1453,7 +1454,7 @@ function vGuide(){
 function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details class="gsec" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
   return `<h2>Your player guide</h2><p class="gintro">Everything about your Airdrie United profile in two minutes.</p>
   ${sec('in','Signing in and your PIN',`<ul><li>Open the team app link, tap <b>Player</b>, choose your name and type your PIN. You stay signed in on your phone.</li>
-    <li>It’s the <b>same PIN</b> as the WhatsApp availability link. First time? The PIN you type becomes yours.</li>
+    <li>It’s the <b>same PIN</b> as the WhatsApp availability link. No PIN yet? Pick your name on the sign-in screen and it asks you to <b>create a PIN</b> (type it twice) right there. Avoid easy ones like 1111 or 1234.</li>
     <li>5 wrong PINs locks your name for an hour. Forgot it? Ask a manager to reset it, then pick a new one. Change it any time in <b>Account</b>.</li></ul>`,true)}
   ${sec('home','Your home screen',`<ul><li>The top card shows the <b>next game</b>: date, time, ${d.settings.venue?esc(d.settings.venue)+', ':''}a countdown and how many are going.</li>
     <li>Tap <b>I’m in</b> or <b>Can’t make it</b>. There’s no maybe. You can change your answer until the link closes.</li>
@@ -1819,22 +1820,35 @@ function renderPlayer(){document.querySelectorAll('#tabs button').forEach(b=>b.s
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
   <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
   <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
-  <label class="f">PIN<input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label>
-  <div class="row"><button class="btn primary" data-a="plogin" type="submit">Open my profile</button></div><span class="small muted" id="plmsg" role="status"></span></form></div>`}
+  <label class="f"><span id="plpinl">PIN</span><input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><label class="f" id="plpin2w" hidden>Type the same PIN again<input id="plpin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><p class="small plhint" id="plhint" hidden></p>
+  <div class="row"><button class="btn primary" data-a="plogin" type="submit" id="plbtn" data-t="Open my profile">Open my profile</button></div><span class="small muted" id="plmsg" role="status"></span></form></div>`}
+// login form switches between "enter your PIN" and "create your PIN" for the chosen name
+let plMode='set';
+async function pPinMode(){const sel=$('#plname');if(!sel)return;const id=sel.value,hint=$('#plhint');plMode='set';
+  const set=(m,label,btn,h,cls)=>{if(sel.value!==id)return;plMode=m;$('#plpinl').textContent=label;$('#plpin2w').hidden=m!=='none';const b=$('#plbtn');if(b)b.textContent=btn||b.dataset.t;hint.hidden=!h;hint.innerHTML=h||'';hint.className='small plhint'+(cls?' '+cls:'')};
+  if(!id){set('set','PIN');return}
+  let st='set';try{st=await prpc('atb_player_pin_state',{p_team:sel.dataset.team,p_player:id})}catch(e){}
+  if(st==='none')set('none','Create your PIN (4 to 6 digits)','Create PIN and open my profile','👋 First time? Choose a PIN only you know. You’ll use it here and on the availability link.','new');
+  else if(st==='blocked')set('blocked','PIN','','Your profile access is turned off. Ask a manager.','bad');
+  else set('set','PIN','','Forgot your PIN? Ask a manager to reset it, then create a new one here.')}
+document.addEventListener('change',e=>{if(e.target.id==='plname'){$('#plmsg').textContent='';$('#plpin').value='';if($('#plpin2'))$('#plpin2').value='';pPinMode()}});
 async function pLoadRoster(){const sel=$('#plname');if(!sel)return;try{const r=await prpc('atb_player_roster',{});const t=r[0];
     if(!t){sel.innerHTML='<option value="">Player sign-in is off</option>';return}
-    sel.dataset.team=t.team;const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('')}
+    sel.dataset.team=t.team;const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('');pPinMode()}
   catch(e){sel.innerHTML='<option value="">Can’t load names. Check your connection</option>'}}
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
   if(a==='lrole'){showLogin('','',el.dataset.r);return}
   if(a==='plogin'){e.preventDefault();const sel=$('#plname'),pin=$('#plpin').value.trim(),msg=$('#plmsg');
-    if(!sel.value){msg.textContent='Choose your name.';return}if(!/^\d{4,6}$/.test(pin)){msg.textContent='Your PIN is 4 to 6 digits.';return}
-    el.disabled=true;msg.textContent='Signing in…';
+    if(!sel.value){msg.textContent='Choose your name.';return}if(plMode==='blocked'){msg.textContent='Your profile access is turned off. Ask a manager.';return}
+    if(!/^\d{4,6}$/.test(pin)){msg.textContent=plMode==='none'?'Choose a PIN of 4 to 6 digits.':'Your PIN is 4 to 6 digits.';return}
+    if(plMode==='none'){if(/^(\d)\1+$/.test(pin)||'0123456789'.includes(pin)||'9876543210'.includes(pin)){msg.textContent='Pick a PIN that’s harder to guess (not 1111 or 1234).';return}
+      if($('#plpin2').value.trim()!==pin){msg.textContent='The two PINs don’t match. Type them again.';return}}
+    el.disabled=true;msg.textContent=plMode==='none'?'Creating your PIN…':'Signing in…';
     try{const r=await prpc('atb_player_login',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
       if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
         if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
-        if(r.new)toast('PIN saved. Use it here and on the availability link');view='me';bootPlayer(saved);return}
+        if(r.new)toast('PIN created. Use it here and on the availability link');view='me';bootPlayer(saved);return}
       msg.textContent=r.err==='blocked'?'Your profile access is turned off. Ask a manager.':r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
     catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
   if(!PM)return;
