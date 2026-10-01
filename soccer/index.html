@@ -469,9 +469,13 @@ div.citem{cursor:default}
 .ei-trophy,.ei-medal.g,.ei-star,.ei-crown{color:#E2B13C}.ei-medal.s{color:#A9B6C6}.ei-medal.b{color:#C9844A}.ei-check{color:var(--ok,#2FB36B)}.ei-warn{color:var(--warn,#E0A526)}.ei-trash{color:var(--bad,#E5484D)}.ei-flame{color:#F07A2A}.ei-heart{color:#E5484D}
 .btn .ei,.chip .ei{margin-right:2px}.themebtn .ei{width:18px;height:18px;vertical-align:-4px}.tipbig .ei{stroke-width:1.5}
 .mgrid{display:flex;flex-direction:column}.mgc{display:contents}.ms{order:var(--o);min-width:0}
-.mdx{display:grid;gap:14px}.mpitch{order:-1;min-width:0}.team.on{box-shadow:0 0 0 2px var(--k),0 10px 30px rgba(0,0,0,.25)}
+.mdx{display:grid;gap:16px}.mleft{display:flex;flex-direction:column;gap:12px;min-width:0}@media(max-width:999px){.mleft{display:contents}.mleft>.mbal{order:-3}.mleft>.fxbar{order:-2}}.mleft>.panel{margin:0}.mbal{justify-content:space-between;gap:10px}.mbal .row{flex-wrap:wrap}.mleft .fxbar{margin:0}.team .hd{cursor:pointer}.team .hd .tfc{flex:none;width:28px;height:28px;background:rgba(0,0,0,.18);border-color:rgba(255,255,255,.35)}.team .hd .tfc::before{border-color:#fff}.team .hd.lt .tfc::before{border-color:#1B1F26}
+.team:not(.fold) .hd .tfc::before{transform:translateY(2px) rotate(-135deg)}
+.tsum{display:none;padding:9px 12px;font-size:13px;color:var(--muted);cursor:pointer}.tsum b{color:var(--ink)}
+.team.fold .tsum{display:block}.team.fold>:not(.hd):not(.tsum){display:none}
+.mdx .teams{gap:10px}.mpitch{order:-1;min-width:0}.team.on{box-shadow:0 0 0 2px var(--k),0 10px 30px rgba(0,0,0,.25)}
 .mptabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}.mptabs::-webkit-scrollbar{display:none}.mptabs button{flex:1 1 0;min-width:max-content;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px var(--f-body);cursor:pointer;white-space:nowrap}.mptabs button[aria-selected=true]{background:var(--k);border-color:var(--k);color:#fff}
-@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:10px}.mpitch .pitch.p3{max-width:min(100%,calc((100vh - 250px)*1.136))}}
+@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:10px}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 330px)*1.136));margin:0 auto}}
 .fxbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;border-left:4px solid var(--line)}.fxbar.ok{border-left-color:var(--ok,#2FB36B)}.fxbar.meh{border-left-color:var(--warn,#E0A526)}.fxbar .fxs{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.fxhint{max-width:260px}.fxcard{border-left:4px solid var(--k)}
 .cx{margin:16px 0 4px}.cx>summary,.mcx>summary{list-style:none;cursor:pointer}.cx>summary::-webkit-details-marker,.mcx>summary::-webkit-details-marker{display:none}
 .cx>summary{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding:4px 0}.cx>summary h2{margin:0}.cxi{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.cxi b{color:var(--ink)}
@@ -639,7 +643,7 @@ button.pc{cursor:pointer}
 .ps-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ps-nav ul::-webkit-scrollbar{display:none}
 .ps-nav a{display:block;white-space:nowrap;text-decoration:none;color:inherit;font-size:13px;font-weight:700;padding:7px 10px;border-radius:8px;background:rgba(127,140,155,.18);border:1px solid transparent}
 .ps-nav a.nav-active{background:#1f9d55;color:#fff;border-color:#4be07f;box-shadow:0 0 0 2px rgba(75,224,127,.25)}
-.ps-panel{margin-top:8px;font-size:14px}.ps-panel .subb{margin:0 6px 6px 0}.ps-kv{display:flex;flex-wrap:wrap;gap:4px 14px}.ps-kv span{font-size:13px}.ps-kv b{font-family:var(--f-display);font-size:16px}.ps-form b{font:900 26px/1 var(--f-display);letter-spacing:.06em}
+.ps-panel{margin-top:8px;font-size:14px}.ps-panel .subb{margin:0 6px 6px 0}.ps-kv{display:flex;flex-wrap:wrap;gap:4px 14px}.ps-kv span{font-size:13px}.ps-kv b{font-family:var(--f-display);font-size:16px}.ps-form b{font:900 16px/1 var(--f-display);letter-spacing:.06em;color:var(--ink)}
 .ps-stats{background:rgba(127,140,155,.16);border-radius:12px;padding:10px 12px}
 .ps-sh{font-weight:800;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pstats{margin:0;display:grid;gap:6px}.pstats>div{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:8px}.pstats dt{font-size:12px;font-weight:800;letter-spacing:.05em;opacity:.8}.pstats dd{margin:0;display:grid;grid-template-columns:28px 1fr;align-items:center;gap:8px}
@@ -1274,15 +1278,17 @@ function vMatch(){
     const spread=Math.max(...st.map(s=>s.tot))-Math.min(...st.map(s=>s.tot));
     const arrow=(v,k)=>{const d=v-mean(k);return Math.abs(d)<0.5?'<span class="d muted">=</span>':d>0?`<span class="d up">▲${r1(d)}</span>`:`<span class="d dn">▼${r1(-d)}</span>`};
     teamsHtml=`<div class="row tbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px"><div class="lseg sm" role="group" aria-label="Badge on pitch">${[['nation','🏳️ Nation'],['club','🛡️ Club']].map(([k,l])=>`<button type="button" data-a="pbadge" data-v="${k}" aria-selected="${(S.settings.pitchBadge||'nation')===k}">${l}</button>`).join('')}</div></div>
-    <div class="panel row" style="justify-content:space-between;margin-bottom:12px">
+<div class="mdx"><div class="mleft">    <div class="panel row mbal">
       <div class="balance"><span>Overall gap <b class="num">${hideR?'–':r1(spread)}</b> pts <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span></span>
       <span class="muted">${S.settings.mix?'Mixing last week’s teammates':''}</span></div>
       <div class="row"><button class="btn" data-a="reroll" ${draft.alts.length>1?'':'disabled'}>Another balanced option</button><button class="btn" data-a="share">Share to WhatsApp</button>${draft.editing?'<button class="btn primary" data-a="savematch">Update match</button>':''}</div>
-    </div>${draft.editing?'':finalBar()}
-    <div class="mdx"><div class="teams">${draft.teams.map((t,i)=>{const s=st[i];const kit=draft.kits[i]||DEF_KITS[i];
-      return `<section class="team${i===pt?' on':''}" style="--k:${KITHEX[kit]}"><div class="hd${kitLt(kit)?' lt':''}" style="background:${KITHEX[kit]}">
+    </div>${draft.editing&&draft.date<todayISO()?'':finalBar()}
+    <div class="teams">${draft.teams.map((t,i)=>{const s=st[i];const kit=draft.kits[i]||DEF_KITS[i];
+      const open=i===pt&&!draft.tfold;
+      return `<section class="team${i===pt?' on':''}${open?'':' fold'}" style="--k:${KITHEX[kit]}"><div class="hd${kitLt(kit)?' lt':''}" style="background:${KITHEX[kit]}" data-a="tsel" data-i="${i}" title="${open?'Fold this team':'Open this team and show it on the pitch'}">
         <input id="tn${i}" value="${esc(draft.names[i]||'Team '+KITS[kit])}" data-a="tname" data-i="${i}" aria-label="Team name">
-        <select id="tk${i}" data-a="tkit" data-i="${i}" aria-label="Kit colour">${Object.keys(KITS).map(k=>`<option value="${k}" ${k===kit?'selected':''}>${KITS[k]}</option>`).join('')}</select></div>
+        <select id="tk${i}" data-a="tkit" data-i="${i}" aria-label="Kit colour">${Object.keys(KITS).map(k=>`<option value="${k}" ${k===kit?'selected':''}>${KITS[k]}</option>`).join('')}</select><span class="cxc tfc" aria-hidden="true"></span></div>
+        <div class="tsum num" data-a="tsel" data-i="${i}">${t.length} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD · Total <b>${hideR?99:r1(s.tot)}</b>${i===pt?' · <span class="pill ok">On the pitch</span>':''}</div>
         <ul class="plist">${sortTeam(t).map(id=>{const p=pById(id);return `<li><span class="pos ${posOf(id)}">${posOf(id)}</span><span class="nm">${esc(p?.name)}${star(id)}</span><span class="num muted small">${rv(R(id).ovr)}</span>
           <span class="row" style="gap:2px"><button class="lock" aria-pressed="${draft.locks[id]!=null}" title="Keep in this team when balancing" data-a="lock" data-id="${id}" data-i="${i}">${draft.locks[id]!=null?'🔒':'🔓'}</button>
           <select aria-label="Move ${esc(p?.name)}" data-a="move" data-id="${id}">${draft.teams.map((_,j)=>`<option value="${j}" ${j===i?'selected':''}>${esc((draft.names[j]||'Team '+KITS[draft.kits[j]||DEF_KITS[j]]).replace(/^Team /,''))}</option>`).join('')}</select></span></li>`}).join('')}</ul>
@@ -1290,7 +1296,7 @@ function vMatch(){
         <div class="lines num">${s.n} players · ${s.c.DEF} DEF · ${s.c.MID} MID · ${s.c.FWD} FWD${(()=>{const sc={};t.forEach(id=>{if(pById(id)?.star){const p=posOf(id);sc[p]=(sc[p]||0)+1}});const bad=Object.keys(sc).filter(p=>sc[p]>1);return bad.length?` <span class="pill meh">${bad.map(p=>sc[p]+" ★ "+p).join(", ")}</span>`:""})()}</div>
         ${(()=>{const lu=teamLU(i);return `<div class="tb"><label class="small">Formation <select id="fm${i}" data-a="form" data-i="${i}">${formOpts(t,lu.gk).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
           <label class="small row" style="gap:4px"><input type="checkbox" id="gk${i}" data-a="gk" data-i="${i}" ${lu.gk?'checked':''}> Keeper</label>
-          <span class="row" style="margin-left:auto;gap:6px"><button class="btn${i===pt?' primary':''}" data-a="pteam" data-i="${i}">${i===pt?'On the pitch':'Show on pitch'}</button><button class="btn" data-a="shareteam" data-i="${i}">Share</button></span></div>`})()}</section>`}).join('')}</div>
+          <span class="row" style="margin-left:auto;gap:6px"><button class="btn${i===pt?' primary':''}" data-a="pteam" data-i="${i}">${i===pt?'On the pitch':'Show on pitch'}</button><button class="btn" data-a="shareteam" data-i="${i}">Share</button></span></div>`})()}</section>`}).join('')}</div></div>
     <div class="mpitch"><div class="mptabs" role="tablist">${draft.teams.map((_,i)=>{const k=draft.kits[i]||DEF_KITS[i];return `<button role="tab" aria-selected="${i===pt}" data-a="pteam" data-i="${i}" style="--k:${KITHEX[k]}"><span class="kitsw sm" style="background:${KITHEX[k]}"></span>${esc(draft.names[i]||'Team '+KITS[k])}</button>`}).join('')}</div>
       ${pitchHTML({kit:draft.kits[pt]||DEF_KITS[pt]},teamLU(pt),pt,true,draft.names[pt]||'Team '+KITS[draft.kits[pt]||DEF_KITS[pt]])}</div></div>`;
     teamsHtml=cx('m_teams','Teams',`${draft.teams.map((t,i)=>`<span class="kitsw sm" style="background:${KITHEX[draft.kits[i]||DEF_KITS[i]]}"></span>`).join('')} gap <b class="num">${hideR?'–':r1(spread)}</b> · <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span>`,teamsHtml);
@@ -2692,7 +2698,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     :`<div class="ps-dyn"><span class="ps-av ps-kit" style="background:${col}"></span><div><b class="ps-name">${esc(title||t.name||'Team')}</b><div class="small">${onp.length} on the pitch · ${subIds.length} subs</div><div class="small">Team rating <b class="player-ovr-stat num">${hideR?99:r1(st.tot)}</b></div></div></div>`;
   const NAV=[['tactics','Tactics'],['formation','Formation'],['squad','Squad Selector'],['kit','Kit Numbers'],['stats','Player Stats']];
   const panel=nav==='tactics'?`<div class="ps-kv num"><span>Attack <b>${hideR?99:r1(st.atk)}</b></span><span>Midfield <b>${hideR?99:r1(st.mid)}</b></span><span>Defence <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`
-    :nav==='formation'?`<div class="ps-form"><b>${esc(lu.f)}</b>${lu.gk?' + GK':''}<div class="small muted">Tap a card, then another card or a sub, to swap them.</div></div>`
+    :nav==='formation'?`<div class="ps-form small muted"><b>${esc(lu.f)}${lu.gk?' + GK':''}</b> · Tap a card, then another card or a sub, to swap them.</div>`
     :nav==='squad'?(subs?`<div class="ps-subs">${subs}</div><div class="small muted">Tap a sub, then a card to bring them on.</div>`:'<div class="small muted">No subs: everyone is on the pitch.</div>')
     :nav==='kit'?`<label class="small row chk"><input type="checkbox" data-a="pnums" ${pNums?'checked':''}> Show shirt numbers on cards</label><div class="small muted">${onp.filter(id=>!pById(id)?.number).length?onp.filter(id=>!pById(id)?.number).map(id=>esc(shortName(pById(id)?.name))).join(', ')+' have no number yet.':'Everyone on the pitch has a number.'}</div>`
     :`<div class="small muted">${sp?'Stats for '+esc(sp.name):'Team averages. Tap a card for one player.'}</div>`;
@@ -2709,9 +2715,9 @@ function shareData(m){return {date:m.date,teams:m.teams.map(t=>{const ids=t.play
 const fxFor=d=>(S.fixtures||[]).find(f=>f.date===d);
 const fxKey=t=>JSON.stringify((t||[]).map(x=>[x.name,x.kit,x.players,x.lu&&x.lu.f,x.lu&&x.lu.gk,x.lu&&x.lu.order]));
 function finalBar(){const fx=fxFor(draft.date),cur=draftAsMatch(),same=fx&&fxKey(fx.teams)===fxKey(cur.teams),future=draft.date>todayISO();
-  return `<div class="panel fxbar ${same?'ok':fx?'meh':''}"><div class="fxs">${same?`${ICO('check')} <b>Teams finalized</b> <span class="small muted">· players see their team on their Me page${fx.by?' · by '+esc(fx.by):''}</span>`:fx?`${ICO('warn')} <b>Changed since you finalized</b> <span class="small muted">· players still see the old teams</span>`:`<b>Not finalized yet</b> <span class="small muted">· players can’t see these teams</span>`}</div>
+  return `<div class="panel fxbar ${same?'ok':fx?'meh':''}"><div class="fxs">${same?`${ICO('check')} <b>Teams finalized</b> <span class="small muted">· players see their team on their Me page${fx.by?' · by '+esc(fx.by):''}</span>`:fx?`${ICO('warn')} <b>Changed since you finalized</b> <span class="small muted">· players still see the old teams</span>`:`<b>Not finalized yet</b> <span class="small muted">Players can’t see these teams.</span>`}</div>
     <div class="row">${same?`<button class="btn ghost" data-a="unfinal">Unpublish</button>`:`<button class="btn primary" data-a="finalize">${fx?'Update finalized teams':'Finalize teams'}</button>`}
-    ${future?`<span class="small muted fxhint">Save the match after it’s played (from ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}).</span>`:`<button class="btn${same?' primary':''}" data-a="savematch">Match played: save it</button>`}</div></div>`}
+    ${draft.editing?`<span class="small muted fxhint">This date already has a saved match; use Update match after the game.</span>`:future?`<span class="small muted fxhint">Save the match after it’s played (from ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}).</span>`:`<button class="btn${same?' primary':''}" data-a="savematch">Match played: save it</button>`}</div></div>`}
 function draftAsMatch(){return {date:draft.date,teams:draft.teams.map((t,i)=>({name:draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]],kit:draft.kits[i]||DEF_KITS[i],players:t,lu:{...teamLU(i),n:onPitch()}}))}}
 let lastShare=null,shareSel='all',lastAwards=null;
 function shareModal(m,sel){
@@ -2820,7 +2826,8 @@ document.addEventListener('click',async e=>{
   if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
   if(a==='pnav'){e.preventDefault();pNav[el.dataset.k]=el.dataset.v;render();return}
   if(a==='pnums'){pNums=el.checked;ls('atb_pnums',pNums);render();return}
-  if(a==='pteam'){draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='tsel'){const i=+el.dataset.i;if(i===(draft.pt||0))draft.tfold=!draft.tfold;else{draft.pt=i;draft.tfold=false}draft.sel=null;saveDraft();render();return}
+  if(a==='pteam'){draft.tfold=false;draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
   if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const k=+el.dataset.k;
