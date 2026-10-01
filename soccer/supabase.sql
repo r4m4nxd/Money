@@ -102,3 +102,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Admin alerts: atb_notify.god_mgr / god_pl (admin's own row, member = team). Triggers atb_god_mgr (atb_activity) and
 -- atb_god_pl (atb_player_activity) push major actions to the admin's ntfy topic via private.atb_god_push; private.atb_major
 -- filters out page views/opens; repeats within 2 minutes are skipped; the admin's own actions are skipped.
+
+-- Admin alerts v2: every manager action counts (atb_major('mgr',…) = true). Repeat pushes are skipped for 2 min
+-- (same action and detail), and for 30 min for 'Opened app'. The client logs 'Signed in' on a password sign-in, and a
+-- "what changed" detail for player, match, settings, tournament and equipment edits.

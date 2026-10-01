@@ -713,7 +713,7 @@ const tipUrl=()=>{const u=String((S.settings.tip||{}).url||TIPURL);return /^http
 const tipCard=(small)=>tipOn()?`<button class="tipcard${small?' sm':''}" data-a="tip" data-src="${small?'guide':'club'}"><span class="tipcup">☕</span><span><b>Support the builder</b><small>Like the app? Buy Raman a coffee for building it. Totally optional ❤️</small></span><span class="tipgo">Ko-fi ›</span></button>`:'';
 /* ---------- admin feed: every major manager / player action (admin only) ---------- */
 let god={items:null,loading:false,at:0},godMem={};
-const GOD_MGR_SKIP=['Opened app','Opened share card','Balanced teams'],GOD_PL_SKIP=['Opened app','Opened match','Said IN','Said OUT'];
+const GOD_MGR_SKIP=[],GOD_PL_SKIP=['Opened app','Opened match','Said IN','Said OUT'];
 const godMajor=x=>x.k==='mgr'?!GOD_MGR_SKIP.includes(x.action):!/^Viewed /.test(x.action)&&!GOD_PL_SKIP.includes(x.action);
 const godRead=()=>{try{return +localStorage.getItem('atb_godread')||0}catch(e){return 0}};
 async function godLoad(){if(!isAdmin||cloud!=='supa'||god.loading)return;god.loading=true;const since=new Date(Date.now()-14*864e5).toISOString();
@@ -780,7 +780,14 @@ const saveDraft=()=>ls('atb_draft',draft);
 let view=ls('atb_view')||'match';
 
 const persistLocal=()=>ls('atb_state',S);
-async function putPlayer(p){logAct(pById(p.id)?'Edited player':'Added player',p.name);const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
+/* Short "what changed" text for the admin's activity feed */
+const DIFFSKIP=new Set(['photo','thumb','photoCut','updated','at']);
+function diffTxt(a,b){if(!a)return '';const out=[],v=x=>x==null||x===''?'—':typeof x==='object'?'…':String(x).slice(0,24);
+  for(const k of new Set([...Object.keys(a||{}),...Object.keys(b||{})])){if(DIFFSKIP.has(k))continue;const x=a[k],y=b[k];if(JSON.stringify(x)===JSON.stringify(y))continue;
+    if(x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)){const sub=[];for(const j of new Set([...Object.keys(x),...Object.keys(y)]))if(JSON.stringify(x[j])!==JSON.stringify(y[j]))sub.push(`${j} ${v(x[j])}→${v(y[j])}`);out.push(k+': '+sub.join(', '))}
+    else out.push(`${k} ${v(x)}→${v(y)}`)}
+  if(a.photo!==b.photo)out.push(b.photo?'photo changed':'photo removed');return out.join(' · ')}
+async function putPlayer(p){const old=pById(p.id);logAct(old?'Edited player':'Added player',old?p.name+(diffTxt(old,p)?' — '+diffTxt(old,p):''):p.name);const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
   if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();syncOpenPolls()}
 async function delPlayer(id){logAct('Deleted player',pById(id)?.name);S.players=S.players.filter(p=>p.id!==id);
   draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
@@ -796,10 +803,10 @@ function syncOpenPolls(){if(cloud!=='supa'||!supa)return;clearTimeout(pollSyncT)
 let quietLog=false;const lastLog={};
 function logAct(action,detail){if(cloud!=='supa'||!supaUser||quietLog)return;const k=action+'|'+(detail||'');const t=Date.now();if(lastLog[k]&&t-lastLog[k]<60000)return;lastLog[k]=t;
   supa.from('atb_activity').insert({team:teamOwner,member:supaUser.id,action,detail:detail?String(detail).slice(0,200):null}).then(()=>{},()=>{})}
-async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);i<0?S.matches.push(m):S.matches[i]=m;
-  if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();logAct('Updated match',fmtDate(m.date))}
+async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);const dd=i<0?'new':diffTxt(S.matches[i],m);i<0?S.matches.push(m):S.matches[i]=m;
+  if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();logAct('Updated match',fmtDate(m.date)+(dd?' — '+dd:''))}
 async function delMatch(id){const dm=S.matches.find(m=>m.id===id);logAct('Deleted match',dm&&fmtDate(dm.date));S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
-async function putSettings(){logAct('Changed settings');if(mode==='db'){try{await db.doc('settings/main').set(S.settings)}catch(e){}}else persistLocal();render()}
+let lastSet=null;async function putSettings(){const d=lastSet?diffTxt(lastSet,S.settings):'';lastSet=JSON.parse(JSON.stringify(S.settings));if(d!==null)logAct('Changed settings',d||undefined);if(mode==='db'){try{await db.doc('settings/main').set(S.settings)}catch(e){}}else persistLocal();render()}
 
 async function seedFromFile(){quietLog=true;try{const r=await fetch('seed.json');const j=await r.json();for(const p of j.players){await putPlayer(p)}if(j.season){S.settings.season=j.season;await putSettings()}toast('Loaded '+j.players.length+' players')}catch(e){toast('Could not load last season’s squad')}quietLog=false}
 
@@ -815,6 +822,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 const MGR_DOMAINS=['aufc-managers.invalid','managers.aufc.local'];
+const niceEmail=e=>{e=e||'';const[u,d]=e.split('@');return MGR_DOMAINS.includes(d)?u+'@aufc.ca':e};
 function supaDB(client,uid){
   const cols={};
   const snap=col=>({docs:[...cols[col].map].map(([id,d])=>({id,exists:true,data:()=>d}))});
@@ -871,7 +879,7 @@ async function boot(){
       // Managers work on the admin's team data; the admin's own id is the team id.
       try{const {data:mm}=await supa.from('atb_members').select('team_owner,username').eq('member',supaUser.id).maybeSingle();if(mm){teamOwner=mm.team_owner;myName=mm.username}}catch(e){}
       teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
-      db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||supaUser.email);
+      db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||niceEmail(supaUser.email));
       if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>');
       $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="toplayer"><span>My profile</span></button>')}
   }
@@ -888,10 +896,10 @@ async function boot(){
       await syncRoster();if(cloud==='supa'&&!Array.isArray(S.settings.seasons)){S.settings.seasons=[{id:'w2627',name:'Winter 2026–27',kind:'indoor',venue:S.settings.venue||'Genesis Centre, Airdrie',time:S.settings.time,games:(Array.isArray(S.settings.schedule)?S.settings.schedule:WINTER).map(g=>g.t?{d:g.d,t:g.t}:{d:g.d})},{id:'s27',name:'Summer 2027',kind:'outdoor',venue:'Bayview, Airdrie',time:S.settings.time,games:[]}];S.settings.schedule=flatSched(S.settings.seasons);S.settings.club=S.settings.club||{name:'Airdrie United',founded:'2025',home:'Bayview, Airdrie',indoor:'Genesis Centre, Airdrie'};await putSettings()}
       if(sched().length&&!draft.teams&&!draft.editing&&!schedAt(draft.date)&&nextGame()){draft.date=nextGame();saveDraft()}
       quietLog=false;loaded=true;render();watchExtra();
-      if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();logAct('Opened app')}};
+      if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();let ji=null;try{ji=sessionStorage.getItem('atb_justin');sessionStorage.removeItem('atb_justin')}catch(e){}logAct(ji?'Signed in':'Opened app',navigator.userAgent.match(/iPhone|iPad|Android|Mac|Windows/)?.[0]||'')}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
-    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());loaded&&render()}done('s')},()=>{done('s')});
+    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());lastSet=JSON.parse(JSON.stringify(S.settings));loaded&&render()}done('s')},()=>{done('s')});
   }else{
     mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
@@ -1637,7 +1645,7 @@ function vSettings(){
       <div class="row"><button class="btn ghost small danger" data-a="seasondel" data-i="${i}">Delete season</button></div></div>`).join('')}
     <div class="row"><button class="btn primary" data-a="savesched">Save seasons</button><button class="btn" data-a="seasonadd">＋ Add season</button><span class="small muted" id="schmsg"></span></div></div>
   ${cloud==='supa'?notifyPanel():''}
-  ${cloud!=='claude'&&supa?`<h2 id="syncsec">Sync across devices</h2><div class="panel stack">${supaUser?`<p style="margin:0">Signed in as <b>${esc(supaUser.email)}</b>. Changes appear on every device signed in with this account.</p><div class="row"><button class="btn" data-a="signout">Sign out</button></div>`
+  ${cloud!=='claude'&&supa?`<h2 id="syncsec">Sync across devices</h2><div class="panel stack">${supaUser?`<p style="margin:0">Signed in as <b>${esc(niceEmail(supaUser.email))}</b>. Changes appear on every device signed in with this account.</p><div class="row"><button class="btn" data-a="signout">Sign out</button></div>`
     :`<p class="small muted" style="margin:0">Sign in with the same email and password on your phone, laptop and tablet to share one squad. The first time you sign in, this device’s squad and matches are uploaded.</p>
     <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 200px">Email<input id="se" type="email" autocomplete="username"></label><label class="f" style="flex:1 1 160px">Password<input id="sp" type="password" autocomplete="current-password"></label></div>
     <div class="row"><button class="btn primary" data-a="signin">Sign in</button><span class="small muted" id="smsg"></span></div>`}</div>`:''}
@@ -1987,8 +1995,9 @@ function eligible(t,p){const r=t.rule||{};if(!r.type||r.type==='open')return tru
   return (r.type==='max'||+r.min<=a||r.min==null||r.min==='')&&(r.type==='min'||+r.max>=a||r.max==null||r.max==='')}
 const tRecord=t=>{const g=(t.games||[]).filter(x=>x.gf!==''&&x.gf!=null&&x.ga!==''&&x.ga!=null);return {W:g.filter(x=>+x.gf>+x.ga).length,D:g.filter(x=>+x.gf===+x.ga).length,L:g.filter(x=>+x.gf<+x.ga).length,GF:g.reduce((n,x)=>n+ +x.gf,0),GA:g.reduce((n,x)=>n+ +x.ga,0),n:g.length}};
 const localCol=col=>col==='tournaments'?'tourns':col==='gear'?'gear':null;
-async function putDoc(col,id,data){if(mode!=='db'){toast('Needs sync');return}try{await db.doc(col+'/'+id).set(data);const k=localCol(col);if(k){S[k]=[...S[k].filter(x=>x.id!==id),{...data,id}];render()}}catch(e){toast('Could not save: '+(e.message||e.code))}}
-async function delDoc(col,id){if(mode==='db'){try{await db.doc(col+'/'+id).delete();const k=localCol(col);if(k){S[k]=S[k].filter(x=>x.id!==id);render()}}catch(e){toast('Could not delete')}}}
+const DOCN={tournaments:'tournament',gear:'equipment'};
+async function putDoc(col,id,data){if(mode!=='db'){toast('Needs sync');return}const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]){const nm=data.name||data.title||data.opp||id,d=old?diffTxt(old,data):'';logAct((old?'Edited ':'Added ')+DOCN[col],nm+(d?' — '+d:''))}try{await db.doc(col+'/'+id).set(data);const k=localCol(col);if(k){S[k]=[...S[k].filter(x=>x.id!==id),{...data,id}];render()}}catch(e){toast('Could not save: '+(e.message||e.code))}}
+async function delDoc(col,id){const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]&&col!=='tournaments')logAct('Deleted '+DOCN[col],old&&(old.name||old.title)||id);if(mode==='db'){try{await db.doc(col+'/'+id).delete();const k=localCol(col);if(k){S[k]=S[k].filter(x=>x.id!==id);render()}}catch(e){toast('Could not delete')}}}
 function watchExtra(){if(mode!=='db'||watchExtra.on)return;watchExtra.on=1;
   db.collection('tournaments').onSnapshot(s=>{S.tourns=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render()},()=>{});
   db.collection('gear').onSnapshot(s=>{S.gear=s.docs.map(d=>({...d.data(),id:d.id}));if(!S.gear.length&&isAdmin&&cloud==='supa'&&!watchExtra.seeded){watchExtra.seeded=1;seedGear()}loaded&&render()},()=>{})}
@@ -2448,12 +2457,13 @@ document.addEventListener('click',async e=>{
     const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.textContent=error?error.message:'If that email has an account, a reset link is on its way.';return}
   if(a==='setpw'){const pw=$('#np').value;if(pw.length<8){$('#npmsg').textContent='Use at least 8 characters.';return}const {error}=await supa.auth.updateUser({password:pw});
     if(error){$('#npmsg').textContent=error.message;return}closeModal();toast('Password updated');return}
-  if(a==='signin'||a==='signup'){const email=$('#se').value.trim(),password=$('#sp').value;const msg=$('#smsg');if(!email||!password){msg.textContent='Enter your email or username and password.';return}
+  if(a==='signin'||a==='signup'){let email=$('#se').value.trim();const password=$('#sp').value;const msg=$('#smsg');if(!email||!password){msg.textContent='Enter your email or username and password.';return}
     el.disabled=true;msg.textContent=a==='signin'?'Signing in…':'Creating account…';
     try{let r;
+      if(a==='signin'&&/@aufc\.ca$/i.test(email)){email=email.replace(/@aufc\.ca$/i,'')}
       if(a==='signin'&&!email.includes('@')){for(const d of MGR_DOMAINS){r=await supa.auth.signInWithPassword({email:email.toLowerCase()+'@'+d,password});if(!r.error)break}}
       else r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
-      if(r.error)throw r.error;if(r.data.session){location.reload();return}
+      if(r.error)throw r.error;if(r.data.session){try{sessionStorage.setItem('atb_justin','1')}catch(e){}location.reload();return}
       msg.textContent='Account created. Open the confirmation email, then come back and sign in.'}catch(err){msg.textContent=err.message||'Could not sign in'}el.disabled=false;return}
   if(a==='signout'){await supa.auth.signOut();location.reload();return}
   if(a==='qr'){const d=+el.dataset.d;K.forEach(k=>{const i=$(`#r_${CSS.escape(id)}_${k}`);i.value=Math.min(10,Math.max(1,Math.round((+i.dataset.b+d)*2)/2))});
