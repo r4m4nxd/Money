@@ -106,3 +106,5 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Admin alerts v2: every manager action counts (atb_major('mgr',…) = true). Repeat pushes are skipped for 2 min
 -- (same action and detail), and for 30 min for 'Opened app'. The client logs 'Signed in' on a password sign-in, and a
 -- "what changed" detail for player, match, settings, tournament and equipment edits.
+
+-- POTM vote window: match day until end of the 2nd day after (atb_player_potm closes at date - 2; payload reveals pvote after that).
