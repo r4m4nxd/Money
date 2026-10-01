@@ -94,3 +94,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- Support (Ko-fi) popup analytics: private.atb_tip_events (not exposed). Written by atb_tip_log (player token) and
 -- atb_tip_log_mgr (managers; admin's own clicks skipped). Read only via atb_tip_stats(), which returns null unless the admin calls it.
+
+-- Portal access: private.atb_portal_ok(owner, player) = playerLogin on, not noLogin, and
+-- (settings.portalAll != false ? player.portal != false : player.portal = true). Enforced in atb_session (all token calls),
+-- atb_player_data ('paused') and atb_player_login (PIN created/checked but no session). Roster returns 'ok' per player.

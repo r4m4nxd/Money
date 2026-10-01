@@ -529,7 +529,7 @@ label.f input,label.f select{width:100%}
 .sharecard.one .sh{font-size:24px}
 .cardprev{margin:0 auto}
 .pphoto{justify-content:center}
-.pinsetup{margin-bottom:12px}.pinsetup summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none}.pinsetup summary::-webkit-details-marker{display:none}
+.pinsetup{margin-bottom:12px}.pabox{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface2)}.pabox.off{border-color:var(--warn,#E0A526)}.pah{display:flex;justify-content:space-between;align-items:center;gap:8px}.pah .btn{flex:none}.pinsetup summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none}.pinsetup summary::-webkit-details-marker{display:none}
 .pinsetup h4{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em}.psbar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:10px}.psbar i{display:block;height:100%;background:var(--good)}
 .pslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 16px}.pslist>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:4px 0;font-size:14px}.pslist>div>span:first-child{font-weight:600}
 .pinrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface2)}
@@ -712,6 +712,9 @@ const WINTER=[['2026-10',[3,10,17,24,31]],['2026-11',[7,14,21,28],'7:30 PM start
   .flatMap(([ym,ds,t])=>ds.map(d=>t?{d:ym+'-'+String(d).padStart(2,'0'),t}:{d:ym+'-'+String(d).padStart(2,'0')}));
 const seasons=()=>Array.isArray(S.settings.seasons)?S.settings.seasons:[];
 const flatSched=ss=>ss.flatMap(se=>(se.games||[]).map(g=>({d:g.d,t:g.t||se.time||'',v:se.venue||'',s:se.name||'',k:se.kind||''}))).sort((a,b)=>a.d<b.d?-1:1);
+// portal access: settings.portalAll (true = everyone except players with portal:false; false = paused, only portal:true)
+const portalAll=()=>S.settings.portalAll!==false;
+const canPortal=p=>!p.noLogin&&(portalAll()?p.portal!==false:p.portal===true);
 const portalMode=()=>S.settings.playerLogin!==false?'on':S.settings.playerSetup?'setup':'off';
 // "Support the builder" (Ko-fi). Managers can hide it or change the link in Settings.
 const TIPURL='https://ko-fi.com/r4m4nxd';
@@ -1230,6 +1233,12 @@ let squadFilter='ALL',showOff=false;
 /* who has set up the player app (PIN) — for onboarding everyone on game day */
 let pinSeen=null;
 async function loadPinSeen(){if(!isAdmin||pinSeen)return;pinSeen={};try{const r=await supa.from('atb_player_activity').select('player_id,at').eq('team',supaUser.id).eq('action','Signed in').order('at',{ascending:false}).limit(2000);(r.data||[]).forEach(x=>{if(!pinSeen[x.player_id])pinSeen[x.player_id]=x.at})}catch(e){}render()}
+function portalAccessBlock(ps){const ok=ps.filter(canPortal),all=portalAll();
+  return `<div class="pabox ${all?'on':'off'}"><div class="pah"><div><b>${all?'🔓 Portal open to everyone':'⏸️ Portal paused'}</b><div class="small muted">${all?`${ok.length} of ${ps.length} can open it${ok.length<ps.length?' (some paused one by one)':''}`:`Only the players you pick can open it: ${ok.length} of ${ps.length}`}</div></div>
+    ${all?'<button class="btn small" data-a="paall" data-v="0">Pause all</button>':'<button class="btn small primary" data-a="paall" data-v="1">Resume all</button>'}</div>
+    <div class="small muted" style="margin:6px 0 4px">${all?'Tap a name to pause just that player:':'Tap names to give them access:'}</div>
+    <div class="chips">${ps.map(p=>`<button class="chip" aria-pressed="${canPortal(p)}" data-a="paone" data-id="${p.id}">${canPortal(p)?'✓ ':''}${esc(p.name)}</button>`).join('')}</div>
+    <p class="small muted" style="margin:6px 0 0">Paused players still see their name and can create their PIN; they just can’t open the portal yet.</p></div>`}
 function pinSetupPanel(){if(cloud!=='supa')return '';if(!st.loaded&&!st.loading)setTimeout(loadStats,0);if(isAdmin&&!pinSeen)setTimeout(loadPinSeen,0);
   const all=S.players.filter(p=>!p.guest&&p.active!==false).sort((a,b)=>a.name.localeCompare(b.name));
   const off=all.filter(p=>p.noLogin),ps=all.filter(p=>!p.noLogin),has=ps.filter(p=>st.pins[p.id]),no=ps.filter(p=>!st.pins[p.id]);
@@ -1238,6 +1247,7 @@ function pinSetupPanel(){if(cloud!=='supa')return '';if(!st.loaded&&!st.loading)
   return `<details class="panel pinsetup" ${open?'open':''} data-a="pinsetup"><summary><span>📱 <b>Player app setup</b></span><span class="pill ${no.length?'meh':'ok'}">${st.loaded?`${has.length} of ${ps.length} have a PIN`:'Loading…'}</span></summary>
     ${st.loaded?`<div class="psbar"><i style="width:${pct}%"></i></div>
     ${portalMode()==='off'?'<div class="row psmode bad"><span>Sign-in is closed, so players can’t see their names or make a PIN.</span><button class="btn small primary" data-a="portalsetup">Open PIN setup</button></div>':portalMode()==='setup'?'<div class="row psmode"><span>🔐 <b>PIN setup mode:</b> players can pick their name and create a PIN; the portal stays closed until you open it.</span><button class="btn small" data-a="portalopen">Open the portal</button></div>':''}
+    ${isAdmin?portalAccessBlock(ps):''}
     <h4>⏳ No PIN yet <span class="small muted">${no.length}</span></h4>${no.length?`<div class="chips">${no.map(p=>`<button class="chip" data-a="editp" data-id="${p.id}">${esc(p.name)}</button>`).join('')}</div>
       <div class="row" style="margin-top:8px"><button class="btn primary" data-a="pinremind">Copy WhatsApp reminder</button><button class="btn ghost" data-a="pinrefresh">Refresh</button></div>`:'<p class="small muted" style="margin:0">Everyone is set up. 🎉</p>'}
     <h4>✅ PIN set <span class="small muted">${has.length}</span></h4><div class="pslist">${has.map(p=>{const k=st.pins[p.id],lk=k.locked_until&&new Date(k.locked_until)>new Date(),seen=pinSeen&&pinSeen[p.id];
@@ -1368,7 +1378,7 @@ function vGuide(){
     <li>Only your team’s accounts can store data, so a stranger who creates an account gets nothing. The admin alone manages managers and player access.</li>
     <li>Two settings to switch on in Supabase (Authentication): turn off <b>Allow new users to sign up</b>, and turn on <b>Leaked password protection</b>.</li></ul>`)}
 
-  ${sec('squad','Squad and players',`<ul><li><b>Player sign-in</b> (Settings → Player portal) has three modes: <b>On</b> (portal open), <b>PIN setup only</b> (players see their names and create a PIN, but can’t open the portal yet; great before a launch) and <b>Off</b>.</li><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b>: an announcement with the launch date, link, steps and the list of who still needs a PIN. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
+  ${sec('squad','Squad and players',`<ul><li><b>Player sign-in</b> (Settings → Player portal) has three modes: <b>On</b> (portal open), <b>PIN setup only</b> (players see their names and create a PIN, but can’t open the portal yet; great before a launch) and <b>Off</b>.</li><li><b>Portal access</b> (admin, in the Squad setup panel): <b>Pause all</b> closes the portal for everyone; then tap names to give just those players access. <b>Resume all</b> opens it to everyone again. You can also tick <b>Can open the player portal</b> on a player’s card. Paused players still see their name and can create a PIN.</li><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b>: an announcement with the launch date, link, steps and the list of who still needs a PIN. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
     <li>Each player has a name, one position (DEF, MID or FWD), shirt number, nation, favourite club, photo, <b>Active this season</b>, <b>★ Star player</b>, and nine starting ratings from 1 to 10.</li>
     <li><b>Add player</b> in Squad; new players start at 7 in everything. Returning players start from last season’s averages.</li>
     <li>Inactive players are hidden from Match Day, the link and the portal sign-in list (tick <b>Show inactive</b> in Squad to see them).</li>
@@ -1630,7 +1640,7 @@ function startPreview(id){const p=pById(id);if(!p)return;closeModal();PM={previe
 async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
   try{const d=PM.preview?await prpc('atb_admin_player_view',{p_player:PM.id}):await prpc('atb_player_data',{p_token:PM.tok});
     if(d.err&&PM.preview){toast('Could not open this profile');location.reload();return}
-    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
+    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='paused'?'⏸️ Your PIN is set, but the portal isn’t open for you yet. Hang tight; it opens soon!':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
     PM.data=d;PM.err='';
     S.players=[{...d.me},...d.players];S.matches=d.matches;S.tourns=d.tournaments||[];S.gear=d.gear||[];Object.assign(S.settings,d.settings);
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
@@ -1888,8 +1898,9 @@ async function pPinMode(){const sel=$('#plname');if(!sel)return;const id=sel.val
   const set=(m,label,btn,h,cls)=>{if(sel.value!==id)return;plMode=m;$('#plpinl').textContent=label;$('#plpin2w').hidden=m!=='none';const b=$('#plbtn');if(b)b.textContent=btn||b.dataset.t;hint.hidden=!h;hint.innerHTML=h||'';hint.className='small plhint'+(cls?' '+cls:'')};
   if(!id){set('set','PIN');return}
   let st='set';try{st=await prpc('atb_player_pin_state',{p_team:sel.dataset.team,p_player:id})}catch(e){}
-  const setup=sel.dataset.mode==='setup';$('#plpin').closest('label').hidden=setup&&st==='set';const b0=$('#plbtn');if(b0)b0.hidden=setup&&st==='set';
-  if(st==='none')set('none','Create your PIN (4 to 6 digits)',setup?'Create my PIN':'Create PIN and open my profile','👋 First time? Choose a PIN only you know. You’ll use it here and on the availability link.','new');
+  const setup=sel.dataset.mode==='setup',paused=!setup&&sel.options[sel.selectedIndex]?.dataset.ok==='0',pz=paused?'<br>⏸️ The portal isn’t open for you yet, but you can set up your PIN now.':'';$('#plpin').closest('label').hidden=setup&&st==='set';const b0=$('#plbtn');if(b0)b0.hidden=setup&&st==='set';
+  if(st==='none')set('none','Create your PIN (4 to 6 digits)',setup||paused?'Create my PIN':'Create PIN and open my profile','👋 First time? Choose a PIN only you know. You’ll use it here and on the availability link.'+pz,'new');
+  else if(paused&&st==='set')set('set','PIN','','⏸️ You already have a PIN ✅. The portal isn’t open for you yet. It opens soon!','new');
   else if(setup&&st==='set')set('set','PIN','','✅ You already have a PIN. You’re all set! The portal opens soon; use this PIN to sign in.','new');
   else if(st==='blocked')set('blocked','PIN','','Your profile access is turned off. Ask a manager.','bad');
   else set('set','PIN','','Forgot your PIN? Ask a manager to reset it, then create a new one here.')}
@@ -1898,7 +1909,7 @@ async function pLoadRoster(){const sel=$('#plname');if(!sel)return;try{const r=a
     if(!t){sel.innerHTML='<option value="">Player sign-in is off</option>';return}
     sel.dataset.team=t.team;sel.dataset.mode=t.mode||'on';
     if(t.mode==='setup'){const h=$('#plh'),pp=$('#plp');if(h)h.textContent='Set up your PIN';if(pp)pp.innerHTML='🔥 The <b>Airdrie United Player Portal</b> is launching soon. Pick your name and create your PIN now so you’re ready on game day.'}
-    const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('');pPinMode()}
+    const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" data-ok="${p.ok===false?0:1}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('');pPinMode()}
   catch(e){sel.innerHTML='<option value="">Can’t load names. Check your connection</option>'}}
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
   if(a==='lrole'){showLogin('','',el.dataset.r);return}
@@ -1917,7 +1928,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
         if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
         if(r.new)toast('PIN created. Use it here and on the availability link');view='me';bootPlayer(saved);return}
-      msg.textContent=r.err==='blocked'?'Your profile access is turned off. Ask a manager.':r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
+      msg.textContent=r.err==='paused'?(r.new?'✅ PIN created! The portal isn’t open for you yet. You’ll use this PIN when it opens.':'✅ PIN is correct, but the portal isn’t open for you yet. It opens soon!'):r.err==='blocked'?'Your profile access is turned off. Ask a manager.':r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
     catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
   if(!PM)return;
   if(a==='exitprev'){ls('atb_view','squad');location.reload();return}
@@ -2211,7 +2222,8 @@ function playerModal(id){pendPhoto=undefined;
     ${r.hist.length?`<h3>Form</h3><div class="tbl"><table><tr><th>Match</th><th>OVR</th></tr>${r.hist.slice().reverse().map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.ovr}</td></tr>`).join('')}</table></div>`:''}`:''}
     ${id&&cloud==='supa'&&!p.guest?(()=>{const k=st.pins[id];return `<div class="pinrow"><div><b>Voting PIN</b><div class="small muted">${k?(k.locked_until&&new Date(k.locked_until)>new Date()?'Locked after wrong tries':'Set')+' · '+new Date(k.set_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'Not set yet. They choose one the first time they vote.'}</div></div>${k?`<button class="btn" data-a="pinreset" data-id="${id}">Reset PIN</button>`:''}</div>`})():''}
     ${id&&isAdmin&&cloud==='supa'&&!p.guest?`<div class="accbox"><div><b>Profile access</b> <span class="small muted" id="accinfo">Checking…</span></div>
-      <label class="small row chk"><input type="checkbox" id="pacc" ${p.noLogin?'':'checked'}> Can sign in to their player profile</label>
+      <label class="small row chk"><input type="checkbox" id="pacc" ${p.noLogin?'':'checked'}> Listed on the sign-in screen (untick to block completely)</label>
+      <label class="small row chk"><input type="checkbox" id="pport" ${(portalAll()?p.portal!==false:p.portal===true)?'checked':''}> Can open the player portal${portalAll()?'':' <span class="pill meh">portal paused for the team</span>'}</label>
       <div class="row"><button class="btn" data-a="pview" data-id="${p.id}">👁 View as player</button><button class="btn" data-a="psout" data-id="${p.id}">Sign out everywhere</button></div></div>`:''}
     <div class="row"><button class="btn primary" data-a="savep" data-id="${p.id}">Save player</button>${id?`<button class="btn danger" data-a="delp" data-id="${p.id}" style="margin-left:auto">Delete player</button>`:''}</div>
     ${id?'<p class="small muted" style="margin:0">Deleting removes the player from the squad. Their past match ratings stay in match history. To keep them but hide them, untick Active this season.</p>':''}
@@ -2486,6 +2498,14 @@ document.addEventListener('click',async e=>{
   if(a==='gearadd'){gearModal(null,el.dataset.v,el.dataset.t);return}
   if(a==='gearview'){gearView(id);return}
   if(a==='portalsetup'||a==='portalopen'){S.settings.playerLogin=a==='portalopen';S.settings.playerSetup=a==='portalsetup';await putSettings();toast(a==='portalopen'?'Player portal is open 🎉':'PIN setup is open. Players can create their PIN now');render();return}
+  if(a==='paall'||a==='paone'){if(!isAdmin)return;
+    const write=async p=>{const i=S.players.findIndex(x=>x.id===p.id);S.players[i]=p;if(mode==='db')await db.doc('players/'+p.id).set(p);else persistLocal()};
+    if(a==='paall'){const on=el.dataset.v==='1';if(!on&&el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to pause everyone';return}
+      el.disabled=true;S.settings.portalAll=on;await putSettings();
+      for(const p of S.players.filter(p=>p.portal!==undefined)){const q={...p};delete q.portal;await write(q)}
+      logAct(on?'Portal resumed for all':'Portal paused for all');toast(on?'Portal open to everyone':'Portal paused. Tap names to give access');render();return}
+    const p=pById(id);if(!p)return;const q={...p},want=!canPortal(p);if(want===portalAll())delete q.portal;else q.portal=want;
+    await write(q);logAct(want?'Gave portal access':'Paused portal access',p.name);render();return}
   if(a==='pinsetup'){setTimeout(()=>ls('atb_pinsetup',el.open?'1':'0'),0);return}
   if(a==='tiprefresh'){tipStats=null;render();return}
   if(a==='pinrefresh'){st.loaded=false;pinSeen=null;await loadStats();return}
@@ -2561,7 +2581,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const acc=$('#pacc');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
+    const acc=$('#pacc'),pport=$('#pport');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),...(pport?{portal:pport.checked===portalAll()?undefined:pport.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='imgshare'){if(!pendImg)return;const f=new File([pendImg.blob],pendImg.name,{type:'image/png'});
