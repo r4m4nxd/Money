@@ -98,3 +98,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Portal access: private.atb_portal_ok(owner, player) = playerLogin on, not noLogin, and
 -- (settings.portalAll != false ? player.portal != false : player.portal = true). Enforced in atb_session (all token calls),
 -- atb_player_data ('paused') and atb_player_login (PIN created/checked but no session). Roster returns 'ok' per player.
+
+-- Admin alerts: atb_notify.god_mgr / god_pl (admin's own row, member = team). Triggers atb_god_mgr (atb_activity) and
+-- atb_god_pl (atb_player_activity) push major actions to the admin's ntfy topic via private.atb_god_push; private.atb_major
+-- filters out page views/opens; repeats within 2 minutes are skipped; the admin's own actions are skipped.

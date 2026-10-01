@@ -516,6 +516,9 @@ label.f input,label.f select{width:100%}
 .sharecard.one .sh{font-size:24px}
 .cardprev{margin:0 auto}
 .pphoto{justify-content:center}
+.godbtn{position:relative}.godbtn i{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#e5484d;color:#fff;font:800 10px/17px var(--f-body,sans-serif);font-style:normal;text-align:center}.godbtn i[hidden]{display:none}
+.godlist{list-style:none;margin:0;padding:0;max-height:62vh;overflow:auto}.godlist li{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:start;padding:8px 4px;border-bottom:1px solid var(--line);font-size:14px}.godlist li.new{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.godlist li.gday{display:block;padding:10px 4px 4px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:0;background:none}.godlist .gi{font-size:16px}.godlist .gtm{font-size:12px;color:var(--muted);white-space:nowrap}.godlist .pill{font-size:10px;padding:1px 6px}
 .pinsetup{margin-bottom:12px}.pabox{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface2)}.pabox.off{border-color:var(--warn,#E0A526)}.pah{display:flex;justify-content:space-between;align-items:center;gap:8px}.pah .btn{flex:none}.pinsetup summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none}.pinsetup summary::-webkit-details-marker{display:none}
 .pinsetup h4{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em}.psbar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:10px}.psbar i{display:block;height:100%;background:var(--good)}
 .pslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 16px}.pslist>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:4px 0;font-size:14px}.pslist>div>span:first-child{font-weight:600}
@@ -568,7 +571,7 @@ h3{line-height:1.2}
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
   <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match"><span>Match Day</span></button>
     <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
@@ -708,7 +711,36 @@ const TIPURL='https://ko-fi.com/r4m4nxd';
 const tipOn=()=>(S.settings.tip||{}).on!==false;
 const tipUrl=()=>{const u=String((S.settings.tip||{}).url||TIPURL);return /^https:\/\/[^\s"'<>]+$/.test(u)?u:TIPURL};
 const tipCard=(small)=>tipOn()?`<button class="tipcard${small?' sm':''}" data-a="tip" data-src="${small?'guide':'club'}"><span class="tipcup">☕</span><span><b>Support the builder</b><small>Like the app? Buy Raman a coffee for building it. Totally optional ❤️</small></span><span class="tipgo">Ko-fi ›</span></button>`:'';
-function tipSync(){const b=document.getElementById('tipbtn');if(!b)return;b.hidden=!(tipOn()&&(PM?PM.data:loaded))}
+/* ---------- admin feed: every major manager / player action (admin only) ---------- */
+let god={items:null,loading:false,at:0},godMem={};
+const GOD_MGR_SKIP=['Opened app','Opened share card','Balanced teams'],GOD_PL_SKIP=['Opened app','Opened match','Said IN','Said OUT'];
+const godMajor=x=>x.k==='mgr'?!GOD_MGR_SKIP.includes(x.action):!/^Viewed /.test(x.action)&&!GOD_PL_SKIP.includes(x.action);
+const godRead=()=>{try{return +localStorage.getItem('atb_godread')||0}catch(e){return 0}};
+async function godLoad(){if(!isAdmin||cloud!=='supa'||god.loading)return;god.loading=true;const since=new Date(Date.now()-14*864e5).toISOString();
+  try{const [a,b,m]=await Promise.all([supa.from('atb_activity').select('member,action,detail,at').eq('team',supaUser.id).neq('member',supaUser.id).gte('at',since).order('at',{ascending:false}).limit(400),
+      supa.from('atb_player_activity').select('player_id,action,detail,at').eq('team',supaUser.id).gte('at',since).order('at',{ascending:false}).limit(800),
+      supa.from('atb_members').select('member,username').eq('team_owner',supaUser.id)]);
+    (m.data||[]).forEach(x=>godMem[x.member]=x.username);
+    god.items=[...(a.data||[]).map(x=>({k:'mgr',who:godMem[x.member]||'Manager',action:x.action,detail:x.detail,at:x.at})),...(b.data||[]).map(x=>({k:'pl',who:pById(x.player_id)?.name||x.player_id,action:x.action,detail:x.detail,at:x.at}))]
+      .filter(godMajor).sort((x,y)=>x.at<y.at?1:-1)}catch(e){}
+  god.loading=false;god.at=Date.now();godBadge();if($('#godlist'))godFeed(true)}
+function godBadge(){const b=document.getElementById('godbtn'),n=document.getElementById('godn');if(!b)return;b.hidden=!(isAdmin&&cloud==='supa'&&!PM&&loaded);if(b.hidden)return;
+  const u=(god.items||[]).filter(x=>new Date(x.at)>godRead()).length;n.hidden=!u;n.textContent=u>99?'99+':u}
+const GODICON=a=>/Deleted|Removed|reset|Reset/.test(a)?'🗑️':/Wrong PIN|Locked|blocked|paused/i.test(a)?'⚠️':/PIN/.test(a)?'🔐':/Signed in/.test(a)?'🔑':/tournament/i.test(a)?'🏆':/match|attendance|rating|Rated/i.test(a)?'📋':/settings|schedule|Portal/i.test(a)?'⚙️':/player/i.test(a)?'👤':/equipment/i.test(a)?'🧰':/profile|POTM/i.test(a)?'⭐':'•';
+let godF='all';
+function godFeed(keep){const r=godRead(),L=(god.items||[]).filter(x=>godF==='all'||x.k===godF);
+  const day=t=>new Date(t).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}),tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+  let last='';const body=god.items?L.length?L.map(x=>{const d=day(x.at),h=d!==last?`<li class="gday">${d}</li>`:'';last=d;
+    return h+`<li class="${new Date(x.at)>r?'new':''}"><span class="gi">${GODICON(x.action)}</span><span class="gt"><b>${esc(x.who)}</b> <span class="pill ${x.k==='mgr'?'meh':''}">${x.k==='mgr'?'Manager':'Player'}</span><br>${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span><span class="gtm">${tm(x.at)}</span></li>`}).join(''):'<li class="muted">Nothing in the last 14 days.</li>':'<li class="muted">Loading…</li>';
+  const html=`<div class="mh"><h2>🔔 Activity</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div class="chips" style="margin-bottom:8px">${[['all','Everything'],['mgr','Managers'],['pl','Players']].map(([k,l])=>`<button class="chip" aria-pressed="${godF===k}" data-a="godf" data-v="${k}" style="padding-left:12px">${l}</button>`).join('')}</div>
+  <ol class="godlist" id="godlist">${body}</ol><p class="small muted" style="margin:8px 0 0">Last 14 days of major actions (page views and in/out answers left out; vote alerts cover those). Only you see this. Phone alerts: Managers → Admin alerts.</p>`;
+  if(keep&&$('#godlist')){$('.modal').innerHTML=html}else openModal(html);
+  try{localStorage.setItem('atb_godread',String(Date.now()))}catch(e){}setTimeout(godBadge,0)}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a="godfeed"],[data-a="godf"]');if(!el)return;e.stopPropagation();
+  if(el.dataset.a==='godf'){godF=el.dataset.v;godFeed(true);return}godFeed();if(Date.now()-god.at>30000)godLoad()},true);
+setInterval(()=>{if(isAdmin&&!PM&&document.visibilityState==='visible')godLoad()},60000);
+function tipSync(){if(isAdmin&&!PM&&loaded&&!god.items&&!god.loading)godLoad();godBadge();const b=document.getElementById('tipbtn');if(!b)return;b.hidden=!(tipOn()&&(PM?PM.data:loaded))||(isAdmin&&!PM)}
 const tipLine=()=>tipOn()?`<button class="tipline" data-a="tip" data-src="home">☕ <span>Enjoying the app? <b>Buy Raman a coffee</b></span><i>›</i></button>`:'';
 // confirmation popup + private click log (admin-only analytics; admin preview and admin's own clicks aren't counted)
 let tipState=null;
@@ -1278,9 +1310,15 @@ function vManagers(){
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
-      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+tipAdminPanel(when)+playerActPanel(when);
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
 }
 // admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
+function godAlertPanel(){if(!ntf){setTimeout(loadNtf,0);return ''}
+  return `<h2>🔔 Admin alerts <span class="small muted">(only you)</span></h2><div class="panel stack">${ntf.none?'<p style="margin:0">Turn on <b>Vote alerts</b> in Settings first (it sets up your private ntfy phone channel), then come back here.</p>':`
+    <p class="small muted" style="margin:0">Phone alerts on your ntfy channel for every major action. Your own actions are skipped, and repeats within 2 minutes are grouped.</p>
+    <label class="small row chk"><input type="checkbox" data-a="godset" data-k="god_mgr" ${ntf.god_mgr?'checked':''}> 👔 Managers: player edits, matches, attendance, ratings, settings, tournaments, deletes, PIN resets…</label>
+    <label class="small row chk"><input type="checkbox" data-a="godset" data-k="god_pl" ${ntf.god_pl?'checked':''}> ⚽ Players: sign-ins, PINs created or changed, wrong PINs and lock-outs, profile edits, POTM votes…</label>
+    <div class="row"><button class="btn" data-a="godfeed">Open activity feed</button></div>`}</div>`}
 let tipStats=null;
 async function loadTipStats(){tipStats={loading:true};try{const {data}=await supa.rpc('atb_tip_stats');tipStats={rows:data||[]}}catch(e){tipStats={rows:[],err:1}}if(view==='managers')render()}
 function tipAdminPanel(when){if(!isAdmin)return '';if(!tipStats)setTimeout(loadTipStats,0);const R=tipStats?.rows||[];
@@ -1365,7 +1403,7 @@ function vGuide(){
     <li>Only your team’s accounts can store data, so a stranger who creates an account gets nothing. The admin alone manages managers and player access.</li>
     <li>Two settings to switch on in Supabase (Authentication): turn off <b>Allow new users to sign up</b>, and turn on <b>Leaked password protection</b>.</li></ul>`)}
 
-  ${sec('squad','Squad and players',`<ul><li><b>Player sign-in</b> (Settings → Player portal) has three modes: <b>On</b> (portal open), <b>PIN setup only</b> (players see their names and create a PIN, but can’t open the portal yet; great before a launch) and <b>Off</b>.</li><li><b>Portal access</b> (admin, in the Squad setup panel): <b>Pause all</b> closes the portal for everyone; then tap names to give just those players access. <b>Resume all</b> opens it to everyone again. You can also tick <b>Can open the player portal</b> on a player’s card. Paused players still see their name and can create a PIN.</li><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b>: an announcement with the launch date, link, steps and the list of who still needs a PIN. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
+  ${sec('squad','Squad and players',`<ul><li><b>Player sign-in</b> (Settings → Player portal) has three modes: <b>On</b> (portal open), <b>PIN setup only</b> (players see their names and create a PIN, but can’t open the portal yet; great before a launch) and <b>Off</b>.</li><li><b>🔔 Admin activity</b> (admin only): the bell in the header shows a red count of new major actions by managers and players (last 14 days) and opens the feed, filterable by Managers or Players. Phone alerts for the same events: Managers → <b>Admin alerts</b> (uses your Vote alerts ntfy channel).</li><li><b>Portal access</b> (admin, in the Squad setup panel): <b>Pause all</b> closes the portal for everyone; then tap names to give just those players access. <b>Resume all</b> opens it to everyone again. You can also tick <b>Can open the player portal</b> on a player’s card. Paused players still see their name and can create a PIN.</li><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b>: an announcement with the launch date, link, steps and the list of who still needs a PIN. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
     <li>Each player has a name, one position (DEF, MID or FWD), shirt number, nation, favourite club, photo, <b>Active this season</b>, <b>★ Star player</b>, and nine starting ratings from 1 to 10.</li>
     <li><b>Add player</b> in Squad; new players start at 7 in everything. Returning players start from last season’s averages.</li>
     <li>Inactive players are hidden from Match Day, the link and the portal sign-in list (tick <b>Show inactive</b> in Squad to see them).</li>
@@ -1543,7 +1581,7 @@ function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details cl
     <li>Teammates only see names, positions, numbers, nations, clubs and photos, plus leaderboards.</li></ul>`)}${tipCard(true)}`}
 
 let ntf=null,ntfLoading=false;
-async function loadNtf(){if(ntfLoading)return;ntfLoading=true;const {data}=await supa.from('atb_notify').select('topic,email,enabled').eq('member',supaUser.id).eq('team',teamOwner).maybeSingle();ntf=data||{none:true};ntfLoading=false;if(view==='settings')render()}
+async function loadNtf(){if(ntfLoading)return;ntfLoading=true;const {data}=await supa.from('atb_notify').select('topic,email,enabled,god_mgr,god_pl').eq('member',supaUser.id).eq('team',teamOwner).maybeSingle();ntf=data||{none:true};ntfLoading=false;if(view==='settings')render()}
 function notifyPanel(){if(!ntf){setTimeout(loadNtf,0);return `<h2>Vote alerts</h2><div class="panel muted">Loading…</div>`}
   if(ntf.none)return `<h2>Vote alerts</h2><div class="panel stack"><p style="margin:0">Get a notification on your phone every time someone says they’re in or out, with a ⚠ when it’s last-minute.</p>
     <p class="small muted" style="margin:0">Alerts go through the free ntfy app. Only someone who knows your private topic name can see them.</p><button class="btn primary wide" data-a="ntfon">Turn on vote alerts</button></div>`;
@@ -2595,6 +2633,7 @@ document.addEventListener('change',async e=>{
     for(const f of el.files){const nm=a==='psone'?el.dataset.n:all.find(x=>key(f.name).includes(key(x)))||all.find(x=>key(x).includes(key(f.name))&&key(f.name).length>3);if(!nm){miss.push(f.name);continue}const u=await iconImg(f);if(u){ic[nm]=u;n++}}
     S.settings.psIcons=ic;await putSettings();render();toast(`${n} icon${n===1?'':'s'} updated`+(miss.length?`. Not matched: ${miss.slice(0,4).join(', ')}${miss.length>4?'…':''}`:''));return}
   if(a==='settip'){if(!isAdmin)return;const u=$('#tipurl').value.trim();if(u&&!/^https:\/\/[^\s"'<>]+$/.test(u)){toast('Use a full https:// link');return}S.settings.tip={on:$('#tipon').checked,url:u||TIPURL};await putSettings();toast('Saved');return}
+  if(a==='godset'){if(!isAdmin)return;const k=el.dataset.k;const {error}=await supa.from('atb_notify').update({[k]:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(error){toast('Could not save');el.checked=!el.checked;return}ntf[k]=el.checked;toast(el.checked?'Alerts on':'Alerts off');return}
   if(a==='setportal'){S.settings.playerLogin=el.value==='on';S.settings.playerSetup=el.value==='setup';await putSettings();toast(el.value==='on'?'Player portal is open':el.value==='setup'?'Players can now create their PIN. The portal stays closed':'Player sign-in is closed');render();return}
   if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
