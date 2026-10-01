@@ -449,6 +449,7 @@ div.citem{cursor:default}
 .citem.add .cimg{border:2px dashed rgba(255,255,255,.25);border-radius:12px;width:88px;height:88px;margin:8px 0}.citem.add .cemo{font-size:34px;color:#E8D6B4}.citem.add .cplq{background:rgba(255,255,255,.12);color:#E8D6B4}
 .cempty{color:#C9B89A;align-self:center;margin:0 0 40px 6px}
 @media(hover:hover){button.citem:hover .cimg{transform:translateY(-3px);transition:transform .15s}}
+.imgprev{display:flex;justify-content:center;margin-bottom:10px}.imgprev img{max-width:100%;max-height:62vh;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.35);-webkit-touch-callout:default;user-select:auto}
 .gview{display:flex;flex-direction:column;gap:10px}.gvimg{display:grid;place-items:center;min-height:240px;max-height:60vh;border-radius:14px;background:radial-gradient(circle at 50% 30%,#2a3445,#0e131b);padding:10px}.gvimg img{max-width:100%;max-height:56vh;object-fit:contain;border-radius:8px}.gvimg svg{width:min(260px,70%)}.gvimg .cemo{font-size:110px}
 .gvth{display:flex;gap:6px;justify-content:center}.gvth button{width:60px;height:60px;padding:0;border-radius:8px;border:2px solid transparent;overflow:hidden;background:var(--surface2);cursor:pointer}.gvth button.on{border-color:var(--accent)}.gvth img{width:100%;height:100%;object-fit:cover}.gvinfo{display:flex;gap:6px;flex-wrap:wrap}
 .gm .o-kit,.gm .o-trophy,.gm .o-cols{display:none}.gm.c-kit .o-kit,.gm.c-trophy .o-trophy{display:grid}.gm.c-bibs .o-cols,.gm.c-cones .o-cols,.gm.c-other .o-cols{display:flex}.gm.c-kit .o-qty,.gm.c-trophy .o-qty{display:none}
@@ -1351,8 +1352,8 @@ function vGuide(){
   ${sec('share','Sharing to WhatsApp',`<ul><li><b>All teams</b> card: date, time${s.venue?', venue':''}, rotation and every team. <b>Team on pitch</b>: one team’s line-up card.</li>
     <li><b>Save as image</b> or <b>Copy text for WhatsApp</b>. Nothing shared ever contains ratings.</li></ul>`)}
 
-  ${sec('rot','Match-night rotation',(()=>{const g=+s.gameMin||9,c=+(s.changeMin??1),t=+s.sessionMin||120,reps=Math.floor(t/((g+c)*3));
-    return `<p>Three teams: <b>A v B → B v C → C v A</b>, repeated. With ${t} min, ${g}-min games and ${c}-min changes: <b>${reps} blocks</b>, ${reps*3} games, <b>${reps*2} each</b>. Four teams use a 6-game round.</p>`})())}
+  ${sec('rot','Match-night rotation',(()=>{const r=rotation({teams:[{},{},{}]}),r4=rotation({teams:[{},{},{},{}]});
+    return `<p>Three teams: <b>A v B → B v C → C v A</b>, repeated. Four teams use a 6-game round. The app fits as many games as the session allows (no break after the last game), then trims so every team plays the same number.</p><p>Now (${r.tot} min, ${r.g}-min games, ${r.c}-min breaks): 3 teams = <b>${r.games} games, ${r.each} each</b>${r.spare?`, ${r.spare} min spare`:''}; 4 teams = <b>${r4.games} games, ${r4.each} each</b>${r4.spare?`, ${r4.spare} min spare`:''}. Change these in Settings.</p>`})())}
 
   ${sec('save','Saving a match',`<ul><li><b>Save match</b> stores teams, kits and line-ups. Saving while editing updates the same match. <b>Edit teams</b> on a past match reloads it; <b>Start a new match instead</b> clears Match Day.</li></ul>`)}
 
@@ -2227,17 +2228,27 @@ function teamText(t){const g=splitLU(t.lu);const nm=id=>pById(id)?.name;const ln
 function rotation(d){const n=d.teams.length;if(n<3)return null;
   const P=n===3?[[0,1],[1,2],[2,0]]:[[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
   const st=S.settings,g=+st.gameMin||9,c=+(st.changeMin??1),tot=+st.sessionMin||120;
-  const reps=Math.max(1,Math.floor(tot/((g+c)*P.length)));const games=reps*P.length;
-  const each=games*2/n;return {P,reps,g,c,games,each}}
+  // as many games as fit (no change needed after the last one), cut back until every team has played the same number
+  let G=Math.max(1,Math.floor((tot+c)/(g+c)));
+  for(;G>1;G--){const cnt=Array(n).fill(0);for(let i=0;i<G;i++)P[i%P.length].forEach(t=>cnt[t]++);if(cnt.every(x=>x===cnt[0]))break}
+  const used=G*g+(G-1)*c;return {P,reps:Math.floor(G/P.length),extra:G%P.length,g,c,games:G,each:G*2/n,spare:Math.max(0,tot-used),tot}}
 function rotLine(d,emoji){const r=rotation(d);if(!r)return '';
   const nm=i=>d.teams[i].name.replace(/^team\s+/i,'');const k=i=>emoji?(KITEMO[d.teams[i].kit]||'▪️')+' '+nm(i):`<span class="kitsw sm" style="background:${KITHEX[d.teams[i].kit]}"></span> ${esc(nm(i))}`;
   const seq=r.P.map(([a,b])=>`${k(a)} v ${k(b)}`).join(emoji?' → ':' <span class="arr">→</span> ');
-  const tail=`repeat ${r.reps}× · ${r.g}-min games · ${r.c}-min change · ${r.each} games each`;
+  const tail=`${r.reps?`repeat ${r.reps}×`:''}${r.extra?`${r.reps?' + ':''}first ${r.extra}`:''} · ${r.games} games of ${r.g} min, ${r.c}-min change · ${r.each} games each team${r.spare?` · ${r.spare} min spare`:''}`;
   return emoji?`🔄 ${seq}\n${tail}\n\n`:`<div class="rot"><div>${seq}</div><div class="rt">${tail}</div></div>`}
 function shareText(d){const head=`⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${timeFor(d.date)}${venueFor(d.date)?' · '+venueFor(d.date):''}\n\n`+rotLine(d,true);
   if(shareSel!=='all')return head+teamText(d.teams[+shareSel]);
   return head+d.teams.map(t=>`${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+t.players.map((p,i)=>`${i+1}. ${p.name} (${p.pos})`).join('\n')).join('\n\n')}
 
+// phones can't download a file made after a delay: show the picture so it can be long-pressed, plus a Share button (a fresh tap)
+let pendImg=null;
+async function saveImage(blob,name){if(window.claude||!matchMedia('(pointer:coarse)').matches){await saveFile(name,blob,'image/png');return}
+  if(pendImg)URL.revokeObjectURL(pendImg.url);pendImg={blob,name,url:URL.createObjectURL(blob)};
+  openModal(`<div class="mh"><h2>Save image</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div class="imgprev"><img src="${pendImg.url}" alt="Team picture"></div>
+  <p class="small muted" style="text-align:center">Press and hold the picture, then choose <b>Save to Photos</b> (iPhone) or <b>Download image</b> (Android). Or tap Share to send it straight to WhatsApp.</p>
+  <div class="row" style="justify-content:center"><button class="btn primary" data-a="imgshare">Share / Save</button><a class="btn" href="${pendImg.url}" download="${esc(name)}">Download</a></div>`)}
 async function saveFile(name,data,mime){
   let dl=null;try{dl=window.claude?await window.claude.use('downloads'):null}catch(e){}
   if(dl){try{await dl.save({filename:name,data});toast('Saved '+name)}catch(e){if(e.code!=='declined')toast('Could not save file')}return}
@@ -2355,7 +2366,7 @@ document.addEventListener('click',async e=>{
     openModal(`<div class="mh"><h2>Share squad</h2><button class="btn ghost x" data-a="close">Close</button></div><div id="sharecard" class="sharecard one"><div class="sh">🏆 ${esc(t.name)}</div><div class="sd">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}</div>
       <div style="margin-top:12px">${pitchHTML({kit:t.kit||'',players:sq},tLU(t),0,false,'Airdrie United')}</div></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" data-a="tshareimg">Save as image</button><button class="btn" data-a="tsharetxt">Copy text for WhatsApp</button></div>`);return}
-  if(a==='tshareimg'){if(!window.html2canvas){toast('Take a screenshot instead');return}try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('squad-'+lastTShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}return}
+  if(a==='tshareimg'){if(!window.html2canvas){toast('Take a screenshot instead');return}try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveImage(blob,'squad-'+lastTShare.date+'.png')}catch(err){toast('Could not make the image. Take a screenshot instead')}return}
   if(a==='tsharetxt'){try{await navigator.clipboard.writeText(tShareText(lastTShare));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}return}
   if(a==='clubedit'){const c=S.settings.club||{};openModal(`<div class="mh"><h2>Club info</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack">
       <label class="f">Club name<input id="cn" value="${esc(c.name||'Airdrie United')}"></label><label class="f">Founded<input id="cf" value="${esc(c.founded||'2025')}"></label>
@@ -2435,8 +2446,11 @@ document.addEventListener('click',async e=>{
     const acc=$('#pacc');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
+  if(a==='imgshare'){if(!pendImg)return;const f=new File([pendImg.blob],pendImg.name,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:pendImg.name})}catch(err){if(err.name!=='AbortError')toast('Press and hold the picture to save it')}}
+    else{const l=document.createElement('a');l.href=pendImg.url;l.download=pendImg.name;document.body.appendChild(l);l.click();l.remove()}return}
   if(a==='saveimg'){if(!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
-    el.disabled=true;try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveFile('teams-'+lastShare.date+'.png',blob,'image/png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
+    el.disabled=true;try{const c=await snapCard($('#sharecard'));const blob=await new Promise(r=>c.toBlob(r,'image/png'));await saveImage(blob,'teams-'+lastShare.date+'.png')}catch(err){toast('Could not make the image. Take a screenshot instead')}el.disabled=false;return}
   if(a==='export'){await saveFile('airdrie-teams-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(S,null,1),'application/json');return}
 });
 document.addEventListener('change',async e=>{
