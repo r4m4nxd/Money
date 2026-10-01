@@ -405,7 +405,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .game{margin-bottom:8px}.game>summary{list-style:none;cursor:pointer}.game>summary::-webkit-details-marker{display:none}
 .gh{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .scs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.sc{border:1px solid var(--line);border-left:4px solid var(--k);border-radius:8px;padding:4px 10px;font-size:13px}.sc.mine{background:color-mix(in srgb,var(--accent) 12%,transparent);font-weight:700}
-.pitchwrap{max-width:420px;margin:10px auto 0}.others{margin-top:8px}
+.pitchwrap{max-width:640px;margin:10px auto 0}.fxcard .pitchwrap{max-width:820px}.pitchwrap .pitch.p3{max-width:none}.others{margin-top:8px}
 .ptbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}.ptbl th,.ptbl td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}.ptbl .num{text-align:right}
 .plb{list-style:none;margin:0;padding:0}.plb li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line)}.plb li:last-child{border:0}
 .plb .rk{width:24px;color:var(--muted);text-align:right}.plb .nm{flex:1;min-width:0;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.plb li.me{background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:8px}
@@ -462,7 +462,7 @@ div.citem{cursor:default}
 .team.fold .tsum{display:block}.team.fold>:not(.hd):not(.tsum){display:none}
 .mdx .teams{gap:10px}.mpitch{order:-1;min-width:0}.team.on{box-shadow:0 0 0 2px var(--k),0 10px 30px rgba(0,0,0,.25)}
 .mptabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}.mptabs::-webkit-scrollbar{display:none}.mptabs button{flex:1 1 0;min-width:max-content;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px var(--f-body);cursor:pointer;white-space:nowrap}.mptabs button[aria-selected=true]{background:var(--k);border-color:var(--k);color:#fff}
-@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:10px}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 330px)*1.136));margin:0 auto}}
+@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:calc(var(--hdrh,96px) + 10px);z-index:1}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 250px - var(--hdrh,96px))*1.136));margin:0 auto}}
 .fxbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;border-left:4px solid var(--line)}.fxbar.ok{border-left-color:var(--ok,#2FB36B)}.fxbar.meh{border-left-color:var(--warn,#E0A526)}.fxbar .fxs{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.fxhint{max-width:260px}.fxcard{border-left:4px solid var(--k)}
 .cx{margin:16px 0 4px}.cx>summary,.mcx>summary{list-style:none;cursor:pointer}.cx>summary::-webkit-details-marker,.mcx>summary::-webkit-details-marker{display:none}
 .cx>summary{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding:4px 0}.cx>summary h2{margin:0}.cxi{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.cxi b{color:var(--ink)}
@@ -585,7 +585,7 @@ h3{line-height:1.2}
   .mrow h3{flex-basis:100%}
 }
 /* ---------- Pitch v3 + Team Management studio ---------- */
-.pitch.p3{container-type:inline-size;position:relative;width:100%;max-width:640px;aspect-ratio:1000/880;margin:0 auto;border:0;border-radius:14px;overflow:hidden;background:#245f37;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+.pitch.p3{container-type:inline-size;position:relative;isolation:isolate;z-index:0;width:100%;max-width:640px;aspect-ratio:1000/880;margin:0 auto;border:0;border-radius:14px;overflow:hidden;background:#245f37;box-shadow:0 10px 30px rgba(0,0,0,.28)}
 .p3 svg.pf{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .p3 .str .s1{fill:#3a8a4c}.p3 .str .s2{fill:#327d44}
 .p3 .grd{stroke:rgba(255,255,255,.07);stroke-width:1;fill:none}
@@ -620,7 +620,7 @@ button.pc{cursor:pointer}
 .pc.sel .pc-card{outline:.6cqw solid #FFD54A;outline-offset:.35cqw}.pc.sel .pc-role{background:#FFD54A;color:#111}
 .hide-r .pc-ovr,.hide-r .player-ovr-stat,.hide-r .psv,.hide-r .ps-kv b{filter:blur(5px);user-select:none;-webkit-user-select:none}
 .pitchwrap:has(.pstudio),.pwrap:has(.pstudio){max-width:none}
-.pstw{container-type:inline-size}@media(max-width:560px){.pstudio{padding:8px;gap:8px;border-radius:12px}}.pstudio{display:grid;grid-template-columns:1fr;gap:12px;padding:12px;border-radius:16px;background:linear-gradient(160deg,#eef1f4,#d7dde3);color:#1d2530}
+.pstw{container-type:inline-size;isolation:isolate}@media(max-width:560px){.pstudio{padding:8px;gap:8px;border-radius:12px}}.pstudio{display:grid;grid-template-columns:1fr;gap:12px;padding:12px;border-radius:16px;background:linear-gradient(160deg,#eef1f4,#d7dde3);color:#1d2530}
 :root[data-theme="dark"] .pstudio{background:linear-gradient(160deg,#1a2330,#101722);color:#e8edf3}
 .ps-side,.ps-stats{min-width:0}
 .ps-h{margin:0 0 8px;font:800 18px/1.1 var(--f-body,sans-serif);letter-spacing:.04em;text-transform:uppercase;color:inherit}.ps-h::before{display:none}
@@ -3046,6 +3046,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pphoto'))close
 addEventListener('offline',()=>toast('You’re offline. Changes may not save until you reconnect.'));
 addEventListener('online',()=>toast('Back online'));
 if('serviceWorker' in navigator&&location.protocol==='https:'&&window.parent===window&&!location.hostname.endsWith('claude.ai')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+/* keep sticky panels below the sticky header */(()=>{const h=document.querySelector('header.top');if(!h)return;const set=()=>document.documentElement.style.setProperty('--hdrh',h.offsetHeight+'px');set();addEventListener('resize',set);try{new ResizeObserver(set).observe(h)}catch(e){}})();
 boot();
 })();
 </script>
