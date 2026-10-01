@@ -91,3 +91,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- PIN setup mode: settings.playerSetup=true with playerLogin=false lists names (atb_player_roster mode 'setup') and allows
 -- atb_player_create_pin(team, player, pin) to create a first PIN only; the portal (atb_player_login) stays closed.
+
+-- Support (Ko-fi) popup analytics: private.atb_tip_events (not exposed). Written by atb_tip_log (player token) and
+-- atb_tip_log_mgr (managers; admin's own clicks skipped). Read only via atb_tip_stats(), which returns null unless the admin calls it.

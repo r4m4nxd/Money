@@ -244,6 +244,8 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 @media(max-width:420px){body .brand .themebtn{min-width:32px;min-height:32px;padding:3px 6px;font-size:14px;margin-left:3px}body .brand .themebtn+.themebtn{margin-left:3px}body .brand h1{font-size:18px;letter-spacing:.02em!important}}
 .brand a.tipbtn{display:inline-grid;place-items:center;text-decoration:none;background:linear-gradient(135deg,#ffe3a3,#f5c451);border-color:#f5c451;color:#2b1d0a}.brand a.tipbtn[hidden]{display:none}
 .tipline{display:flex;align-items:center;gap:8px;margin:10px 0 2px;padding:7px 12px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;text-decoration:none}.tipline b{color:var(--ink);font-weight:700}.tipline i{margin-left:auto;font-style:normal;color:var(--muted)}
+.tippop{text-align:center}.tippop a.btn{text-decoration:none}.tippop p{margin:6px 0}.tipbig{font-size:54px;line-height:1;margin:6px 0}
+button.tipline,button.tipcard{width:100%;font:inherit;text-align:left;cursor:pointer}button.tipline{background:none}button.tipcard{border:0}
 .tipcard{display:flex;align-items:center;gap:12px;margin:18px 0 6px;padding:12px 14px;border-radius:14px;text-decoration:none;color:#2b1d0a;background:linear-gradient(135deg,#ffe3a3,#f5c451 55%,#e9a73b);box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .tipcard b{display:block;font-family:var(--f-display);font-size:17px;letter-spacing:.02em;text-transform:uppercase}.tipcard small{display:block;font-size:12.5px;line-height:1.3;opacity:.85}
 .tipcup{font-size:30px;flex:none}.tipgo{margin-left:auto;flex:none;font-weight:800;font-size:13px;background:#2b1d0a;color:#ffe3a3;border-radius:99px;padding:6px 12px}.tipcard.sm{margin-top:14px}
@@ -579,7 +581,7 @@ h3{line-height:1.2}
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
   <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><a class="themebtn tipbtn" id="tipbtn" href="https://ko-fi.com/r4m4nxd" target="_blank" rel="noopener noreferrer" aria-label="Support the builder on Ko-fi" title="Support the builder ☕" hidden>☕</a><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match"><span>Match Day</span></button>
     <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
@@ -715,9 +717,22 @@ const portalMode=()=>S.settings.playerLogin!==false?'on':S.settings.playerSetup?
 const TIPURL='https://ko-fi.com/r4m4nxd';
 const tipOn=()=>(S.settings.tip||{}).on!==false;
 const tipUrl=()=>{const u=String((S.settings.tip||{}).url||TIPURL);return /^https:\/\/[^\s"'<>]+$/.test(u)?u:TIPURL};
-const tipCard=(small)=>tipOn()?`<a class="tipcard${small?' sm':''}" href="${esc(tipUrl())}" target="_blank" rel="noopener noreferrer"><span class="tipcup">☕</span><span><b>Support the builder</b><small>Like the app? Buy Raman a coffee for building it. Totally optional ❤️</small></span><span class="tipgo">Ko-fi ›</span></a>`:'';
-function tipSync(){const b=document.getElementById('tipbtn');if(!b)return;b.hidden=!(tipOn()&&(PM?PM.data:loaded));b.href=tipUrl()}
-const tipLine=()=>tipOn()?`<a class="tipline" href="${esc(tipUrl())}" target="_blank" rel="noopener noreferrer">☕ <span>Enjoying the app? <b>Buy Raman a coffee</b></span><i>›</i></a>`:'';
+const tipCard=(small)=>tipOn()?`<button class="tipcard${small?' sm':''}" data-a="tip" data-src="${small?'guide':'club'}"><span class="tipcup">☕</span><span><b>Support the builder</b><small>Like the app? Buy Raman a coffee for building it. Totally optional ❤️</small></span><span class="tipgo">Ko-fi ›</span></button>`:'';
+function tipSync(){const b=document.getElementById('tipbtn');if(!b)return;b.hidden=!(tipOn()&&(PM?PM.data:loaded))}
+const tipLine=()=>tipOn()?`<button class="tipline" data-a="tip" data-src="home">☕ <span>Enjoying the app? <b>Buy Raman a coffee</b></span><i>›</i></button>`:'';
+// confirmation popup + private click log (admin-only analytics; admin preview and admin's own clicks aren't counted)
+let tipState=null;
+function tipLog(action,src){try{if(PM){if(PM.preview||!PM.tok)return;prpc('atb_tip_log',{p_token:PM.tok,p_action:action,p_src:src}).catch(()=>{})}
+  else if(cloud==='supa'&&supaUser&&!isAdmin)supa.rpc('atb_tip_log_mgr',{p_team:teamOwner,p_action:action,p_src:src}).then(()=>{},()=>{})}catch(e){}}
+function tipPopup(src){tipState={src,went:false};tipLog('open',src);
+  openModal(`<div class="mh"><h2>Support the app</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div class="tippop"><div class="tipbig">☕</div><p><b>This app is built and run by Raman</b> in his spare time, for the love of the game ⚽.</p>
+  <p class="small muted">If it makes your Saturdays better, you can buy him a coffee on Ko-fi. Totally optional, any amount. No account needed: card, Apple Pay or Google Pay.</p>
+  <div class="row" style="justify-content:center"><a class="btn primary" href="${esc(tipUrl())}" target="_blank" rel="noopener noreferrer" data-a="tipgo">☕ Buy a coffee</a><button class="btn ghost" data-a="tipno">Maybe later</button></div></div>`)}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a="tip"],[data-a="tipgo"],[data-a="tipno"]');if(!el)return;const a=el.dataset.a;
+  if(a==='tip'){e.preventDefault();e.stopPropagation();tipPopup(el.dataset.src||'');return}
+  if(a==='tipgo'){if(tipState){tipState.went=true;tipLog('go',tipState.src)}setTimeout(closeModal,300);return}
+  if(a==='tipno'){e.stopPropagation();closeModal()}},true);
 const sched=()=>seasons().length?flatSched(seasons()):Array.isArray(S.settings.schedule)?S.settings.schedule:[];
 const venueFor=d=>schedAt(d)?.v||S.settings.venue||'';
 // the season a date belongs to (or the one with the next game)
@@ -1266,8 +1281,24 @@ function vManagers(){
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
-      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+playerActPanel(when);
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+tipAdminPanel(when)+playerActPanel(when);
 }
+// admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
+let tipStats=null;
+async function loadTipStats(){tipStats={loading:true};try{const {data}=await supa.rpc('atb_tip_stats');tipStats={rows:data||[]}}catch(e){tipStats={rows:[],err:1}}if(view==='managers')render()}
+function tipAdminPanel(when){if(!isAdmin)return '';if(!tipStats)setTimeout(loadTipStats,0);const R=tipStats?.rows||[];
+  const nm=x=>x.kind==='player'?(x.name||x.who):String(x.who).replace(/@.*$/,'')+' (manager)';
+  const per={};R.forEach(x=>{const k=x.kind+':'+x.who,o=per[k]=per[k]||{n:nm(x),open:0,go:0,close:0,last:x.at};o[x.action]++});
+  const tot=a=>R.filter(x=>x.action===a).length,op=tot('open'),go=tot('go'),cl=tot('close'),ppl=Object.keys(per).length;
+  const SRC={header:'☕ header',home:'Home line',club:'Club card',guide:'Guide'};const bySrc=Object.entries(R.filter(x=>x.action==='open').reduce((o,x)=>(o[x.src]=(o[x.src]||0)+1,o),{})).sort((a,b)=>b[1]-a[1]);
+  return `<h2>☕ Support button <span class="small muted">(only you see this)</span></h2><div class="panel stack">
+    <label class="small row chk"><input type="checkbox" id="tipon" data-a="settip" ${tipOn()?'checked':''}> Show the ☕ Support the builder button (header, player home, Club page and guides)</label>
+    <label class="f" style="max-width:420px">Ko-fi link<input id="tipurl" data-a="settip" value="${esc(tipUrl())}" inputmode="url" autocapitalize="none" spellcheck="false"></label>
+    ${tipStats?.loading?'<p class="small muted" style="margin:0">Loading…</p>':`<div class="kpis">${kpi(op,'Popup opened')}${kpi(go,'☕ Went to Ko-fi')}${kpi(cl,'Closed')}${kpi(op?Math.round(go/op*100)+'%':'–','Click-through')}${kpi(ppl,'People')}</div>
+    ${bySrc.length?`<div class="small muted">Opened from: ${bySrc.map(([k,v])=>`${SRC[k]||k||'?'} ${v}`).join(' · ')}</div>`:''}
+    ${ppl?`<div class="tbl"><table><tr><th>Who</th><th>Opened</th><th>Ko-fi</th><th>Closed</th><th>Last</th></tr>${Object.values(per).sort((a,b)=>b.go-a.go||b.open-a.open).map(o=>`<tr><td>${esc(o.n)}</td><td>${o.open}</td><td>${o.go?'<b>'+o.go+'</b>':0}</td><td>${o.close}</td><td class="small">${when(o.last)}</td></tr>`).join('')}</table></div>`:'<p class="small muted" style="margin:0">No clicks yet.</p>'}
+    <p class="small muted" style="margin:0">“Went to Ko-fi” means they tapped Buy a coffee; Ko-fi itself shows who actually paid. Your own clicks and previews aren’t counted.</p>
+    <div class="row"><button class="btn ghost small" data-a="tiprefresh">Refresh</button></div>`}</div>`}
 let pactQ='';
 function playerActPanel(when){const acts=mgrs.pact;
   if(!acts)return `<h2>Player activity</h2><div class="panel muted">Loading…</div>`;
@@ -1478,7 +1509,7 @@ function vGuide(){
 
   ${sec('backup','Backup, delete and reset',`<ul><li><b>Export backup</b> saves squad, matches and settings to one file; <b>Import backup</b> adds or replaces by ID.</li>
     <li><b>Delete player</b> (Undo for a few seconds) and <b>Delete match</b> (removes its ratings, goals and attendance) both need a second tap.</li></ul>`)}
-  ${sec('tip','Support link',`<ul><li>A small <b>☕ Support the builder</b> card (Ko-fi) shows at the bottom of the Club page and the guides, for managers and players. Tips are optional and go to the Ko-fi account. Turn it off or change the link in <b>Settings → Player portal</b>.</li></ul>`)}${tipCard(true)}`;
+  ${sec('tip','Support link',`<ul><li>A small <b>☕ Support the builder</b> card (Ko-fi) shows at the bottom of the Club page and the guides, for managers and players. Tapping it shows a short confirmation popup first. Tips are optional and go to the Ko-fi account. Only the admin can turn it off or change the link.</li></ul>`)}${tipCard(true)}`;
 }
 function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details class="gsec" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
   return `<h2>Your player guide</h2><p class="gintro">Everything about your Airdrie United profile in two minutes.</p>
@@ -1558,8 +1589,6 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
-    <label class="small row chk"><input type="checkbox" id="tipon" data-a="settip" ${tipOn()?'checked':''}> Show the ☕ Support the builder (Ko-fi) card on the Club page and guides</label>
-    <label class="f" style="max-width:420px">Support link<input id="tipurl" data-a="settip" value="${esc(tipUrl())}" inputmode="url" autocapitalize="none" spellcheck="false"></label>
     <label class="small row chk"><input type="checkbox" id="plgw" data-a="set" data-k="playerGrowth" ${s.playerGrowth!==false?'checked':''}> Players see their growth: trends, weekly focus, card upgrades and personal bests (no ratings shown unless the box above is ticked)</label>`:''}
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
   </div>
@@ -2151,7 +2180,7 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
 
 /* ---------- modals ---------- */
 function openModal(html){document.documentElement.style.overflow='hidden';document.body.classList.add('mopen');$('#modal').innerHTML=`<div class="scrim" data-a="scrim"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
-function closeModal(){document.documentElement.style.overflow='';document.body.classList.remove('mopen');$('#modal').innerHTML=''}
+function closeModal(){if(tipState){if(!tipState.went)tipLog('close',tipState.src);tipState=null}document.documentElement.style.overflow='';document.body.classList.remove('mopen');$('#modal').innerHTML=''}
 
 function playerModal(id){pendPhoto=undefined;
   const p=id?pById(id):{id:'',name:'',pos:'MID',base:Object.fromEntries(K.map(k=>[k,7])),baseN:0,active:true};
@@ -2458,6 +2487,7 @@ document.addEventListener('click',async e=>{
   if(a==='gearview'){gearView(id);return}
   if(a==='portalsetup'||a==='portalopen'){S.settings.playerLogin=a==='portalopen';S.settings.playerSetup=a==='portalsetup';await putSettings();toast(a==='portalopen'?'Player portal is open 🎉':'PIN setup is open. Players can create their PIN now');render();return}
   if(a==='pinsetup'){setTimeout(()=>ls('atb_pinsetup',el.open?'1':'0'),0);return}
+  if(a==='tiprefresh'){tipStats=null;render();return}
   if(a==='pinrefresh'){st.loaded=false;pinSeen=null;await loadStats();return}
   if(a==='pinremind'){const no=S.players.filter(p=>!p.guest&&p.active!==false&&!p.noLogin&&!st.pins[p.id]).map(p=>p.name).sort((a,b)=>a.localeCompare(b));const url=S.settings.appUrl||location.origin+'/';
     const nx=sched().map(x=>x.d).filter(d=>d>=todayISO()).sort()[0],day=nx?new Date(nx+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}):'Saturday';
@@ -2557,7 +2587,7 @@ document.addEventListener('change',async e=>{
   if(a==='psone'||a==='psbulk'){const all=PSTYLES.flatMap(([,l])=>l).map(x=>x[1]),key=v=>v.toLowerCase().replace(/\.[a-z0-9]+$/,'').replace(/[^a-z]/g,'');const ic={...(S.settings.psIcons||{})};let n=0,miss=[];
     for(const f of el.files){const nm=a==='psone'?el.dataset.n:all.find(x=>key(f.name).includes(key(x)))||all.find(x=>key(x).includes(key(f.name))&&key(f.name).length>3);if(!nm){miss.push(f.name);continue}const u=await iconImg(f);if(u){ic[nm]=u;n++}}
     S.settings.psIcons=ic;await putSettings();render();toast(`${n} icon${n===1?'':'s'} updated`+(miss.length?`. Not matched: ${miss.slice(0,4).join(', ')}${miss.length>4?'…':''}`:''));return}
-  if(a==='settip'){const u=$('#tipurl').value.trim();if(u&&!/^https:\/\/[^\s"'<>]+$/.test(u)){toast('Use a full https:// link');return}S.settings.tip={on:$('#tipon').checked,url:u||TIPURL};await putSettings();toast('Saved');return}
+  if(a==='settip'){if(!isAdmin)return;const u=$('#tipurl').value.trim();if(u&&!/^https:\/\/[^\s"'<>]+$/.test(u)){toast('Use a full https:// link');return}S.settings.tip={on:$('#tipon').checked,url:u||TIPURL};await putSettings();toast('Saved');return}
   if(a==='setportal'){S.settings.playerLogin=el.value==='on';S.settings.playerSetup=el.value==='setup';await putSettings();toast(el.value==='on'?'Player portal is open':el.value==='setup'?'Players can now create their PIN. The portal stays closed':'Player sign-in is closed');render();return}
   if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
