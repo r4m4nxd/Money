@@ -240,6 +240,7 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .qb.skip{margin-left:auto}.qb.skip[aria-pressed="true"]{background:var(--muted);border-color:var(--muted);color:var(--bg)}
 .rate[data-skip="1"] b{text-decoration:line-through;opacity:.6}
 .more summary{cursor:pointer;margin-top:4px}
+.psmode{justify-content:space-between;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:13px;flex-wrap:nowrap}.psmode.bad{color:var(--bad)}.psmode .btn{flex:none}
 .plhint{margin:0;color:var(--muted)}.plhint.new{color:var(--ink);background:color-mix(in srgb,var(--good) 14%,transparent);border:1px solid var(--good);border-radius:10px;padding:8px 10px}.plhint.bad{color:var(--bad)}
 .login{max-width:420px;margin:32px auto;text-align:left}.lcrest{width:84px;height:84px;border-radius:50%;box-shadow:0 0 0 2px var(--accent)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
@@ -703,6 +704,7 @@ const WINTER=[['2026-10',[3,10,17,24,31]],['2026-11',[7,14,21,28],'7:30 PM start
   .flatMap(([ym,ds,t])=>ds.map(d=>t?{d:ym+'-'+String(d).padStart(2,'0'),t}:{d:ym+'-'+String(d).padStart(2,'0')}));
 const seasons=()=>Array.isArray(S.settings.seasons)?S.settings.seasons:[];
 const flatSched=ss=>ss.flatMap(se=>(se.games||[]).map(g=>({d:g.d,t:g.t||se.time||'',v:se.venue||'',s:se.name||'',k:se.kind||''}))).sort((a,b)=>a.d<b.d?-1:1);
+const portalMode=()=>S.settings.playerLogin!==false?'on':S.settings.playerSetup?'setup':'off';
 const sched=()=>seasons().length?flatSched(seasons()):Array.isArray(S.settings.schedule)?S.settings.schedule:[];
 const venueFor=d=>schedAt(d)?.v||S.settings.venue||'';
 // the season a date belongs to (or the one with the next game)
@@ -791,8 +793,8 @@ function showLogin(err,info,role){role=role||ls('atb_lrole')||'player';ls('atb_l
   const seg=`<div class="lseg" role="tablist"><button type="button" role="tab" data-a="lrole" data-r="player" aria-selected="${role==='player'}">Player</button><button type="button" role="tab" data-a="lrole" data-r="mgr" aria-selected="${role!=='player'}">Manager</button></div>`;
   $('#main').innerHTML=`<div class="login panel stack"><img src="icons/crest-640.jpg" alt="Airdrie United crest" class="lcrest">${supa?seg:''}
     ${info?`<p class="small" style="margin:0;color:var(--warn)">${esc(info)}</p>`:''}
-    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:role==='player'?`<h2 style="margin:0">Your player profile</h2>
-    <p class="small muted" style="margin:0">See your matches, teams, results and availability. Pick your name. No PIN yet? You can create one right here.</p>
+    ${err?`<p class="small" style="color:var(--bad);margin:0">${esc(err)}</p>`:role==='player'?`<h2 style="margin:0" id="plh">Your player profile</h2>
+    <p class="small muted" style="margin:0" id="plp">See your matches, teams, results and availability. Pick your name. No PIN yet? You can create one right here.</p>
     <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
     <label class="f"><span id="plpinl">PIN</span><input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><label class="f" id="plpin2w" hidden>Type the same PIN again<input id="plpin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><p class="small plhint" id="plhint" hidden></p>
     <div class="row"><button class="btn primary" data-a="plogin" type="submit" id="plbtn" data-t="Sign in">Sign in</button></div><span class="small muted" id="plmsg" role="status"></span></form>`
@@ -1207,7 +1209,7 @@ function pinSetupPanel(){if(cloud!=='supa')return '';if(!st.loaded&&!st.loading)
   const open=ls('atb_pinsetup')!=='0'&&no.length>0;
   return `<details class="panel pinsetup" ${open?'open':''} data-a="pinsetup"><summary><span>📱 <b>Player app setup</b></span><span class="pill ${no.length?'meh':'ok'}">${st.loaded?`${has.length} of ${ps.length} have a PIN`:'Loading…'}</span></summary>
     ${st.loaded?`<div class="psbar"><i style="width:${pct}%"></i></div>
-    ${S.settings.playerLogin===false?'<p class="small" style="color:var(--bad);margin:6px 0 0">Player sign-in is turned off in Settings → Player portal.</p>':''}
+    ${portalMode()==='off'?'<div class="row psmode bad"><span>Sign-in is closed, so players can’t see their names or make a PIN.</span><button class="btn small primary" data-a="portalsetup">Open PIN setup</button></div>':portalMode()==='setup'?'<div class="row psmode"><span>🔐 <b>PIN setup mode:</b> players can pick their name and create a PIN; the portal stays closed until you open it.</span><button class="btn small" data-a="portalopen">Open the portal</button></div>':''}
     <h4>⏳ No PIN yet <span class="small muted">${no.length}</span></h4>${no.length?`<div class="chips">${no.map(p=>`<button class="chip" data-a="editp" data-id="${p.id}">${esc(p.name)}</button>`).join('')}</div>
       <div class="row" style="margin-top:8px"><button class="btn primary" data-a="pinremind">Copy WhatsApp reminder</button><button class="btn ghost" data-a="pinrefresh">Refresh</button></div>`:'<p class="small muted" style="margin:0">Everyone is set up. 🎉</p>'}
     <h4>✅ PIN set <span class="small muted">${has.length}</span></h4><div class="pslist">${has.map(p=>{const k=st.pins[p.id],lk=k.locked_until&&new Date(k.locked_until)>new Date(),seen=pinSeen&&pinSeen[p.id];
@@ -1322,7 +1324,7 @@ function vGuide(){
     <li>Only your team’s accounts can store data, so a stranger who creates an account gets nothing. The admin alone manages managers and player access.</li>
     <li>Two settings to switch on in Supabase (Authentication): turn off <b>Allow new users to sign up</b>, and turn on <b>Leaked password protection</b>.</li></ul>`)}
 
-  ${sec('squad','Squad and players',`<ul><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b> with the link and steps. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
+  ${sec('squad','Squad and players',`<ul><li><b>Player sign-in</b> (Settings → Player portal) has three modes: <b>On</b> (portal open), <b>PIN setup only</b> (players see their names and create a PIN, but can’t open the portal yet; great before a launch) and <b>Off</b>.</li><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b>: an announcement with the launch date, link, steps and the list of who still needs a PIN. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
     <li>Each player has a name, one position (DEF, MID or FWD), shirt number, nation, favourite club, photo, <b>Active this season</b>, <b>★ Star player</b>, and nine starting ratings from 1 to 10.</li>
     <li><b>Add player</b> in Squad; new players start at 7 in everything. Returning players start from last season’s averages.</li>
     <li>Inactive players are hidden from Match Day, the link and the portal sign-in list (tick <b>Show inactive</b> in Squad to see them).</li>
@@ -1538,7 +1540,7 @@ function vSettings(){
       <div class="row"><label class="btn primary" for="psbulk">Upload several</label><input type="file" id="psbulk" accept="image/*" multiple hidden data-a="psbulk">${Object.keys(s.psIcons||{}).length?'<button class="btn ghost" data-a="psreset">Use the built-in EA icons</button>':''}<span class="small muted" id="psmsg"></span></div>
       <div class="psupg">${PSTYLES.flatMap(([,l])=>l).map(x=>`<label class="psupi" title="Replace ${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small>${s.psIcons?.[x[1]]?'<i>✓</i>':''}<input type="file" accept="image/*" hidden data-a="psone" data-n="${esc(x[1])}"></label>`).join('')}</div></details>
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
-    ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="small row chk"><input type="checkbox" id="plg" data-a="set" data-k="playerLogin" ${s.playerLogin!==false?'checked':''}> Players can sign in to see their own profile, matches and availability</label>
+    ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="f" style="max-width:420px">Player sign-in<select id="plg" data-a="setportal">${[['on','On: players can sign in to their portal'],['setup','PIN setup only: names listed, players create a PIN, portal stays closed'],['off','Off: sign-in screen closed']].map(([k,l])=>`<option value="${k}" ${portalMode()===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
@@ -1841,13 +1843,17 @@ async function pPinMode(){const sel=$('#plname');if(!sel)return;const id=sel.val
   const set=(m,label,btn,h,cls)=>{if(sel.value!==id)return;plMode=m;$('#plpinl').textContent=label;$('#plpin2w').hidden=m!=='none';const b=$('#plbtn');if(b)b.textContent=btn||b.dataset.t;hint.hidden=!h;hint.innerHTML=h||'';hint.className='small plhint'+(cls?' '+cls:'')};
   if(!id){set('set','PIN');return}
   let st='set';try{st=await prpc('atb_player_pin_state',{p_team:sel.dataset.team,p_player:id})}catch(e){}
-  if(st==='none')set('none','Create your PIN (4 to 6 digits)','Create PIN and open my profile','👋 First time? Choose a PIN only you know. You’ll use it here and on the availability link.','new');
+  const setup=sel.dataset.mode==='setup';$('#plpin').closest('label').hidden=setup&&st==='set';const b0=$('#plbtn');if(b0)b0.hidden=setup&&st==='set';
+  if(st==='none')set('none','Create your PIN (4 to 6 digits)',setup?'Create my PIN':'Create PIN and open my profile','👋 First time? Choose a PIN only you know. You’ll use it here and on the availability link.','new');
+  else if(setup&&st==='set')set('set','PIN','','✅ You already have a PIN. You’re all set! The portal opens soon; use this PIN to sign in.','new');
   else if(st==='blocked')set('blocked','PIN','','Your profile access is turned off. Ask a manager.','bad');
   else set('set','PIN','','Forgot your PIN? Ask a manager to reset it, then create a new one here.')}
 document.addEventListener('change',e=>{if(e.target.id==='plname'){$('#plmsg').textContent='';$('#plpin').value='';if($('#plpin2'))$('#plpin2').value='';pPinMode()}});
 async function pLoadRoster(){const sel=$('#plname');if(!sel)return;try{const r=await prpc('atb_player_roster',{});const t=r[0];
     if(!t){sel.innerHTML='<option value="">Player sign-in is off</option>';return}
-    sel.dataset.team=t.team;const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('');pPinMode()}
+    sel.dataset.team=t.team;sel.dataset.mode=t.mode||'on';
+    if(t.mode==='setup'){const h=$('#plh'),pp=$('#plp');if(h)h.textContent='Set up your PIN';if(pp)pp.innerHTML='🔥 The <b>Airdrie United Player Portal</b> is launching soon. Pick your name and create your PIN now so you’re ready on game day.'}
+    const last=ls('atb_plast');sel.innerHTML='<option value="">Choose your name…</option>'+t.players.map(p=>`<option value="${esc(p.id)}" ${p.id===last?'selected':''}>${esc(p.name)}</option>`).join('');pPinMode()}
   catch(e){sel.innerHTML='<option value="">Can’t load names. Check your connection</option>'}}
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
   if(a==='lrole'){showLogin('','',el.dataset.r);return}
@@ -1857,6 +1863,10 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
     if(plMode==='none'){if(/^(\d)\1+$/.test(pin)||'0123456789'.includes(pin)||'9876543210'.includes(pin)){msg.textContent='Pick a PIN that’s harder to guess (not 1111 or 1234).';return}
       if($('#plpin2').value.trim()!==pin){msg.textContent='The two PINs don’t match. Type them again.';return}}
     el.disabled=true;msg.textContent=plMode==='none'?'Creating your PIN…':'Signing in…';
+    if(sel.dataset.mode==='setup'){try{const r=await prpc('atb_player_create_pin',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
+        if(r==='created'){ls('atb_plast',sel.value);$('#lform').outerHTML=`<div class="plhint new" style="font-size:15px">🎉 <b>PIN created for ${esc(sel.options[sel.selectedIndex].text)}!</b><br>Remember it. When the Player Portal opens, sign in here with your name and this PIN. It also works on the availability link.</div>`;return}
+        msg.textContent=r==='exists'?'You already have a PIN. You’re all set.':r==='blocked'?'Your profile access is turned off. Ask a manager.':'Could not create the PIN. Ask a manager.'}
+      catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
     try{const r=await prpc('atb_player_login',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
       if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
@@ -2430,10 +2440,12 @@ document.addEventListener('click',async e=>{
   if(a==='clubsave'){S.settings.club={name:$('#cn').value.trim().slice(0,40),founded:$('#cf').value.trim().slice(0,10),home:$('#ch').value.trim().slice(0,60),indoor:$('#ci').value.trim().slice(0,60)};await putSettings();closeModal();render();return}
   if(a==='gearadd'){gearModal(null,el.dataset.v,el.dataset.t);return}
   if(a==='gearview'){gearView(id);return}
+  if(a==='portalsetup'||a==='portalopen'){S.settings.playerLogin=a==='portalopen';S.settings.playerSetup=a==='portalsetup';await putSettings();toast(a==='portalopen'?'Player portal is open 🎉':'PIN setup is open. Players can create their PIN now');render();return}
   if(a==='pinsetup'){setTimeout(()=>ls('atb_pinsetup',el.open?'1':'0'),0);return}
   if(a==='pinrefresh'){st.loaded=false;pinSeen=null;await loadStats();return}
-  if(a==='pinremind'){const no=S.players.filter(p=>!p.guest&&p.active!==false&&!p.noLogin&&!st.pins[p.id]).map(p=>p.name);const url=S.settings.appUrl||location.origin+'/';
-    const txt=`⚽ *Airdrie United app* – please set up your PIN before Saturday!\n\n1. Open ${url}\n2. Choose *Player* and pick your name\n3. Choose a 4–6 digit PIN (only you know it)\n\nYou'll see your player card, stats, matches and availability.\n\nStill to do: ${no.join(', ')}`;
+  if(a==='pinremind'){const no=S.players.filter(p=>!p.guest&&p.active!==false&&!p.noLogin&&!st.pins[p.id]).map(p=>p.name).sort((a,b)=>a.localeCompare(b));const url=S.settings.appUrl||location.origin+'/';
+    const nx=sched().map(x=>x.d).filter(d=>d>=todayISO()).sort()[0],day=nx?new Date(nx+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'}):'Saturday';
+    const txt=`🚨⚽ *BIG NEWS, AIRDRIE UNITED!* ⚽🚨\n\nOur very own *Player Portal* is launching on *${day}*! 🔥\n\nYour own FC-style player card 🃏, your stats and ratings growth 📈, PlayStyles, badges and levels 🏅, match history, Team of the Week, tournaments 🏆 and availability voting, all in one place.\n\n👉 *Before ${nx?'the game on '+day:'Saturday'}, set up your PIN (takes 30 seconds):*\n1️⃣ Open ${url}\n2️⃣ Tap *Player* and choose your name\n3️⃣ Create a 4–6 digit PIN (only you know it, don’t use 1234 😉)\n\nI’ll walk everyone through the portal at the game. Be ready! 💪\n\n${no.length?`⏳ *Still need to create a PIN (${no.length}):*\n${no.map(n=>'• '+n).join('\n')}`:'✅ Everyone has a PIN. Legends! 🙌'}`;
     try{await navigator.clipboard.writeText(txt);toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}return}
   if(a==='psreset'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to remove uploaded icons';return}delete S.settings.psIcons;await putSettings();render();return}
   if(a==='gvsel'){const g=S.gear.find(x=>x.id===id);$('#gvimg').innerHTML=`<img src="${gImgs(g)[+el.dataset.i]}" alt="">`;document.querySelectorAll('.gvth button').forEach(b=>b.classList.toggle('on',b===el));return}
@@ -2529,6 +2541,7 @@ document.addEventListener('change',async e=>{
   if(a==='psone'||a==='psbulk'){const all=PSTYLES.flatMap(([,l])=>l).map(x=>x[1]),key=v=>v.toLowerCase().replace(/\.[a-z0-9]+$/,'').replace(/[^a-z]/g,'');const ic={...(S.settings.psIcons||{})};let n=0,miss=[];
     for(const f of el.files){const nm=a==='psone'?el.dataset.n:all.find(x=>key(f.name).includes(key(x)))||all.find(x=>key(x).includes(key(f.name))&&key(f.name).length>3);if(!nm){miss.push(f.name);continue}const u=await iconImg(f);if(u){ic[nm]=u;n++}}
     S.settings.psIcons=ic;await putSettings();render();toast(`${n} icon${n===1?'':'s'} updated`+(miss.length?`. Not matched: ${miss.slice(0,4).join(', ')}${miss.length>4?'…':''}`:''));return}
+  if(a==='setportal'){S.settings.playerLogin=el.value==='on';S.settings.playerSetup=el.value==='setup';await putSettings();toast(el.value==='on'?'Player portal is open':el.value==='setup'?'Players can now create their PIN. The portal stays closed':'Player sign-in is closed');render();return}
   if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
   if(a==='ntfen'){const {error}=await supa.from('atb_notify').update({enabled:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(!error){ntf.enabled=el.checked;toast(el.checked?'Alerts resumed':'Alerts paused')}return}

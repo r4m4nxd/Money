@@ -88,3 +88,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- public storage bucket 'crests' as <id>.png (no write policies: only the service role can change them).
 
 -- atb_player_pin_state(team, player) -> 'set' | 'none' | 'blocked' | 'unknown': lets the sign-in screen offer "Create your PIN".
+
+-- PIN setup mode: settings.playerSetup=true with playerLogin=false lists names (atb_player_roster mode 'setup') and allows
+-- atb_player_create_pin(team, player, pin) to create a first PIN only; the portal (atb_player_login) stays closed.
