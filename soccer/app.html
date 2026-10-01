@@ -506,6 +506,9 @@ label.f input,label.f select{width:100%}
 .sharecard.one .sh{font-size:24px}
 .cardprev{margin:0 auto}
 .pphoto{justify-content:center}
+.pinsetup{margin-bottom:12px}.pinsetup summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;list-style:none}.pinsetup summary::-webkit-details-marker{display:none}
+.pinsetup h4{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em}.psbar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:10px}.psbar i{display:block;height:100%;background:var(--good)}
+.pslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 16px}.pslist>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:4px 0;font-size:14px}.pslist>div>span:first-child{font-weight:600}
 .pinrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface2)}
 .steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .pphoto>.row{flex:1 1 200px}
@@ -1180,13 +1183,31 @@ function vHistory(){
 
 function tier(o){return o>=78?"gold":o>=71?"silver":"bronze"}
 let squadFilter='ALL',showOff=false;
+/* who has set up the player app (PIN) — for onboarding everyone on game day */
+let pinSeen=null;
+async function loadPinSeen(){if(!isAdmin||pinSeen)return;pinSeen={};try{const r=await supa.from('atb_player_activity').select('player_id,at').eq('team',supaUser.id).eq('action','Signed in').order('at',{ascending:false}).limit(2000);(r.data||[]).forEach(x=>{if(!pinSeen[x.player_id])pinSeen[x.player_id]=x.at})}catch(e){}render()}
+function pinSetupPanel(){if(cloud!=='supa')return '';if(!st.loaded&&!st.loading)setTimeout(loadStats,0);if(isAdmin&&!pinSeen)setTimeout(loadPinSeen,0);
+  const all=S.players.filter(p=>!p.guest&&p.active!==false).sort((a,b)=>a.name.localeCompare(b.name));
+  const off=all.filter(p=>p.noLogin),ps=all.filter(p=>!p.noLogin),has=ps.filter(p=>st.pins[p.id]),no=ps.filter(p=>!st.pins[p.id]);
+  const pct=ps.length?Math.round(has.length/ps.length*100):0,d=t=>new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  const open=ls('atb_pinsetup')!=='0'&&no.length>0;
+  return `<details class="panel pinsetup" ${open?'open':''} data-a="pinsetup"><summary><span>📱 <b>Player app setup</b></span><span class="pill ${no.length?'meh':'ok'}">${st.loaded?`${has.length} of ${ps.length} have a PIN`:'Loading…'}</span></summary>
+    ${st.loaded?`<div class="psbar"><i style="width:${pct}%"></i></div>
+    ${S.settings.playerLogin===false?'<p class="small" style="color:var(--bad);margin:6px 0 0">Player sign-in is turned off in Settings → Player portal.</p>':''}
+    <h4>⏳ No PIN yet <span class="small muted">${no.length}</span></h4>${no.length?`<div class="chips">${no.map(p=>`<button class="chip" data-a="editp" data-id="${p.id}">${esc(p.name)}</button>`).join('')}</div>
+      <div class="row" style="margin-top:8px"><button class="btn primary" data-a="pinremind">Copy WhatsApp reminder</button><button class="btn ghost" data-a="pinrefresh">Refresh</button></div>`:'<p class="small muted" style="margin:0">Everyone is set up. 🎉</p>'}
+    <h4>✅ PIN set <span class="small muted">${has.length}</span></h4><div class="pslist">${has.map(p=>{const k=st.pins[p.id],lk=k.locked_until&&new Date(k.locked_until)>new Date(),seen=pinSeen&&pinSeen[p.id];
+      return `<div><span>${esc(p.name)}</span><span class="small muted">${lk?'<span class="pill bad">Locked</span> ':''}${k.set_at?'PIN '+d(k.set_at):''}${isAdmin?` · ${seen?'last in '+d(seen):'not signed in yet'}`:''}</span></div>`}).join('')||'<p class="small muted" style="margin:0">Nobody yet.</p>'}</div>
+    ${off.length?`<h4>🚫 App access off <span class="small muted">${off.length}</span></h4><p class="small muted" style="margin:0">${off.map(p=>esc(p.name)).join(', ')}. Turn it on in their player card.</p>`:''}
+    <p class="small muted" style="margin:8px 0 0">A player sets their PIN the first time they sign in to the app (or answer the availability link). Tap a name to open their card.</p>`:''}
+  </details>`}
 function vSquad(){
   let ps=S.players.filter(p=>showOff||(p.active!==false&&!p.guest));
   if(squadFilter!=='ALL')ps=ps.filter(p=>p.pos===squadFilter);
   ps.sort((a,b)=>hideR?a.name.localeCompare(b.name):R(b.id).ovr-R(a.id).ovr);
   return `<h2>Squad</h2><div class="row" style="margin-bottom:12px">${['ALL',...POS].map(f=>`<button class="chip" aria-pressed="${squadFilter===f}" data-a="sf" data-f="${f}" style="padding-left:10px">${f==='ALL'?'All':f}</button>`).join('')}
     <label class="small row" style="gap:4px;margin-left:8px"><input type="checkbox" id="showoff" data-a="showoff" ${showOff?'checked':''}> Show inactive &amp; guests</label>
-    <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>
+    <button class="btn primary" data-a="addp" style="margin-left:auto">Add player</button></div>${pinSetupPanel()}
   <div class="cards">${ps.map(p=>{const r=R(p.id);const h=r.hist;const fm=h.length?h[h.length-1].ovr-r.ovr:0;
     const f=k=>Math.round((r.a[k]||0)*10);
     return cardHTML(p)}).join('')}</div>`;
@@ -1287,7 +1308,7 @@ function vGuide(){
     <li>Only your team’s accounts can store data, so a stranger who creates an account gets nothing. The admin alone manages managers and player access.</li>
     <li>Two settings to switch on in Supabase (Authentication): turn off <b>Allow new users to sign up</b>, and turn on <b>Leaked password protection</b>.</li></ul>`)}
 
-  ${sec('squad','Squad and players',`<ul>
+  ${sec('squad','Squad and players',`<ul><li><b>📱 Player app setup</b> (top of Squad): how many active players have made their PIN, who is still missing (tap a name to open their card), and <b>Copy WhatsApp reminder</b> with the link and steps. Admin also sees when each player last signed in. A player with a PIN but “not signed in yet” made it on the availability link.</li>
     <li>Each player has a name, one position (DEF, MID or FWD), shirt number, nation, favourite club, photo, <b>Active this season</b>, <b>★ Star player</b>, and nine starting ratings from 1 to 10.</li>
     <li><b>Add player</b> in Squad; new players start at 7 in everything. Returning players start from last season’s averages.</li>
     <li>Inactive players are hidden from Match Day, the link and the portal sign-in list (tick <b>Show inactive</b> in Squad to see them).</li>
@@ -2382,6 +2403,11 @@ document.addEventListener('click',async e=>{
   if(a==='clubsave'){S.settings.club={name:$('#cn').value.trim().slice(0,40),founded:$('#cf').value.trim().slice(0,10),home:$('#ch').value.trim().slice(0,60),indoor:$('#ci').value.trim().slice(0,60)};await putSettings();closeModal();render();return}
   if(a==='gearadd'){gearModal(null,el.dataset.v,el.dataset.t);return}
   if(a==='gearview'){gearView(id);return}
+  if(a==='pinsetup'){setTimeout(()=>ls('atb_pinsetup',el.open?'1':'0'),0);return}
+  if(a==='pinrefresh'){st.loaded=false;pinSeen=null;await loadStats();return}
+  if(a==='pinremind'){const no=S.players.filter(p=>!p.guest&&p.active!==false&&!p.noLogin&&!st.pins[p.id]).map(p=>p.name);const url=S.settings.appUrl||location.origin+'/';
+    const txt=`⚽ *Airdrie United app* – please set up your PIN before Saturday!\n\n1. Open ${url}\n2. Choose *Player* and pick your name\n3. Choose a 4–6 digit PIN (only you know it)\n\nYou'll see your player card, stats, matches and availability.\n\nStill to do: ${no.join(', ')}`;
+    try{await navigator.clipboard.writeText(txt);toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}return}
   if(a==='psreset'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to remove uploaded icons';return}delete S.settings.psIcons;await putSettings();render();return}
   if(a==='gvsel'){const g=S.gear.find(x=>x.id===id);$('#gvimg').innerHTML=`<img src="${gImgs(g)[+el.dataset.i]}" alt="">`;document.querySelectorAll('.gvth button').forEach(b=>b.classList.toggle('on',b===el));return}
   if(a==='gimgdel'){pendGear.splice(+el.dataset.i,1);gThumbs();return}
