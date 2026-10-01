@@ -110,3 +110,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- POTM vote window: match day until end of the 2nd day after (atb_player_potm closes at date - 2; payload reveals pvote after that).
 
 -- Finalized teams: atb_docs col='fixtures' (id = date). Player payload adds 'fixtures' (date >= today) and only sends matches dated today or earlier.
+
+-- Version gate: private.atb_cfg(min_build); atb_docs insert/update/delete also need private.atb_build_ok() (build number sent in x-client-info as atb/yyyymmddHHMM).
+-- RPCs: atb_min_build(), atb_set_min_build(text) (admin). Player sessions end after 1 hour without use (private.atb_session).
+-- Player sign-in pushes come from 'Signed in on' (device) sent by the app right after a PIN sign-in.

@@ -17,3 +17,5 @@ cd "$(dirname "$0")"
 </head><body>
 H
 cat app.html; printf '\n</body></html>\n'; } > index.html
+# stamp the build number (UTC yyyymmddHHMM) used by the app version gate
+b=$(date -u +%Y%m%d%H%M); sed -i "s/__BUILD__/$b/" index.html

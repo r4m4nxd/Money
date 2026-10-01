@@ -456,13 +456,14 @@ div.citem{cursor:default}
 .ei-trophy,.ei-medal.g,.ei-star,.ei-crown{color:#E2B13C}.ei-medal.s{color:#A9B6C6}.ei-medal.b{color:#C9844A}.ei-check{color:var(--ok,#2FB36B)}.ei-warn{color:var(--warn,#E0A526)}.ei-trash{color:var(--bad,#E5484D)}.ei-flame{color:#F07A2A}.ei-heart{color:#E5484D}
 .btn .ei,.chip .ei{margin-right:2px}.themebtn .ei{width:18px;height:18px;vertical-align:-4px}.tipbig .ei{stroke-width:1.5}
 .mgrid{display:flex;flex-direction:column}.mgc{display:contents}.ms{order:var(--o);min-width:0}
+.upd{position:fixed;inset:0;z-index:500;background:rgba(4,10,20,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px}.updb{max-width:380px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}.updb img{border-radius:50%}.updb h2{margin:10px 0 6px}.updb h2::before{display:none}.updb p{color:var(--muted)}
 .mdx{display:grid;gap:16px}.mleft{display:flex;flex-direction:column;gap:12px;min-width:0}@media(max-width:999px){.mleft{display:contents}.mleft>.mbal{order:-3}.mleft>.fxbar{order:-2}}.mleft>.panel{margin:0}.mbal{justify-content:space-between;gap:10px}.mbal .row{flex-wrap:wrap}.mleft .fxbar{margin:0}.team .hd{cursor:pointer}.team .hd .tfc{flex:none;width:28px;height:28px;background:rgba(0,0,0,.18);border-color:rgba(255,255,255,.35)}.team .hd .tfc::before{border-color:#fff}.team .hd.lt .tfc::before{border-color:#1B1F26}
 .team:not(.fold) .hd .tfc::before{transform:translateY(2px) rotate(-135deg)}
 .tsum{display:none;padding:9px 12px;font-size:13px;color:var(--muted);cursor:pointer}.tsum b{color:var(--ink)}
 .team.fold .tsum{display:block}.team.fold>:not(.hd):not(.tsum){display:none}
 .mdx .teams{gap:10px}.mpitch{order:-1;min-width:0}.team.on{box-shadow:0 0 0 2px var(--k),0 10px 30px rgba(0,0,0,.25)}
 .mptabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}.mptabs::-webkit-scrollbar{display:none}.mptabs button{flex:1 1 0;min-width:max-content;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px var(--f-body);cursor:pointer;white-space:nowrap}.mptabs button[aria-selected=true]{background:var(--k);border-color:var(--k);color:#fff}
-@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:calc(var(--hdrh,96px) + 10px);z-index:1}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 250px - var(--hdrh,96px))*1.136));margin:0 auto}}
+@media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:calc(var(--hdrh,96px) + 10px);z-index:1}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 250px - var(--hdrh,96px))*1.111));margin:0 auto}}
 .fxbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;border-left:4px solid var(--line)}.fxbar.ok{border-left-color:var(--ok,#2FB36B)}.fxbar.meh{border-left-color:var(--warn,#E0A526)}.fxbar .fxs{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.fxhint{max-width:260px}.fxcard{border-left:4px solid var(--k)}
 .cx{margin:16px 0 4px}.cx>summary,.mcx>summary{list-style:none;cursor:pointer}.cx>summary::-webkit-details-marker,.mcx>summary::-webkit-details-marker{display:none}
 .cx>summary{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding:4px 0}.cx>summary h2{margin:0}.cxi{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.cxi b{color:var(--ink)}
@@ -585,26 +586,26 @@ h3{line-height:1.2}
   .mrow h3{flex-basis:100%}
 }
 /* ---------- Pitch v3 + Team Management studio ---------- */
-.pitch.p3{container-type:inline-size;position:relative;isolation:isolate;z-index:0;width:100%;max-width:640px;aspect-ratio:1000/880;margin:0 auto;border:0;border-radius:14px;overflow:hidden;background:#245f37;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+.pitch.p3{container-type:inline-size;position:relative;isolation:isolate;z-index:0;width:100%;max-width:640px;aspect-ratio:1000/900;margin:0 auto;border:0;border-radius:14px;overflow:hidden;background:#245f37;box-shadow:0 10px 30px rgba(0,0,0,.28)}
 .p3 svg.pf{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .p3 .str .s1{fill:#3a8a4c}.p3 .str .s2{fill:#327d44}
 .p3 .grd{stroke:rgba(255,255,255,.07);stroke-width:1;fill:none}
 .p3 .mks{stroke:rgba(255,255,255,.85);stroke-width:2.6;fill:none;stroke-linejoin:round}.p3 .goal .gnet{fill:rgba(255,255,255,.16);stroke:none}.p3 .gnl{stroke:rgba(255,255,255,.5);stroke-width:1;fill:none}.p3 .gpost{stroke:#fff;stroke-width:6;fill:none;stroke-linejoin:round;stroke-linecap:round}.p3 .gback{stroke:rgba(255,255,255,.65);stroke-width:2;fill:none}.p3 .spt{fill:rgba(255,255,255,.85)}
 .p3 .ptitle3{position:absolute;left:2.5%;top:2.5%;z-index:120;background:rgba(8,14,22,.72);color:#fff;font:800 clamp(10px,2.5cqw,17px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;padding:.7cqw 1.8cqw;border-radius:8px;border-left:4px solid var(--kc);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p3 .pform{position:absolute;left:2.5%;bottom:1.5%;z-index:1;font:900 clamp(20px,8cqw,64px)/1 var(--f-display);letter-spacing:.08em;color:rgba(255,255,255,.88);text-shadow:0 .5cqw 0 rgba(0,0,0,.28)}
-.pc{position:absolute;transform:translate(-50%,-62%);width:calc(15cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
+.pc{position:absolute;transform:translate(-50%,-62%);width:calc(12.6cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
 button.pc{cursor:pointer}
-.pc-card{position:relative;display:block;width:100%;aspect-ratio:.8;overflow:visible;border-radius:calc(1.7cqw*var(--s)) calc(1.7cqw*var(--s)) calc(2.6cqw*var(--s)) calc(2.6cqw*var(--s));background:linear-gradient(180deg,#fff0b4 0%,#ebc96f 42%,#d6a948 78%,#b98a2f 100%);box-shadow:0 1cqw 2cqw rgba(0,0,0,.38),inset 0 0 0 .35cqw rgba(255,255,255,.4)}
+.pc-card{position:relative;display:block;width:100%;aspect-ratio:.8;overflow:visible;border-radius:calc(1.7cqw*var(--s)) calc(1.7cqw*var(--s)) calc(2.6cqw*var(--s)) calc(2.6cqw*var(--s));background:linear-gradient(180deg,#fff0b4 0%,#ebc96f 42%,#d6a948 78%,#b98a2f 100%);box-shadow:0 1cqw 2cqw rgba(0,0,0,.38);border:calc(.3cqw*var(--s)) solid rgba(255,255,255,.5);box-sizing:border-box}
 .t-silver .pc-card{background:linear-gradient(180deg,#ffffff 0%,#dfe4ea 42%,#bcc5cf 78%,#97a2ae 100%)}
 .t-bronze .pc-card{background:linear-gradient(180deg,#f8d6b0 0%,#dda774 42%,#c0834f 78%,#96602f 100%)}
 .t-special .pc-card{background:linear-gradient(180deg,#3a4656 0%,#1a222d 55%,#0f141b 100%);color:#F3E3B0}.t-special{color:#F3E3B0}
 .pc-top{position:absolute;left:6%;top:8%;width:26%;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:1}
 .pc-ovr{font:900 calc(3.9cqw*var(--s))/1 var(--f-display)}
 .pc-pos{font:800 calc(1.75cqw*var(--s))/1 var(--f-display);letter-spacing:.02em;margin-top:.25cqw}
-.pc-ph{position:absolute;left:30%;right:4%;top:6%;height:58%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
-.pc-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}
-.pc-ph .sil{width:82%;height:92%;fill:rgba(70,45,10,.28)}.t-special .pc-ph .sil{fill:rgba(255,255,255,.22)}
-.pc-nm{position:absolute;left:5%;right:5%;top:67%;text-align:center;font:800 calc(1.75cqw*var(--s))/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-ph{position:absolute;left:30%;right:4%;top:6%;height:58%;display:flex;align-items:flex-end;justify-content:center}
+.pc-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}.pc-ph.hp::after{content:'';position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to bottom,var(--cf0,rgba(226,187,98,0)),var(--cf,#e2bb62))}.t-silver{--cf:#c6ced7;--cf0:rgba(198,206,215,0)}.t-bronze{--cf:#cd9461;--cf0:rgba(205,148,97,0)}.t-special{--cf:#151c25;--cf0:rgba(21,28,37,0)}.pc-ph.cut img{filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.25))}
+.pc-ph img.sil{width:82%;height:92%;object-fit:contain;object-position:50% 100%}
+.pc-nm{position:absolute;left:3%;right:3%;top:67%;text-align:center;font:800 calc(1.55cqw*var(--s))/1.1 var(--f-display);text-transform:uppercase;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-ic{position:absolute;left:0;right:0;bottom:7%;display:flex;justify-content:center;align-items:center;gap:6%}
 .pc-ic .pc-fl{width:calc(2.7cqw*var(--s));height:calc(1.9cqw*var(--s));object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
 .pc-ic .cb{width:calc(2.5cqw*var(--s));height:calc(2.5cqw*var(--s));object-fit:contain}
@@ -630,7 +631,7 @@ button.pc{cursor:pointer}
 .ps-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ps-nav ul::-webkit-scrollbar{display:none}
 .ps-nav a{display:block;white-space:nowrap;text-decoration:none;color:inherit;font-size:13px;font-weight:700;padding:7px 10px;border-radius:8px;background:rgba(127,140,155,.18);border:1px solid transparent}
 .ps-nav a.nav-active{background:#1f9d55;color:#fff;border-color:#4be07f;box-shadow:0 0 0 2px rgba(75,224,127,.25)}
-.ps-panel{margin-top:8px;font-size:14px}.ps-panel .subb{margin:0 6px 6px 0}.ps-kv{display:flex;flex-wrap:wrap;gap:4px 14px}.ps-kv span{font-size:13px}.ps-kv b{font-family:var(--f-display);font-size:16px}.ps-form b{font:900 16px/1 var(--f-display);letter-spacing:.06em;color:var(--ink)}
+.ps-panel{margin-top:8px;font-size:14px}.ps-panel .subb{margin:0 6px 6px 0}.ps-kv{display:flex;flex-wrap:wrap;gap:4px 14px}.ps-kv span{font-size:13px}.ps-kv b{font-family:var(--f-display);font-size:16px}.ps-form{gap:8px 14px;align-items:center;flex-wrap:wrap}.ps-form select{min-height:34px}
 .ps-stats{background:rgba(127,140,155,.16);border-radius:12px;padding:10px 12px}
 .ps-sh{font-weight:800;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pstats{margin:0;display:grid;gap:6px}.pstats>div{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:8px}.pstats dt{font-size:12px;font-weight:800;letter-spacing:.05em;opacity:.8}.pstats dd{margin:0;display:grid;grid-template-columns:28px 1fr;align-items:center;gap:8px}
@@ -929,11 +930,13 @@ async function godLoad(){if(!isAdmin||cloud!=='supa'||god.loading)return;god.loa
       supa.from('atb_members').select('member,username').eq('team_owner',supaUser.id)]);
     (m.data||[]).forEach(x=>godMem[x.member]=x.username);
     god.items=[...(a.data||[]).map(x=>({k:'mgr',who:godMem[x.member]||'Manager',action:x.action,detail:x.detail,at:x.at})),...(b.data||[]).map(x=>({k:'pl',who:pById(x.player_id)?.name||x.player_id,action:x.action,detail:x.detail,at:x.at}))]
-      .filter(godMajor).sort((x,y)=>x.at<y.at?1:-1)}catch(e){}
+      .filter(godMajor).sort((x,y)=>x.at<y.at?1:-1);
+    // a PIN sign-in is followed by 'Signed in on' (with the device): show only that one
+    const on=god.items.filter(x=>x.action==='Signed in on');god.items=god.items.filter(x=>!(x.action==='Signed in'&&x.k==='pl'&&on.some(o=>o.who===x.who&&Math.abs(new Date(o.at)-new Date(x.at))<12e4)))}catch(e){}
   god.loading=false;god.at=Date.now();godBadge();if($('#godlist'))godFeed(true)}
 function godBadge(){const b=document.getElementById('godbtn'),n=document.getElementById('godn');if(!b)return;b.hidden=!(isAdmin&&cloud==='supa'&&!PM&&loaded);if(b.hidden)return;
   const u=(god.items||[]).filter(x=>new Date(x.at)>godRead()).length;n.hidden=!u;n.textContent=u>99?'99+':u}
-const GODICON=a=>/Opened app/.test(a)?'📱':/Deleted|Removed|reset|Reset/.test(a)?'🗑️':/Wrong PIN|Locked|blocked|paused/i.test(a)?'⚠️':/PIN/.test(a)?'🔐':/Signed in/.test(a)?'🔑':/tournament/i.test(a)?'🏆':/match|attendance|rating|Rated/i.test(a)?'📋':/settings|schedule|Portal/i.test(a)?'⚙️':/player/i.test(a)?'👤':/equipment/i.test(a)?'🧰':/profile|POTM/i.test(a)?'⭐':'•';
+const GODICON=a=>/Signed in on|Opened app/.test(a)?'📱':/Deleted|Removed|reset|Reset/.test(a)?'🗑️':/Wrong PIN|Locked|blocked|paused/i.test(a)?'⚠️':/PIN/.test(a)?'🔐':/Signed in/.test(a)?'🔑':/tournament/i.test(a)?'🏆':/match|attendance|rating|Rated/i.test(a)?'📋':/settings|schedule|Portal/i.test(a)?'⚙️':/player/i.test(a)?'👤':/equipment/i.test(a)?'🧰':/profile|POTM/i.test(a)?'⭐':'•';
 let godF='all';
 function godFeed(keep){const r=godRead(),L=(god.items||[]).filter(x=>godF==='all'||x.k===godF);
   const day=t=>new Date(t).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}),tm=t=>new Date(t).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
@@ -1043,6 +1046,13 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 /* Supabase sync: one row per document in atb_docs, shaped like the db API the page already uses */
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
+/* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
+const APP_BUILD='__BUILD__',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+let buildMin=null;
+async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
+function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
+  d.innerHTML=`<div class="updb"><img src="icons/crest-640.jpg" alt="" width="64" height="64"><h2>New version ready</h2><p>This copy of the app is out of date. Reload to get the latest version; saving is paused until you do.</p><button class="btn primary wide" onclick="location.reload()">Reload now</button></div>`;document.body.appendChild(d)}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkBuild()});setInterval(checkBuild,300000);
 const MGR_DOMAINS=['aufc-managers.invalid','managers.aufc.local'];
 const niceEmail=e=>{e=e||'';const[u,d]=e.split('@');return MGR_DOMAINS.includes(d)?u+'@aufc.ca':e};
 function supaDB(client,uid){
@@ -1093,7 +1103,7 @@ async function boot(){
   try{db=window.claude?await window.claude.use('db'):null}catch(e){db=null}
   if(db){cloud='claude';$('#sync').textContent='Synced'}
   else if(window.supabase&&!window.claude){
-    try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+    try{supa=window.supabase.createClient(SUPA_URL,SUPA_KEY,{global:{headers:{'x-client-info':'supabase-js-web/2.45.4 atb/'+BUILDN}}});setTimeout(checkBuild,1500);
       supa.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY')setTimeout(newPasswordModal,300)});
       const {data}=await supa.auth.getSession();supaUser=data.session?.user||null}catch(e){supa=null}
     if(supaUser&&ls('atb_mode')==='player'){const ps=ls('atb_player');if(ps&&ps.tok){bootPlayer(ps);return}ls('atb_mode','mgr')}
@@ -1118,7 +1128,7 @@ async function boot(){
       await syncRoster();if(cloud==='supa'&&!Array.isArray(S.settings.seasons)){S.settings.seasons=[{id:'w2627',name:'Winter 2026–27',kind:'indoor',venue:S.settings.venue||'Genesis Centre, Airdrie',time:S.settings.time,games:(Array.isArray(S.settings.schedule)?S.settings.schedule:WINTER).map(g=>g.t?{d:g.d,t:g.t}:{d:g.d})},{id:'s27',name:'Summer 2027',kind:'outdoor',venue:'Bayview, Airdrie',time:S.settings.time,games:[]}];S.settings.schedule=flatSched(S.settings.seasons);S.settings.club=S.settings.club||{name:'Airdrie United',founded:'2025',home:'Bayview, Airdrie',indoor:'Genesis Centre, Airdrie'};await putSettings()}
       if(sched().length&&!draft.teams&&!draft.editing&&!schedAt(draft.date)&&nextGame()){draft.date=nextGame();saveDraft()}
       quietLog=false;loaded=true;render();watchExtra();
-      if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();let ji=null;try{ji=sessionStorage.getItem('atb_justin');sessionStorage.removeItem('atb_justin')}catch(e){}logAct(ji?'Signed in':'Opened app',navigator.userAgent.match(/iPhone|iPad|Android|Mac|Windows/)?.[0]||'')}};
+      if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();let ji=null;try{ji=sessionStorage.getItem('atb_justin');sessionStorage.removeItem('atb_justin')}catch(e){}deviceStr().then(dv=>logAct(ji?'Signed in':'Opened app',dv))}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
     db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());lastSet=JSON.parse(JSON.stringify(S.settings));loaded&&render()}done('s')},()=>{done('s')});
@@ -1576,9 +1586,13 @@ function vManagers(){
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
-      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+appVerPanel()+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
 }
 // admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
+function appVerPanel(){if(!isAdmin||BUILDN==='0')return '';const fmt=b=>b&&b!=='0'?`${b.slice(0,4)}-${b.slice(4,6)}-${b.slice(6,8)} ${b.slice(8,10)}:${b.slice(10,12)} UTC`:'none';
+  return `<h2>App version</h2><div class="panel stack"><p style="margin:0">This copy: <b>${fmt(BUILDN)}</b> · Required for everyone: <b>${fmt(buildMin)}</b></p>
+    <p class="small muted" style="margin:0">After an update, press this so managers and players on an older copy get a <b>Reload</b> screen and can’t save anything until they reload.</p>
+    <div class="row"><button class="btn primary" data-a="reqbuild" ${buildMin===BUILDN?'disabled':''}>${buildMin===BUILDN?'Everyone must use this version':'Require this version for everyone'}</button></div></div>`}
 function godAlertPanel(){if(!ntf){setTimeout(loadNtf,0);return ''}
   return `<h2>🔔 Admin alerts <span class="small muted">(only you)</span></h2><div class="panel stack">${ntf.none?'<p style="margin:0">Turn on <b>Vote alerts</b> in Settings first (it sets up your private ntfy phone channel), then come back here.</p>':`
     <p class="small muted" style="margin:0">Phone alerts on your ntfy channel for every major action. Your own actions are skipped, and repeats within 2 minutes are grouped.</p>
@@ -1922,11 +1936,30 @@ function vSettings(){
 /* ---------- Player accounts: a player signs in with their name + 4–6 digit PIN and sees only their own profile ---------- */
 let PM=null;// {tok,team,id,name,data,loading,err,season}
 const PTABS=[['me','Me'],['games','Matches'],['tourn','Tournaments'],['avail','Availability'],['leaders','Leaders'],['club','Club'],['acct','Account'],['pguide','Guide']];
+/* Device for sign-in alerts: phone/computer, model where the browser tells us (Android, Chromebook), iPhone model estimated from its screen */
+const IPHONES={'375x667':'iPhone SE/8','375x812':'iPhone X/11 Pro/12-13 mini','414x896':'iPhone XR/11/11 Pro Max','390x844':'iPhone 12/13/14','428x926':'iPhone 12-13 Pro Max/14 Plus','393x852':'iPhone 14 Pro/15/16','430x932':'iPhone 14 Pro Max/15 Plus/15 Pro Max/16 Plus','402x874':'iPhone 16 Pro/17','440x956':'iPhone 16-17 Pro Max','420x912':'iPhone Air'};
+async function deviceStr(){const ua=navigator.userAgent||'';let os='',model='';
+  if(/iPhone/.test(ua)){os='iOS';model=IPHONES[Math.min(screen.width,screen.height)+'x'+Math.max(screen.width,screen.height)]||'iPhone'}
+  else if(/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)){os='iPadOS';model='iPad'}
+  else if(/Android/.test(ua)){os='Android '+((ua.match(/Android ([\d.]+)/)||[])[1]||'');model=(ua.match(/Android [\d.]+; (?:[a-z]{2}-[a-z]{2}; )?([^;)]+?)(?: Build|\))/i)||[])[1]||''}
+  else if(/Windows/.test(ua))os='Windows';else if(/CrOS/.test(ua))os='Chromebook';else if(/Mac OS X/.test(ua))os='Mac';else if(/Linux/.test(ua))os='Linux';
+  const v=ua.match(/OS (\d+)_(\d+)/);if(v&&/iOS|iPadOS/.test(os))os+=' '+v[1]+'.'+v[2];
+  try{if(navigator.userAgentData&&navigator.userAgentData.getHighEntropyValues){const h=await navigator.userAgentData.getHighEntropyValues(['model','platformVersion']);if(h.model)model=h.model}}catch(e){}
+  if(model==='K')model='';
+  const br=/Edg\//.test(ua)?'Edge':/SamsungBrowser/.test(ua)?'Samsung Internet':/CriOS|Chrome\//.test(ua)?'Chrome':/FxiOS|Firefox\//.test(ua)?'Firefox':/Safari\//.test(ua)?'Safari':'';
+  const app=(matchMedia('(display-mode: standalone)').matches||navigator.standalone)?'home-screen app':br;
+  return [model,os,app].filter(Boolean).join(' · ').slice(0,120)}
+/* Players are signed out after 1 hour without using the app (also enforced by the server) */
+const PL_IDLE=36e5;let plUseT=0;
+const plTouch=()=>{if(!PM||PM.preview)return;const n=Date.now();if(n-plUseT>3e4){plUseT=n;ls('atb_pl_use',n)}};
+['pointerdown','keydown','scroll','touchstart'].forEach(ev=>addEventListener(ev,plTouch,{passive:true}));
+function plIdleOut(){if(!PM||PM.preview||!PM.tok)return false;const last=+ls('atb_pl_use')||0;if(last&&Date.now()-last>PL_IDLE){const t=PM.tok;prpc('atb_player_logout',{p_token:t}).catch(()=>{});playerSignedOut('You were signed out after 1 hour without using the app. Enter your PIN to continue.');return true}return false}
+setInterval(plIdleOut,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')plIdleOut()});
 function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
 function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
-  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(!['me','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
+  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;plUseT=0;plTouch();if(!['me','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   await loadPlayer();
@@ -1939,7 +1972,7 @@ function startPreview(id){const p=pById(id);if(!p)return;const from={v:view,m:mo
 async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
   try{const d=PM.preview?await prpc('atb_admin_player_view',{p_player:PM.id}):await prpc('atb_player_data',{p_token:PM.tok});
     if(d.err&&PM.preview){toast('Could not open this profile');location.reload();return}
-    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='paused'?'⏸️ Your PIN is set, but the portal isn’t open for you yet. Hang tight; it opens soon!':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (your PIN was reset or changed). Sign in again.');return}
+    if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='paused'?'⏸️ Your PIN is set, but the portal isn’t open for you yet. Hang tight; it opens soon!':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (1 hour without using the app, or your PIN changed). Enter your PIN to continue.');return}
     PM.data=d;PM.err='';
     S.players=[{...d.me},...d.players];S.matches=(d.matches||[]).filter(m=>m.date<=todayISO());S.fixtures=d.fixtures||[];S.tourns=d.tournaments||[];S.gear=d.gear||[];Object.assign(S.settings,d.settings);
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
@@ -2235,7 +2268,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
         msg.textContent=r==='exists'?'You already have a PIN. You’re all set.':r==='blocked'?'Your profile access is turned off. Ask a manager.':'Could not create the PIN. Ask a manager.'}
       catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
     try{const r=await prpc('atb_player_login',{p_team:sel.dataset.team,p_player:sel.value,p_pin:pin});
-      if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);
+      if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);ls('atb_pl_use',Date.now());
+        try{await prpc('atb_player_log',{p_token:r.token,p_action:'Signed in on',p_detail:await deviceStr()})}catch(e){}
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
         if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
         if(r.new)toast('PIN created. Use it here and on the availability link');view='me';bootPlayer(saved);return}
@@ -2436,7 +2470,7 @@ function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);c
       <label class="small">On pitch <select data-a="tonp" data-id="${t.id}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n} players</option>`).join('')}</select></label>
       <label class="small">Formation <select data-a="tform" data-id="${t.id}">${formOpts(squad,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
       <label class="small row chk"><input type="checkbox" data-a="tgk" data-id="${t.id}" ${lu.gk?'checked':''}> Keeper</label><button class="btn" data-a="tshare" data-id="${t.id}">Share squad</button></div>
-    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,true,t.name,{a:'tslot',captain:t.captain,sel:tSlot&&tSlot.t===t.id?{t:0,k:tSlot.k}:null})}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap them, on the pitch or with a sub. Players see exactly this line-up.</p></div>`:''}
+    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,true,t.name,{a:'tslot',tid:t.id,captain:t.captain,sel:tSlot&&tSlot.t===t.id?{t:0,k:tSlot.k}:null})}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap them, on the pitch or with a sub. Players see exactly this line-up.</p></div>`:''}
   <h3 class="tsh">4 · Results</h3><div class="panel stack">
     ${g.map((x,i)=>`<div class="tg"><select id="tgs_${i}">${['Group','Round of 16','Quarter-final','Semi-final','Final','Friendly'].map(k=>`<option ${x.stage===k?'selected':''}>${k}</option>`).join('')}</select><input id="tgo_${i}" value="${esc(x.opp||'')}" placeholder="Opponent"><input id="tgf_${i}" class="num" type="number" min="0" value="${esc(x.gf??'')}" placeholder="Us"><span>–</span><input id="tga_${i}" class="num" type="number" min="0" value="${esc(x.ga??'')}" placeholder="Them"><button class="btn ghost small" data-a="tgdel" data-id="${t.id}" data-i="${i}">✕</button><div class="tgx"><input id="tgc_${i}" list="stafflist" maxlength="40" value="${esc(x.coach||'')}" placeholder="Coach: ${esc(t.coach||'same as tournament')}"><input id="tgm_${i}" list="stafflist" maxlength="40" value="${esc(x.manager||'')}" placeholder="Manager: ${esc(t.manager||'same as tournament')}"></div></div>`).join('')}
     <div class="row"><button class="btn" data-a="tgadd" data-id="${t.id}">＋ Add game</button><span class="small muted">${rec.n?`W${rec.W} D${rec.D} L${rec.L} · ${rec.GF}–${rec.GA}`:''}</span></div>
@@ -2624,7 +2658,7 @@ const PITCH2=(()=>{const T=84,B=330,xl=y=>36-44*(y-T)/(B-T),xr=y=>300-xl(y);cons
 /* ---------- Pitch v3: angled (perspective) SVG pitch with grid overlay, FC-style mini cards placed absolutely on it,
    and for editable line-ups a Team Management studio (sidebar menu + player stats panel). Built without CSS 3D so
    saved images (html2canvas) match the screen. ---------- */
-const P3={W:1000,H:880,top:92,bot:838,th:225,bh:640,k:-.45};
+const P3={W:1000,H:900,top:96,bot:862,th:235,bh:640,k:-.28};
 const p3f=v=>v*(1+P3.k)/(1+P3.k*v);
 function p3pt(u,v){const f=p3f(v),y=P3.top+(P3.bot-P3.top)*f,h=P3.th+(P3.bh-P3.th)*f;return [P3.W/2+(u-.5)*2*h,y,f]}
 const PITCH3=(()=>{const P=(u,v)=>p3pt(u,v).slice(0,2).map(n=>n.toFixed(1)).join(','),poly=(pts)=>pts.map(([u,v])=>P(u,v)).join(' ');
@@ -2651,6 +2685,7 @@ const PITCH3=(()=>{const P=(u,v)=>p3pt(u,v).slice(0,2).map(n=>n.toFixed(1)).join
     <rect width="${P3.W}" height="${P3.H}" fill="url(#p3sky)"/><rect width="${P3.W}" height="40" fill="#16351f"/>
     <g class="str">${stripes}</g><g class="grd">${grid}</g><g class="mks">${marks}</g><g class="spt">${dot(.5,.5,4)}${dot(.5,spot,3.5)}${dot(.5,1-spot,4)}</g>${goal(0,-1)}${goal(1,1)}
     <rect width="${P3.W}" height="${P3.H}" fill="url(#p3vig)"/></svg>`})();
+const SILURI=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110"><g fill="${c}"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></g></svg>`);
 const ROLES={GK:['GK'],DEF:[['CB'],['CB','CB'],['CB','CB','CB'],['LB','CB','CB','RB'],['LWB','CB','CB','CB','RWB']],MID:[['CM'],['CM','CM'],['LM','CM','RM'],['LM','CM','CM','RM'],['LM','CM','CAM','CM','RM']],FWD:[['ST'],['ST','ST'],['LW','ST','RW'],['LW','ST','ST','RW']]};
 const roleOf=(row,k,i)=>row==='GK'?'GK':(ROLES[row][k-1]||[])[i]||row;
 let pNums=ls('atb_pnums')!==false,pNav={};
@@ -2658,19 +2693,19 @@ const p3Stats=id=>{const r=R(id),a=r.a||{},f=k=>Math.round((a[k]||0)*10);return 
 const barCol=v=>v>=75?'#2FB36B':v>=60?'#EE8A1A':'#E5484D';
 function statBars(rows,ovr){return `<dl class="pstats">${ovr!=null?`<div class="pso"><dt>OVR</dt><dd class="player-ovr-stat num">${rv(ovr)}</dd></div>`:''}${rows.map(([k,v])=>`<div class="psr"><dt>${k}</dt><dd><span class="num psv">${rv(v)}</span><span class="stat-bar-container"><span class="stat-bar-fill" style="--w:${hideR?0:Math.max(4,Math.min(100,v))}%;--c:${barCol(v)}"></span></span></dd></div>`).join('')}</dl>`}
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
-  const g=splitLU(lu),rows=g.GK.length?{GK:.93,DEF:.72,MID:.47,FWD:.22}:{DEF:.82,MID:.52,FWD:.22};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
+  const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr=interactive&&!PM,cap=opt?.captain;
   const card=(id,role,u,v,idx)=>{const p=pById(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.thumb||p?.photo,r=R(id);
     const tr=!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
-    return `<${tag} class="pc t-${tr}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${(x/P3.W*100).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
+    return `<${tag} class="pc t-${tr}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
       <span class="pc-card"><span class="pc-top">${showOvr?`<b class="pc-ovr player-ovr-stat num">${rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span></span>
-      <span class="pc-ph">${ph?`<img src="${ph}" alt="">`:SIL}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
+      <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       <span class="pc-ic">${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       ${p?.number?`<span class="badge-position nb">${esc(p.number)}</span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
       <span class="pc-role">${role}</span></${tag}>`};
   let html='',idx=0;
   for(const row of ['GK','DEF','MID','FWD']){const ids=g[row],k=ids.length;if(!k)continue;const v=rows[row]||.5;
-    ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.1+i*.8/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.32);html+=card(id,roleOf(row,k,i),u,v,idx++)})}
+    ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);html+=card(id,roleOf(row,k,i),u,v,idx++)})}
   const subIds=g.SUB,subs=subIds.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="${A}" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   const pitch=`<div class="pitch p3${pNums?'':' nonum'}" style="--kc:${col}">${PITCH3}${title?`<div class="ptitle3">${esc(title)}</div>`:''}<div class="pform">${esc(lu.f)}</div>${html}</div>`;
@@ -2685,7 +2720,9 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     :`<div class="ps-dyn"><span class="ps-av ps-kit" style="background:${col}"></span><div><b class="ps-name">${esc(title||t.name||'Team')}</b><div class="small">${onp.length} on the pitch · ${subIds.length} subs</div><div class="small">Team rating <b class="player-ovr-stat num">${hideR?99:r1(st.tot)}</b></div></div></div>`;
   const NAV=[['tactics','Tactics'],['formation','Formation'],['squad','Squad Selector'],['kit','Kit Numbers'],['stats','Player Stats']];
   const panel=nav==='tactics'?`<div class="ps-kv num"><span>Attack <b>${hideR?99:r1(st.atk)}</b></span><span>Midfield <b>${hideR?99:r1(st.mid)}</b></span><span>Defence <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`
-    :nav==='formation'?`<div class="ps-form small muted"><b>${esc(lu.f)}${lu.gk?' + GK':''}</b> · Tap a card, then another card or a sub, to swap them.</div>`
+    :nav==='formation'?`<div class="ps-form row">${opt?.tid?`<label class="small">On pitch <select data-a="tonp" data-id="${opt.tid}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n}</option>`).join('')}</select></label>`:''}
+        <label class="small">Formation <select ${opt?.tid?`data-a="tform" data-id="${opt.tid}"`:`data-a="form" data-i="${ti}"`}>${formOpts(lu.order,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
+        <label class="small row chk"><input type="checkbox" ${opt?.tid?`data-a="tgk" data-id="${opt.tid}"`:`data-a="gk" data-i="${ti}"`} ${lu.gk?'checked':''}> Keeper</label><span class="small muted">Tap a card, then another card or a sub, to swap.</span></div>`
     :nav==='squad'?(subs?`<div class="ps-subs">${subs}</div><div class="small muted">Tap a sub, then a card to bring them on.</div>`:'<div class="small muted">No subs: everyone is on the pitch.</div>')
     :nav==='kit'?`<label class="small row chk"><input type="checkbox" data-a="pnums" ${pNums?'checked':''}> Show shirt numbers on cards</label><div class="small muted">${onp.filter(id=>!pById(id)?.number).length?onp.filter(id=>!pById(id)?.number).map(id=>esc(shortName(pById(id)?.name))).join(', ')+' have no number yet.':'Everyone on the pitch has a number.'}</div>`
     :`<div class="small muted">${sp?'Stats for '+esc(sp.name):'Team averages. Tap a card for one player.'}</div>`;
@@ -2814,6 +2851,7 @@ document.addEventListener('click',async e=>{
   if(a==='pnav'){e.preventDefault();pNav[el.dataset.k]=el.dataset.v;render();return}
   if(a==='pnums'){pNums=el.checked;ls('atb_pnums',pNums);render();return}
   if(a==='tsel'){const i=+el.dataset.i;if(i===(draft.pt||0))draft.tfold=!draft.tfold;else{draft.pt=i;draft.tfold=false}draft.sel=null;saveDraft();render();return}
+  if(a==='reqbuild'){if(!isAdmin)return;el.disabled=true;try{const r=await supa.rpc('atb_set_min_build',{p_build:BUILDN});if(r.error)throw r.error;buildMin=BUILDN;toast('Done. Older copies must reload before saving');logAct('Required app version',BUILDN)}catch(err){toast('Could not update: '+(err.message||err));el.disabled=false}render();return}
   if(a==='pteam'){draft.tfold=false;draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
