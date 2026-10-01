@@ -215,7 +215,9 @@ button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .sharecard .subs>span:first-child{color:#A9B6C6}.sharecard .subb{background:#172638;border-color:#2A3B52;color:#F2F5F8}
 .sharecard.one{max-width:440px}
 .rot{background:#172638;border-radius:10px;padding:8px 10px;margin:-4px 0 12px;font-size:14px;font-weight:600}
-.rot .kitsw.sm{vertical-align:-1px}.rot .arr{color:#A9B6C6;margin-inline:4px}.rot .rt{color:#A9B6C6;font-size:12px;font-weight:500;margin-top:3px}
+.rot .kitsw.sm{vertical-align:-1px}.rot .rh{font-size:13px;margin-bottom:6px}
+.rg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:3px}.rg li{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;white-space:nowrap;min-width:0}
+.rg .rn{color:#7f8da0;font-size:11px;width:16px;text-align:right;flex:none}.rg .rc{color:#A9B6C6;font-weight:500;font-size:12px;width:34px;flex:none}.rg .rv{overflow:hidden;text-overflow:ellipsis}.rg i{color:#7f8da0;font-style:normal;font-weight:500;margin-inline:2px}
 .kitsw{width:26px;height:26px;border-radius:6px;flex:none;display:inline-block}.kitsw.sm{width:12px;height:12px;border-radius:3px}
 .star{color:#D9A21B;margin-left:4px;font-size:.95em}
 .fbadge{white-space:nowrap;margin-left:auto;font-family:var(--f-display);font-weight:800;font-size:18px;background:#172638;padding:4px 10px;border-radius:8px}
@@ -2232,11 +2234,17 @@ function rotation(d){const n=d.teams.length;if(n<3)return null;
   let G=Math.max(1,Math.floor((tot+c)/(g+c)));
   for(;G>1;G--){const cnt=Array(n).fill(0);for(let i=0;i<G;i++)P[i%P.length].forEach(t=>cnt[t]++);if(cnt.every(x=>x===cnt[0]))break}
   const used=G*g+(G-1)*c;return {P,reps:Math.floor(G/P.length),extra:G%P.length,g,c,games:G,each:G*2/n,spare:Math.max(0,tot-used),tot}}
+// kick-off clock for game i, from the night's start time (e.g. "7:00 – 9:00 PM", "7:30 PM start")
+function rotClock(d,i,r){const t=String(timeFor(d.date)||''),m=t.match(/(\d{1,2})(?::(\d{2}))?/);if(!m)return '';
+  let h=+m[1];if(/pm/i.test(t)&&h<12)h+=12;
+  const x=h*60+(+m[2]||0)+i*(r.g+r.c);const hh=Math.floor(x/60)%24,mm=x%60;return `${(hh%12)||12}:${String(mm).padStart(2,'0')}`}
 function rotLine(d,emoji){const r=rotation(d);if(!r)return '';
-  const nm=i=>d.teams[i].name.replace(/^team\s+/i,'');const k=i=>emoji?(KITEMO[d.teams[i].kit]||'▪️')+' '+nm(i):`<span class="kitsw sm" style="background:${KITHEX[d.teams[i].kit]}"></span> ${esc(nm(i))}`;
-  const seq=r.P.map(([a,b])=>`${k(a)} v ${k(b)}`).join(emoji?' → ':' <span class="arr">→</span> ');
-  const tail=`${r.reps?`repeat ${r.reps}×`:''}${r.extra?`${r.reps?' + ':''}first ${r.extra}`:''} · ${r.games} games of ${r.g} min, ${r.c}-min change · ${r.each} games each team${r.spare?` · ${r.spare} min spare`:''}`;
-  return emoji?`🔄 ${seq}\n${tail}\n\n`:`<div class="rot"><div>${seq}</div><div class="rt">${tail}</div></div>`}
+  const nm=i=>d.teams[i].name.replace(/^team\s+/i,'');
+  const k=i=>emoji?(KITEMO[d.teams[i].kit]||'▪️')+' '+nm(i):`<span class="kitsw sm" style="background:${KITHEX[d.teams[i].kit]}"></span> ${esc(nm(i))}`;
+  const games=[...Array(r.games)].map((_,i)=>r.P[i%r.P.length]);
+  const head=`${r.games} games · ${r.g} min each + ${r.c} min break · every team plays ${r.each}`;
+  if(emoji)return `🔄 *Game schedule* (${head})\n`+games.map(([a,b],i)=>`${i+1}. ${rotClock(d,i,r)} ${k(a)} v ${k(b)}`).join('\n')+'\n\n';
+  return `<div class="rot"><div class="rh">🔄 ${head}</div><ol class="rg">${games.map(([a,b],i)=>`<li><span class="rn">${i+1}</span><span class="rc">${rotClock(d,i,r)}</span><span class="rv">${k(a)} <i>v</i> ${k(b)}</span></li>`).join('')}</ol></div>`}
 function shareText(d){const head=`⚽ *Saturday Soccer* – ${fmtDate(d.date)}, ${timeFor(d.date)}${venueFor(d.date)?' · '+venueFor(d.date):''}\n\n`+rotLine(d,true);
   if(shareSel!=='all')return head+teamText(d.teams[+shareSel]);
   return head+d.teams.map(t=>`${KITEMO[t.kit]||'▪️'} *${t.name.toUpperCase()}* (${t.lu.f})\n`+t.players.map((p,i)=>`${i+1}. ${p.name} (${p.pos})`).join('\n')).join('\n\n')}
