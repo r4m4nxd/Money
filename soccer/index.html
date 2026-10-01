@@ -648,11 +648,11 @@ button.pc{cursor:pointer}
 .ps-stats{background:rgba(127,140,155,.16);border-radius:12px;padding:10px 12px}
 .ps-sh{font-weight:800;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pstats{margin:0;display:grid;gap:6px}.pstats>div{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:8px}.pstats dt{font-size:12px;font-weight:800;letter-spacing:.05em;opacity:.8}.pstats dd{margin:0;display:grid;grid-template-columns:28px 1fr;align-items:center;gap:8px}
-.pso dd{font:900 26px/1 var(--f-display);display:block}
+.pso{display:flex!important;align-items:baseline;gap:10px;padding-bottom:4px;border-bottom:1px solid rgba(127,140,155,.25)}.pso dd{font:900 26px/1 var(--f-display);display:block}
 .stat-bar-container{display:block;height:6px;border-radius:99px;background:rgba(127,140,155,.28);overflow:hidden}.stat-bar-fill{display:block;height:100%;width:var(--w);background:var(--c);border-radius:inherit;transition:width .4s cubic-bezier(.2,.8,.2,1)}
 @container (max-width:520px){.pc-role{font-size:calc(2.1cqw*var(--s))}}
 @container (min-width:720px){.pstudio{grid-template-columns:minmax(0,1fr) 200px;grid-template-areas:'side side' 'main stats';align-items:start;padding:14px}.ps-side{grid-area:side;display:grid;grid-template-columns:auto minmax(220px,auto) minmax(0,1fr);align-items:center;gap:8px 14px}.ps-side .ps-h{margin:0}.ps-side .ps-dyn{margin:0}.ps-side .ps-panel{grid-column:1/-1;margin:0}.ps-main{grid-area:main;min-width:0}.ps-stats{grid-area:stats}.pstudio .pitch.p3{max-width:none}}
-@container (max-width:859px){.ps-h{font-size:15px}.ps-stats .pstats{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+@container (max-width:719px){.ps-h{font-size:15px}.ps-stats .pstats{grid-template-columns:1fr 1fr;gap:8px 18px}.ps-stats .pso{grid-column:1/-1}}
 /* ---------- Premium feel: smooth motion, refined type, tactile controls ---------- */
 html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 .panel{box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 6px 24px rgba(0,0,0,.12)}
@@ -1062,7 +1062,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610012229',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610012244',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
