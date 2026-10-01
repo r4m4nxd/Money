@@ -477,6 +477,10 @@ div.citem{cursor:default}
 .mdx .teams{gap:10px}.mpitch{order:-1;min-width:0}.team.on{box-shadow:0 0 0 2px var(--k),0 10px 30px rgba(0,0,0,.25)}
 .mptabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px}.mptabs::-webkit-scrollbar{display:none}.mptabs button{flex:1 1 0;min-width:max-content;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px var(--f-body);cursor:pointer;white-space:nowrap}.mptabs button[aria-selected=true]{background:var(--k);border-color:var(--k);color:#fff}
 @media(min-width:1000px){.mdx{grid-template-columns:minmax(290px,350px) minmax(0,1fr);align-items:start}.mdx .teams{grid-template-columns:1fr}.mpitch{order:0;position:sticky;top:calc(var(--hdrh,96px) + 10px);z-index:1}.mpitch .pstudio .pitch.p3{max-width:min(100%,calc((100vh - 250px - var(--hdrh,96px))*1.111));margin:0 auto}}
+.myteam{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;padding:10px 14px;border-radius:12px;background:var(--k);color:#fff}.myteam b{font:900 20px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}.myteam.lt{color:#1B1F26}
+.ochip{--k:#555}.ochip[aria-pressed=true]{background:var(--k);color:#fff;border-color:var(--k)}.ochip .kitsw{margin-right:4px}
+.ominit{display:grid;gap:10px;margin-top:10px}.small-pitch{max-width:380px!important;margin:0}.olist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;font-size:13px}.olist .pos{font-size:10px}
+@media(min-width:700px){.ominit{grid-template-columns:minmax(0,380px) 1fr;align-items:start}}
 .fxbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;border-left:4px solid var(--line)}.fxbar.ok{border-left-color:var(--ok,#2FB36B)}.fxbar.meh{border-left-color:var(--warn,#E0A526)}.fxbar .fxs{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.fxhint{max-width:260px}.fxcard{border-left:4px solid var(--k)}
 .cx{margin:16px 0 4px}.cx>summary,.mcx>summary{list-style:none;cursor:pointer}.cx>summary::-webkit-details-marker,.mcx>summary::-webkit-details-marker{display:none}
 .cx>summary{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding:4px 0}.cx>summary h2{margin:0}.cxi{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}.cxi b{color:var(--ink)}
@@ -1062,7 +1066,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610012244',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610012317',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2190,10 +2194,14 @@ function myFixture(){const me=PM.data.me.id,t=todayISO();return (S.fixtures||[])
 function fixtureCard(fx){const me=PM.data.me.id,ti=fx.teams.findIndex(t=>t.players.includes(me)),t=fx.teams[ti],lu=getLU(t.players.filter(id=>pById(id)),t.lu);
   const days=Math.round((new Date(fx.date+'T12:00')-new Date(todayISO()+'T12:00'))/864e5);
   return `<div class="panel game fxcard" style="--k:${KITHEX[t.kit]||'#555'}"><div class="gh"><div><div class="small muted">Your next match · teams are set</div><b>${fmtDate(fx.date)}</b><div class="small muted">${esc(timeFor(fx.date))}${venueFor(fx.date)?' · '+esc(venueFor(fx.date)):''}</div></div><span class="pill ok">${days<=0?'Today':days===1?'Tomorrow':'In '+days+' days'}</span></div>
-    <div class="scs">${fx.teams.map((x,i)=>`<span class="sc${i===ti?' mine':''}" style="--k:${KITHEX[x.kit]||'#555'}">${esc(x.name||'Team '+(i+1))}</span>`).join('')}</div>
-    <p class="small" style="margin:6px 0">You’re in <b style="color:${KITHEX[t.kit]||'inherit'}">${esc(t.name)}</b>${lu.order.slice(0,(lu.n||lu.order.length)).includes(me)?'':' · starting on the bench'}.</p>
+    <div class="myteam${kitLt(t.kit)?' lt':''}" style="--k:${KITHEX[t.kit]||'#555'}"><span class="small">You’re in</span><b>${esc(t.name)}</b>${lu.order.slice(0,(lu.n||lu.order.length)).includes(me)?'':'<span class="small">· starting on the bench</span>'}</div>
     <div class="pitchwrap">${pitchHTML(t,lu,ti,false,t.name)}</div>
-    <details class="others"><summary class="small">Other teams</summary>${fx.teams.map((x,i)=>i===ti?'':`<p class="small"><b style="color:${KITHEX[x.kit]||'inherit'}">${esc(x.name||'Team '+(i+1))}</b>: ${x.players.map(id=>esc(pById(id)?.name||'Guest')).join(', ')}</p>`).join('')}</details></div>`}
+    ${otherTeams(fx.teams,ti,'fx'+fx.date)}</div>`}
+/* Other teams: tap one to see its line-up on a small pitch and its player list */
+let otherSel={};
+function otherTeams(teams,mine,key){const L=teams.map((x,i)=>i).filter(i=>i!==mine);if(!L.length)return '';const sel=otherSel[key];
+  return `<div class="others2"><div class="small muted" style="margin:10px 0 6px">Other teams · tap one to see its line-up</div><div class="chips">${L.map(i=>{const x=teams[i];return `<button class="chip ochip" aria-pressed="${sel===i}" data-a="oteam" data-k="${esc(key)}" data-i="${i}" style="--k:${KITHEX[x.kit]||'#555'}"><span class="kitsw sm" style="background:${KITHEX[x.kit]||'#555'}"></span>${esc(x.name||'Team '+(i+1))}</button>`}).join('')}</div>
+    ${sel!=null&&teams[sel]?(()=>{const x=teams[sel],lu=getLU(x.players.filter(id=>pById(id)),x.lu);return `<div class="ominit"><div class="pitchwrap small-pitch">${pitchHTML(x,lu,sel,false,x.name)}</div><ol class="olist">${x.players.map(id=>`<li><span class="pos ${posOf(id)}">${posOf(id)}</span> ${esc(pById(id)?.name||'Guest')}</li>`).join('')}</ol></div>`})():''}</div>`}
 function gameCard(x,open){const m=x.m,me=PM.data.me.id;
   const score=m.teams.map((t,i)=>`<span class="sc${i===x.ti?' mine':''}" style="--k:${KITHEX[t.kit]||'#555'}">${esc(t.name||'Team '+(i+1))} <b class="num">${t.goals??'–'}</b></span>`).join('');
   const lu=getLU(x.t.players.filter(id=>pById(id)),x.t.lu);
@@ -2202,7 +2210,7 @@ function gameCard(x,open){const m=x.m,me=PM.data.me.id;
     ${m.potm&&pById(m.potm)?`<p class="small muted" style="margin:6px 0">Player of the match: <b>${esc(pById(m.potm).name)}</b></p>`:''}${m.pvote&&pById(m.pvote)?`<p class="small muted" style="margin:6px 0">Players’ pick: <b>${esc(pById(m.pvote).name)}</b>${m.myvote?` · you voted ${esc(pById(m.myvote)?.name||'')}`:''}</p>`:''}
     ${m.myfb?`<p class="fbk small" style="margin:6px 0">💬 ${esc(m.myfb)}</p>`:''}
     <div class="pitchwrap">${pitchHTML(x.t,lu,x.ti,false,x.t.name)}</div>
-    <details class="others"><summary class="small">Other teams</summary>${m.teams.map((t,i)=>i===x.ti?'':`<p class="small"><b style="color:${KITHEX[t.kit]||'inherit'}">${esc(t.name||'Team '+(i+1))}</b>: ${t.players.map(id=>esc(pById(id)?.name||'Guest')).join(', ')}</p>`).join('')}</details>
+    ${otherTeams(m.teams,x.ti,'m'+m.id)}
   </details>`}
 function vpGames(){const s=pSummary();
   return `${myFixture()?`<h2>Upcoming</h2>${fixtureCard(myFixture())}`:''}<div class="row" style="justify-content:space-between;align-items:center"><h2>Your matches</h2>${seasonPick()}</div>
@@ -2868,6 +2876,7 @@ document.addEventListener('click',async e=>{
   if(a==='pnums'){pNums=el.checked;ls('atb_pnums',pNums);render();return}
   if(a==='tsel'){const i=+el.dataset.i;if(i===(draft.pt||0))draft.tfold=!draft.tfold;else{draft.pt=i;draft.tfold=false}draft.sel=null;saveDraft();render();return}
   if(a==='reqbuild'){if(!isAdmin)return;el.disabled=true;try{const r=await supa.rpc('atb_set_min_build',{p_build:BUILDN});if(r.error)throw r.error;buildMin=BUILDN;toast('Done. Older copies must reload before saving');logAct('Required app version',BUILDN)}catch(err){toast('Could not update: '+(err.message||err));el.disabled=false}render();return}
+  if(a==='oteam'){const k=el.dataset.k,i=+el.dataset.i;otherSel[k]=otherSel[k]===i?null:i;render();return}
   if(a==='pteam'){draft.tfold=false;draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
