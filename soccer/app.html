@@ -457,6 +457,7 @@ div.citem{cursor:default}
 .btn .ei,.chip .ei{margin-right:2px}.themebtn .ei{width:18px;height:18px;vertical-align:-4px}.tipbig .ei{stroke-width:1.5}
 .mgrid{display:flex;flex-direction:column}.mgc{display:contents}.ms{order:var(--o);min-width:0}
 .upd{position:fixed;inset:0;z-index:500;background:rgba(4,10,20,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px}.updb{max-width:380px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}.updb img{border-radius:50%}.updb h2{margin:10px 0 6px}.updb h2::before{display:none}.updb p{color:var(--muted)}
+.editbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-left:4px solid var(--accent);margin:12px 0 0}.editbar .btn{flex:none}#main[data-v=match]>.editbar{grid-column:1/-1}#main[data-v=match]:has(>.editbar)>.cx[data-cx=m_teams]{grid-row:2/span 9}
 .mdx{display:grid;gap:16px}.mleft{display:flex;flex-direction:column;gap:12px;min-width:0}@media(max-width:999px){.mleft{display:contents}.mleft>.mbal{order:-3}.mleft>.fxbar{order:-2}}.mleft>.panel{margin:0}.mbal{justify-content:space-between;gap:10px}.mbal .row{flex-wrap:wrap}.mleft .fxbar{margin:0}.team .hd{cursor:pointer}.team .hd .tfc{flex:none;width:28px;height:28px;background:rgba(0,0,0,.18);border-color:rgba(255,255,255,.35)}.team .hd .tfc::before{border-color:#fff}.team .hd.lt .tfc::before{border-color:#1B1F26}
 .team:not(.fold) .hd .tfc::before{transform:translateY(2px) rotate(-135deg)}
 .tsum{display:none;padding:9px 12px;font-size:13px;color:var(--muted);cursor:pointer}.tsum b{color:var(--ink)}
@@ -1024,7 +1025,7 @@ async function delPlayer(id){logAct('Deleted player',pById(id)?.name);S.players=
   draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
   if(mode==='db'){try{await db.doc('players/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render();syncOpenPolls()}
 /* Open availability links show the current squad: any rename, position change, new, deleted or inactive player is pushed to every open link from today on. */
-const pollRoster=()=>S.players.filter(p=>p.active!==false&&!p.guest).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
+const pollRoster=()=>S.players.filter(p=>p.active!==false&&!p.guest&&!p.noLogin).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,pos:p.pos}));
 let pollSyncT=null;
 function syncOpenPolls(){if(cloud!=='supa'||!supa)return;clearTimeout(pollSyncT);pollSyncT=setTimeout(async()=>{try{
   const {data,error}=await supa.from('atb_polls').select('id,players,max_players').eq('owner',teamOwner).eq('kind','match').eq('open',true).gte('match_date',new Date().toISOString().slice(0,10));if(error)return;
@@ -1305,13 +1306,14 @@ function vMatch(){
       ${pitchHTML({kit:draft.kits[pt]||DEF_KITS[pt]},teamLU(pt),pt,true,draft.names[pt]||'Team '+KITS[draft.kits[pt]||DEF_KITS[pt]])}</div></div>`;
     teamsHtml=cx('m_teams','Teams',`${draft.teams.map((t,i)=>`<span class="kitsw sm" style="background:${KITHEX[draft.kits[i]||DEF_KITS[i]]}"></span>`).join('')} gap <b class="num">${hideR?'–':r1(spread)}</b> · <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span>`,teamsHtml);
   }
-  return cx('m_setup',draft.editing?'Editing match':'Next match',`<b>${fmtDate(draft.date)}</b> · ${draft.n} teams · ${onPitch()} a side`,`
+  const editBar=draft.editing?`<div class="panel editbar"><div><b>Editing the match of ${fmtDate(draft.date)}</b><div class="small muted">Date, Who’s playing and Teams below are this match. Changes are saved with <b>Update match</b>.</div></div><button class="btn primary" data-a="newmatch">Start a new match</button></div>`:'';
+  return editBar+cx('m_setup',draft.editing?'Editing match':'Next match',`<b>${fmtDate(draft.date)}</b> · ${draft.n} teams · ${onPitch()} a side`,`
   <div class="panel stack">
     <label class="f">Match date<input type="date" id="mdate" value="${draft.date}" data-a="date"></label>
     <div class="fgrid g2"><label class="f">Teams<select id="mn" data-a="nteams">${[2,3,4].map(n=>`<option value="${n}" ${n==draft.n?'selected':''}>${n} teams</option>`).join('')}</select></label>
     <label class="f">On pitch per team<select id="op" data-a="set" data-k="onPitch">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n==onPitch()?'selected':''}>${n} players</option>`).join('')}</select></label></div>
     <div class="mwhen">${fmtDate(draft.date)} · ${esc(timeFor(draft.date))}</div>${sched().length?(()=>{const se=seasonFor(draft.date),L=(se.games||[]).map(x=>x.d).sort(),i=L.indexOf(draft.date);return i>=0?`<div class="small muted">${esc(se.name||'Season')} · game ${i+1} of ${L.length}${venueFor(draft.date)?' · '+esc(venueFor(draft.date)):''}</div>`:`<div class="small" style="color:var(--warn)">Not on the season schedule${nextGame()?` · next game ${fmtDate(nextGame())}`:''}</div>`})():''}
-    ${draft.editing?'<button class="btn ghost" data-a="newmatch">Start a new match instead</button>':''}
+
   </div>`)+cx('m_who','Who’s playing',`<span class="num"><b>${av.size}</b> in · ${cnt.DEF} DEF · ${cnt.MID} MID · ${cnt.FWD} FWD</span>`,`
   ${pollPanel()}
   <div class="panel">${grp}
@@ -2850,12 +2852,12 @@ document.addEventListener('click',async e=>{
   if(a==='savematch'){const mm=draftAsMatch();const old=draft.editing&&S.matches.find(x=>x.id===draft.editing);
     const m={id:old?old.id:draft.date+'-'+uid(),date:mm.date,teams:mm.teams.map((t,i)=>({...t,goals:old?.teams[i]?.goals??null})),ratings:old?.ratings||{},createdAt:old?.createdAt||Date.now(),gap:(()=>{const t=mm.teams.map(x=>teamStats(x.players).tot);return Math.round((Math.max(...t)-Math.min(...t))*10)/10})()};
     await putMatch(m);if(fxFor(m.date))await delDoc('fixtures',m.date);draft.editing=m.id;saveDraft();toast('Match saved');render();return}
-  if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextSat(),names:[],lu:[],pitch:{},sel:null});saveDraft();render();return}
+  if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextGame()||nextSat(),names:[],lu:[],pitch:{},sel:null,pt:0,tfold:false,autoFor:null});cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);poll.date=null;saveDraft();render();window.scrollTo(0,0);toast('New match: pick who’s playing, then balance');return}
   if(a==='share'){logAct('Opened share card',fmtDate(draft.date));shareModal(draftAsMatch());return}
   if(a==='sharem'){shareModal(S.matches.find(x=>x.id===id));return}
   if(a==='potmmsg'){potmShare(S.matches.find(x=>x.id===id));return}
   if(a==='potmcopy'){try{await navigator.clipboard.writeText(potmMsg(S.matches.find(x=>x.id===id)));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}logAct('Copied POTM vote message');return}
-  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();go('match',{force:true});return}
+  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);draft.pt=0;draft.tfold=false;go('match',{force:true});return}
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
   if(a==='rate'){rateModal(id);return}
   if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
