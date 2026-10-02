@@ -234,6 +234,7 @@ ul.tight{margin:0;padding-left:18px}
 .twgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0}.twc{width:96px;opacity:0;transform:rotateY(90deg) scale(.8);animation:twflip .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.35s + var(--i)*.28s)}.twc.mine{filter:drop-shadow(0 0 14px #FFD86B)}.twyou{font-family:var(--f-display);font-weight:900;font-size:22px;color:#FFD86B;margin:6px 0 12px;animation:twpop .5s 2.4s both}
 @keyframes twflip{to{opacity:1;transform:none}}@keyframes twin{from{opacity:0}}@keyframes twpop{from{transform:scale(.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){.twc{animation:none;opacity:1;transform:none}.compbar.risk{animation:none}}
+.pchipsr{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.prc{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:2px 9px;cursor:pointer}.prc i{font-style:normal;font-size:10px;color:#fff;background:#C0392B;border-radius:6px;padding:0 4px;margin-left:3px}.prc.outlier,.prc.bias,.prc.excluded{opacity:.6;text-decoration:line-through}.prc.outlier i{background:#B7791F}.biasp{border:1.5px solid #E8A33D}
 .peerrow{padding:8px 0;border-bottom:1px solid var(--line)}.pchips{display:flex;gap:3px;flex-wrap:nowrap;min-width:0}.pchips button{flex:1 1 0;min-width:0;height:30px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:0}.pchips button.on{background:#F2803A;border-color:#F2803A;color:#fff}.cmrow{flex-direction:column;align-items:stretch!important}.cmrow .cmn{flex-direction:row!important;gap:8px;align-items:baseline}.cmrow .cmr{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}.cmrow .cmr>small{color:var(--muted);font-size:12px}
 .chemnag{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;border:1.5px solid #E8A33D;background:linear-gradient(90deg,rgba(232,163,61,.16),transparent);cursor:pointer;font:inherit;color:inherit}.chemnag .cnic{font-size:26px}.chemnag>div{flex:1;min-width:0}.chemnag .cnxp{flex:none;font-weight:800;color:#fff;background:#E8A33D;border-radius:999px;padding:4px 10px;font-size:13px}
 .cmrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.cmrow .cmn{display:flex;flex-direction:column;min-width:0}.cmrow .cmn small{color:var(--muted)}.cmrow.done .cmn b::after{content:' ✓';color:#2FB36B}.cmh{margin:14px 0 2px;font-size:14px}
@@ -1624,7 +1625,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022310',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022323',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2297,13 +2298,17 @@ let mgrs={list:null,loading:false,err:''};
 async function mgrCall(body){const {data,error}=await supa.functions.invoke('atb-managers',{body});
   if(error){let m=error.message;try{const j=await error.context.json();m=j.error||m}catch(e){}throw new Error(m)}if(data&&data.error)throw new Error(data.error);return data}
 async function loadPeer(){if(!supa||PM)return;try{const {data,error}=await supa.rpc('atb_mgr_peer');if(!error&&data){S.peer=data;CACHE=compute();bgRender()}}catch(e){}}
-async function peerModal(mid){const m=S.matches.find(x=>x.id===mid);if(!m)return;let rows=[];try{const {data}=await supa.rpc('atb_mgr_peer_detail',{p_match:mid});rows=data||[]}catch(e){}
-  const by={};rows.forEach(([rater,ratee,o,a,at])=>(by[ratee]=by[ratee]||[]).push({rater,o:+o}));const agg=(S.peer||{})[mid]||{};
+async function peerModal(mid){const m=S.matches.find(x=>x.id===mid);if(!m)return;let rows=[],bias=[];
+  try{const [a,b]=await Promise.all([supa.rpc('atb_mgr_peer_detail',{p_match:mid}),supa.rpc('atb_mgr_peer_bias')]);rows=a.data||[];bias=b.data||[]}catch(e){}
+  const nm=id=>esc(shortName(pById(id)?.name||id)),by={};rows.forEach(([rater,ratee,o,adj,st,med])=>(by[ratee]=by[ratee]||[]).push({rater,o:+o,adj:+adj,st:st||'ok'}));const agg=(S.peer||{})[mid]||{};
+  const ST={ok:'',outlier:'ignored: far from the others',bias:'ignored: possible bias',excluded:'excluded by a manager'};
+  const ids=new Set(m.teams.flatMap(t=>t.players)),bl=bias.filter(b=>ids.has(b.ratee)||ids.has(b.rater));
   openModal(`<div class="mh"><h2>Peer ratings · ${new Date(m.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <p class="small muted" style="margin-top:0">What teammates gave each other (1–10). The average drops the highest and lowest once 5+ have rated, and counts once ${peerMin()}+ have rated. Only managers see this.</p>
+  <p class="small muted" style="margin-top:0">Only managers see this. Automatic fairness: harsh or generous raters are evened out; a score 3+ away from what the other teammates gave is ignored; someone 2.5+ away from everyone on the same player in 3+ matches is treated as biased and ignored for that player; once 5+ have rated, the top and bottom are dropped. A player’s average counts once ${peerMin()}+ ratings are left. Tap a rating to exclude or include it.</p>
+  ${bl.length?`<div class="panel stack biasp"><b>⚠ Possible bias</b>${bl.map(b=>`<div class="row" style="justify-content:space-between;gap:8px"><span class="small">${nm(b.rater)} → ${nm(b.ratee)}: ${b.low>=3?`${b.low}× much lower`:''}${b.low>=3&&b.high>=3?', ':''}${b.high>=3?`${b.high}× much higher`:''} than the others${b.muted?' · <b>muted</b>':''}</span><button class="btn small" data-a="pexcl" data-m="*" data-r="${esc(b.rater)}" data-e="${esc(b.ratee)}" data-on="${b.muted?0:1}" data-mid="${mid}">${b.muted?'Unmute':'Mute for good'}</button></div>`).join('')}</div>`:''}
   ${m.teams.map(t=>`<h3 style="color:${KITHEX[t.kit]};margin-top:12px">${esc(t.name)}</h3>${t.players.filter(id=>pById(id)).map(id=>{const l=(by[id]||[]).sort((x,y)=>y.o-x.o),g=agg[id];
-    return `<div class="peerrow"><div class="row" style="justify-content:space-between"><b>${esc(pById(id).name)}</b>${g?`<span class="pill ${+g.n>=peerMin()?'ok':'meh'}">${(+g.o).toFixed(1)} · ${g.n} rating${g.n>1?'s':''}</span>`:'<span class="small muted">no ratings yet</span>'}</div>
-      ${l.length?`<div class="small muted">${l.map(x=>`${esc(shortName(pById(x.rater)?.name||x.rater))} <b>${x.o}</b>`).join(' · ')}</div>`:''}</div>`}).join('')}`).join('')}`)}
+    return `<div class="peerrow"><div class="row" style="justify-content:space-between"><b>${esc(pById(id).name)}</b>${g?`<span class="pill ${+g.n>=peerMin()?'ok':'meh'}">${(+g.o).toFixed(1)} · ${g.n} counted</span>`:l.length?'<span class="small muted">not enough ratings yet</span>':'<span class="small muted">no ratings yet</span>'}</div>
+      ${l.length?`<div class="pchipsr">${l.map(x=>`<button class="prc ${x.st}" data-a="pexcl" data-m="${mid}" data-r="${esc(x.rater)}" data-e="${esc(id)}" data-on="${x.st==='excluded'?0:1}" data-mid="${mid}" title="${ST[x.st]||''}${x.adj!==x.o?` · evened out to ${x.adj}`:''}">${nm(x.rater)} <b>${x.o}</b>${x.st!=='ok'?` <i>${x.st==='outlier'?'ignored':x.st==='bias'?'bias':'excluded'}</i>`:''}</button>`).join('')}</div>`:''}</div>`}).join('')}`).join('')}`)}
 async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgrCall({action:'list'})).managers;const a=await supa.from('atb_activity').select('member,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(500);mgrs.act=a.data||[]}catch(e){mgrs.err=e.message}
   try{const b=await supa.from('atb_player_activity').select('player_id,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(3000);mgrs.pact=b.data||[]}catch(e){mgrs.pact=[]}mgrs.loading=false;if(view==='managers')render()}
 const genPw=()=>{const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';const b=new Uint32Array(12);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('')};
@@ -2637,7 +2642,12 @@ function vGuide(){
 
   ${sec('peer','Teammates rate each other',`<ul><li>For 7 days after a match, each player rates <b>only the teammates they played with that night</b>: 1–10 for how they played, plus chemistry stars. The app asks them the first time they open it after the match, and each rating earns XP.</li>
     <li>Once ${peerMin()}+ teammates have rated a player (Settings: <b>Teammates’ ratings count after</b>), their average blends with your rating for that match (Settings: <b>Teammates’ ratings weight</b>, default 50%). If you didn’t rate that player, the teammates’ average is used on its own.</li>
-    <li>Fairness: players can’t rate themselves or other teams, and once 5+ have rated, the single highest and lowest scores are dropped.</li>
+    <li>Fairness, all automatic: players can’t rate themselves or other teams.
+      <ul><li><b>Harsh or generous raters are evened out.</b> Someone who gives everyone 5s has their 5 count as average.</li>
+      <li><b>Outliers are ignored.</b> A score 3+ points away from what the other teammates gave doesn’t count. <i>Example:</i> 8, 8, 2 → the 2 is ignored → 8.</li>
+      <li><b>Grudges and favouritism are spotted.</b> If one player rates another 2.5+ away from everyone else in 3+ matches, their ratings of that player are ignored and the pair shows under <b>⚠ Possible bias</b>.</li>
+      <li>Once 5+ have rated, the single highest and lowest are also dropped.</li></ul></li>
+    <li>You decide too: on 👥 Peer ratings tap any rating to exclude or include it, or <b>Mute for good</b> a biased pair. Players are never told.</li>
     <li>See who gave what: <b>Matches &amp; Ratings → 👥 Peer ratings</b> on any match. The rating screen also shows each player’s teammates’ average. Players never see each other’s answers.</li>
     <li><i>Example:</i> you rate a player 6 in every area; 6 teammates give 9, 8, 8, 7, 7 and 3. The 9 and 3 are dropped, so the average is 7.5. At 50% each area becomes 6.75.</li></ul>`)}
   ${sec('compete','Player competition',`<ul><li>Players get a <b>Compete</b> tab: performance vs their usual, weekly challenges (2 on the pitch, 1 off), daily streak, weekly XP league with top-3 bonuses, a weekly rival, match predictions, Team of the Week reveal and a season track.</li>
@@ -4691,6 +4701,8 @@ document.addEventListener('click',async e=>{
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
   if(a==='rate'){rateModal(id);return}
   if(a==='peerm'){peerModal(id);return}
+  if(a==='pexcl'){const on=el.dataset.on==='1';try{const {data,error}=await supa.rpc('atb_mgr_peer_excl',{p_match:el.dataset.m,p_rater:el.dataset.r,p_ratee:el.dataset.e,p_on:on});if(error||data!=='ok')throw error;
+      toast(el.dataset.m==='*'?(on?'Muted: their ratings of this player are ignored':'Unmuted'):(on?'Rating excluded':'Rating included'));await loadPeer();peerModal(el.dataset.mid)}catch(e){toast('Could not save')}return}
   if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
   if(a==='tboard'){e.preventDefault();const i=+el.dataset.i;let ids,lu,col,cap,title;
     if(el.dataset.id){const t=S.tourns.find(x=>x.id===el.dataset.id);lu=tLU(t);col=KITHEX[t.kit]||'#2F6FD6';cap=t.captain;title=t.name}else{lu=teamLU(i);col=KITHEX[draft.kits[i]||DEF_KITS[i]];cap=(draft.caps||{})[i];title=draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]]}

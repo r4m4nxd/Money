@@ -155,3 +155,8 @@ grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
 -- Peer ratings: private.atb_peer(team, match_id, rater, ratee, o 1-10, a areas). atb_player_peer: only teammates from the same
 -- team that night, within 7 days, not self, not a no-show. private.atb_peer_agg: trimmed mean (drops top/bottom once 5+).
 -- Managers: atb_mgr_peer() aggregates, atb_mgr_peer_detail(match) who-gave-what. Payload: peer (mine), peerMe (my aggregate), settings.peerW/peerMin.
+
+-- Peer fairness: private.atb_peer_rows(team) evens out harsh/generous raters (shrunk to the club mean once a rater has 5+ ratings),
+-- marks outliers (3+ from the median of the other teammates), bias (2.5+ away from everyone on the same player in 3+ matches) and
+-- manager exclusions (private.atb_peer_excl; match_id '*' = mute a rater for a player). atb_peer_agg uses only 'ok' rows.
+-- Managers: atb_mgr_peer_detail (with status), atb_mgr_peer_bias, atb_mgr_peer_excl.
