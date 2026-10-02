@@ -686,6 +686,17 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .pc-ovr.stv{filter:none!important}
 .dsug{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.dsug>b{width:100%}.dsug .btn{white-space:normal;text-align:left}
 .dpitch .cll{font-size:calc(1.4cqw);font-weight:800}
+.dfilters{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.dfl{display:flex;flex-direction:column;gap:2px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.dfl select{font-size:13px;padding:6px 8px}
+.dres{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;max-height:430px!important;padding:2px}
+.dmc,.dbs{position:relative;display:flex;flex-direction:column;align-items:center;padding:6px 4px 7px;border-radius:10px 10px 16px 16px;border:1px solid rgba(255,255,255,.4);cursor:pointer;font:inherit;color:#2a1d07;background:linear-gradient(180deg,#fff0b4,#ebc96f 45%,#c99a3a);box-shadow:0 3px 8px rgba(0,0,0,.2);transition:transform .15s cubic-bezier(.2,.8,.2,1)}
+.dmc:active,.dbs:active{transform:scale(.95)}.dmc.t-silver,.dbs.t-silver{background:linear-gradient(180deg,#fff,#dfe4ea 45%,#a8b3be)}.dmc.t-bronze{background:linear-gradient(180deg,#f8d6b0,#dda774 45%,#a66a39)}.dmc.t-icon{background:linear-gradient(180deg,#fffdf5,#efe6cf 45%,#cdb98a);border-color:#C9A227}
+.dmc>b{position:absolute;left:6px;top:4px;font:900 17px/1 var(--f-display)}.dmc>i{position:absolute;left:6px;top:22px;font:800 10px/1 var(--f-display);font-style:normal}
+.dmph{width:64%;aspect-ratio:1;margin-left:22%;display:grid;place-items:end center;overflow:hidden;border-radius:6px}.dmph img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}.dmph svg{width:80%;opacity:.3}
+.dmn{font:800 11px/1.15 var(--f-display);text-transform:uppercase;margin-top:3px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dmf{display:flex;align-items:center;gap:4px;margin-top:2px;max-width:100%}.dmf img{width:16px;height:11px;object-fit:cover;border-radius:2px}.dmf small{font-size:9px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dmc[aria-pressed=true]{opacity:.55}.dmc em{position:absolute;inset:auto 0 40% 0;font-style:normal;font:800 9px var(--f-display);background:rgba(0,0,0,.65);color:#fff;text-transform:uppercase;letter-spacing:.05em}
+.dbench{margin-top:10px;padding:10px;border-radius:14px;background:var(--surface2,rgba(127,127,127,.1))}.dbrow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:6px 0}
+.dbs{padding:4px 2px 6px;min-height:84px}.dbs>b{position:absolute;left:4px;top:3px;font:900 13px/1 var(--f-display)}.dbs>i{font:800 9px var(--f-display);font-style:normal}.dbs .dmph{width:70%;margin-left:15%}.dbs .dmn{font-size:9px}.dbs.empty{background:rgba(255,255,255,.12);border:2px dashed rgba(127,127,127,.5);box-shadow:none;justify-content:center}.dbs .plus{font:900 22px var(--f-display);color:var(--muted)}.dbs.sel{outline:3px solid #FFD54A;outline-offset:2px}
+@media(max-width:560px){.dbrow{grid-template-columns:repeat(4,1fr)}}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -2665,8 +2676,8 @@ function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!(n in WIKI
     need.forEach(n=>wikiBusy.delete(n));if(PM&&view==='dream')bgRender()})()}
 const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:w&&w.u||undefined,st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
-function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill('')}}
-function dreamFit(d){const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
+function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill(''),bench:Array(7).fill('')}}
+function dreamFit(d){if(!Array.isArray(d.bench))d.bench=Array(7).fill('');while(d.bench.length<7)d.bench.push('');const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
 function vpDream(){const L=PM.data.me.dreams||[];
   if(!DE)return `<h2>Dream Team</h2><p class="small muted" style="margin-top:-4px">Build your all-time team from the club and the world’s best (Icons to today). Only you see it; save it as an image to share.</p>
     <div class="dlist">${L.map((d,i)=>`<button class="panel dcard" data-a="dopen" data-i="${i}"><b>${esc(d.name||'Dream team')}</b><span class="small muted">${d.f}${d.gk?' + GK':''} · ${esc(d.tactic||'')} · ${(d.order||[]).filter(Boolean).length}/${(d.order||[]).length} picked</span><span class="small">${(d.order||[]).filter(Boolean).slice(0,4).map(dreamName).map(esc).join(', ')}${(d.order||[]).filter(Boolean).length>4?'…':''}</span></button>`).join('')}
@@ -2683,14 +2694,31 @@ function vpDream(){const L=PM.data.me.dreams||[];
       <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
     ${dreamPicker()}</div>
     <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or drag cards to swap.`:'Tap a card to pick a player for that spot. Drag cards to swap them.'}</div>
-      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
-function dreamPicker(){const d=DE.d,q=dreamQ.trim().toLowerCase(),used=new Set(d.order.filter(Boolean)),hit=n=>!q||n.toLowerCase().includes(q);
-  const club=S.players.filter(p=>!p.guest&&p.active!==false&&hit(p.name)).sort((a,b)=>a.name.localeCompare(b.name));
-  const grp=(t,items)=>items.length?`<div class="dgrp"><b>${esc(t)}</b><div class="chips">${items.join('')}</div></div>`:'';
-  const chip=(id,label)=>`<button class="chip dpick" data-a="dpick" data-v="${esc(id)}" ${used.has(id)?'aria-pressed="true"':''}>${esc(label)}</button>`;
-  return `<div class="panel stack dpk"><div class="row" style="justify-content:space-between"><b>Pick players</b>${dreamSel!=null?`<button class="btn ghost small" data-a="dclear">Empty slot ${dreamSel+1}</button>`:''}</div>
-    <input id="dq" placeholder="Search a player…" value="${esc(dreamQ)}" autocomplete="off">
-    <div class="dgrps">${grp('Our club',club.map(p=>chip('c:'+p.id,p.name)))}${FAVPLAYERS.map(([g,l])=>grp(g,l.filter(hit).map(n=>chip('x:'+n,n+(STARS[n]?' · '+STARS[n][0]+' '+STARS[n][1]:''))))).join('')}</div></div>`}
+      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${dreamBench(d)}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
+let DF={pos:'',nat:'',lg:'',club:'',min:0,any:false},dreamBSel=null;
+const LGN={ENG:'Premier League',ESP:'LALIGA',ITA:'Serie A',GER:'Bundesliga',FRA:'Ligue 1',POR:'Liga Portugal',MLS:'MLS',SAU:'Saudi Pro League',TUR:'Süper Lig',ISL:'Indian Super League',SCO:'Scottish Premiership',EFL:'EFL Championship',BRA:'Brasileirão',ICON:'Icons',AUFC:'Airdrie United'};
+const NATN={ar:'Argentina',be:'Belgium',bg:'Bulgaria',br:'Brazil',ca:'Canada',ci:'Côte d’Ivoire',cm:'Cameroon',cz:'Czechia',de:'Germany',dk:'Denmark',dz:'Algeria',eg:'Egypt',es:'Spain',fr:'France','gb-eng':'England','gb-nir':'Northern Ireland','gb-sct':'Scotland','gb-wls':'Wales',ge:'Georgia',hr:'Croatia',hu:'Hungary',ie:'Ireland',in:'India',it:'Italy',kr:'Korea Republic',lr:'Liberia',ma:'Morocco',ng:'Nigeria',nl:'Netherlands',no:'Norway',pl:'Poland',pt:'Portugal',ro:'Romania',ru:'Russia',se:'Sweden',si:'Slovenia',tr:'Türkiye',ua:'Ukraine',us:'USA',uy:'Uruguay',pk:'Pakistan'};
+const ROWPOS={GK:'GK',DEF:'CB',MID:'CM',FWD:'ST'};
+function dreamPool(){const vis=PM&&(PM.data.showRatings||SQR());const club=S.players.filter(p=>!p.guest&&p.active!==false).map(p=>({id:'c:'+p.id,name:p.name,pos:ROWPOS[p.pos]||'CM',row:p.pos,ovr:vis?Math.round(R(p.id).ovr):null,nat:String(p.nation||'').toLowerCase(),club:'AUFC',lg:'AUFC',ph:p.photo||p.thumb,mine:true}));
+  const st=Object.entries(STARS).map(([n,x])=>({id:'x:'+n,name:n,pos:x[0],ovr:x[1],nat:x[8],club:x[9],lg:x[10],icon:x[9]==='ICON',ph:WIKI[n]&&WIKI[n].u}));return club.concat(st)}
+const rowOfRole=r=>{const g=POSGRP[r];return g==='GK'?'GK':['CB','LB','RB'].includes(g)?'DEF':['ST','LW','RW'].includes(g)?'FWD':'MID'};
+function dreamBench(d){dreamFit(d);wikiLoad(d.bench.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2)));
+  return `<div class="dbench"><b class="small">Substitutes</b><div class="dbrow">${d.bench.map((x,i)=>{const p=x?dreamRes(x):null,st=p&&p.st;return `<button class="dbs${dreamBSel===i?' sel':''}${x?'':' empty'}" data-a="dbslot" data-k="${i}">${x?`<b>${st?st[1]:''}</b><span class="dmph">${p.photo||p.thumb?`<img src="${p.photo||p.thumb}" alt="">`:SIL}</span><span class="dmn">${esc(shortName(p.name))}</span><i>${esc(st?st[0]:p.pos||'')}</i>`:'<span class="plus">+</span>'}</button>`}).join('')}</div><div class="small muted">Tap a bench spot, then a pitch card to swap them.</div></div>`}
+function dreamPicker(){const d=DE.d;dreamFit(d);const q=dreamQ.trim().toLowerCase(),used=new Set(d.order.concat(d.bench).filter(Boolean)),pool=dreamPool();
+  const slotRole=dreamSel!=null?(slotsOf({f:d.f,gk:d.gk,order:d.order,n:d.order.length}).find(x=>x.idx===dreamSel)||{}).role:null;
+  const fitPos=x=>{const want=DF.pos||(!DF.any&&slotRole);if(!want)return true;if(x.mine)return x.row===rowOfRole(want);return posFits(x.pos,want)};
+  const R0=pool.filter(x=>(!q||x.name.toLowerCase().includes(q))&&fitPos(x)&&(!DF.nat||x.nat===DF.nat)&&(!DF.lg||x.lg===DF.lg)&&(!DF.club||x.club===DF.club)&&(!DF.min||(x.ovr||0)>=+DF.min))
+    .sort((a,b)=>(b.ovr??-1)-(a.ovr??-1)||a.name.localeCompare(b.name));const res=R0.slice(0,48);
+  wikiLoad(res.filter(x=>x.id.startsWith('x:')).map(x=>x.name));
+  const opt=(k,label,vals)=>`<label class="dfl"><span>${label}</span><select data-a="dfilt" data-k="${k}"><option value="">Any</option>${vals.map(([v,t])=>`<option value="${esc(String(v))}" ${String(DF[k])===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
+  const uniq=(k,nm)=>[...new Set(pool.map(x=>x[k]).filter(Boolean))].map(v=>[v,nm(v)]).sort((a,b)=>a[1].localeCompare(b[1]));
+  const mc=x=>{const t=x.icon?'icon':x.ovr==null?'gold':tier(x.ovr);return `<button class="dmc t-${t}" data-a="dpick" data-v="${esc(x.id)}" ${used.has(x.id)?'aria-pressed="true"':''} title="${esc(x.name)}"><b>${x.ovr??'–'}</b><i>${esc(x.mine?x.row:x.pos)}</i><span class="dmph">${x.ph?`<img src="${x.ph}" alt="" loading="lazy">`:SIL}</span><span class="dmn">${esc(shortName(x.name))}</span><span class="dmf">${x.nat&&x.nat.length>=2?`<img src="icons/flags/${x.nat}.svg" alt="" onerror="this.remove()">`:''}<small>${esc(x.club==='ICON'?'ICON':x.club==='AUFC'?'AUFC':(LGN[x.lg]||x.lg||''))}</small></span>${used.has(x.id)?'<em>In squad</em>':''}</button>`};
+  const target=dreamBSel!=null?`Bench spot ${dreamBSel+1}`:dreamSel!=null?`${slotRole||'Slot'} slot`:'';
+  return `<div class="panel stack dpk"><div class="row" style="justify-content:space-between;align-items:center"><b>Player search</b>${target?`<span class="pill">${esc(target)}</span><button class="btn ghost small" data-a="dclear">Remove player</button>`:'<span class="small muted">Tap a spot first, or tap a player to fill the best empty spot</span>'}</div>
+    <input id="dq" placeholder="Search by name…" value="${esc(dreamQ)}" autocomplete="off">
+    <div class="dfilters">${opt('pos','Position',['GK','CB','LB','RB','CDM','CM','CAM','LM','RM','LW','RW','ST','CF'].map(v=>[v,v]))}${opt('lg','League',uniq('lg',v=>LGN[v]||v))}${opt('nat','Nation',uniq('nat',v=>NATN[v]||(NATIONS.find(n=>n[0].toLowerCase()===v)||[])[1]||v.toUpperCase()))}${opt('club','Club',uniq('club',v=>v==='ICON'?'Icons':v==='AUFC'?'Airdrie United':v))}${opt('min','Rating',[[75,'75+'],[80,'80+'],[85,'85+'],[90,'90+']])}</div>
+    <div class="row small" style="gap:10px">${slotRole&&!DF.pos?`<label class="row chk"><input type="checkbox" data-a="dfany" ${DF.any?'checked':''}> Any position</label>`:''}${DF.pos||DF.nat||DF.lg||DF.club||DF.min?'<button class="btn ghost small" data-a="dfreset">Reset filters</button>':''}<span class="muted">${R0.length} players${slotRole&&!DF.pos&&!DF.any?` · showing ${esc(slotRole)}s for this spot`:''}</span></div>
+    <div class="dgrps dres">${res.map(mc).join('')||'<div class="small muted">No players match.</div>'}</div></div>`}
 async function dreamSaveAll(list){const r=await prpc('atb_player_dreams',{p_token:PM.tok,p_dreams:list});if(r!=='ok')throw new Error(r);PM.data.me.dreams=list;const me=pById(PM.data.me.id);if(me)me.dreams=list}
 function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.length};
   openModal(`<div class="mh"><h2>Share dream team</h2><button class="btn ghost x" data-a="close">Close</button></div>
@@ -2698,22 +2726,29 @@ function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.len
     <div style="margin-top:10px">${pitchHTML({kit:''},lu,0,false,'',{res:dreamRes,captain:d.cap,dream:true})}${lastDreamChem?`<div class="dsum img"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b></div></div>`:''}</div><div class="sty-sig" style="position:static;text-align:right;margin-top:8px">${d.order.some(x=>x&&x.startsWith('x:'))?'Photos: Wikimedia Commons · ':''}Developed by Raman · AUFC App</div></div>
   <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button></div>`);prepImg('dream-team.png')}
 async function dreamAction(a,el){
-  if(a==='dnew'){DE={i:-1,d:dreamNew()};dreamSel=null;render();return}
+  if(a==='dnew'){DE={i:-1,d:dreamNew()};dreamSel=null;dreamBSel=null;render();return}
   if(a==='dopen'){const L=PM.data.me.dreams||[];DE={i:+el.dataset.i,d:dreamFit(JSON.parse(JSON.stringify(L[+el.dataset.i])))};dreamSel=null;render();return}
   if(a==='dback'){DE=null;dreamSel=null;render();return}
   if(!DE)return;const d=DE.d;
   if(a==='dsw'){const i=+el.dataset.i,j=+el.dataset.j;[d.order[i],d.order[j]]=[d.order[j],d.order[i]];dreamSel=null;render();toast('Swapped for better chemistry');return}
   if(a==='dbest'){d.f=el.dataset.f;d.order=JSON.parse(el.dataset.o);dreamSel=null;render();toast('Formation and positions set for best chemistry');return}
-  if(a==='dslot'){const k=+el.dataset.k;dreamSel=dreamSel===k?null:k;render();return}
-  if(a==='dpick'){const v=el.dataset.v;let k=dreamSel;if(k==null)k=d.order.indexOf('');if(k<0){toast('All spots are full. Tap a card first to replace that player');return}const was=d.order.indexOf(v);if(was>=0)d.order[was]=d.order[k];d.order[k]=v;
-    dreamSel=null;const nx=d.order.indexOf('');if(nx>=0)dreamSel=nx;render();return}
-  if(a==='dclear'){if(dreamSel!=null){if(d.cap===d.order[dreamSel])d.cap='';d.order[dreamSel]=''}render();return}
+  if(a==='dslot'){const k=+el.dataset.k;if(dreamBSel!=null){dreamFit(d);[d.order[k],d.bench[dreamBSel]]=[d.bench[dreamBSel],d.order[k]];dreamBSel=null;dreamSel=null;render();return}dreamSel=dreamSel===k?null:k;render();return}
+  if(a==='dbslot'){dreamFit(d);const k=+el.dataset.k;if(dreamSel!=null){[d.order[dreamSel],d.bench[k]]=[d.bench[k],d.order[dreamSel]];dreamSel=null;dreamBSel=null;render();return}dreamBSel=dreamBSel===k?null:k;render();return}
+  if(a==='dpick'){dreamFit(d);const v=el.dataset.v;const wasO=d.order.indexOf(v),wasB=d.bench.indexOf(v);
+    if(dreamBSel!=null){if(wasO>=0)d.order[wasO]=d.bench[dreamBSel];if(wasB>=0)d.bench[wasB]=d.bench[dreamBSel];d.bench[dreamBSel]=v;dreamBSel=null;render();return}
+    let k=dreamSel;const SLs=slotsOf({f:d.f,gk:d.gk,order:d.order,n:d.order.length}),pp=(dreamRes(v).st||[])[0];
+    if(k==null){const fit=SLs.find(q=>!d.order[q.idx]&&pp&&posFits(pp,q.role));k=fit?fit.idx:d.order.indexOf('')}
+    if(k<0){const bi=d.bench.indexOf('');if(bi>=0){if(wasO>=0||wasB>=0){toast('Already in your squad');return}d.bench[bi]=v;toast('Starting XI is full: added to the bench');render();return}toast('Squad is full. Tap a card first to replace that player');return}
+    if(wasO>=0)d.order[wasO]=d.order[k];if(wasB>=0)d.bench[wasB]=d.order[k];d.order[k]=v;
+    dreamSel=null;render();return}
+  if(a==='dclear'){if(dreamBSel!=null){dreamFit(d);d.bench[dreamBSel]='';dreamBSel=null}else if(dreamSel!=null){if(d.cap===d.order[dreamSel])d.cap='';d.order[dreamSel]='';dreamSel=null}render();return}
   if(a==='dgk'){d.gk=el.checked;d.f=tbFormOpts(d.order.length,d.gk)[0];dreamFit(d);render();return}
   if(a==='dimg'){d.name=$('#dname').value.trim()||'Dream team';dreamImage();return}
   if(a==='dboard'){const ids=d.order;openTacticBoard({title:d.name,players:ids.map(id=>{const p=dreamRes(id);return {id:'',label:p.empty?'':shortName(p.name),num:p.number||'',cap:id&&id===d.cap}}),f:d.f,gk:d.gk,color:'#C9A227'});return}
   if(a==='dsave'||a==='ddel'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}d.name=($('#dname')?.value||d.name).trim().slice(0,30)||'Dream team';
     const L=(PM.data.me.dreams||[]).slice();if(a==='ddel'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to delete';return}L.splice(DE.i,1)}else if(DE.i>=0)L[DE.i]=d;else{L.push(d);DE.i=L.length-1}
-    el.disabled=true;try{await dreamSaveAll(L);toast(a==='ddel'?'Dream team deleted':'Dream team saved');if(a==='ddel')DE=null;render()}catch(err){toast('Could not save');el.disabled=false}return}}
+    el.disabled=true;let ok=false;try{await dreamSaveAll(L);ok=true}catch(err){const m=String(err&&err.message||'');toast(m==='signed_out'?'Signed out: enter your PIN again, then save':m==='too_big'?'Too much to save: max 5 dream teams':'Could not save. Check your connection.');el.disabled=false}
+    if(ok){toast(a==='ddel'?'Dream team deleted':'Dream team saved');if(a==='ddel')DE=null;try{render()}catch(e){}}return}}
 function dreamChange(a,el){if(!DE)return;const d=DE.d;
   if(a==='dsize'){const n=+el.value;d.order=d.order.slice(0,n);d.f=tbFormOpts(n,d.gk)[0];dreamFit(d)}
   else if(a==='dform')d.f=el.value;else if(a==='dtac')d.tactic=el.value;else if(a==='dcapt')d.cap=el.value;else return;
@@ -2841,7 +2876,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
       toast(r==='ok'?'Vote saved 🗳️':r==='closed'?'Voting has closed for this match':'Could not save your vote');await loadPlayer()}catch(err){toast('Could not save your vote');el.disabled=false}return}
-  if(['dnew','dopen','dback','dslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel','dsw','dbest'].includes(a)){await dreamAction(a,el);return}
+  if(['dnew','dopen','dback','dslot','dbslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel','dsw','dbest'].includes(a)){await dreamAction(a,el);return}
   if(a==='pboard'){const fx=(S.fixtures||[]).find(f=>f.date===el.dataset.v),me=PM.data.me.id,t=fx&&fx.teams.find(x=>x.players.includes(me));if(!t)return;const lu=getLU(t.players.filter(id=>pById(id)),t.lu);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.cap),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='ptboard'){const t=S.tourns.find(x=>x.id===el.dataset.id);if(!t)return;const lu=tLU(t);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.captain),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='pub'){pubPage(el.dataset.id);return}
@@ -2864,6 +2899,9 @@ document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.cont
 document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;filePick=0;const f=e.target.files&&e.target.files[0];if(!f)return;
   try{const cp=await cropPhoto(f);e.target.value='';if(!cp)return;const th=await makeThumb(cp.src,cp.cut);const r=await prpc('atb_player_photo2',{p_token:PM.tok,p_img:cp.src,p_cut:!!cp.cut,p_thumb:th});if(r==='ok'||r==='live'){toast(r==='live'?'Photo updated on your card':'Photo sent. A manager will approve it');HD[PM.data.me.id]=null;await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a]');if(el&&PM&&['dsize','dform','dtac','dcapt'].includes(el.dataset.a))dreamChange(el.dataset.a,el)});
+const dpkRefresh=()=>{const box=document.querySelector('.dpk');if(box){const g=box.querySelector('.dres'),st=g?g.scrollTop:0;box.outerHTML=dreamPicker()}};
+document.addEventListener('change',e=>{const el=e.target;if(!DE||!el.dataset)return;if(el.dataset.a==='dfilt'){DF[el.dataset.k]=el.value;dpkRefresh()}else if(el.dataset.a==='dfany'){DF.any=el.checked;dpkRefresh()}});
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a="dfreset"]');if(!el||!DE)return;e.stopPropagation();DF={pos:'',nat:'',lg:'',club:'',min:0,any:false};dpkRefresh()},true);
 document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;const box=document.querySelector('.dpk');if(box){const pos=e.target.selectionStart;box.outerHTML=dreamPicker();const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
