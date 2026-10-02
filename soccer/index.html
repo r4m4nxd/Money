@@ -1303,7 +1303,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020605',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020606',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1539,8 +1539,11 @@ document.addEventListener('keydown',e=>{const h=e.target.closest&&e.target.close
 /* Redraws of the same screen (taps, toggles, refreshes) keep the scroll position exactly where it was */
 let codeScroll=0,selfScroll=false;
 (()=>{const ws=window.scrollTo.bind(window),siv=Element.prototype.scrollIntoView;window.scrollTo=function(...a){if(!selfScroll)codeScroll++;return ws(...a)};Element.prototype.scrollIntoView=function(...a){codeScroll++;return siv.apply(this,a)}})();
-queueMicrotask(()=>{const inner=render;render=function(){const k=view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen'),y=window.scrollY,c0=codeScroll;inner();
-  const fix=()=>{if(codeScroll!==c0)return;if(view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen')===k&&Math.abs(window.scrollY-y)>1){selfScroll=true;window.scrollTo({top:y,behavior:'instant'});selfScroll=false}};fix();queueMicrotask(fix)}});
+const boxKey=e=>e.tagName+'.'+(e.className&&e.className.baseVal===undefined?e.className:'')+'#'+(e.id||'');
+function boxSnap(){const m=$('#main'),out=[];if(!m)return out;const seen={};m.querySelectorAll('div,ul,ol,nav,section,table,form').forEach(e=>{if(e.scrollTop>0||e.scrollLeft>0){const k=boxKey(e);seen[k]=(seen[k]||0)+1;out.push([k,seen[k],e.scrollTop,e.scrollLeft])}});return out}
+function boxRestore(L){if(!L.length)return;const m=$('#main'),seen={},by={};m.querySelectorAll('div,ul,ol,nav,section,table,form').forEach(e=>{const k=boxKey(e);seen[k]=(seen[k]||0)+1;by[k+'|'+seen[k]]=e});L.forEach(([k,n,t,l])=>{const e=by[k+'|'+n];if(e){e.scrollTop=t;e.scrollLeft=l}})}
+queueMicrotask(()=>{const inner=render;render=function(){const k=view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen'),y=window.scrollY,c0=codeScroll,bx=boxSnap();inner();if(view+'|'+(PM?1:0)===k.split('|').slice(0,2).join('|'))boxRestore(bx);
+  const fix=()=>{if(codeScroll!==c0)return;if(view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen')===k&&Math.abs(window.scrollY-y)>1){selfScroll=true;window.scrollTo({top:y,behavior:'instant'});selfScroll=false}};fix();queueMicrotask(()=>{fix();if(view+'|'+(PM?1:0)===k.split('|').slice(0,2).join('|'))boxRestore(bx)})}});
 /* tap ripple on buttons, tabs and chips */
 document.addEventListener('pointerdown',e=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const b=e.target.closest('.btn,#tabs button,.chip');if(!b||b.disabled)return;const r=b.getBoundingClientRect();
   const sp=document.createElement('span');sp.className='rip';sp.style.setProperty('--rx',(e.clientX-r.left)+'px');sp.style.setProperty('--ry',(e.clientY-r.top)+'px');sp.style.setProperty('--rs',Math.ceil(Math.hypot(r.width,r.height)/6));b.appendChild(sp);setTimeout(()=>sp.remove(),600)},{passive:true});
@@ -2661,12 +2664,16 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
 let DE=null,dreamSel=null,dreamQ='';
 const TACTICS=['Balanced','Attacking','Defensive','Counter-attack','Possession','High press','Park the bus','Wing play'];
 /* Star photos for Dream Team: freely licensed images from Wikipedia / Wikimedia Commons, looked up by name once and cached on the phone */
-let WIKI=ls('atb_wiki')||{};const wikiBusy=new Set();
-async function wikiPhoto(name){const tryT=async t=>{const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t.replace(/ /g,'_')),{headers:{'Accept':'application/json'}});if(!r.ok)return null;const j=await r.json();
-    if(j.type==='disambiguation'||!j.thumbnail)return null;if(!/football|soccer/i.test((j.description||'')+' '+(j.extract||'').slice(0,300)))return null;return (j.thumbnail.source||'').replace(/\/\d+px-/,'/480px-')};
-  try{return (await tryT(name))||(await tryT(name+' (footballer)'))||''}catch(e){return null}}
-function wikiLoad(names){const need=names.filter(n=>n&&!(n in WIKI&&(WIKI[n].u||Date.now()-WIKI[n].t<7*864e5))&&!wikiBusy.has(n));if(!need.length)return;
-  need.forEach(n=>wikiBusy.add(n));Promise.all(need.map(async n=>{const u=await wikiPhoto(n);if(u!==null)WIKI[n]={u:u||'',t:Date.now()};wikiBusy.delete(n)})).then(()=>{try{ls('atb_wiki',WIKI)}catch(e){}if(PM&&view==='dream')bgRender()})}
+let WIKI=ls('atb_wiki2')||{};const wikiBusy=new Set();
+// MediaWiki API with origin=* (CORS-enabled), up to 40 names per request; only pages describing a footballer are used
+async function wikiBatch(titles){const u='https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*&redirects=1&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=480&titles='+encodeURIComponent(titles.join('|'));
+  const r=await fetch(u);if(!r.ok)throw new Error('wiki '+r.status);const j=await r.json(),q=j.query||{},map={};
+  const back={};(q.normalized||[]).forEach(n=>back[n.to]=n.from);(q.redirects||[]).forEach(n=>back[n.to]=back[n.from]||n.from);
+  (q.pages||[]).forEach(pg=>{const orig=back[pg.title]||pg.title;const ok=pg.thumbnail&&/football|soccer/i.test(pg.description||'');map[orig]=ok?pg.thumbnail.source:'';map[pg.title]=map[orig]});return map}
+function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!(n in WIKI&&(WIKI[n].u||Date.now()-WIKI[n].t<3*864e5))&&!wikiBusy.has(n));if(!need.length)return;need.forEach(n=>wikiBusy.add(n));
+  (async()=>{try{const m=await wikiBatch(need);const miss=need.filter(n=>!m[n]);let m2={};if(miss.length)try{m2=await wikiBatch(miss.map(n=>n+' (footballer)'))}catch(e){}
+      need.forEach(n=>{const u=m[n]||m2[n+' (footballer)']||'';WIKI[n]={u,t:Date.now()}});try{ls('atb_wiki2',WIKI)}catch(e){}}catch(e){}
+    need.forEach(n=>wikiBusy.delete(n));if(PM&&view==='dream')bgRender()})()}
 const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:w&&w.u||undefined,st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
 function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill('')}}
