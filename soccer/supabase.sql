@@ -126,3 +126,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Manager ↔ own player: private.atb_mgr_links(uid,owner,player_id); public.atb_mgr_link(token) (authenticated; set on PIN sign-in / player-mode boot); public.atb_mgr_player_token() issues a player session for the linked player (no PIN).
 -- atb_player_profile: card accepts any ^[a-z]{2,12}$ key (client renders known designs: 18 special designs + legacy colours).
 -- Feedback: public.atb_feedback (RLS read: team owner only); atb_player_feedback(token,area,rating,body,usage) (5/day, logs 'Sent feedback'); atb_mgr_feedback(team,area,rating,body). Expenses: atb_docs col 'expenses' (managers only; not in player payload).
+
+-- 2026-10-02: player payload also sends 'starCard' (manager-chosen card design for star players)
+--   patched in private.atb_player_payload: 'star', x.data->'star', 'starCard', x.data->'starCard',

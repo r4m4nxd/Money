@@ -284,7 +284,7 @@ button.tipline,button.tipcard{width:100%;font:inherit;text-align:left;cursor:poi
 @media (max-width:520px){.stats{grid-template-columns:repeat(5,1fr)}.stats b{font-size:16px}}
 @media (prefers-reduced-motion:no-preference){.chip,.btn{transition:background .12s,color .12s}}
 /* ---- FC skin ---- */
-body{background:var(--bg) linear-gradient(135deg,transparent 0 70%,color-mix(in srgb,var(--accent) 5%,transparent) 70% 100%) fixed}
+body{background:var(--bg)}
 header.top{background:linear-gradient(100deg,var(--hdr1),var(--hdr2));border-bottom:2px solid var(--accent);color:var(--hdr-ink)}
 header.top .brand h1{color:var(--hdr-ink);letter-spacing:.06em}
 header.top small,header.top .sync{color:#A9B8D2}
@@ -684,8 +684,8 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .fut .fs::before{content:'';position:absolute;left:10%;right:10%;top:-2.6cqw;height:.35cqw;background:linear-gradient(90deg,transparent,currentColor,transparent);opacity:.35}
 .fut .fshine{position:absolute;inset:0;clip-path:url(#fcShape);pointer-events:none;z-index:4!important;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.42) 48%,rgba(255,255,255,.08) 54%,transparent 62%);background-size:260% 100%;background-position:var(--sx,140%) 0;opacity:0;transition:opacity .3s}
 .fut[class*=" cc-"] .fshine,.fut.t-special .fshine{opacity:.9}
-@media (prefers-reduced-motion:no-preference){.pubcard .fut .fshine,.ppcard .fut .fshine,.phero .fut .fshine,.sqc .fut .fshine{animation:fshine 4.5s ease-in-out infinite}}
-@keyframes fshine{0%,55%{background-position:140% 0}85%,100%{background-position:-40% 0}}
+@media (prefers-reduced-motion:no-preference){.phero .fut .fshine,.ppcard .fut .fshine{animation:fshine 16s ease-in-out 3s infinite}}
+@keyframes fshine{0%,88%{background-position:140% 0}97%,100%{background-position:-40% 0}}
 .tilt{transform:perspective(700px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));transition:transform .12s ease-out}
 .tilt .fshine{animation:none!important;background-position:var(--sx,50%) 0}
 .wo{position:relative}
@@ -881,7 +881,7 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .fut.art>.fart{position:absolute;top:0;bottom:0;left:-14%;width:128%;height:100%;object-fit:contain;object-position:50% 50%;pointer-events:none;z-index:0;max-width:none}
 .fut.art .fbody{clip-path:none;background:none;overflow:visible;z-index:1}
 .fut.art .fbody::before,.fut.art .fmot,.fut.art .streak,.fut.art .fs::before{display:none}
-.fut.art .fshine{clip-path:none;inset:2cqw 3cqw;border-radius:6cqw 6cqw 30cqw 30cqw/6cqw 6cqw 12cqw 12cqw;opacity:.55!important}
+.fut.art .fshine{clip-path:none;inset:2cqw 3cqw;border-radius:6cqw 6cqw 30cqw 30cqw/6cqw 6cqw 12cqw 12cqw;opacity:.28!important;will-change:background-position}
 .fut.art .ph{left:20cqw;top:13cqw;width:72cqw;height:78cqw}.fut.art .ph:not(.cut){-webkit-mask-image:radial-gradient(75% 80% at 50% 38%,#000 55%,transparent 100%);mask-image:radial-gradient(75% 80% at 50% 38%,#000 55%,transparent 100%)}
 .fut.art .fl{left:8cqw;top:21cqw}
 .fut.art .ovr{font-size:21cqw}.fut.art .ps{font-size:8.6cqw}
@@ -892,7 +892,7 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .fut.art .fs b{font-size:8.4cqw;min-width:10cqw;text-align:right}.fut.art .fs i{font-size:6.4cqw}
 .fut.art .fb{top:131.5cqw;gap:3cqw}.fut.art .fb .flag{width:7.5cqw;height:5.4cqw}.fut.art .fb .club,.fut.art .fb .cb{width:6.8cqw;height:6.8cqw}
 .fut.art .tpip{top:10cqw;right:9cqw}
-.fut.art.t-special .ovr,.fut.art.t-special .fn,.fut.art.t-special .ps,.fut.art.t-special .fs b{color:#3A2D10}.fut.art.t-special{--lab:#8A6A22;--ink2:#3A2D10}
+
 .pc-card>.pcart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 34%;border-radius:inherit;z-index:0;pointer-events:none;max-width:none}
 .pc-card:has(>.pcart){border-color:rgba(255,255,255,.35)}
 .abil.chs .abb{display:inline-grid;place-items:center;min-width:34px;height:20px;padding:0 5px;border-radius:5px;background:linear-gradient(135deg,#2FD07A,#0E8C5A);color:#04140b;font:900 11px/1 var(--f-display);letter-spacing:.04em}.abil.chs.sm .abb{min-width:28px;height:16px;font-size:9.5px}.abcat{margin:8px 0 4px;font-weight:700}
@@ -939,15 +939,11 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .sb-nums{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;background:rgba(255,255,255,.07);border-radius:8px;padding:5px 2px}.sb-nums b{display:block;font:900 15px/1.1 var(--f-display)}.sb-nums i{font-style:normal;font-size:8.5px;color:#A9B8D2;text-transform:uppercase}
 .sb-foot{grid-column:1/-1;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.14);padding-top:8px}.sb-foot img{width:30px;height:30px;border-radius:50%}.sb-foot b{display:block;font:900 13px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.05em}.sb-foot span{font-size:10px;color:#A9B8D2}.sb-foot em{margin-left:auto;font:900 italic 12px var(--f-display);color:#4BE0A0}
 
-/* ---------- abstract app background (diagonal bands, streak lines, brushed texture), light + dark ---------- */
-:root{--abs1:rgba(7,47,99,.05);--abs2:rgba(224,122,31,.22);--abs3:rgba(7,47,99,.028);--abs4:rgba(224,122,31,.12);--abs5:rgba(7,47,99,.07)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--abs1:rgba(255,255,255,.035);--abs2:rgba(242,196,107,.26);--abs3:rgba(255,255,255,.02);--abs4:rgba(242,196,107,.09);--abs5:rgba(90,140,255,.08)}}
-:root[data-theme="dark"]{--abs1:rgba(255,255,255,.035);--abs2:rgba(242,196,107,.26);--abs3:rgba(255,255,255,.02);--abs4:rgba(242,196,107,.09);--abs5:rgba(90,140,255,.08)}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:linear-gradient(115deg,transparent 0 34%,var(--abs1) 34% 44%,transparent 44%),linear-gradient(115deg,transparent 0 51%,var(--abs2) 51% 51.5%,transparent 51.5%),
-  linear-gradient(115deg,transparent 0 56%,var(--abs1) 56% 71%,transparent 71%),linear-gradient(115deg,transparent 0 78%,var(--abs2) 78% 78.35%,transparent 78.35%),
-  linear-gradient(115deg,transparent 0 12%,var(--abs2) 12% 12.25%,transparent 12.25%),linear-gradient(295deg,transparent 0 86%,var(--abs1) 86% 100%),
-  repeating-linear-gradient(115deg,var(--abs3) 0 1px,transparent 1px 6px),radial-gradient(55% 45% at 88% 0%,var(--abs4),transparent 70%),radial-gradient(50% 45% at 0% 100%,var(--abs5),transparent 70%)}
+/* ---------- luxury backdrop: soft gold light beams, silk ribbon, glows and gold dust (rendered images, no fine lines) ---------- */
+:root{--lux:url(icons/bg-light.webp)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lux:url(icons/bg-dark.webp)}}
+:root[data-theme="dark"]{--lux:url(icons/bg-dark.webp)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--lux) center/cover no-repeat;transform:translateZ(0)}
 
 /* pitch cards keep the real card outline (artwork shape, or the FC shape for plain colours) */
 .pc.art .pc-card{aspect-ratio:.64;background:none!important;border:0!important;border-radius:0;box-shadow:none!important;filter:drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
@@ -962,6 +958,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
 .special-card-glow.art .pc-card{box-shadow:none!important;animation:none;filter:drop-shadow(0 0 .6cqw #4be07f) drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
 .pc:not(.art):not(.empty) .pc-card{clip-path:url(#fcShape);border:0;border-radius:0}
 .snap .pc.art .pc-card{box-shadow:none!important}
+.pc-ph.hp:not(.cut) img[src^="https://upload.wikimedia"]{-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent);object-fit:cover}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1232,8 +1229,8 @@ const CARDTHEMES={
   scream:['Ultimate Scream','#A77247','#503259','#1F1115','#FFFFFF','#FFB060']};
 // designs players picked before the new artwork map onto the closest new one
 const CARDALIAS={legend:'icon',galaxy:'greats',starball:'premier',inferno:'cornerstones',crimson:'knockout',copper:'bronze',heatwave:'summer',golden:'gold',volt:'summer',emerald:'destined',aqua:'otwglow',pearl:'icon',sky:'premlights',royal:'tots',rose:'fiesta',blackout:'totw',shadow:'halloffame'};
-const TIERART={bronze:'bronze',silver:'silver',gold:'gold',special:'icon'};
-const artOf=(cc,t)=>CARDTHEMES[cc]?cc:cc?'':TIERART[t]||'gold';
+const TIERART={bronze:'bronze',silver:'silver',gold:'gold'};
+const artOf=(cc,t,p,ovr)=>p&&p.star&&CARDTHEMES[p.starCard]?p.starCard:CARDTHEMES[cc]?cc:cc?'':t==='special'?TIERART[ovr!=null?tier(ovr):'gold']:TIERART[t]||'gold';
 const ARTIMG=(k,c)=>k?`<img class="${c}" src="cards/${k}.webp" alt="" decoding="async">`:'';
 Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top,bot,mid,ink]});
 (()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc]])=>`.fut.fut.cc-${k}{--ink2:${ink};--lab:${acc}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i,.fut.fut.cc-${k} .no{color:${acc}}
@@ -1280,8 +1277,8 @@ const optGroups=(groups,cur)=>groups.map(([g,l])=>`<optgroup label="${esc(g)}">$
 function cardHTML(p,{btn=true,tier:tv,nonum=false}={}){const r=R(p.id),t=tv||(p.star?'special':hideR?'gold':tier(r.ovr)),f=k=>rv(Math.round((r.a[k]||0)*10)),cc=ccOf(p),known=!!(tv||p.star||!hideR),pic=p.photo||p.thumb;
   const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',rv(Math.round(((r.a.str||0)+(r.a.sta||0))*5))]];
   const tag=btn?'button':'div';
-  const art=artOf(cc,t);
-  return `<${tag} class="fut t-${t}${cc?' cc-'+cc:''}${art?' art':''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}>${ARTIMG(art,'fart')}<div class="fbody">
+  const art=artOf(cc,t,p,known?r.ovr:null);
+  return `<${tag} class="fut t-${t}${cc?' cc-'+cc:art&&t==='special'?' cc-'+art:''}${art?' art':''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}>${ARTIMG(art,'fart')}<div class="fbody">
     <i class="fmot"></i><span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span><i class="fshine"></i>
     ${cc&&known?`<span class="tpip ${t}" title="${t} card">${t==='special'?'★ Special':t}</span>`:''}<div class="ph${pic&&p.photoCut?' cut':''}">${pic?`<img src="${pic}" alt="">`:SIL}</div>
     <div class="fl"><b class="ovr num">${rv(r.ovr)}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
@@ -1432,7 +1429,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021740',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021747',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2910,7 +2907,21 @@ function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!(n in WIKI
   (async()=>{try{const m=await wikiBatch(need);const miss=need.filter(n=>!m[n]);let m2={};if(miss.length)try{m2=await wikiBatch(miss.map(n=>n+' (footballer)'))}catch(e){}
       need.forEach(n=>{const u=m[n]||m2[n+' (footballer)']||'';WIKI[n]={u,t:Date.now()}});try{ls('atb_wiki2',WIKI)}catch(e){}}catch(e){}
     need.forEach(n=>wikiBusy.delete(n));if(PM&&view==='dream')bgRender()})()}
-const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:w&&w.u||undefined,st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
+/* Star photos with the background removed (on the phone, once per star, kept in this device's storage) */
+const CUT={},cutQ=[],cutTried=new Set();let cutBusy=false,cutDB=null;
+const cutStore=()=>cutDB||(cutDB=new Promise(res=>{try{const r=indexedDB.open('aufc-cuts',1);r.onupgradeneeded=()=>r.result.createObjectStore('c');r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}}));
+(async()=>{const db=await cutStore();if(!db)return;try{const tx=db.transaction('c'),os=tx.objectStore('c'),rq=os.openCursor();rq.onsuccess=()=>{const c=rq.result;if(!c){if(PM&&view==='dream')bgRender();return}if(c.value instanceof Blob)CUT[c.key]=URL.createObjectURL(c.value);c.continue()}}catch(e){}})();
+// crop the cut-out to head and shoulders on a square canvas
+async function cutTrim(blob){const bm=await createImageBitmap(blob),c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;const g=c.getContext('2d');g.drawImage(bm,0,0);
+  const d=g.getImageData(0,0,c.width,c.height).data;let x0=c.width,y0=c.height,x1=0,y1=0;for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2)if(d[(y*c.width+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<=x0||y1<=y0)return null;const w=x1-x0,side=Math.min(Math.max(w,(y1-y0)*.55),y1-y0),cx=(x0+x1)/2,o=document.createElement('canvas');o.width=o.height=420;
+  o.getContext('2d').drawImage(c,cx-side/2,y0-side*.04,side,side,0,0,420,420);return await new Promise(r=>o.toBlob(r,'image/webp',.88))}
+function cutQueue(names){names.forEach(n=>{const u=WIKI[n]?.u;if(u&&!CUT[n]&&!cutTried.has(n)&&!cutQ.includes(n))cutQ.push(n)});cutRun()}
+async function cutRun(){if(cutBusy||!cutQ.length)return;cutBusy=true;let lib;try{lib=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm')}catch(e){cutBusy=false;return}
+  while(cutQ.length){const n=cutQ.shift();cutTried.add(n);try{const raw=await lib.removeBackground(WIKI[n].u,{model:'isnet_quint8',output:{format:'image/png'}}),b=await cutTrim(raw);
+      if(b){CUT[n]=URL.createObjectURL(b);const db=await cutStore();if(db)try{db.transaction('c','readwrite').objectStore('c').put(b,n)}catch(e){}if(PM&&view==='dream')bgRender()}}catch(e){}
+    await new Promise(r=>(window.requestIdleCallback||setTimeout)(r,{timeout:800}))}cutBusy=false}
+const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:CUT[n]||w&&w.u||undefined,photoCut:!!CUT[n],st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
 function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill(''),bench:Array(7).fill('')}}
 function dreamFit(d){if(!Array.isArray(d.bench))d.bench=Array(7).fill('');while(d.bench.length<7)d.bench.push('');const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
@@ -2930,7 +2941,7 @@ function vpDream(){const L=PM.data.me.dreams||[];
       <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
     ${dreamPicker()}</div>
     <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or drag cards to swap.`:'Tap a card to pick a player for that spot. Drag cards to swap them.'}</div>
-      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${dreamBench(d)}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
+      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),cutQueue(d.order.concat(d.bench||[]).filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${dreamBench(d)}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
 let DF={pos:'',nat:'',lg:'',club:'',min:0,any:false},dreamBSel=null;
 const LGN={ENG:'Premier League',ESP:'LALIGA',ITA:'Serie A',GER:'Bundesliga',FRA:'Ligue 1',POR:'Liga Portugal',MLS:'MLS',SAU:'Saudi Pro League',TUR:'Süper Lig',ISL:'Indian Super League',SCO:'Scottish Premiership',EFL:'EFL Championship',BRA:'Brasileirão',ICON:'Icons',AUFC:'Airdrie United'};
 const NATN={ar:'Argentina',be:'Belgium',bg:'Bulgaria',br:'Brazil',ca:'Canada',ci:'Côte d’Ivoire',cm:'Cameroon',cz:'Czechia',de:'Germany',dk:'Denmark',dz:'Algeria',eg:'Egypt',es:'Spain',fr:'France','gb-eng':'England','gb-nir':'Northern Ireland','gb-sct':'Scotland','gb-wls':'Wales',ge:'Georgia',hr:'Croatia',hu:'Hungary',ie:'Ireland',in:'India',it:'Italy',kr:'Korea Republic',lr:'Liberia',ma:'Morocco',ng:'Nigeria',nl:'Netherlands',no:'Norway',pl:'Poland',pt:'Portugal',ro:'Romania',ru:'Russia',se:'Sweden',si:'Slovenia',tr:'Türkiye',ua:'Ukraine',us:'USA',uy:'Uruguay',pk:'Pakistan'};
@@ -3477,6 +3488,7 @@ function playerModal(id){pendPhoto=undefined;
     <label class="f">Weak foot ★<select id="pwf">${[0,1,2,3,4,5].map(x=>`<option ${x===+(p.wf||0)?'selected':''} value="${x}">${x||'–'}</option>`).join('')}</select></label></div>
     <div class="row" style="gap:18px"><label class="small row chk"><input type="checkbox" id="pa" ${p.active!==false?'checked':''}> Active this season</label>
     <label class="small row chk"><input type="checkbox" id="pstar" ${p.star?'checked':''}> ★ Star player</label></div>
+    <label class="f">Star player card <span class="muted small">(managers choose; used while “Star player” is on)</span><select id="pstarcard"><option value="">Earned card (gold / silver / bronze)</option>${Object.entries(CARDTHEMES).map(([k,v])=>`<option value="${k}" ${p.starCard===k?'selected':''}>${esc(v[0])}</option>`).join('')}</select></label>
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
     ${id?(()=>{const a=Object.fromEntries(K.map(k=>[k,Math.round((R(id).a[k]||7)*10)]));pendPS={...(p.ps||{})};return `<h3>PlayStyles</h3><p class="small muted" style="margin:0">${S.settings.psAuto!==false?'Tap to cycle: <b>Auto</b> (lit when earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>.':'Tap to award (✓) or take away. Auto-awarding is off in Settings.'} Only coloured ones show as awarded. Players can’t change these.</p>
       <div class="psed">${PSTYLES.flatMap(([,l])=>l).map(x=>{const o=pendPS[x[1]],au=S.settings.psAuto!==false&&psAuto(a,x[2]);return psEdBtn(x[1],o,au)}).join('')}</div>`})():''}
@@ -3766,8 +3778,8 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,stD=p?.st,r=stD?{ovr:stD[1],a:{}}:R(id),showOvr=showOvr0||!!stD||!!(opt?.dream&&p&&!p.ext&&!p.empty&&PM&&(PM.data.showRatings||SQR()));
     const tr=stD?(stD[9]==='ICON'?'special':tier(stD[1])):!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
-    const art=p?.empty?'':artOf(cc,tr);
-    return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:''}${art?' art':''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
+    const art=p?.empty?'':artOf(cc,tr,p,stD?stD[1]:showOvr?r.ovr:null);
+    return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:art&&tr==='special'?' cc-'+art:''}${art?' art':''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
       <span class="pc-card">${ARTIMG(art,'pcart')}${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       ${p?.number?`<span class="pc-ic"><span class="pcno">${esc(p.number)}</span></span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
@@ -4124,7 +4136,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const acc=$('#pacc'),pport=$('#pport');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),...(pport?{portal:pport.checked===portalAll()?undefined:pport.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
+    const acc=$('#pacc'),pport=$('#pport');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),...(pport?{portal:pport.checked===portalAll()?undefined:pport.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,starCard:$('#pstarcard')?.value||undefined,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='imgshare'){if(!pendImg)return;const f=new File([pendImg.blob],pendImg.name,{type:'image/png'});
