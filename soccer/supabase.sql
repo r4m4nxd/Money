@@ -151,3 +151,7 @@ grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
 -- Compete (v2.6): private.atb_checkins (daily streak), private.atb_xp_week (weekly XP reported by each player's app, clamped),
 -- private.atb_preds (match predictions, only before kick-off). RPCs: atb_player_checkin, atb_player_xp, atb_player_predict.
 -- Payload adds days, league ([player, week, xp, tot, streak] last 120 days), preds (mine), predAgg (winner pick counts), settings.compete.
+
+-- Peer ratings: private.atb_peer(team, match_id, rater, ratee, o 1-10, a areas). atb_player_peer: only teammates from the same
+-- team that night, within 7 days, not self, not a no-show. private.atb_peer_agg: trimmed mean (drops top/bottom once 5+).
+-- Managers: atb_mgr_peer() aggregates, atb_mgr_peer_detail(match) who-gave-what. Payload: peer (mine), peerMe (my aggregate), settings.peerW/peerMin.
