@@ -1608,7 +1608,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022234',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022235',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -4341,7 +4341,7 @@ function prepImg(name){const tok={name};imgPrep=tok;const fin=()=>{tok.done=true
 async function useImg(el){const tok=imgPrep;if(!tok||!window.html2canvas){toast('Image tool did not load. Take a screenshot instead');return}
   const mobile=matchMedia('(pointer:coarse)').matches&&!window.claude;
   if(tok.blob&&mobile){const f=new File([tok.blob],tok.name,{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(err=>{if(err.name!=='AbortError')saveImage(tok.blob,tok.name)});return}}
+    if(navigator.canShare&&navigator.canShare({files:[f]})){toast('WhatsApp tip: tap HD before sending for full quality');navigator.share({files:[f]}).catch(err=>{if(err.name!=='AbortError')saveImage(tok.blob,tok.name)});return}}
   if(!tok.done){el.disabled=true;const t0=el.textContent;el.textContent='Making image…';await Promise.race([new Promise(r=>tok.wait=r),new Promise(r=>setTimeout(r,60000))]);el.disabled=false;el.textContent=t0}
   if(!tok.blob){toast('Could not make the image. Take a screenshot instead');return}
   await saveImage(tok.blob,tok.name)}
@@ -4598,7 +4598,7 @@ document.addEventListener('click',async e=>{
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='imgshare'){if(!pendImg)return;const f=new File([pendImg.blob],pendImg.name,{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:pendImg.name})}catch(err){if(err.name!=='AbortError')toast('Press and hold the picture to save it')}}
+    if(navigator.canShare&&navigator.canShare({files:[f]})){toast('WhatsApp tip: tap HD before sending for full quality');try{await navigator.share({files:[f],title:pendImg.name})}catch(err){if(err.name!=='AbortError')toast('Press and hold the picture to save it')}}
     else{const l=document.createElement('a');l.href=pendImg.url;l.download=pendImg.name;document.body.appendChild(l);l.click();l.remove()}return}
   if(a==='saveimg'){await useImg(el);return}
   if(a==='export'){await saveFile('airdrie-teams-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(S,null,1),'application/json');return}
