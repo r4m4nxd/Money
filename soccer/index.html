@@ -1165,7 +1165,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020137',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020147',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2712,9 +2712,14 @@ async function snapCard(el){const imgs=[...el.querySelectorAll('img')];
     const w=Math.round(r.width*3),h=Math.round(r.height*3),iw=im.naturalWidth||im.width||640,ih=im.naturalHeight||im.height||480;
     const k=fit==='cover'?Math.max(w/iw,h/ih):fit==='contain'||fit==='scale-down'?Math.min(w/iw,h/ih):0;const pos=cs.objectPosition.split(' ').map(v=>parseFloat(v)/100);
     const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
-    try{if(k)g.drawImage(im,(w-iw*k)*(isNaN(pos[0])?.5:pos[0]),(h-ih*k)*(isNaN(pos[1])?.5:pos[1]),iw*k,ih*k);else g.drawImage(im,0,0,w,h);return c.toDataURL('image/png')}catch(e){return null}finally{L.done()}}));
+    try{if(k)g.drawImage(im,(w-iw*k)*(isNaN(pos[0])?.5:pos[0]),(h-ih*k)*(isNaN(pos[1])?.5:pos[1]),iw*k,ih*k);else g.drawImage(im,0,0,w,h);g.getImageData(0,0,1,1);return c}catch(e){return null}finally{L.done()}}));
+  // iPhone Safari often leaves images blank inside html2canvas's hidden copy of the page, so each image goes in as a ready-drawn canvas (nothing left to load)
+  const KEEP=['display','position','top','right','bottom','left','margin-top','margin-right','margin-bottom','margin-left','vertical-align','border-radius','z-index','opacity','flex-shrink','flex-grow','float','align-self','justify-self','grid-area','box-shadow','border'];
+  const box=imgs.map(i=>{const cs=getComputedStyle(i);return {w:i.offsetWidth||i.getBoundingClientRect().width,h:i.offsetHeight||i.getBoundingClientRect().height,css:KEEP.map(k=>k+':'+cs.getPropertyValue(k)).join(';')}});
   return html2canvas(el,{backgroundColor:'#0F1B2B',scale:2,useCORS:true,imageTimeout:15000,onclone:doc=>{const cl=doc.getElementById(el.id)||doc.querySelector('#sharecard');
-    [...cl.querySelectorAll('img')].forEach((i,k)=>{i.removeAttribute('loading');if(list[k]){i.src=list[k];i.removeAttribute('srcset');i.style.objectFit='fill'}})}})}
+    [...cl.querySelectorAll('img')].forEach((i,k)=>{i.removeAttribute('loading');const src=list[k];if(!src)return;
+      try{const c=doc.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);c.className=i.className;c.setAttribute('style',box[k].css+';width:'+box[k].w+'px;height:'+box[k].h+'px;max-width:none;max-height:none');i.replaceWith(c)}
+      catch(e){i.src=src.toDataURL('image/png');i.removeAttribute('srcset');i.style.objectFit='fill'}})}})}
 function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};img.onerror=()=>res(null);img.src=u})}
 
 /* ----- Manager: tournaments ----- */
