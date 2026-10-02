@@ -649,17 +649,13 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 #modal>.scrim.out{pointer-events:none;animation:mOut .2s ease forwards}#modal-ghost{position:fixed;inset:0;z-index:49;pointer-events:none}#modal-ghost *{pointer-events:none!important}
 #modal-ghost .scrim{animation:mOut .2s ease forwards}#modal-ghost .modal{animation:mOutB .2s ease forwards}
 @keyframes mOut{to{opacity:0}}@keyframes mOutB{to{transform:translateY(14px) scale(.97);opacity:0}}
-::view-transition-old(root),::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
-::view-transition-old(root){animation-name:vtOut}::view-transition-new(root){animation-name:vtIn}
-@keyframes vtOut{to{opacity:0;transform:translateY(-6px)}}@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
-header.top{view-transition-name:hdr}
 #tabs button{transition:background-color .25s,color .25s,transform .14s cubic-bezier(.2,.8,.2,1)}
 #tabs button:active,.sqc:active,.pnr:active,.trow:active,.ax-h:active .ax-c,.ccsw:active,.abopt:active,.psopt:active{transform:scale(.96)}
 .sqc,.trow,.pnr{transition:transform .16s cubic-bezier(.2,.8,.2,1)}
 .toast,#toast{transition:transform .3s cubic-bezier(.2,.9,.25,1.1),opacity .25s}
 @media (hover:hover){.sqc:hover{transform:translateY(-3px)}.sqc{transition:transform .2s cubic-bezier(.2,.8,.2,1)}}
 @media (pointer:coarse){.scrim{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}}
-@media (prefers-reduced-motion:reduce){.ax-b,.ax-i,.ax-c{transition:none!important}.rip{display:none}::view-transition-old(root),::view-transition-new(root){animation:none}}
+@media (prefers-reduced-motion:reduce){.ax-b,.ax-i,.ax-c{transition:none!important}.rip{display:none}}
 @keyframes pcIn{from{opacity:0;transform:translate(-50%,-62%) scale(.6)}}.pc.pcin{animation:pcIn .45s cubic-bezier(.2,.9,.25,1.2)}
 .capb{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#F4C542;color:#1a1200;font:900 10px/1 var(--f-display);vertical-align:1px;margin-left:2px}
 .chemsvg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}.chemsvg line{stroke-linecap:round}
@@ -817,7 +813,7 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 @media (prefers-reduced-motion:no-preference){
   html{scroll-behavior:smooth}
   @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  #main.enter>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  #main.enter>*{animation:rise .38s cubic-bezier(.2,.8,.2,1) both}
   #main.enter>*:nth-child(2){animation-delay:.04s}#main.enter>*:nth-child(3){animation-delay:.08s}#main.enter>*:nth-child(4){animation-delay:.12s}#main.enter>*:nth-child(5){animation-delay:.16s}#main.enter>*:nth-child(n+6){animation-delay:.2s}
   :root{interpolate-size:allow-keywords}
   details::details-content{transition:block-size .34s cubic-bezier(.2,.8,.2,1),content-visibility .34s allow-discrete;overflow:clip;block-size:0}
@@ -1250,7 +1246,7 @@ let navLock=0,navQ=[],modalDepth=0,modalStack=[],modalCtx=null,lastAct=null,navR
 function navPush(st){const s={atb:1,v:view,pv:!!(typeof PM!=='undefined'&&PM&&PM.preview),...st};if(navLock){navQ.push(s);return}try{history.pushState(s,'')}catch(e){}}
 try{history.replaceState({atb:1,v:view},'')}catch(e){}
 function go(v,opts){if(v===view&&!opts?.force){window.scrollTo({top:0,behavior:'smooth'});return}view=v;navPush({v});
-  const run=()=>{render();window.scrollTo({top:0,behavior:'instant'})};if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&!document.body.classList.contains('mopen')){try{document.startViewTransition(run);return}catch(e){}}run()}
+  const run=()=>{render();window.scrollTo({top:0,behavior:'instant'})};run()}
 function navReplay(ctx,fresh){if(!ctx)return false;if(fresh){const b=document.createElement('button');b.hidden=true;Object.entries(ctx).forEach(([k,v])=>{if(v!=null)b.dataset[k]=v});document.body.appendChild(b);b.click();b.remove();return true}const b=document.createElement('button');b.hidden=true;Object.entries(ctx).forEach(([k,v])=>{if(v!=null)b.dataset[k]=v});document.body.appendChild(b);navReplaying=true;try{b.click()}finally{setTimeout(()=>{navReplaying=false;b.remove()},0)}return true}
 function exitPreview(){sessionStorage.setItem('atb_restore',JSON.stringify(PM&&PM.from||{v:'squad'}));ls('atb_mode','mgr');location.reload()}
 addEventListener('popstate',e=>{
@@ -1303,7 +1299,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020343',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020358',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
