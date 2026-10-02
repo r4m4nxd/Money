@@ -683,8 +683,8 @@ body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .t-silver .pc-card{background:linear-gradient(180deg,#ffffff 0%,#dfe4ea 42%,#bcc5cf 78%,#97a2ae 100%)}
 .t-bronze .pc-card{background:linear-gradient(180deg,#f8d6b0 0%,#dda774 42%,#c0834f 78%,#96602f 100%)}
 .t-special .pc-card{background:linear-gradient(180deg,#3a4656 0%,#1a222d 55%,#0f141b 100%);color:#F3E3B0}.t-special{color:#F3E3B0}
-.pc-top{position:absolute;left:5%;top:7%;width:24%;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:1}
-.pc-ovr{font:900 calc(3.9cqw*var(--s))/1 var(--f-display)}
+.pc-top{position:absolute;left:5%;top:6%;width:26%;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:1}
+.pc-ovr{font:900 calc(3.1cqw*var(--s))/1 var(--f-display);letter-spacing:-.03em}
 .pc-pos{font:800 calc(1.75cqw*var(--s))/1 var(--f-display);letter-spacing:.02em;margin-top:.25cqw}
 .pc-ph{position:absolute;left:29%;right:2%;top:4%;height:68%;display:flex;align-items:flex-end;justify-content:center}
 .pc-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}.pc-ph.hp::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:52%;background:linear-gradient(to bottom,var(--cf0),var(--cf))}.pc{--cf:#dbae4f;--cf0:rgba(219,174,79,0)}.t-silver{--cf:#c4ccd5;--cf0:rgba(196,204,213,0)}.t-bronze{--cf:#c98c57;--cf0:rgba(201,140,87,0)}.t-special{--cf:#141b24;--cf0:rgba(20,27,36,0)}.pc-ph.cut img{filter:drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.25))}
@@ -695,9 +695,9 @@ body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .pc-ic .cb{width:calc(2.5cqw*var(--s));height:calc(2.5cqw*var(--s));object-fit:contain}
 .pc-role{background:rgba(14,20,28,.86);color:#fff;font:800 calc(1.8cqw*var(--s))/1 var(--f-display);letter-spacing:.05em;padding:calc(.55cqw*var(--s)) calc(1.8cqw*var(--s));border-radius:99px;border:1px solid rgba(255,255,255,.22);white-space:nowrap}
 .badge-position{position:absolute;display:grid;place-items:center;border-radius:50%;width:calc(3.3cqw*var(--s));height:calc(3.3cqw*var(--s));font:800 calc(1.6cqw*var(--s))/1 var(--f-body,sans-serif);box-shadow:0 1px 3px rgba(0,0,0,.4);z-index:3}
-.badge-position.nb{left:-9%;top:44%;background:#16202b;color:#fff;border:1.5px solid rgba(255,255,255,.9)}
-.badge-position.cap{right:-9%;top:44%;background:#F2C418;color:#111}
-.badge-position.star{right:-9%;top:44%;background:#111;color:#E2B13C}
+.badge-position.nb{left:5%;top:auto;bottom:4.5%;width:auto;min-width:calc(2.9cqw*var(--s));height:calc(2.5cqw*var(--s));padding:0 calc(.5cqw*var(--s));border-radius:99px;font-size:calc(1.45cqw*var(--s));border-width:1px;background:#16202b;color:#fff;border:1.5px solid rgba(255,255,255,.9)}
+.badge-position.cap{right:5%;top:auto;bottom:4.5%;width:calc(2.7cqw*var(--s));height:calc(2.7cqw*var(--s));font-size:calc(1.5cqw*var(--s));background:#F2C418;color:#111}
+.badge-position.star{right:5%;top:auto;bottom:4.5%;width:calc(2.7cqw*var(--s));height:calc(2.7cqw*var(--s));background:#111;color:#E2B13C}
 .p3.nonum .nb{display:none}
 .special-card-glow .pc-card{box-shadow:0 0 0 .45cqw #4be07f,0 0 2.6cqw .7cqw rgba(75,224,127,.6),0 1cqw 2cqw rgba(0,0,0,.38)}
 @media (prefers-reduced-motion:no-preference){.special-card-glow .pc-card{animation:pcglow 2.2s ease-in-out infinite}@keyframes pcglow{50%{box-shadow:0 0 0 .45cqw #4be07f,0 0 4cqw 1.2cqw rgba(75,224,127,.85),0 1cqw 2cqw rgba(0,0,0,.38)}}
@@ -1225,7 +1225,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020307',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020308',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
