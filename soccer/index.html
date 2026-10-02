@@ -615,6 +615,7 @@ h3{line-height:1.2}
 .p3 .pform{position:absolute;left:2.5%;bottom:1.5%;z-index:1;font:900 clamp(20px,8cqw,64px)/1 var(--f-display);letter-spacing:.08em;color:rgba(255,255,255,.88);text-shadow:0 .5cqw 0 rgba(0,0,0,.28)}
 .pc{position:absolute;transform:translate(-50%,-62%);width:calc(12.6cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
 .pfwrap{margin:14px 0}.pfwrap>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px 16px}.pfwrap>summary::-webkit-details-marker{display:none}.pfsum>span:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}.pfsi{font-size:1.3em}.pfchev{font-size:1.5em;transition:transform .25s;opacity:.6}.pfwrap[open] .pfchev{transform:rotate(90deg)}.pfwrap[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}.pfwrap[open]>.pfed{border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid var(--line,rgba(127,127,127,.2));animation:pfin .28s ease}@keyframes pfin{from{opacity:0;transform:translateY(-6px)}}
+.profb{margin:14px 0;padding:14px;border-radius:14px;background:var(--panel2,rgba(127,127,127,.08))}.profb .favs{margin:0}.profb .gh2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.ccdot{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -1165,7 +1166,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020147',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020151',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2417,11 +2418,10 @@ function pubPage(id){const p=pById(id);if(!p)return;const me=PM?PM.data.me.id:nu
   const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
   openModal(`<div class="mh"><h2>${esc(titleName(p.name))}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="pub"><div class="pubcard">${cardHTML(p,{btn:false,nonum:!mine||!PM?.data?.showRatings,tier:mine&&PM?.data?.growth?tier(R(id).ovr):undefined})}</div>
-    <div class="pubinfo"><div class="pubname">${dispName(p)}</div>${pr.ability?`<div style="margin:6px 0">${abilityChip(pr.ability)}</div>`:''}
+    <div class="pubinfo"><div class="pubname">${dispName(p)}</div>
       <div class="ppchips">${nat?`<span>${flagImg(p.nation)} ${esc(nat)}</span>`:''}${club?`<span>${clubBadge(p.club,'cb')} ${esc(club.n)}</span>`:''}<span>${p.pos}${pr.bestPos?` · likes ${esc(pr.bestPos)}`:''}</span>${p.number?`<span>#${esc(p.number)}</span>`:''}${pr.dreamNo?`<span>Dream #${esc(pr.dreamNo)}</span>`:''}</div>
       <div class="ppnums"><div><b>${st.apps}</b><i>Apps</i></div><div><b>${st.W}</b><i>Wins</i></div><div><b>${st.g}</b><i>Goals</i></div><div><b>${st.a}</b><i>Assists</i></div><div><b>${st.potm}</b><i>POTM</i></div><div><b>${st.titles}</b><i>Titles</i></div></div>
-      <dl class="favs">${pr.favPlayer?`<div><dt>Favourite player</dt><dd>${esc(pr.favPlayer)}</dd></div>`:''}${mate?`<div><dt>Favourite teammate</dt><dd>${esc(mate.name)}</dd></div>`:''}${pr.boots?`<div><dt>Boots</dt><dd>${esc(pr.boots)}</dd></div>`:''}${pr.stadium?`<div><dt>Stadium</dt><dd>${esc(pr.stadium)}</dd></div>`:''}</dl>
-      ${(pr.ps||[]).length?`<div class="pubps">${pr.ps.map(n=>`<span class="psx on">${psBadge(n,'on')}<small>${esc(n)}</small></span>`).join('')}</div>`:''}</div></div>
+      ${profBlock(p)}</div></div>
   <div class="row" style="margin-top:12px">${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="pfedit">Edit my profile</button>`:''}</div>
   ${PM&&!mine?`<div class="chemrow" style="margin-top:12px"><span class="small">Your chemistry with ${esc(p.name.split(' ')[0])}</span>${chemStars(id,(PM.data.chem||{})[id]||0)}</div>`:''}`);document.querySelector('.modal').classList.add('wide')}
 function cmpPage(id){const me=PM.data.me.id,A=pById(me),B=pById(id),sa=pubStats(me),sb=pubStats(id),pa=prof(A),pb=prof(B);
@@ -2839,6 +2839,16 @@ const PITCHFULL=`<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none
 const FCGROUPS=[['Pace',['spd']],['Shooting',['sho']],['Passing',['pas','tea']],['Dribbling',['bal','min']],['Defending',['def']],['Physical',['str','sta']]];
 function posRatings(r){const f=r.fwd*100,m=r.mid*100,d=r.def*100,pc=r.pace*100,x=v=>Math.round(v);
   return {ST:x(f),LW:x((f+pc)/2),RW:x((f+pc)/2),CAM:x((f+m)/2),LM:x((m+pc)/2),CM:x(m),RM:x((m+pc)/2),CDM:x((m+d)/2),LB:x((d+pc)/2),CB:x(d),RB:x((d+pc)/2)}}
+/* What a player chose for their own profile, shown to every player and manager */
+function profBlock(p){const pr=prof(p),mate=pr.favMate&&pById(pr.favMate),cc=ccOf(p);
+  const f=[['Nickname',pr.nick&&'“'+esc(pr.nick)+'”'],['Card colour',cc&&`<span class="ccdot cc-${cc}" style="background:linear-gradient(160deg,${CARDCOL[cc][1]},${CARDCOL[cc][2]})"></span>${esc(CARDCOL[cc][0])}`],['Best position',pr.bestPos&&esc(pr.bestPos)],['Dream number',pr.dreamNo&&'#'+esc(pr.dreamNo)],
+    ['Favourite player',pr.favPlayer&&esc(pr.favPlayer)],['Favourite teammate',mate&&esc(mate.name)],['Dream boots',pr.boots&&esc(pr.boots)],['Favourite stadium',pr.stadium&&esc(pr.stadium)]].filter(x=>x[1]);
+  const ps=(pr.ps||[]).filter(n=>PSTYLES.some(([,l])=>l.some(x=>x[1]===n)));
+  if(!f.length&&!pr.ability&&!ps.length)return `<div class="profb"><div class="gh2"><b>Profile</b></div><div class="small muted">${PM&&p.id===PM.data.me.id?'You haven’t personalised your profile yet. Tap “Edit my profile”.':'Hasn’t personalised their profile yet.'}</div></div>`;
+  return `<div class="profb"><div class="gh2"><b>Profile</b><span class="small muted">picked by ${PM&&p.id===PM.data.me.id?'you':esc(p.name.split(' ')[0])}</span></div>
+    ${pr.ability&&ABILITIES[pr.ability]?`<div style="margin:2px 0 8px">${abilityChip(pr.ability)}</div>`:''}
+    ${f.length?`<dl class="favs">${f.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`:''}
+    ${ps.length?`<div class="small muted" style="margin-top:8px">Self-picked PlayStyles</div><div class="pubps">${ps.map(n=>`<span class="psx on">${psBadge(n,'on')}<small>${esc(n)}</small></span>`).join('')}</div>`:''}</div>`}
 function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||PM.data.showRatings,v=n=>show?rv(n):'•';
   const a=Object.fromEntries(K.map(k=>[k,Math.round((r.a[k]||7)*10)]));
   psCur=p.ps||null;psSelf=new Set(prof(p).ps||[]);const earned=PSTYLES.flatMap(([,l])=>l).filter(x=>psEarned(a,x[2],x[1]));
@@ -2855,6 +2865,7 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
           <div><i>Foot</i><b>${esc(p.foot||'–')}</b></div><div><i>Height</i><b>${p.height?esc(p.height)+' cm':'–'}</b></div><div><i>Skills</i><b class="stars">${star(+p.skills)}</b></div><div><i>Weak foot</i><b class="stars">${star(+p.wf)}</b></div>
           ${p.number?`<div><i>Shirt</i><b>#${esc(p.number)}</b></div>`:''}</div>
         <div class="ppnums"><div><b>${ms.length}</b><i>Apps</i></div><div><b>${g}</b><i>Goals</i></div><div><b>${as}</b><i>Assists</i></div><div><b>${potm}</b><i>POTM</i></div><div><b>${tr.length}</b><i>Tournaments</i></div><div><b>${tr.filter(x=>x.place==='champ').length}</b><i>Titles</i></div></div></div></div>
+    ${profBlock(p)}
     <div class="psgrid"><div class="gh2"><b>PlayStyles</b><span class="small muted">${earned.length} of ${PSTYLES.flatMap(([,l])=>l).length} awarded</span></div>${PSTYLES.map(([cat,l])=>`<div class="psrow"><i>${cat}</i><div>${l.map(x=>{const on=psEarned(a,x[2],x[1]),pl=on&&psPlus(a,x[2]);const me=psSelf.has(x[1]);return `<div class="psx${on?' on':''}${me?' self':''}" title="${esc(x[1])}${me?' · picked by the player':on?' · awarded':' · not awarded yet'}">${psBadge(x[1],on?(pl?'plus':'on'):'')}<small>${x[1]}${pl?'+':''}</small></div>`}).join('')}</div></div>`).join('')}<p class="small muted" style="margin:2px 0 0">Coloured = awarded by the managers${S.settings.psAuto!==false?' or earned from match ratings':''}. Grey = not yet. Gold = elite (＋).</p></div>
     <div class="ppgrid">
       <div class="ppstats">${FCGROUPS.map(([nm,ks])=>{const gv=Math.round(ks.reduce((n,k)=>n+a[k],0)/ks.length);return `<div class="fcg"><div class="gh2"><b>${nm}</b><b class="num ${gv>=80?'hi':gv>=70?'md':'lo'}">${v(gv)}</b></div><div class="pbar"><i style="width:${show?gv:50}%"></i></div>${ks.map(k=>`<div class="sub"><span>${esc(KL[k])}</span><b class="num ${a[k]>=80?'hi':a[k]>=70?'md':'lo'}">${v(a[k])}</b></div>`).join('')}</div>`}).join('')}</div>
