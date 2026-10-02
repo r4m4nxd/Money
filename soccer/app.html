@@ -1380,7 +1380,7 @@ function render(){tipSync();outSync();if(!PM){const pb=$('#pbell');if(pb)pb.hidd
   $('#sub').textContent=S.players.filter(p=>p.active!==false&&!p.guest).length+' players · '+S.matches.length+' matches';
   const m=$('#main');
   if(!S.players.length){m.innerHTML=`<div class="empty panel"><h2>No squad yet</h2><p>Start from this season’s roster. Everyone starts at 7; set each player’s ratings in Squad, or add players one by one in Squad.</p><div class="row" style="justify-content:center"><button class="btn primary" data-a="seed">Load this season’s roster</button><button class="btn" data-a="addp">Add a player</button></div></div>`;return}
-  if(view==='toplayer'){m.innerHTML=vSwitchPlayer();pLoadRoster();return}
+  if(view==='toplayer'){if(!mgrAutoTried){mgrAutoTried=true;m.innerHTML='<div class="panel small muted" style="text-align:center;padding:30px">Opening your player profile…</div>';mgrToPlayer().then(ok=>{if(!ok&&view==='toplayer')render()});return}m.innerHTML=vSwitchPlayer();pLoadRoster();return}
   if(m.dataset.v!==view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v=view;
   const keep=keepDetails(m);
   m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='tourn'?vTourn():view==='club'?vClub():view==='guide'?vGuide():view==='managers'&&isAdmin?vManagers():vSettings();keep();
@@ -2127,11 +2127,18 @@ async function hdLoad(){if(!PM||hdBusy)return;const need=S.players.filter(p=>p.p
       const put={};ids.forEach(id=>{const p=miss.find(x=>x.id===id);if(r[id]&&p){HD[id]={pv:p.pv,photo:r[id]};put[id]=HD[id]}});hdPut(put)}
   }catch(e){}hdBusy=false;if(PM&&hdApply())bgRender()}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
-function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
+/* Managers who once signed in to their own player profile are linked to it: "My profile" opens it without a PIN */
+let mgrAutoTried=false;
+async function mgrToPlayer(){if(!supaUser||!supa)return false;try{const {data}=await supa.rpc('atb_mgr_player_token');if(!data||!data.token)return false;
+  ls('atb_player',{tok:data.token,team:data.team,id:data.id,name:data.name});ls('atb_pl_use',Date.now());ls('atb_mode','player');ls('atb_view','me');location.reload();return true}catch(e){return false}}
+function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}catch(e){}
+  if(supaUser){let t=0;try{t=+sessionStorage.getItem('atb_relink')||0}catch(e){}if(Date.now()-t>60000){try{sessionStorage.setItem('atb_relink',Date.now())}catch(e){}mgrToPlayer().then(ok=>{if(!ok){ls('atb_mode','mgr');location.reload()}});return}
+    ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
   PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
+  if(supaUser&&saved.tok)supa.rpc('atb_mgr_link',{p_token:saved.tok}).then(()=>{},()=>{});
   await loadPlayer();
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer(true)});
   setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer(true)},90000);
@@ -2581,7 +2588,7 @@ function renderPlayer(){outSync();document.querySelectorAll('#tabs button').forE
   m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small ghost" data-a="exitprev">Exit</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='team'?vpTeam():view==='dream'?vpDream():view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():view==='tourn'?vpTourn():view==='club'?vClub():vpMe());keep()}
 
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
-  <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
+  <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back. <b>You only do this once:</b> after that, My profile opens straight away on any device you’re signed in on as a manager.</p>
   <form class="stack" id="lform" novalidate><label class="f">Your name<select id="plname"><option value="">Loading names…</option></select></label>
   <label class="f"><span id="plpinl">PIN</span><input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><label class="f" id="plpin2w" hidden>Type the same PIN again<input id="plpin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><p class="small plhint" id="plhint" hidden></p>
   <div class="row"><button class="btn primary" data-a="plogin" type="submit" id="plbtn" data-t="Open my profile">Open my profile</button></div><span class="small muted" id="plmsg" role="status"></span></form></div>`}
@@ -2620,7 +2627,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
       if(r.token){const saved={tok:r.token,team:sel.dataset.team,id:sel.value,name:sel.options[sel.selectedIndex].text};ls('atb_player',saved);ls('atb_plast',sel.value);ls('atb_pl_use',Date.now());
         try{await prpc('atb_player_log',{p_token:r.token,p_action:'Signed in on',p_detail:await deviceStr()})}catch(e){}
         const old=ls('atb_player');if(old&&old.tok&&old.tok!==r.token)prpc('atb_player_logout',{p_token:old.tok}).catch(()=>{});ls('atb_player',saved);
-        if(supaUser){ls('atb_mode','player');ls('atb_view','me');location.reload();return}
+        if(supaUser){try{await supa.rpc('atb_mgr_link',{p_token:r.token})}catch(e){}ls('atb_mode','player');ls('atb_view','me');location.reload();return}
         if(r.new)toast('PIN created. Use it here and on the availability link');view='me';bootPlayer(saved);return}
       msg.textContent=r.err==='paused'?(r.new?'✅ PIN created! The portal isn’t open for you yet. You’ll use this PIN when it opens.':'✅ PIN is correct, but the portal isn’t open for you yet. It opens soon!'):r.err==='blocked'?'Your profile access is turned off. Ask a manager.':r.err==='wrong_pin'?`Wrong PIN. ${r.left} ${r.left===1?'try':'tries'} left before a 1-hour lock.`:r.err==='locked'?'Too many wrong PINs. Try again in an hour, or ask a manager to reset your PIN.':r.err==='unknown'?'That name isn’t on the squad.':'Check your PIN.'}
     catch(err){msg.textContent='Could not sign in. Check your connection.'}el.disabled=false;return}
