@@ -2940,10 +2940,16 @@ async function cutTrim(blob){const bm=await createImageBitmap(blob),c=document.c
   if(x1<=x0||y1<=y0)return null;const w=x1-x0,side=Math.min(Math.max(w,(y1-y0)*.55),y1-y0),cx=(x0+x1)/2,o=document.createElement('canvas');o.width=o.height=420;
   o.getContext('2d').drawImage(c,cx-side/2,y0-side*.04,side,side,0,0,420,420);return await new Promise(r=>o.toBlob(r,'image/webp',.88))}
 function cutQueue(names){names.forEach(n=>{const u=WIKI[n]?.u;if(u&&!CUT[n]&&!cutTried.has(n)&&!cutQ.includes(n))cutQ.push(n)});cutRun()}
-async function cutRun(){if(cutBusy||!cutQ.length)return;cutBusy=true;let lib;try{lib=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm')}catch(e){cutBusy=false;return}
-  while(cutQ.length){const n=cutQ.shift();cutTried.add(n);try{const raw=await lib.removeBackground(WIKI[n].u,{model:'isnet_quint8',output:{format:'image/png'}}),b=await cutTrim(raw);
-      if(b){CUT[n]=URL.createObjectURL(b);const db=await cutStore();if(db)try{db.transaction('c','readwrite').objectStore('c').put(b,n)}catch(e){}if(PM&&view==='dream')bgRender()}}catch(e){}
-    await new Promise(r=>(window.requestIdleCallback||setTimeout)(r,{timeout:800}))}cutBusy=false}
+// runs in a background worker so the app never freezes; if the worker can't run it, photos simply stay as they are
+let cutW=null,cutDead=false,cutRT=0;const cutWait={};
+function cutWorker(){if(cutW||cutDead)return cutW;try{const src=`let lib;self.onmessage=async e=>{const {id,url}=e.data;try{lib=lib||await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');const b=await lib.removeBackground(url,{model:'isnet_quint8',device:'cpu',output:{format:'image/png'}});self.postMessage({id,blob:b})}catch(err){self.postMessage({id,err:String(err&&err.message||err)})}}`;
+    cutW=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),{type:'module'});cutW.onmessage=e=>{const w=cutWait[e.data.id];if(w){delete cutWait[e.data.id];w(e.data)}};cutW.onerror=()=>{cutDead=true;Object.values(cutWait).forEach(w=>w({err:'worker'}))}}catch(e){cutDead=true}return cutW}
+const cutRepaint=()=>{clearTimeout(cutRT);cutRT=setTimeout(()=>{if(PM&&view==='dream'&&!DPK.open)bgRender()},1200)};
+async function cutRun(){if(cutBusy||!cutQ.length||cutDead)return;cutBusy=true;await new Promise(r=>setTimeout(r,2500));
+  while(cutQ.length&&!cutDead){const n=cutQ.shift();cutTried.add(n);const w=cutWorker();if(!w)break;const id=Math.random().toString(36).slice(2);
+    const r=await new Promise(res=>{cutWait[id]=res;w.postMessage({id,url:WIKI[n].u});setTimeout(()=>{if(cutWait[id]){delete cutWait[id];res({err:'timeout'})}},90000)});
+    if(r.blob)try{const b=await cutTrim(r.blob);if(b){CUT[n]=URL.createObjectURL(b);const db=await cutStore();if(db)try{db.transaction('c','readwrite').objectStore('c').put(b,n)}catch(e){}cutRepaint()}}catch(e){}
+    await new Promise(r=>(window.requestIdleCallback||setTimeout)(r,{timeout:1500}))}cutBusy=false}
 const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:CUT[n]||w&&w.u||undefined,photoCut:!!CUT[n],st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
 function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill(''),bench:Array(7).fill('')}}
@@ -3036,6 +3042,7 @@ async function dreamAction(a,el){
   if(a==='dback'){DE=null;dreamSel=null;DPK.open=false;render();return}
   if(!DE)return;const d=DE.d;
   if(a==='dsw'){const i=+el.dataset.i,j=+el.dataset.j;[d.order[i],d.order[j]]=[d.order[j],d.order[i]];dreamSel=null;render();toast('Swapped for better chemistry');return}
+  if(a==='dbestcalc'){el.disabled=true;el.textContent='Working…';setTimeout(()=>{const b=dreamBestCalc(d),cur=dchemOf(d,d.order);if(b.t>cur){d.f=b.f;d.order=b.o;dreamSel=null;render();toast(`Best: ${b.f} · chemistry ${b.t}/${d.order.length*3}`)}else{el.textContent='Already the best chemistry';}},30);return}
   if(a==='dbest'){d.f=el.dataset.f;d.order=JSON.parse(el.dataset.o);dreamSel=null;render();toast('Formation and positions set for best chemistry');return}
   if(a==='dslot'){const k=+el.dataset.k;if(dreamBSel!=null&&d.bench[dreamBSel]){dreamFit(d);[d.order[k],d.bench[dreamBSel]]=[d.bench[dreamBSel],d.order[k]];dreamBSel=null;dreamSel=null;render();return}
     dreamBSel=null;if(!d.order[k]){dreamSel=k;DPK.open=true;DPK.page=0;render();return}dreamSel=dreamSel===k?null:k;render();return}
@@ -3824,23 +3831,26 @@ function dreamLines(SL,DC,sq){const at={};DC.P.forEach(x=>at[x.idx]=x);const col
     L.push(`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${col(v)}" stroke-width="${v?1.4+v*.6:1}" ${v?'':'stroke-dasharray="3 4"'} opacity=".8" vector-effect="non-scaling-stroke"/>`)}));
   return `<svg class="chemsvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${L.join('')}</svg>`}
 // best moves: single swaps that raise chemistry, plus the best formation after rearranging (hill-climb on swaps)
-function dreamSuggest(d,selIdx){const base=dchemOf(d,d.order),n=d.order.length,sw=[];
+let DSC={k:'',v:null};
+// quick swap tips are cached; the full best-formation search only runs when the button is tapped
+function dreamSuggest(d,selIdx){const key=JSON.stringify([d.f,d.gk,d.order,selIdx]);if(DSC.k===key)return DSC.v;const v=dreamSuggest0(d,selIdx);DSC={k:key,v};return v}
+function dreamBestCalc(d){const n=d.order.length;const climb=f=>{let o=d.order.slice(),t=dchemOf(d,o,f);for(let pass=0;pass<4;pass++){let imp=false;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const o2=o.slice();[o2[i],o2[j]]=[o2[j],o2[i]];const t2=dchemOf(d,o2,f);if(t2>t){o=o2;t=t2;imp=true}}if(!imp)break}return {f,o,t}};
+  let best={f:d.f,...climb(d.f)};tbFormOpts(n,d.gk).forEach(f=>{if(f===d.f)return;const r=climb(f);if(r.t>best.t)best=r});return best}
+function dreamSuggest0(d,selIdx){const base=dchemOf(d,d.order),n=d.order.length,sw=[];
   for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){if(!d.order[i]&&!d.order[j])continue;const o=d.order.slice();[o[i],o[j]]=[o[j],o[i]];const t=dchemOf(d,o);if(t>base)sw.push({i,j,d:t-base})}
   sw.sort((a,b)=>b.d-a.d);const forSel=selIdx!=null?sw.filter(x=>x.i===selIdx||x.j===selIdx).slice(0,1):[];
-  const climb=f=>{let o=d.order.slice(),t=dchemOf(d,o,f);for(let pass=0;pass<4;pass++){let imp=false;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const o2=o.slice();[o2[i],o2[j]]=[o2[j],o2[i]];const t2=dchemOf(d,o2,f);if(t2>t){o=o2;t=t2;imp=true}}if(!imp)break}return {f,o,t}};
-  let best={f:d.f,...climb(d.f)};tbFormOpts(n,d.gk).forEach(f=>{if(f===d.f)return;const r=climb(f);if(r.t>best.t)best=r});
-  return {base,swaps:sw.slice(0,3),forSel,best:best.t>base?best:null}}
-function dreamSugHTML(d,S){if(!S||(!S.swaps.length&&!S.best))return d.order.filter(Boolean).length>1?'<div class="small muted dsug">Chemistry is as high as it gets with these players and formation.</div>':'';
+  return {base,swaps:sw.slice(0,3),forSel,best:null}}
+function dreamSugHTML(d,S){const bestBtn=d.order.filter(Boolean).length>1?'<button class="btn small" data-a="dbestcalc">Find best formation &amp; positions</button>':'';if(!S||(!S.swaps.length&&!S.best))return d.order.filter(Boolean).length>1?`<div class="dsug"><span class="small muted">No quick swaps improve chemistry.</span>${bestBtn}</div>`:'';
   const nm=i=>esc(shortName(dreamName(d.order[i])||'empty slot'));
   return `<div class="dsug"><b class="small">Suggestions</b>${S.forSel.map(x=>`<button class="btn small primary" data-a="dsw" data-i="${x.i}" data-j="${x.j}">Swap ${nm(x.i)} ↔ ${nm(x.j)} · +${x.d} chem</button>`).join('')}
     ${S.swaps.filter(x=>!S.forSel.some(y=>y.i===x.i&&y.j===x.j)).map(x=>`<button class="btn small" data-a="dsw" data-i="${x.i}" data-j="${x.j}">Swap ${nm(x.i)} ↔ ${nm(x.j)} · +${x.d}</button>`).join('')}
-    ${S.best?`<button class="btn small" data-a="dbest" data-f="${S.best.f}" data-o="${esc(JSON.stringify(S.best.o))}">${S.best.f===d.f?'Rearrange for best chemistry':'Switch to '+S.best.f+' and rearrange'} · ${S.best.t}/${d.order.length*3}</button>`:''}</div>`}
+    ${bestBtn}</div>`}
 
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr0=interactive&&!PM,showOvr=showOvr0,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
   const res=opt?.res||pById;
-  const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,stD=p?.st,r=stD?{ovr:stD[1],a:{}}:R(id),showOvr=showOvr0||!!stD||!!(opt?.dream&&p&&!p.ext&&!p.empty&&PM&&(PM.data.showRatings||SQR()));
+  let PFIT=1;const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=((.74+.3*f)*PFIT).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,stD=p?.st,r=stD?{ovr:stD[1],a:{}}:R(id),showOvr=showOvr0||!!stD||!!(opt?.dream&&p&&!p.ext&&!p.empty&&PM&&(PM.data.showRatings||SQR()));
     const tr=stD?(stD[9]==='ICON'?'special':tier(stD[1])):!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
     const art=p?.empty?'':stD&&stD[9]==='ICON'?'icon':artOf(cc,tr,p,stD?stD[1]:showOvr?r.ovr:null);
@@ -3852,6 +3862,12 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   let html='',idx=0;const SL=[];
   for(const row of ['GK','DEF','MID','FWD']){const ids=g[row],k=ids.length;if(!k)continue;const v=rows[row]||.5;
     ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);const [x,y]=p3pt(u,v);SL.push({id,row,role:roleOf(row,k,i),u,v,idx:idx++,x:Math.min(93,Math.max(7,x/P3.W*100)),y:y/P3.H*100})})}
+  // no-overlap rule: shrink every card (with its name, chemistry and position pill) until no two touch
+  {const PH=100*P3.H/P3.W,sz=q=>.74+.3*p3pt(q.u,q.v)[2],hh=sc=>(12.6*sc/.64+6.5*sc)/PH*100,ww=sc=>12.6*sc;let fit=1;
+    const rws=['GK','DEF','MID','FWD'].map(r=>SL.filter(q=>q.row===r)).filter(r=>r.length).sort((a,b)=>b[0].y-a[0].y);
+    for(let i=0;i+1<rws.length;i++){const lo=rws[i][0],hi=rws[i+1][0],need=.38*hh(sz(hi))+.62*hh(sz(lo));fit=Math.min(fit,(lo.y-hi.y)/need)}
+    rws.forEach(r=>{const o=r.slice().sort((a,b)=>a.x-b.x);for(let i=0;i+1<o.length;i++){const need=(ww(sz(o[i]))+ww(sz(o[i+1])))/2+1.2;fit=Math.min(fit,(o[i+1].x-o[i].x)/need)}});
+    PFIT=Math.max(.5,Math.min(1,fit))}
   const CH=interactive&&!PM&&chemS.rows&&SL.length>1?chemModel(SL):null,DC=opt?.dream?dreamChem(SL,res):null;if(DC)lastDreamChem=DC;
   SL.forEach(q=>{const CP=CH||DC;html+=card(q.id,q.role,q.u,q.v,q.idx).replace('<span class="pc-role">',CP&&res(q.id)&&!res(q.id).empty?`<span class="pcchem c${CP.pts[q.idx]}" title="Chemistry ${CP.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:CH?`<span class="pcchem c${CH.pts[q.idx]}" title="Chemistry ${CH.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:'<span class="pc-role">')});
   if(DC&&SL.length>1){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=dreamLines(SL,DC,sq)+html;if(opt.sugK!=null)html=html.replace(`data-k="${opt.sugK}"`,`data-k="${opt.sugK}" data-chemsug="1"`)}
