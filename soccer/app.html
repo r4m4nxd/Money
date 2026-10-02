@@ -667,6 +667,26 @@ header.top{view-transition-name:hdr}
 .pcpip{top:auto!important;bottom:6%!important;right:6%!important}
 .ccpick .ccsw{min-width:0;height:104px;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 5px 9px;border-radius:12px 12px 22px 22px;font:800 11px/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.02em;box-shadow:0 4px 12px rgba(0,0,0,.22);transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .2s}.ccpick .ccsw[aria-pressed=true]{outline:3px solid var(--accent);outline-offset:2px;transform:translateY(-3px)}.ccpick .ccsw:first-child{color:#3a2a06;text-shadow:none}
 .ccdot{width:18px!important;height:22px!important;border-radius:4px 4px 7px 7px!important}
+
+/* ---------- FC-style card finish: motif art, foil shine, tilt, walkout ---------- */
+.fmot{position:absolute;inset:0;pointer-events:none;background-size:100% 100%;background-repeat:no-repeat}
+.fut .fmot{inset:1.8cqw 1.8cqw 2.2cqw;clip-path:url(#fcShape)}
+.pc-card>.fmot{border-radius:inherit;overflow:hidden;z-index:0}
+.sty-card>.fmot{border-radius:15px;z-index:0}
+.fut .fs::before{content:'';position:absolute;left:10%;right:10%;top:-2.6cqw;height:.35cqw;background:linear-gradient(90deg,transparent,currentColor,transparent);opacity:.35}
+.fut .fshine{position:absolute;inset:0;clip-path:url(#fcShape);pointer-events:none;z-index:4!important;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.42) 48%,rgba(255,255,255,.08) 54%,transparent 62%);background-size:260% 100%;background-position:var(--sx,140%) 0;opacity:0;transition:opacity .3s}
+.fut[class*=" cc-"] .fshine,.fut.t-special .fshine{opacity:.9}
+@media (prefers-reduced-motion:no-preference){.pubcard .fut .fshine,.ppcard .fut .fshine,.phero .fut .fshine,.sqc .fut .fshine{animation:fshine 4.5s ease-in-out infinite}}
+@keyframes fshine{0%,55%{background-position:140% 0}85%,100%{background-position:-40% 0}}
+.tilt{transform:perspective(700px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));transition:transform .12s ease-out}
+.tilt .fshine{animation:none!important;background-position:var(--sx,50%) 0}
+.wo{position:relative}
+.wo::before{content:'';position:absolute;left:50%;top:46%;width:230%;aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:-1;background:repeating-conic-gradient(from 0deg,rgba(255,214,120,0) 0deg 9deg,rgba(255,214,120,.42) 9deg 13deg);-webkit-mask:radial-gradient(closest-side,#000 20%,transparent);mask:radial-gradient(closest-side,#000 20%,transparent);animation:woRays 1.8s ease-out forwards}
+.wo .fut{animation:woCard 1.05s cubic-bezier(.2,.9,.25,1.08) both}
+@keyframes woCard{0%{transform:perspective(800px) rotateY(-540deg) scale(.35);opacity:0;filter:brightness(3) drop-shadow(0 0 30px #ffd88a)}55%{opacity:1;filter:brightness(1.7) drop-shadow(0 0 24px #ffd88a)}100%{transform:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}}
+@keyframes woRays{0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(80deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.wo::before{display:none}.wo .fut{animation:none}.tilt{transform:none}}
+.snap .fshine{display:none!important}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -848,7 +868,7 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 <main class="wrap" id="main"><p class="empty">Loading squad…</p></main>
 <div id="modal"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <clipPath id="fcShape" clipPathUnits="objectBoundingBox"><path d="M0,0.109 Q0,0.047 0.08,0.039 Q0.18,0.031 0.24,0 H0.76 Q0.82,0.031 0.92,0.039 Q1,0.047 1,0.109 V0.8125 Q1,0.859 0.94,0.875 L0.56,0.977 Q0.5,0.992 0.44,0.977 L0.06,0.875 Q0,0.859 0,0.8125 Z"/></clipPath>
+  <clipPath id="fcShape" clipPathUnits="objectBoundingBox"><path d="M0.07,0.035 H0.31 Q0.35,0.035 0.38,0.012 Q0.395,0 0.42,0 H0.58 Q0.605,0 0.62,0.012 Q0.65,0.035 0.69,0.035 H0.93 Q1,0.035 1,0.09 V0.815 Q1,0.85 0.965,0.866 L0.56,0.982 Q0.5,0.998 0.44,0.982 L0.035,0.866 Q0,0.85 0,0.815 V0.09 Q0,0.035 0.07,0.035 Z"/></clipPath>
 </defs></svg>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1089,6 +1109,27 @@ Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top
 .fut.fut.cc-${k} .fbody::before{background:${bg}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i{color:${acc}}.pc.pc.cc-${k} .pc-card{background:${bg};color:${ink};border-color:${rl}}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
 .sty-card.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}.ccsw.cc-${k},.ccdot.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}`}).join('\n');
   const st=document.createElement('style');st.id='cardthemes';st.textContent=css;(document.body||document.head).appendChild(st)})();
+/* Motif artwork per design (our own drawings), rasterised once to PNG so it also shows in saved images */
+const MOTIFS=(()=>{const W=(o,b)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 128" preserveAspectRatio="none"><g opacity="${o}">${b}</g></svg>`;
+  const rays=c=>Array.from({length:28},(_,i)=>{const a=i/28*Math.PI*2,x=50+Math.cos(a)*140,y=44+Math.sin(a)*140;return i%2?'':`<path d="M50 44 L${(50+Math.cos(a-.06)*140).toFixed(1)} ${(44+Math.sin(a-.06)*140).toFixed(1)} L${(50+Math.cos(a+.06)*140).toFixed(1)} ${(44+Math.sin(a+.06)*140).toFixed(1)}Z" fill="${c}"/>`}).join('');
+  const stars=c=>[[14,18,1.4],[84,22,1.1],[72,58,.9],[22,64,1],[90,90,.8],[10,100,1.2],[60,12,.8],[40,104,.9]].map(([x,y,r])=>`<path d="M${x} ${y-r*2.4}L${x+r*.6} ${y-r*.6}L${x+r*2.4} ${y}L${x+r*.6} ${y+r*.6}L${x} ${y+r*2.4}L${x-r*.6} ${y+r*.6}L${x-r*2.4} ${y}L${x-r*.6} ${y-r*.6}Z" fill="${c}"/>`).join('');
+  return {
+  lightning:c=>W(.6,`<g fill="none" stroke="${c}" stroke-linejoin="round"><path d="M72 0L59 30L69 32L50 70L61 72L43 112" stroke-width="1.3"/><path d="M96 8L86 34L93 36L80 62" stroke-width=".9" opacity=".7"/><path d="M22 14L13 40L20 42L8 70" stroke-width=".8" opacity=".55"/><path d="M72 0L59 30L69 32L50 70L61 72L43 112" stroke-width="6" opacity=".14"/></g>`),
+  flames:c=>W(.42,`<path fill="${c}" d="M0 128C9 102 3 92 13 72C16 88 23 90 21 105C29 93 29 79 39 66C42 84 49 92 45 108C55 96 57 80 66 72C68 90 76 98 72 112C80 103 86 92 90 82C93 100 100 106 100 128Z"/><path fill="#fff" opacity=".45" d="M8 128C14 112 12 104 18 94C20 106 26 110 24 120C30 112 32 104 36 98C38 110 44 116 42 128Z"/>`),
+  starburst:c=>W(.32,rays(c)+stars('#fff')),
+  marble:c=>W(.5,`<g fill="none" stroke="${c}"><path d="M-4 20C20 30 30 10 52 26S86 30 104 18" stroke-width=".6"/><path d="M-4 62C18 52 34 74 56 60S84 44 104 58" stroke-width=".9"/><path d="M-4 96C22 88 36 106 60 98S88 84 104 92" stroke-width=".5"/><path d="M30 0C34 24 18 40 26 62S40 96 30 128" stroke-width=".35"/><path d="M76 0C70 30 86 48 78 74S70 110 82 128" stroke-width=".4"/></g>`),
+  grid:c=>W(.5,`<g stroke="${c}" stroke-width=".45" fill="none">${[0,1,2,3,4,5,6].map(i=>`<path d="M${-60+i*36} 128L50 60"/>`).join('')}${[70,78,88,100,114].map(y=>`<path d="M0 ${y}H100"/>`).join('')}</g><path d="M0 60H100" stroke="${c}" stroke-width="1.2" opacity=".8"/>`),
+  swirl:c=>W(.35,`<g fill="none" stroke="${c}">${[12,22,32,44,58,74].map((r,i)=>`<circle cx="74" cy="34" r="${r}" stroke-width="${1.6-i*.2}"/>`).join('')}</g>`),
+  waves:c=>W(.4,`<g fill="none" stroke="${c}">${[52,62,72,84,98,112].map((y,i)=>`<path d="M-5 ${y}C15 ${y-8} 30 ${y+8} 50 ${y}S85 ${y-8} 105 ${y}" stroke-width="${1.4-i*.15}"/>`).join('')}</g>`),
+  holo:c=>W(.5,`<defs><linearGradient id="h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".3" stop-color="#9ff" stop-opacity=".5"/><stop offset=".45" stop-color="#f9f" stop-opacity=".5"/><stop offset=".6" stop-color="#ff9" stop-opacity=".45"/><stop offset=".8" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path d="M0 20L100 0V40L0 76Z" fill="url(#h)"/><path d="M0 92L100 64V80L0 110Z" fill="url(#h)" opacity=".6"/>`+stars('#fff')),
+  shards:c=>W(.3,`<g fill="${c}"><path d="M0 0L40 0L0 50Z" opacity=".5"/><path d="M100 10L60 60L100 74Z"/><path d="M0 84L34 128H0Z" opacity=".7"/><path d="M100 96L70 128H100Z" opacity=".5"/><path d="M58 0L100 0L80 30Z" opacity=".35"/></g>`),
+  bokeh:c=>W(.45,[[18,20,9,.25],[80,26,6,.35],[66,64,12,.15],[24,82,7,.3],[88,96,10,.2],[44,40,4,.45],[56,110,6,.3]].map(([x,y,r,o])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${o}"/>`).join('')+stars('#fff'))}})();
+const THEMEMOTIF={legend:['marble','#B8892E'],hero:['lightning','#FFFFFF'],galaxy:['bokeh','#FFC6F4'],starball:['starburst','#FFFFFF'],inferno:['flames','#FFD36B'],crimson:['shards','#FFFFFF'],copper:['swirl','#FFE3C2'],heatwave:['waves','#FFFFFF'],golden:['starburst','#FFFFFF'],volt:['grid','#E4FF4F'],emerald:['waves','#E3FFD9'],aqua:['waves','#FFFFFF'],pearl:['marble','#4FB89B'],sky:['holo','#FFFFFF'],royal:['starburst','#F4D98A'],rose:['holo','#FFFFFF'],blackout:['shards','#FFFFFF'],shadow:['lightning','#FF5A5A']};
+(()=>{const st=document.createElement('style');st.id='cardmotifs';(document.body||document.head).appendChild(st);const rules={};
+  const put=(k,url)=>{rules[k]=`.cc-${k} .fmot{background-image:url("${url}")}`;st.textContent=Object.values(rules).join('\n')};
+  Object.entries(THEMEMOTIF).forEach(([k,[m,c]])=>{const svg='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(MOTIFS[m](c));put(k,svg);
+    const im=new Image();im.onload=()=>{try{const cv=document.createElement('canvas');cv.width=300;cv.height=384;cv.getContext('2d').drawImage(im,0,0,300,384);put(k,cv.toDataURL('image/png'))}catch(e){}};im.src=svg})})();
+
 /* one signature ability per player: icon + plain label so its meaning is obvious */
 const ABILITIES={speed:['zap','Speedster','rapid pace'],sniper:['target','Sniper','clinical finisher'],vision:['eye','Playmaker','sees the pass'],wall:['shield','Brick Wall','tough to beat'],engine:['battery','Engine','runs all game'],magic:['wand','Magician','dribbling skills'],captain:['crown','Captain','leads the team'],rocket:['rocket','Long Ranger','long shots'],gloves:['glove','Safe Hands','great keeper'],clutch:['flame','Clutch','big-game player'],tank:['dumb','Tank','strength'],fox:['ball','Fox in the Box','poacher'],thief:['swap','Ball Winner','wins it back'],flair:['spark','Showman','tricks and flair'],assist:['assist','Assist King','sets up goals']};
 const prof=p=>p&&p.prof||{};
@@ -1100,7 +1141,7 @@ function cardHTML(p,{btn=true,tier:tv,nonum=false}={}){const r=R(p.id),t=tv||(p.
   const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',rv(Math.round(((r.a.str||0)+(r.a.sta||0))*5))]];
   const tag=btn?'button':'div';
   return `<${tag} class="fut t-${t}${cc?' cc-'+cc:''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}><div class="fbody">
-    <span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span>
+    <i class="fmot"></i><span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span><i class="fshine"></i>
     ${cc&&known?`<span class="tpip ${t}" title="${t} card">${t==='special'?'★ Special':t}</span>`:''}<div class="ph${pic&&p.photoCut?' cut':''}">${pic?`<img src="${pic}" alt="">`:SIL}</div>
     <div class="fl"><b class="ovr num">${rv(r.ovr)}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
     <div class="fn${p.name.length>16?' xl':p.name.length>12?' l':''}">${esc(titleName(p.name))}</div>
@@ -2556,6 +2597,12 @@ function vpTeam(){const me=PM.data.me.id,L=S.players.filter(p=>!p.guest&&p.activ
   <h2>Team chemistry</h2><div class="panel stack"><p class="small muted" style="margin:0">How well do you play with each teammate? 1 = we don’t click, 5 = perfect partner. <b>Only managers see this</b>; it helps them build better teams.</p>
     <div class="chemlist">${L.filter(p=>p.id!==me).map(p=>`<div class="chemrow"><span class="nm">${esc(p.name)}</span>${chemStars(p.id,ch[p.id]||0)}</div>`).join('')}</div></div>`}
 const chemStars=(id,v)=>`<span class="cstars" role="group" aria-label="Chemistry">${[1,2,3,4,5].map(n=>`<button class="cst${n<=v?' on':''}" data-a="chem" data-id="${id}" data-v="${n===v?0:n}" aria-label="${n} of 5">★</button>`).join('')}</span>`;
+
+/* walkout reveal when a player page opens, and gentle tilt that follows the finger/mouse */
+function walkout(sel){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=document.querySelector(sel);if(!c)return;c.classList.add('wo');setTimeout(()=>c.classList.remove('wo'),1900)}
+document.addEventListener('pointermove',e=>{const f=e.target.closest&&e.target.closest('.pubcard .fut,.ppcard .fut,.phero .fut,.sty-card');if(!f||f.closest('.wo'))return;const r=f.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  f.classList.add('tilt');f.style.setProperty('--rx',(x*14).toFixed(1)+'deg');f.style.setProperty('--ry',(-y*12).toFixed(1)+'deg');f.style.setProperty('--sx',(120-(x+.5)*160).toFixed(0)+'%')},{passive:true});
+document.addEventListener('pointerout',e=>{const f=e.target.closest&&e.target.closest('.tilt');if(f&&!f.contains(e.relatedTarget)){f.classList.remove('tilt');f.style.removeProperty('--rx');f.style.removeProperty('--ry')}},{passive:true});
 const SQR=()=>!!(PM&&PM.data&&PM.data.settings&&PM.data.settings.squadRatings);
 function pubPage(id){const p=pById(id);if(!p)return;const me=PM?PM.data.me.id:null,pr=prof(p),st=pubStats(id),mine=id===me,mate=pr.favMate&&pById(pr.favMate);
   const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
@@ -2566,7 +2613,7 @@ function pubPage(id){const p=pById(id);if(!p)return;const me=PM?PM.data.me.id:nu
       <div class="ppnums"><div><b>${st.apps}</b><i>Apps</i></div><div><b>${st.W}</b><i>Wins</i></div><div><b>${st.g}</b><i>Goals</i></div><div><b>${st.a}</b><i>Assists</i></div><div><b>${st.potm}</b><i>POTM</i></div><div><b>${st.titles}</b><i>Titles</i></div></div>
       ${profBlock(p)}</div></div>
   <div class="row" style="margin-top:12px">${PM&&!mine&&SQR()?`<button class="btn" data-a="ppage2" data-id="${id}">Full ratings & stats</button>`:''}${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="pfedit">Edit my profile</button>`:''}</div>
-  ${PM&&!mine?`<div class="chemrow" style="margin-top:12px"><span class="small">Your chemistry with ${esc(p.name.split(' ')[0])}</span>${chemStars(id,(PM.data.chem||{})[id]||0)}</div>`:''}`);document.querySelector('.modal').classList.add('wide')}
+  ${PM&&!mine?`<div class="chemrow" style="margin-top:12px"><span class="small">Your chemistry with ${esc(p.name.split(' ')[0])}</span>${chemStars(id,(PM.data.chem||{})[id]||0)}</div>`:''}`);document.querySelector('.modal').classList.add('wide');walkout('.modal .pubcard')}
 function cmpPage(id){const me=PM.data.me.id,A=pById(me),B=pById(id),sa=pubStats(me),sb=pubStats(id),pa=prof(A),pb=prof(B);
   const pct=s=>s.res?Math.round(s.W/s.res*100):0,gpm=s=>s.apps?Math.round((s.g+s.a)/s.apps*10)/10:0;
   const rows=[['Apps',sa.apps,sb.apps],['Wins',sa.W,sb.W],['Win %',pct(sa),pct(sb)],['Goals',sa.g,sb.g],['Assists',sa.a,sb.a],['G+A per match',gpm(sa),gpm(sb)],['Player of the Match',sa.potm,sb.potm],['Tournaments',sa.tn,sb.tn],['Titles',sa.titles,sb.titles]];
@@ -2582,7 +2629,7 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
   const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
   openModal(`<div class="mh"><h2>Share my player page</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div id="sharecard" class="story"><div class="sty-h"><img src="icons/crest-640.jpg" alt=""><div><b>${esc((S.settings.club||{}).name||'Airdrie United')}</b><span>Player card · ${esc(S.settings.season||new Date().getFullYear())}</span></div></div>
-    <div class="sty-card t-${tr}${cc?' cc-'+cc:''}" style="${bg}">${cc&&known?`<span class="sty-pip ${t}">${t==='special'?'★ Special':t}</span>`:''}
+    <div class="sty-card t-${tr}${cc?' cc-'+cc:''}" style="${bg}"><i class="fmot"></i>${cc&&known?`<span class="sty-pip ${t}">${t==='special'?'★ Special':t}</span>`:''}
       <div class="sty-top">${show?`<b>${r.ovr}</b>`:''}<span>${esc(pr.bestPos||p.pos)}</span></div>
       <div class="sty-ph${pic?' hp':''}${pic&&p.photoCut?' cut':''}" style="${col?`--cf:${col[2]};--cf0:${col[2]}00`:''}">${pic?`<img src="${pic}" alt="">`:`<img class="sil" src="${SILURI('rgba(70,45,10,.3)')}" alt="">`}</div>
       <div class="sty-nm">${esc(titleName(p.name))}</div><div class="sty-ic">${p.nation?`<img src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${club?clubBadge(p.club,'cb'):''}${p.number?`<span>#${esc(p.number)}</span>`:''}</div></div>
@@ -3066,7 +3113,7 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
     </div>
     ${!PM||id===PM.data.me.id?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" data-a="story" data-id="${id}">Save as image (story)</button>${PM&&!PM.preview&&id===PM.data.me.id?'<button class="btn" data-a="pfedit">✏️ Edit my profile</button>':''}</div>`:''}
     ${!show?'<p class="small muted">Numbers are private. Your managers can turn on “Players can see their own ratings”.</p>':''}
-  </div>`);psSelf=null;document.querySelector('.modal').classList.add('wide')}
+  </div>`);psSelf=null;document.querySelector('.modal').classList.add('wide');walkout('.modal .ppcard')}
 
 /* ---------- modals ---------- */
 function openModal(html){const ctx=lastAct;lastAct=null;
@@ -3348,7 +3395,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     const tr=!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
     return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
-      <span class="pc-card">${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr player-ovr-stat num">${rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
+      <span class="pc-card"><i class="fmot"></i>${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr player-ovr-stat num">${rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       ${p?.number?`<span class="pc-ic"><span class="pcno">${esc(p.number)}</span></span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
       <span class="pc-role">${role}</span></${tag}>`};
