@@ -643,7 +643,7 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .ax.closed>.ax-h h2{opacity:.8}
 .ax.closed{margin-bottom:6px}
 .btn,.themebtn,#tabs button,.chip,.sqc,.pnr,.trow,.ax-h,.ccsw,.abopt,.psopt{position:relative}
-.btn,#tabs button,.chip{overflow:hidden}
+.btn,#tabs button,.chip{overflow:hidden}#tabs button,.chip{flex-shrink:0;min-width:max-content}
 .rip{position:absolute;left:var(--rx);top:var(--ry);width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:currentColor;opacity:.28;pointer-events:none;transform:scale(0);animation:rip .55s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes rip{to{transform:scale(var(--rs,30));opacity:0}}
 .mlist>.panel,.mlist>details,#main[data-v=p-games] .panel.game{content-visibility:auto;contain-intrinsic-size:auto 140px}
@@ -1224,7 +1224,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020302',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020305',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';

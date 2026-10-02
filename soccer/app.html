@@ -630,7 +630,7 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .ax.closed>.ax-h h2{opacity:.8}
 .ax.closed{margin-bottom:6px}
 .btn,.themebtn,#tabs button,.chip,.sqc,.pnr,.trow,.ax-h,.ccsw,.abopt,.psopt{position:relative}
-.btn,#tabs button,.chip{overflow:hidden}
+.btn,#tabs button,.chip{overflow:hidden}#tabs button,.chip{flex-shrink:0;min-width:max-content}
 .rip{position:absolute;left:var(--rx);top:var(--ry);width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:currentColor;opacity:.28;pointer-events:none;transform:scale(0);animation:rip .55s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes rip{to{transform:scale(var(--rs,30));opacity:0}}
 .mlist>.panel,.mlist>details,#main[data-v=p-games] .panel.game{content-visibility:auto;contain-intrinsic-size:auto 140px}
