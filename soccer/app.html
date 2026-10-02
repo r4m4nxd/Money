@@ -1993,7 +1993,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a="
 
 /* ---------- A warm hello every time someone opens the app (once per visit) ---------- */
 const CHEERS=['Every Saturday is a chance to be the hero. ⚽','Show up, work hard, have fun. That’s the AUFC way.','The best players make everyone around them better.','Small improvements every week add up. Keep going!','Talent wins games, teamwork wins championships.','Your teammates are counting on you this week. 💪','Play with your heart, pass with your head.','Champions keep playing until they get it right.','Football is better together. See you on the pitch!','One more match, one more memory. Let’s go!'];
-function helloPlayer(){if(!PM||PM.preview||sessionStorage.getItem('atb_hello'))return;try{sessionStorage.setItem('atb_hello','1')}catch(e){}
+function helloPlayer(){if(!PM||PM.preview)return;
   const d=PM.data,me=d.me,nm=esc(prof(me).nick||me.name.split(' ')[0]),h=new Date().getHours(),hi=h<12?'Good morning':h<18?'Good afternoon':'Good evening',t=todayISO();
   const fx=myFixture(),poll=(d.polls||[]).find(p=>p.open&&!p.mine&&p.match_date>=t),games=allGames();let streak=0;const ms=S.matches.slice().sort((a,b)=>a.date<b.date?1:-1);for(const m of ms){if(m.teams.some(x=>x.players.includes(me.id)))streak++;else break}
   const days=fx?Math.round((new Date(fx.date+'T12:00')-new Date(t+'T12:00'))/864e5):null,last=games[0];
@@ -2001,7 +2001,7 @@ function helloPlayer(){if(!PM||PM.preview||sessionStorage.getItem('atb_hello'))r
     :poll?`Are you in for ${new Date(poll.match_date+'T12:00').toLocaleDateString(undefined,{weekday:'long'})}? Let the managers know.`:last&&last.potm?'Last time out you were Player of the Match. Do it again! 🏆'
     :streak>=3?`🔥 ${streak} matches in a row. Keep the streak alive!`:CHEERS[Math.floor(Math.random()*CHEERS.length)];
   helloShow(`<b>${hi}, ${nm}!</b><span>${line}</span>`,poll?'avail':'me')}
-function helloMgr(){if(PM||!supaUser||sessionStorage.getItem('atb_hello_m'))return;try{sessionStorage.setItem('atb_hello_m','1')}catch(e){}
+function helloMgr(){if(PM||!supaUser)return;
   const h=new Date().getHours(),hi=h<12?'Good morning':h<18?'Good afternoon':'Good evening',nx=nextGame?.();const act=S.players.filter(p=>p.active!==false&&!p.guest).length;
   helloShow(`<b>${hi}, ${esc(myName||'coach')}!</b><span>${act} players in the squad${nx?` · next game ${new Date(nx+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}`:''}. Thanks for running the club. 🙌</span>`,null)}
 function helloShow(html,dest){if(document.querySelector('.hello'))return;const el=document.createElement('button');el.className='hello';el.innerHTML=`<img src="icons/crest-640.jpg" alt=""><span class="hl">${html}</span>`;
