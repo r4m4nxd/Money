@@ -2520,17 +2520,75 @@ function vGuide(){
   ${sec('guests','Guest players',`<ul><li><b>＋ Guest</b> on Match Day adds a one-off player with a level (Beginner 60 to Top 90). They join the team that needs them most if teams exist.</li>
     <li>Guests aren’t on the link or in the portal. You can rate them. <b>Remove guests</b> deletes all of them.</li></ul>`)}
 
-  ${sec('balance','How teams are balanced',`<p>80 starting splits are improved by swapping until no swap helps; the 8 best distinct results are kept. <b>Another balanced option</b> steps through them. Penalties, strongest first:</p>
-    <div class="tbl"><table><tr><th>Rule</th><th>Penalty</th></tr>
-    <tr><td>Team sizes differ by more than 1</td><td>1000 per extra player</td></tr>
-    <tr><td>Two ★ stars with the same position on one team</td><td>800 per extra star</td></tr>
-    <tr><td>DEF/MID/FWD counts differ by more than 1</td><td>60 per extra + 6 per player of difference</td></tr>
-    <tr><td>Gap in team Total</td><td>12 per point</td></tr><tr><td>Gap in Attack, Midfield or Defence</td><td>3 per point each</td></tr><tr><td>Gap in Pace</td><td>1.5 per point</td></tr>
-    <tr><td>Last match’s teammates together (Mix up last week’s teammates)</td><td>1.2 per pair</td></tr>
-    <tr><td>Unreliable players bunched on one team: anyone with a late drop <b>or a no-show</b> (Spread players with late drops)</td><td>40 per extra beyond 1 + 4 per player of difference</td></tr></table></div>
-    <p>Team ratings are averages of all players (subs included). <b>Overall gap</b> under 1.5 points is marked Balanced.</p>`)}
+  ${sec('balance','How teams are balanced (the full recipe)',`<p>Press <b>Balance</b> and the app builds the fairest teams it can in about 0.15 seconds. Here is exactly what it does, step by step.</p>
+    <h4>1. Every player gets a rating profile</h4>
+    <ul><li>Each player has 9 match attributes, each scored 1–10: Passing, Shooting, Defending, Ball Skill, Mindset, Team Work, Speed, Stamina, Strength.</li>
+    <li>Their value = an average of their <b>starting ratings</b> (weighted by “Base weight” in Settings) and <b>every match rating</b> they have had (or only the last N matches if “Recent matches only” is set).</li>
+    <li>From these, four area scores out of 100:
+      <ul><li><b>Attack</b> = everything except Defending</li><li><b>Midfield</b> = everything except Speed and Strength</li><li><b>Defence</b> = everything except Ball Skill</li><li><b>Pace</b> = Speed</li></ul></li>
+    <li><b>OVR</b> = the average of the four. <i>Example:</i> Attack 74, Midfield 72, Defence 68, Pace 80 → OVR 74.</li></ul>
+    <h4>2. Extra features read for each player</h4>
+    <ul><li><b>Position</b> (DEF / MID / FWD), or today’s override if you changed it on Match Day.</li>
+    <li><b>★ Star</b> tick.</li>
+    <li><b>Chemistry style type</b> (attacking, midfield or defensive style, e.g. Hunter = attacking, Anchor = defensive).</li>
+    <li><b>PlayStyles earned</b> from their ratings (e.g. Speed 78+ = Quick Step).</li>
+    <li><b>Reliability</b>: anyone with a late drop or a no-show.</li>
+    <li><b>Team chemistry</b>: how players rated each other 1–5 in the Squad tab (both directions averaged).</li>
+    <li><b>Last week’s teammates</b> (if “Mix up last week’s teammates” is on).</li></ul>
+    <h4>3. Many starting splits, each improved by swapping</h4>
+    <ul><li>Players are sorted by position, then by OVR with a small random shuffle (so every run is a bit different). Locked players 🔒 go to their team first.</li>
+    <li>Each player goes to the team that is smallest, has fewest of their position and the lowest total so far (a “snake draft”).</li>
+    <li>Then every possible <b>one-for-one swap</b> between two teams is tried. A swap is kept only if it lowers the <b>penalty score</b> below. This repeats until no swap helps.</li>
+    <li>This is done up to <b>80 times</b> from different starts (at least 6). The <b>8 best different results</b> are kept; <b>Another balanced option</b> steps through them.</li></ul>
+    <h4>4. The penalty score (lower = fairer)</h4>
+    <div class="tbl"><table><tr><th>Rule</th><th>Penalty</th><th>Example</th></tr>
+    <tr><td>Team sizes differ by more than 1</td><td>1000 per extra player</td><td>8 v 6 = 1000</td></tr>
+    <tr><td>Two ★ stars of the same position on one team</td><td>800 per extra star</td><td>2 star FWDs together = 800</td></tr>
+    <tr><td>DEF / MID / FWD counts differ</td><td>6 per player of difference, +60 for each beyond 1</td><td>3 DEF v 1 DEF = 12 + 60 = 72</td></tr>
+    <tr><td>Gap in team average OVR</td><td>12 per point</td><td>74.0 v 72.5 = 18</td></tr>
+    <tr><td>Gap in Attack, Midfield or Defence</td><td>3 per point each</td><td>Defence 70 v 66 = 12</td></tr>
+    <tr><td>Gap in Pace</td><td>1.5 per point</td><td>Pace 80 v 72 = 12</td></tr>
+    <tr><td>Chemistry-style types uneven (attacking / midfield / defensive styles)</td><td>5 per style of difference</td><td>3 attacking styles v 0 = 15</td></tr>
+    <tr><td>Earned PlayStyles uneven</td><td>1.2 per PlayStyle of difference</td><td>9 v 4 = 6</td></tr>
+    <tr><td>Team chemistry gap (average teammate rating)</td><td>6 per point of gap</td><td>4.0 v 3.0 = 6</td></tr>
+    <tr><td>Good chemistry inside a team (bonus)</td><td>−2 per point of each team’s average</td><td>avg 4.5 = −9 (rewarded)</td></tr>
+    <tr><td>Last week’s teammates together</td><td>1.2 per pair</td><td>5 repeat pairs = 6</td></tr>
+    <tr><td>Unreliable players bunched</td><td>4 per player of difference, +40 for each beyond 1</td><td>3 v 0 = 12 + 80 = 92</td></tr></table></div>
+    <p>So the order of importance is: equal sizes → stars spread → positions spread → equal strength → equal style mix and chemistry → small tie-breakers.</p>
+    <h4>5. A worked example</h4>
+    <p>16 players, 2 teams. Split A: OVR 75.0 v 72.0 (gap 3 = 36), Defence gap 6 (18), two star FWDs together (800) → <b>854</b>. Swap one star FWD for a similar FWD → stars split (0), OVR 73.6 v 73.4 (2.4), Defence gap 2 (6) → <b>8.4</b>. The swap is kept because 8.4 is lower.</p>
+    <h4>6. After the teams are made</h4>
+    <ul><li><b>Formation</b> is picked automatically from each team’s DEF/MID/FWD mix (every line gets at least 1 player). <i>Example:</i> 7 on the pitch with 3 DEF, 2 MID, 3 FWD → 3-2-2 or similar; you can choose any shape.</li>
+    <li><b>Who starts</b>: the best Defence scores fill DEF, best Midfield fill MID, best Attack fill FWD. With Keeper ticked, the best remaining defender goes in goal. The rest are subs.</li>
+    <li><b>Pitch chemistry</b> (Team Management): each starter earns 0–3. +1 for playing in their area (their position, best position, or a chemistry style for that line), plus 0–2 from how they rate the 3 nearest teammates (avg 4+ = 2, 3+ = 1, below 3 = 0, no ratings = 1). <i>Example:</i> a MID in midfield next to teammates they rate 4.3 = 1 + 2 = 3/3.</li>
+    <li><b>Best positions for chemistry</b> tries every swap of positions and keeps the arrangement with the highest total. Tap a player to see green / amber / red lines to everyone and a suggested swap with the chemistry gain.</li>
+    <li>Team ratings shown are averages of all players (subs included). An overall gap under 1.5 points is marked <b>Balanced</b>.</li></ul>
+    <h4>What does NOT affect balancing</h4>
+    <ul><li>Card designs, nicknames, favourites, XP and badges. Skill ★ and weak-foot ★ are shown on cards but are not used.</li>
+    <li>Manager overrides of the 29 FC attributes change how a player’s page looks, not their match ratings. To change balancing, change their ratings.</li></ul>`)}
 
-  ${sec('stars','Star players',`<ul><li>Tick ★ on a card. Balancing never puts two same-position stars on one team if it can avoid it; a warning pill shows if you do it by hand. Stars get a black special card.</li></ul>`)}
+  ${sec('stars','Star players',`<ul><li>Tick ★ on a card. Balancing never puts two same-position stars on one team if it can avoid it (800 penalty); a warning pill shows if you do it by hand.</li>
+    <li>Pick the star’s card design on their card (<b>Star card</b>); leave it on “Earned card” to use gold / silver / bronze.</li></ul>`)}
+
+  ${sec('chem','Chemistry, chemistry styles and PlayStyles',`<ul><li><b>Team chemistry</b>: players rate each teammate 1–5 in the Squad tab. Only managers see it. It is used in balancing and on the pitch (see above).</li>
+    <li><b>Chemistry styles</b> (23, like EA FC: Hunter, Hawk, Marksman, Finisher, Deadeye, Sniper, Engine, Maestro, Architect, Powerhouse, Shadow, Anchor, Sentinel, Wall and more): each player picks one. It adds +3 to the stat groups it boosts on their player page (Basic adds +1 to all) and counts as attacking, midfield or defensive in balancing. The player page shows the best styles for them.</li>
+    <li><b>PlayStyles</b> (36): earned automatically from match ratings, or awarded / removed by you on the player’s card. Gold “+” = elite (88+). Players pick up to 5 of their own; tapping one shows what it means. Goalkeeper ones are only ever awarded by you.</li></ul>`)}
+
+  ${sec('attrs','Ratings, FC attributes and the player page',`<ul><li>The 9 match attributes (1–10) are the real ratings. They make the six FC groups (PAC, SHO, PAS, DRI, DEF, PHY) and 29 FC attributes (Acceleration, Finishing, Vision…).</li>
+    <li>You can <b>override any of the 29 attributes</b> with a slider on the player’s card. Overrides change the player page and card numbers only.</li>
+    <li><b>Strip under the card</b> on the player page: <b>R/L</b> = preferred foot, <b>3★</b> = skill moves, <b>3WF</b> = weak foot (out of 5), green number = best role rating.</li>
+    <li><b>Best ratings / roles</b>: position rating × 0.7 + the role’s two key attributes × 0.3. <i>Example:</i> ST 76 with Shooting 82 and Speed 78 → 76×0.7 + 80×0.3 = 77.2.</li>
+    <li><b>AcceleRATE</b>: Acceleration minus Strength, with height. 10+ faster and up to 182 cm = Explosive; 5+ = Mostly Explosive; Strength 10+ higher and 174 cm+ = Lengthy; 5+ = Mostly Lengthy; else Controlled.</li></ul>`)}
+
+  ${sec('analytics','Stats dashboards',`<ul><li><b>Stats</b> tab: spider chart of a player’s attributes, a form line over their matches, and leaderboards.</li>
+    <li><b>Team vs team</b>: pick a match, then compare any two of its teams on a spider chart.</li></ul>`)}
+
+  ${sec('unlocks','Unlocks and exclusives (admin)',`<ul><li>Card designs, chemistry styles and PlayStyles open up as players earn XP; they get a notification for each unlock. Set the XP needed with the sliders in Settings → <b>Unlocks &amp; exclusives</b> (far left = free).</li>
+    <li><b>Only me</b> keeps a design or style for your own player profile; nobody else sees it, and the server refuses it for anyone else.</li></ul>`)}
+
+  ${sec('search','Search, changelog and tips',`<ul><li>🔍 in the header (or Ctrl/Cmd + K) finds any feature or setting and jumps straight to it.</li>
+    <li><b>Changelog</b> tab (admin only) lists every version and what changed.</li>
+    <li>Numbers use sliders; scores, goals and quantities use − / + buttons.</li></ul>`)}
 
   ${sec('manual','Moving and locking',`<ul><li>Move players with the team dropdown; 🔒 keeps them there when you balance again. Team names and kit colours are in each team header.</li>
     <li>Once teams exist, tapping a player in adds just them to the team that needs them most; tapping out removes only them.</li></ul>`)}
@@ -2547,11 +2605,11 @@ function vGuide(){
     <li>Tournaments have a <b>Coach</b> and <b>Manager</b>; each game in Results can name different ones.</li>
     <li>Theme button switches between dark and light.</li>
     <li>The line-up card: a green perspective pitch on white, each player in a circle ringed in the <b>team’s kit colour</b>, shirt number top-left and a badge top-right. Players without a photo get a kit-coloured circle with initials.</li>
-    <li><b>🏳️ Nation / 🛡️ Club</b> (next to the Teams heading, or Settings) switches that badge between nation flag and favourite-club crest everywhere, including the player portal and share images.</li>
+    <li>Each pitch card shows the nation flag and favourite-club crest together.</li>
     <li>Tap two players on the pitch or in subs to swap them. The strip above shows the on-pitch (starters only) rating.</li></ul>`)}
 
   ${sec('share','Sharing to WhatsApp',`<ul><li><b>All teams</b> card: date, time${s.venue?', venue':''}, rotation and every team. <b>Team on pitch</b>: one team’s line-up card.</li>
-    <li><b>Save as image</b> or <b>Copy text for WhatsApp</b>. Nothing shared ever contains ratings.</li></ul>`)}
+    <li><b>Save as image</b> or <b>Copy text for WhatsApp</b>. Nothing shared ever contains ratings.</li><li>Images are saved at the highest quality the phone allows. In WhatsApp, tap <b>HD</b> before sending (or send as a Document) so WhatsApp doesn’t shrink it.</li></ul>`)}
 
   ${sec('rot','Match-night rotation',(()=>{const r=rotation({teams:[{},{},{}]}),r4=rotation({teams:[{},{},{},{}]});
     return `<p>Three teams: <b>A v B → B v C → C v A</b>, repeated. Four teams use a 6-game round. The app fits as many games as the session allows (no break after the last game), then trims so every team plays the same number.</p><p>Now (${r.tot} min, ${r.g}-min games, ${r.c}-min breaks): 3 teams = <b>${r.games} games, ${r.each} each</b>${r.spare?`, ${r.spare} min spare`:''}; 4 teams = <b>${r4.games} games, ${r4.each} each</b>${r4.spare?`, ${r4.spare} min spare`:''}. Change these in Settings.</p>`})())}
@@ -2645,7 +2703,7 @@ function vGuide(){
 function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details class="gsec" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
   return `<h2>Your player guide</h2><p class="gintro">Everything about your Airdrie United profile in two minutes.</p>
   ${sec('mine','Make your profile yours',`<ul><li><b>Dream Team</b> tab: build up to 5 private teams from the club and the world’s top players (Icons to today). Pick any size (5–11), formation, tactic and captain, tap two cards to swap, then <b>Save as image</b> or open it on the <b>Tactic board</b>.</li>
-    <li><b>Tactic board</b>: drag players and the ball, drop the ball on a player, switch to <b>Pass</b> and tap a teammate, <b>Draw run</b> for arrows, add opponents, save steps and press <b>Play</b> to watch the move. Captains get it on their Next match and tournament cards.</li><li><b>Account → My profile</b>: nickname, best position, card colour (your gold/silver/bronze/★ level still shows as a small badge), one signature ability, up to <b>5 PlayStyles</b> of your own (managers award the rest), favourite player, favourite teammate, dream boots, stadium and shirt number.</li>
+    <li><b>Tactic board</b>: drag players and the ball, drop the ball on a player, switch to <b>Pass</b> and tap a teammate, <b>Draw run</b> for arrows, add opponents, save steps and press <b>Play</b> to watch the move. Captains get it on their Next match and tournament cards.</li><li><b>Account → My profile</b>: nickname, best position, card colour (your gold/silver/bronze/★ level still shows as a small badge), one chemistry style, up to <b>5 PlayStyles</b> of your own (managers award the rest), favourite player, favourite teammate, dream boots, stadium and shirt number.</li>
     <li><b>Photo</b>: send a new one; it shows after a manager approves it. Your old photo stays until then.</li>
     <li><b>Squad</b> tab: every teammate’s card and page. Tap <b>Compare with me</b> to go head to head.</li>
     <li><b>Team chemistry</b> (Squad tab): rate 1–5 how well you play with each teammate. Only managers see it; it helps build better teams.</li>
@@ -2674,6 +2732,18 @@ function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details cl
     <li>From match day until the end of the 2nd day after it you can <b>vote for Player of the Match</b> (not yourself). Managers see the votes and make the final pick.</li></ul>`)}
   ${sec('tourns','Tournaments and your career',`<ul><li>The <b>Tournaments</b> tab shows upcoming tournaments against other clubs, the age rule and whether you’re eligible. Answer I’m in / Can’t make it right there.</li><li>Add your <b>date of birth</b> in Account so managers can check age groups (only managers see it).</li><li>Get picked and you’ll see the squad on the pitch, your captaincy, and a <b>tournament career</b>: tournaments, titles, results, goals and assists. Squads earn +200 XP, winners +500.</li></ul>`)}
   ${sec('page','Your player page and PlayStyles',`<ul><li>Me → <b>📄 My player page</b>: your FC-style page with your details, apps, goals and titles, your six stat groups, your rating in every position on a pitch, and your <b>PlayStyles</b>.</li><li>PlayStyles unlock when your match ratings reach a level (e.g. Rapid at Speed 82+), or when the managers award one. Awarded ones are coloured (gold = elite “+”); the grey ones are still to earn. Only managers set ratings, skills and PlayStyles.</li></ul>`)}
+  ${sec('styles','Chemistry styles and PlayStyles',`<ul><li><b>Chemistry style</b> (Edit my profile): pick one of 23, like Hunter (Pace + Shooting) or Anchor (Defending + Physical). It boosts those stats on your player page, and your page shows which styles suit you best.</li>
+    <li><b>PlayStyles</b>: pick up to 5 of your own; managers award the rest. <b>Tap any PlayStyle</b> to read what it means, e.g. Quick Step = explosive first few steps to burst away.</li>
+    <li>White icon = PlayStyle, gold icon = PlayStyle+ (elite).</li></ul>`)}
+  ${sec('unl','Unlocks',`<ul><li>New card designs, chemistry styles and PlayStyles unlock as you earn XP. 🔒 shows the XP needed; you get a notification when one opens.</li>
+    <li>Some designs are exclusive and never unlock.</li></ul>`)}
+  ${sec('strip','Reading your player page',`<ul><li>Under your card: <b>R/L</b> = preferred foot, <b>3★</b> = skill moves, <b>3WF</b> = weak foot (out of 5)${d.showRatings?', and the green number is your best role rating':''}.</li>
+    <li><b>AcceleRATE</b>: how you speed up. Explosive = quick off the mark, Lengthy = builds up to top speed, Controlled = in between.</li>
+    <li><b>Roles</b> (like ST Poacher or CAM Playmaker) show the positions and jobs that suit you most. ++ = a perfect fit.</li></ul>`)}
+  ${sec('teams','How the managers make teams',`<ul><li>The app balances teams using everyone’s match ratings, positions, ★ star players, chemistry styles, PlayStyles and the teammate chemistry you rate in the Squad tab. Rating your teammates honestly helps make fairer, better teams.</li>
+    <li>It also spreads out players who often drop late, and can mix up last week’s teammates.</li></ul>`)}
+  ${sec('find','Search and sharing',`<ul><li>🔍 in the header finds anything in the app.</li>
+    <li>Saved images are full quality. In WhatsApp, tap <b>HD</b> before sending (or send as a Document) to keep them sharp.</li></ul>`)}
   ${sec('club','The Club page',`<ul><li>The club cabinet: trophies, kits, balls, training gear and nets on shelves. Tap anything to see its photos. Also our grounds: Bayview in summer, Genesis Centre in winter.</li><li>The Tournaments tab shows the tournaments the managers have shared with you, including past ones you played in.</li></ul>`)}
   ${sec('tabs','The other tabs',`<ul><li><b>Matches</b>: every game you played, the score, your team on the pitch, the other teams, and any note from the managers.</li>
     <li><b>Availability</b>: the whole season schedule marked Played, Missed, No-show or your answer, plus your answer history.</li>
@@ -2754,7 +2824,7 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" data-a="set" data-k="photoAuto" ${s.photoAuto?'checked':''}> Player photos go live straight away (players crop and remove the background themselves; no approval needed)</label>
     <div class="stack" style="gap:6px;margin-top:6px"><b class="small">Message to all players</b><textarea id="annt" rows="2" maxlength="280" placeholder="e.g. Bring both kits this Saturday">${esc((s.announce||{}).text||'')}</textarea><div class="row"><button class="btn small primary" data-a="annsend">Send to players</button>${(s.announce||{}).text?`<button class="btn small ghost" data-a="annclear">Clear</button><span class="small muted">Sent ${new Date(s.announce.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</span>`:''}</div><span class="small muted">Shows in every player’s notification bell and pops up when they open the app.</span></div>
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
-    <label class="small row chk"><input type="checkbox" id="plprof" data-a="set" data-k="playerProfile" ${s.playerProfile!==false?'checked':''}> Players can edit their profile: nickname, card colour, signature ability, up to 5 PlayStyles, favourites, and send a photo for approval</label>
+    <label class="small row chk"><input type="checkbox" id="plprof" data-a="set" data-k="playerProfile" ${s.playerProfile!==false?'checked':''}> Players can edit their profile: nickname, card colour, chemistry style, up to 5 PlayStyles, favourites, and send a photo for approval</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
     <label class="small row chk"><input type="checkbox" id="plgw" data-a="set" data-k="playerGrowth" ${s.playerGrowth!==false?'checked':''}> Players see their growth: trends, weekly focus, card upgrades and personal bests (no ratings shown unless the box above is ticked)</label>`:''}
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
