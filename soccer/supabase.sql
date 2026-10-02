@@ -134,3 +134,5 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 --   policies on storage.objects: stars_admin_insert / stars_admin_update / stars_admin_select
 
 -- 2026-10-02: player payload sends 'fc' (manager attribute overrides) with the shared squad ratings
+
+-- 2026-10-02: settings.unlocks {card,cs,ps:{key:xp|-1},owner}; payload sends 'unlocks'; atb_player_profile rejects admin-only (-1) card/ability unless the player is linked to the team owner (private.atb_mgr_links)

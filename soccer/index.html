@@ -1074,6 +1074,17 @@ label.f .muted,label.f .small{text-transform:none;letter-spacing:0;font-weight:5
 .hb .rk{color:var(--muted);font-size:12px;text-align:right}.hb .hbn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hb small{color:var(--muted)}.hb .hbt{height:10px;background:color-mix(in srgb,var(--muted) 14%,transparent);border-radius:5px;overflow:hidden}.hb .hbt i{display:block;height:100%;background:var(--s1);border-radius:0 5px 5px 0}
 .hb b{text-align:right;font:800 15px var(--f-display)}.hb li.me{background:color-mix(in srgb,var(--accent) 12%,transparent)}.hb li.me .hbt i{background:var(--accent)}
 .tvt{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}.tvt th,.tvt td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}.tvt th:first-child,.tvt td:first-child{text-align:left;color:var(--muted)}.tvt th{font-size:12px;color:var(--muted)}.tvt td.win{font-weight:800;color:var(--ink)}
+
+/* unlocks */
+.ultag{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font:800 10px var(--f-body);font-style:normal;background:rgba(10,14,22,.82);color:#fff;padding:3px 7px;border-radius:99px;white-space:nowrap;pointer-events:none;z-index:2}.ultag.only{background:linear-gradient(135deg,#F4D98A,#B88A2E);color:#2a1d07}
+.ccsw2,.abopt,.psopt{position:relative}.abopt .ultag,.psopt .ultag{top:50%}
+.locked .ccimg,.locked .abil,.locked .psb{filter:grayscale(.85) brightness(.75);opacity:.55}.locked span,.locked small{opacity:.6}
+.ulnext{margin-top:8px;font-size:13px;color:var(--ink)}
+.uld{border:1px solid var(--line);border-radius:12px;padding:8px 12px}.uld summary{cursor:pointer;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ulg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px 20px;margin-top:8px}
+.ulr{display:grid;grid-template-columns:120px minmax(0,1fr) 72px 78px;align-items:center;gap:8px;font-size:13px;min-height:40px}.ulr .uln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.ulr output{font:800 13px var(--f-display);text-align:right}
+.ulr input[type=range]{accent-color:var(--accent);width:100%;min-width:0}.ulr.only output{color:#B88A2E}.ulr.only input[type=range]{opacity:.35}
+@media(max-width:520px){.ulr{grid-template-columns:96px minmax(0,1fr) 64px;}.ulr label{grid-column:2/4}}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1392,7 +1403,7 @@ const ABALIAS={speed:'hunter',vision:'artist',wall:'sentinel',magic:'artist',cap
 const abKey=k=>ABILITIES[k]?k:ABALIAS[k]||'';
 const prof=p=>p&&p.prof||{};
 const abilityChip=(k,small)=>{const a=ABILITIES[abKey(k)];return a?`<span class="abil chs${small?' sm':''}" title="Chemistry style ${esc(a[1])}: boosts ${esc(a[2].join(', '))}"><b class="abb">${a[0]}</b><b>${esc(a[1])}</b>${small?'':`<i>${esc(a[2].join(' · '))}</i>`}</span>`:''};
-const ccOf=p=>{let c=prof(p).card;c=CARDALIAS[c]||c;return c&&CARDCOL[c]?c:''};
+const ccOf=p=>{let c=prof(p).card;c=CARDALIAS[c]||c;if(c&&p&&ulOf('card',c)===-1&&p.id!==ulOwner())return '';return c&&CARDCOL[c]?c:''};
 const optGroups=(groups,cur)=>groups.map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(n=>`<option ${n===cur?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('');
 // FC card (EA FC layout): metal body by tier, OVR + position top-left, photo centre fading into the card, name, six stats, flag + crest.
 function cardHTML(p,{btn=true,tier:tv,nonum=false}={}){const r=R(p.id),t=tv||(p.star?'special':hideR?'gold':tier(r.ovr)),f=k=>rv(Math.round((r.a[k]||0)*10)),cc=ccOf(p),known=!!(tv||p.star||!hideR),pic=p.photo||p.thumb;
@@ -1551,7 +1562,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021949',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022005',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2667,9 +2678,20 @@ async function starJobRun(){if(starJob)return;const names=Object.keys(STARS).fil
 function starJobPanel(){if(!isAdmin)return '';const tot=Object.keys(STARS).length,have=Object.keys(STARS).filter(n=>STARIX.has(starSlug(n))).length;
   return `<h2>Dream Team star photos</h2><div class="panel stack"><div class="small muted">Cut out every star’s photo once (background removed) and publish it, so players’ phones never do this work. Takes about 10–20 minutes; keep this page open.</div>
     <div><b>${have}</b> of ${tot} ready</div><div id="starjob" class="small">${starJob?'Working…':''}</div><div class="row"><button class="btn primary" data-a="starjob" ${starJob||have>=tot?'disabled':''}>${have?'Prepare the missing ones':'Prepare all star photos'}</button></div></div>`}
+
+function unlockPanel(){if(!isAdmin)return '';const u=S.settings.unlocks||{},P=S.players.filter(p=>!p.guest),grp=[['card','Card designs',Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])],['cs','Chemistry styles',Object.entries(ABILITIES).map(([k,v])=>[k,v[1]])],['ps','PlayStyles (players’ own picks)',PSTYLES.flatMap(([,l])=>l).map(x=>[x[1],x[1]])]];
+  const lbl=v=>v===-1?'Only you':v<=0?'Free':v.toLocaleString()+' XP';
+  return `<h2>Unlocks &amp; exclusives <span class="small muted">admin only</span></h2><div class="panel stack"><p class="small muted" style="margin:0">Players unlock these as they earn XP and get a notification each time. Slide to set the XP needed (far left = free). <b>Only me</b> keeps it for your own player profile: nobody else sees it.</p>
+    <label class="f">Your player profile<select data-ulown>${['<option value="">Choose…</option>'].concat(P.map(p=>`<option value="${p.id}" ${p.id===u.owner?'selected':''}>${esc(p.name)}</option>`)).join('')}</select></label>
+    ${grp.map(([t,title,items])=>`<details class="uld"><summary><b>${title}</b> <span class="small muted">${items.filter(([k])=>ulOf(t,k)===-1).length} only you · ${items.filter(([k])=>ulOf(t,k)>0).length} locked · ${items.filter(([k])=>ulOf(t,k)===0).length} free</span></summary>
+      <div class="ulg">${items.map(([k,n])=>{const v=ulOf(t,k);return `<div class="ulr${v===-1?' only':''}"><span class="uln">${esc(n)}</span><input type="range" min="0" max="12000" step="100" value="${Math.max(0,v)}" data-ul="${t}" data-k="${esc(k)}" ${v===-1?'disabled':''}><output>${lbl(v)}</output>${t!=='ps'?`<label class="small row chk"><input type="checkbox" data-ulx="${t}" data-k="${esc(k)}" ${v===-1?'checked':''}> Only me</label>`:'<span></span>'}</div>`}).join('')}</div></details>`).join('')}
+    <div class="row"><button class="btn ghost small" data-a="ulreset">Reset to the default ladder</button></div></div>`}
+let ulT=0;const ulSave=()=>{clearTimeout(ulT);ulT=setTimeout(()=>putSettings(),500)};
+document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.ul)return;const v=+el.value,o=el.nextElementSibling;o.textContent=v?v.toLocaleString()+' XP':'Free';const u=S.settings.unlocks=S.settings.unlocks||{};(u[el.dataset.ul]=u[el.dataset.ul]||{})[el.dataset.k]=v;ulSave()});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset)return;if(el.dataset.ulx){const u=S.settings.unlocks=S.settings.unlocks||{},t=el.dataset.ulx,k=el.dataset.k;(u[t]=u[t]||{})[k]=el.checked?-1:(UL_DEF[t]||{})[k]??0;ulSave();render()}else if(el.dataset.ulown!=null){(S.settings.unlocks=S.settings.unlocks||{}).owner=el.value;ulSave()}});
 function vSettings(){
   const s=S.settings;
-  return (supaUser?mfbPanel():'')+starJobPanel()+`<h2>Rating model</h2><div class="panel stack">
+  return (supaUser?mfbPanel():'')+unlockPanel()+starJobPanel()+`<h2>Rating model</h2><div class="panel stack">
     <div class="fgrid">
       <label class="f">Last season counts as<select id="bw" data-a="set" data-k="baseW">${[0,1,2,3,5,8].map(n=>`<option value="${n}" ${n==s.baseW?'selected':''}>${n} match${n==1?'':'es'}</option>`).join('')}</select></label>
       <label class="f">Average over<select id="rn" data-a="set" data-k="recentN">${[0,3,5,8,12].map(n=>`<option value="${n}" ${n==s.recentN?'selected':''}>${n?'last '+n+' matches':'all matches'}</option>`).join('')}</select></label>
@@ -2930,11 +2952,29 @@ function xpEvents(){const me=PM.data.me.id,ev=[],noshow=new Set();
   S.tourns.filter(t=>(t.squad||[]).includes(me)&&t.date<=todayISO()).forEach(t=>{ev.push({d:t.date,x:200,l:'Tournament squad: '+t.name});if(t.place==='champ')ev.push({d:t.date,x:500,l:'Tournament winners'});if(t.place==='runner')ev.push({d:t.date,x:250,l:'Tournament runners-up'});const st=t.stats?.[me];if(st?.g)ev.push({d:t.date,x:40*st.g,l:`${st.g} tournament goal${st.g>1?'s':''}`});if(st?.a)ev.push({d:t.date,x:25*st.a,l:`${st.a} tournament assist${st.a>1?'s':''}`})});
   badgeList().filter(b=>b.got).forEach(b=>ev.push({d:'',x:100,l:'Badge: '+b.n}));
   return ev.sort((a,b)=>(b.d||'').localeCompare(a.d||''))}
+
+/* ---------- Unlocks: card designs, chemistry styles and PlayStyles open up as players earn XP; the admin can keep some for themselves ----------
+   value per item: 0 = free, N = unlocks at N XP, -1 = admin only (exclusive). Admin sets them in Settings; defaults below. */
+const UL_DEF={card:{cornerstones:300,foundation:600,sponsor:900,summer:1200,otw:1500,otwglow:1900,fiesta:2300,risingstar:2700,premier:3100,premlights:3500,destined:4000,hero:4500,knockout:5000,prime:5600,greats:6200,totw:6800,tots:7400,scream:8000,proicon:9000,halloffame:10000,icon:12000},
+  cs:{hawk:400,finisher:800,deadeye:1200,marksman:1800,sniper:2400,maestro:3000,architect:600,powerhouse:1500,anchor:1000,guardian:2000,gladiator:2600,backbone:3400,gkwall:800,shield:1600,cat:2400,glove:3200},
+  ps:{}};
+// PlayStyles: the first two of each group are free, the rest unlock gradually
+const ULK=()=>((PM?PM.data.settings:S.settings)||{}).unlocks||{};
+let PSDEF=null;const psDef=k=>{if(!PSDEF){PSDEF={};let i=0;PSTYLES.forEach(([,l])=>l.forEach((x,j)=>{PSDEF[x[1]]=j<2?0:Math.min(9000,300+(i++)*300)}))}return PSDEF[k]??0};
+const ulOf=(t,k)=>{const u=ULK()[t];if(u&&u[k]!=null)return +u[k];return t==='ps'?psDef(k):(UL_DEF[t]||{})[k]??0};
+const ulOwner=()=>ULK().owner||'';
+const amOwner=()=>!!(PM&&(PM.data.me.id===ulOwner()||(isAdmin&&!PM.preview)));
+const myXP=()=>{try{return Math.max(0,xpEvents().reduce((n,e)=>n+e.x,0))}catch(e){return 0}};
+// state for a picker item: {hide, lock, need, only}
+function ulState(t,k){const v=ulOf(t,k),own=amOwner();if(v===-1)return own?{only:true}:{hide:true};if(!PM||own||v<=0)return {};const xp=myXP();return xp>=v?{}:{lock:true,need:v,have:xp}}
+const ulTag=st=>st.only?'<em class="ultag only">👑 Only you</em>':st.lock?`<em class="ultag">🔒 ${st.need.toLocaleString()} XP</em>`:'';
+const ulName=(t,k)=>t==='card'?(CARDTHEMES[k]||[k])[0]+' card':t==='cs'?(ABILITIES[k]||[,k])[1]+' chemistry style':k+' PlayStyle';
+function ulAll(){const L=[];Object.keys(CARDTHEMES).forEach(k=>L.push(['card',k]));Object.keys(ABILITIES).forEach(k=>L.push(['cs',k]));PSTYLES.flatMap(([,l])=>l).forEach(x=>L.push(['ps',x[1]]));return L.map(([t,k])=>({t,k,v:ulOf(t,k)}))}
 function levelOf(xp){let L=1,need=500,base=0;while(xp>=base+need){base+=need;L++;need+=500}return {L,name:LEVELS[Math.min(L-1,LEVELS.length-1)],into:xp-base,need}}
 function levelPanel(){const ev=xpEvents(),xp=Math.max(0,ev.reduce((n,e)=>n+e.x,0)),lv=levelOf(xp),lastD=allGames()[0]?.m.date,lastXP=lastD?ev.filter(e=>e.d===lastD).reduce((n,e)=>n+e.x,0):0;
   const nd=d=>d?new Date(d+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
   return `<div class="panel lvl"><div class="lvh"><span class="lvb"><small>LV</small>${lv.L}</span><div style="flex:1;min-width:0"><b>${lv.name}</b><div class="small muted">${xp.toLocaleString()} XP · ${(lv.need-lv.into).toLocaleString()} to Level ${lv.L+1}</div></div>${lastXP?`<span class="pill ${lastXP>0?'ok':'bad'}">${lastXP>0?'+':''}${lastXP} XP last match</span>`:''}</div>
-    <div class="pbar"><i style="width:${Math.round(lv.into/lv.need*100)}%"></i></div>
+    <div class="pbar"><i style="width:${Math.round(lv.into/lv.need*100)}%"></i></div>${(()=>{if(amOwner())return '';const nx=ulAll().filter(x=>x.v>xp).sort((a,b)=>a.v-b.v)[0];return nx?`<div class="ulnext">🔓 Next unlock: <b>${esc(ulName(nx.t,nx.k))}</b> at ${nx.v.toLocaleString()} XP <span class="muted">· ${(nx.v-xp).toLocaleString()} to go</span></div>`:''})()}
     <details><summary class="small">How XP works · your recent XP</summary><div class="xpg"><ul class="xpr">${XPRULES.map(([l,v])=>`<li><span>${l}</span><b class="num">${typeof v==='number'?(v>0?'+':'')+v:v}</b></li>`).join('')}</ul>
       <ol class="alog">${ev.slice(0,15).map(e=>`<li><span class="at num">${nd(e.d)}</span><span class="who">${esc(e.l)}</span><b class="num ${e.x<0?'neg':''}">${e.x>0?'+':''}${e.x}</b></li>`).join('')||'<li class="muted">Play your first match to earn XP.</li>'}</ol></div></details></div>`}
 
@@ -3045,10 +3085,10 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
-    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw2" aria-pressed="${(CARDALIAS[pfD.card]||pfD.card||'')===k}" data-a="pfcard" data-v="${k}" title="${esc(l)}">${CARDTHEMES[k]||!k?`<i class="ccimg" style="background-image:url(cards/t_${k||'gold'}.webp?v=${CARDV})"></i>`:`<i class="ccimg ccflat" style="background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})"></i>`}<span>${k?esc(l):'Earned (auto)'}</span></button>`).join('')}</div>
+    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>[k,l,k?ulState('card',k):{}]).filter(x=>!x[2].hide).map(([k,l,st])=>`<button class="ccsw2${st.lock?' locked':''}" aria-pressed="${(CARDALIAS[pfD.card]||pfD.card||'')===k}" data-a="pfcard" data-v="${k}" ${st.lock?`data-lock="${st.need}"`:''} title="${esc(l)}">${ulTag(st)}${CARDTHEMES[k]||!k?`<i class="ccimg" style="background-image:url(cards/t_${k||'gold'}.webp?v=${CARDV})"></i>`:`<i class="ccimg ccflat" style="background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})"></i>`}<span>${k?esc(l):'Earned (auto)'}</span></button>`).join('')}</div>
       <div class="small muted">Your level still shows on your card as a small gold, silver, bronze or ★ badge.</div></div>
-    <div><div class="f"><span>Chemistry style <span class="muted">(your signature, pick one)</span></span></div>${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="abgrid">${Object.keys(ABILITIES).filter(k=>ABILITIES[k][3]===c).map(k=>`<button class="abopt" aria-pressed="${abKey(pfD.ability)===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div>`).join('')}</div>
-    <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
+    <div><div class="f"><span>Chemistry style <span class="muted">(your signature, pick one)</span></span></div>${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="abgrid">${Object.keys(ABILITIES).filter(k=>ABILITIES[k][3]===c).map(k=>[k,ulState('cs',k)]).filter(x=>!x[1].hide).map(([k,st])=>`<button class="abopt${st.lock?' locked':''}" aria-pressed="${abKey(pfD.ability)===k}" data-a="pfabil" data-v="${k}" ${st.lock?`data-lock="${st.need}"`:''}>${abilityChip(k)}${ulTag(st)}</button>`).join('')}</div>`).join('')}</div>
+    <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>[x,ulState('ps',x[1])]).filter(y=>!y[1].hide).map(([x,st])=>`<button class="psopt${st.lock?' locked':''}" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}" ${st.lock?`data-lock="${st.need}"`:''}>${psBadge(x[1],st.lock?'':'on')}<small>${esc(x[1])}</small>${ulTag(st)}</button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
     <div class="fgrid g2"><label class="f">Favourite player<select id="pffav"><option value="">–</option>${optGroups(FAVPLAYERS,pr.favPlayer)}</select></label>
       <label class="f">Favourite teammate<select id="pfmate"><option value="">–</option>${mates.map(p=>`<option value="${p.id}" ${p.id===pr.favMate?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
       <label class="f">Dream boots<select id="pfboots"><option value="">–</option>${pr.boots&&!BOOTS.some(([b,l])=>l.some(n=>(b==='Others'?n:b+' '+n)===pr.boots))?`<option selected>${esc(pr.boots)}</option>`:''}${BOOTS.map(([b,l])=>`<optgroup label="${b}">${l.map(n=>{const v=b==='Others'?n:b+' '+n;return `<option ${v===pr.boots?'selected':''}>${esc(v)}</option>`}).join('')}</optgroup>`).join('')}</select></label>
@@ -3293,6 +3333,9 @@ const PN_KEY=()=>'atb_pn_'+PM.data.me.id;let pnPopped=false;
 function pnState(){const k=PN_KEY();let st=ls(k);if(!st||typeof st!=='object')st={seen:{},pop:{},first:true};st.seen=st.seen||{};st.pop=st.pop||{};return st}
 function pnItems(){const d=PM.data,me=d.me,id=me.id,t=todayISO(),out=[],ago=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10),recent=ago(14);
   const day=x=>new Date(x+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}),add=(k,ic,title,body,at,go)=>out.push({k,ic,title,body,at:at||t,go});
+  if(!amOwner()){const xp=myXP(),got=ulAll().filter(x=>x.v>0&&xp>=x.v).sort((a,b)=>b.v-a.v),kk='atb_unl_'+id;let rec={};try{rec=JSON.parse(localStorage.getItem(kk)||'{}')}catch(e){}
+    if(got.length){if(rec.n!==got.length){rec={n:got.length,at:t};try{localStorage.setItem(kk,JSON.stringify(rec))}catch(e){}}
+      add('unl:'+got.length,'🔓',got.length===1?'You unlocked something new':`New unlock: ${ulName(got[0].t,got[0].k)}`,`${got.slice(0,4).map(x=>ulName(x.t,x.k)).join(', ')}${got.length>4?` and ${got.length-4} more`:''}. Pick it in Edit my profile.`,rec.at||t,'me')}}
   const an=d.settings&&d.settings.announce;if(an&&an.text&&String(an.at||'').slice(0,10)>=ago(21))add('ann:'+an.at,'📣','Message from the managers',an.text,String(an.at).slice(0,10),'me');
   (S.fixtures||[]).filter(f=>f.date>=t).forEach(f=>{const ti=(f.teams||[]).findIndex(x=>x.players.includes(id));if(ti<0)return;const tm=f.teams[ti];
     add('fx:'+f.date+':'+(tm.name||ti)+':'+tm.players.length,'👕','Teams are out',`You’re in ${tm.name||'Team '+(ti+1)} for ${day(f.date)}.`,f.date<=t?t:ago(0),'me');
@@ -3406,6 +3449,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='cmp'){cmpPage(el.dataset.id);return}
   if(a==='ppage2'){closeModal();setTimeout(()=>playerPage(el.dataset.id),60);return}
   if(a==='story'){storyCard(el.dataset.id);return}
+  if((a==='pfps'||a==='pfcard'||a==='pfabil')&&el.dataset.lock){const n=+el.dataset.lock,h=myXP();toast(`🔒 Unlocks at ${n.toLocaleString()} XP. You have ${h.toLocaleString()}, ${(n-h).toLocaleString()} to go.`);return}
   if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&abKey(pfD[k])===el.dataset.v?'':el.dataset.v;(a==='pfabil'?document.querySelectorAll('[data-a=pfabil]'):el.parentNode.querySelectorAll('button')).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();const hc=document.querySelector('.phero .pcard');if(hc){const me=pById(PM.data.me.id)||PM.data.me,inf=hc.querySelector('.inform');hc.innerHTML=cardHTML({...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}},{btn:false,tier:PM.data.growth?tier(R(me.id).ovr):undefined})+(inf?inf.outerHTML:'')}return}
   if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';pfKeep();return}
   if(a==='pfsave'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const msg=$('#pfmsg');el.disabled=true;
@@ -4251,6 +4295,7 @@ document.addEventListener('click',async e=>{
     while(draft.names.length<draft.n)draft.names.push('');saveDraft();render();return}
   if(a==='reroll'){draft.altI=((draft.altI||0)+1)%draft.alts.length;draft.teams=draft.alts[draft.altI];saveDraft();render();toast('Option '+(draft.altI+1)+' of '+draft.alts.length);return}
   if(a==='lock'){const i=+el.dataset.i;draft.locks[id]!=null?delete draft.locks[id]:draft.locks[id]=i;saveDraft();render();return}
+  if(a==='ulreset'){if(!isAdmin)return;const own=(S.settings.unlocks||{}).owner;S.settings.unlocks=own?{owner:own}:{};await putSettings();render();toast('Default unlock ladder restored');return}
   if(a==='starjob'){if(!isAdmin)return;el.disabled=true;starJobRun();return}
   if(a==='finalize'){const mm=draftAsMatch();await putDoc('fixtures',draft.date,{date:mm.date,teams:mm.teams,at:Date.now(),by:myName||(isAdmin?'admin':'')});toast('Teams finalized. Players can see them now');render();return}
   if(a==='unfinal'){await delDoc('fixtures',draft.date);toast('Finalized teams removed from players');render();return}
