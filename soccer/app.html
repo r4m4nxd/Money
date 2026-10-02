@@ -2433,7 +2433,7 @@ async function bootPlayer(saved){
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   if(supaUser&&saved.tok)supa.rpc('atb_mgr_link',{p_token:saved.tok}).then(()=>{},()=>{});
   await loadPlayer();
-  try{useTrack()}catch(e){}setTimeout(()=>{try{helloPlayer()}catch(e){}},1600);
+  try{useTrack()}catch(e){}
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer(true)});
   setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer(true)},90000);
 }
@@ -2918,7 +2918,8 @@ function pnOpen(){pnClose();const st=pnState(),items=pnItems();
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a="pbell"],[data-a="pngo"],[data-a="pnclose"]');if(!el||!PM)return;e.stopPropagation();const a=el.dataset.a;
   if(a==='pbell'){pnOpen();return}if(a==='pnclose'){const st=pnState();pnClose();return}
   if(a==='pngo'){pnClose();if(document.body.classList.contains('mopen'))closeModal();const v=el.dataset.v;setTimeout(()=>{if(v&&v!==view)go(v);else window.scrollTo({top:0,behavior:'smooth'})},60)}},true);
-function renderPlayer(){outSync();document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');if(m.dataset.v!=='p-'+view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v='p-'+view;
+let helloDone=false;
+function renderPlayer(){if(!helloDone&&PM&&PM.data&&!PM.preview){helloDone=true;setTimeout(()=>{try{helloPlayer()}catch(e){console.error('hello',e);try{helloShow('<b>Welcome back!</b><span>'+CHEERS[0]+'</span>','me')}catch(_){}}},1200)}outSync();document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');if(m.dataset.v!=='p-'+view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v='p-'+view;
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
   const keep=keepDetails(m);
