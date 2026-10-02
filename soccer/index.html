@@ -1607,7 +1607,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022146',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022150',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1649,8 +1649,8 @@ function showLogin(err,info,role){role=role||ls('atb_lrole')||'player';ls('atb_l
     <label class="f"><span id="plpinl">PIN</span><input id="plpin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><label class="f" id="plpin2w" hidden>Type the same PIN again<input id="plpin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></label><p class="small plhint" id="plhint" hidden></p>
     <div class="row"><button class="btn primary" data-a="plogin" type="submit" id="plbtn" data-t="Sign in">Sign in</button></div><span class="small muted" id="plmsg" role="status"></span></form>`
     :`<h2 style="margin:0">Manager sign-in</h2>
-    <form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>
-    <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required></label>
+    <form class="stack" id="lform" novalidate><label class="f">Email or username<input id="se" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required readonly data-ro></label>
+    <label class="f">Password<input id="sp" type="password" autocomplete="current-password" required readonly data-ro></label>
     <div class="row"><button class="btn primary" data-a="signin" type="submit">Sign in</button><button class="btn ghost" type="button" data-a="forgot">Forgot password?</button></div><span class="small muted" id="smsg" role="status"></span></form>`}</div>`;
   $('#lform')?.addEventListener('submit',e=>e.preventDefault());
   if(role==='player'&&!err)pLoadRoster();
@@ -3885,6 +3885,9 @@ function cmdClose(){document.querySelector('.cmdk')?.remove()}
 function cmdRun(i){const x=cmdRes[i];cmdClose();if(x)setTimeout(()=>x.run(),30)}
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.querySelector('.cmdk')?cmdClose():cmdOpen();return}
   if(!document.querySelector('.cmdk'))return;if(e.key==='Escape'){e.preventDefault();cmdClose()}else if(e.key==='ArrowDown'){e.preventDefault();cmdSel=Math.min(cmdRes.length-1,cmdSel+1);cmdDraw()}else if(e.key==='ArrowUp'){e.preventDefault();cmdSel=Math.max(0,cmdSel-1);cmdDraw()}else if(e.key==='Enter'){e.preventDefault();cmdRun(cmdSel)}});
+
+// login fields stay read-only until tapped, so phones don't pop up saved passwords the moment the app opens
+['pointerdown','touchstart','focusin','keydown'].forEach(t=>document.addEventListener(t,e=>{const f=e.target&&e.target.closest&&e.target.closest('input[data-ro]');if(f&&f.readOnly){f.readOnly=false;if(t!=='focusin')setTimeout(()=>f.focus(),0)}},{capture:true,passive:true}));
 /* ---------- modals ---------- */
 function openModal(html){const ctx=lastAct;lastAct=null;
   if(navReplaying){navReplaying=false;modalCtx=ctx||modalCtx}
