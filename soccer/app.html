@@ -935,6 +935,20 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   linear-gradient(115deg,transparent 0 56%,var(--abs1) 56% 71%,transparent 71%),linear-gradient(115deg,transparent 0 78%,var(--abs2) 78% 78.35%,transparent 78.35%),
   linear-gradient(115deg,transparent 0 12%,var(--abs2) 12% 12.25%,transparent 12.25%),linear-gradient(295deg,transparent 0 86%,var(--abs1) 86% 100%),
   repeating-linear-gradient(115deg,var(--abs3) 0 1px,transparent 1px 6px),radial-gradient(55% 45% at 88% 0%,var(--abs4),transparent 70%),radial-gradient(50% 45% at 0% 100%,var(--abs5),transparent 70%)}
+
+/* pitch cards keep the real card outline (artwork shape, or the FC shape for plain colours) */
+.pc.art .pc-card{aspect-ratio:.64;background:none!important;border:0!important;border-radius:0;box-shadow:none!important;filter:drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
+.pc.art .pc-card>.pcart{inset:auto;top:0;left:-14%;width:128%;height:100%;object-fit:contain;object-position:50% 50%;border-radius:0}
+.pc.art .pc-top{top:15%;left:7%}.pc.art .pc-ph{top:9%;height:54%;left:27%;right:6%}.pc.art .pc-ph.hp::after{display:none}
+.pc.art .pc-ph:not(.cut){-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.pc.art .pc-nm{top:62%;text-shadow:0 1px 2px rgba(0,0,0,.25)}.pc.art .pc-ic{bottom:17%}.pc.art .pcpip{bottom:22%!important}
+.pc.art .badge-position.cap,.pc.art .badge-position.star{top:11%!important;right:9%!important}
+.pc.art.sel .pc-card{outline:none;filter:drop-shadow(0 0 .45cqw #FFD54A) drop-shadow(0 0 .45cqw #FFD54A) drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
+.pc.art[data-chemsug] .pc-card{outline:none;filter:drop-shadow(0 0 .5cqw #2FD07A) drop-shadow(0 0 .5cqw #2FD07A)}
+.pc.art.swapt .pc-card{outline:none;filter:drop-shadow(0 0 .5cqw #fff) drop-shadow(0 0 .6cqw rgba(255,214,90,.9))}
+.special-card-glow.art .pc-card{box-shadow:none!important;animation:none;filter:drop-shadow(0 0 .6cqw #4be07f) drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
+.pc:not(.art):not(.empty) .pc-card{clip-path:url(#fcShape);border:0;border-radius:0}
+.snap .pc.art .pc-card{box-shadow:none!important}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -3739,8 +3753,9 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,stD=p?.st,r=stD?{ovr:stD[1],a:{}}:R(id),showOvr=showOvr0||!!stD||!!(opt?.dream&&p&&!p.ext&&!p.empty&&PM&&(PM.data.showRatings||SQR()));
     const tr=stD?(stD[9]==='ICON'?'special':tier(stD[1])):!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
-    return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
-      <span class="pc-card">${p?.empty?'':ARTIMG(artOf(cc,tr),'pcart')}${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
+    const art=p?.empty?'':artOf(cc,tr);
+    return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:''}${art?' art':''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
+      <span class="pc-card">${ARTIMG(art,'pcart')}${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       ${p?.number?`<span class="pc-ic"><span class="pcno">${esc(p.number)}</span></span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
       <span class="pc-role">${role}</span></${tag}>`};
