@@ -959,6 +959,41 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .pc:not(.art):not(.empty) .pc-card{clip-path:url(#fcShape);border:0;border-radius:0}
 .snap .pc.art .pc-card{box-shadow:none!important}
 .pc-ph.hp:not(.cut) img[src^="https://upload.wikimedia"]{-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent);object-fit:cover}
+
+/* ---------- Dream Team builder, squad-builder layout ---------- */
+.dfb{display:grid;gap:16px;margin-top:10px;align-items:start}@media(min-width:900px){.dfb{grid-template-columns:minmax(0,1fr) 300px}.dfb-side{position:sticky;top:calc(var(--hdrh,96px) + 12px)}}
+.dfb-main{min-width:0}.dfb-main .dhint{min-height:30px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.dfb-side{display:flex;flex-direction:column;gap:12px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--line);border-radius:14px;padding:14px;backdrop-filter:blur(6px)}
+.dside{display:flex;flex-direction:column;gap:8px}.dside+.dside{border-top:1px solid var(--line);padding-top:12px}.dsh{font:800 16px var(--f-display)}
+.dname{display:flex;gap:6px}.dname input{flex:1;min-width:0}.dname .btn{padding:0 10px}
+.dinfo{display:flex;gap:10px;align-items:center}.dinfo select{flex:1}.dsr{display:flex;flex-direction:column;align-items:flex-end}.dsr small{font-size:10.5px;color:var(--muted)}
+.dstars i{font-style:normal;font-size:17px;color:color-mix(in srgb,var(--muted) 45%,transparent)}.dstars i.on{color:#F2C230}.dstars i.half{background:linear-gradient(90deg,#F2C230 50%,color-mix(in srgb,var(--muted) 45%,transparent) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.davg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;text-align:center}.davg b{display:block;font:800 14px/30px var(--f-display);border:1px solid var(--line);border-radius:6px;background:var(--surface2)}.davg small{font-size:10px;color:var(--muted)}
+.dfull summary{cursor:pointer;font-size:13px;font-weight:700;margin-bottom:6px}
+.dchem{display:flex;align-items:center;gap:10px}.dchem .chemtot{flex:1}
+.dpitch .pc.empty .pc-card{aspect-ratio:.64;clip-path:url(#fcShape);border:0!important;background:linear-gradient(160deg,#4a4e55 0%,#2a2d32 55%,#1c1e22 100%)!important;box-shadow:none!important}
+.dpitch .pc.empty .pc-card::before{display:none}
+.dpitch .pc.empty .pc-card::after{content:'';background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44'%3E%3Cpath d='M20 2 37 11.5v21L20 42 3 32.5v-21z' fill='none' stroke='%232FD07A' stroke-width='2.4'/%3E%3Cpath d='M20 14v16M12 22h16' stroke='%232FD07A' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center 42%/38% auto no-repeat;color:transparent}
+.dpitch .pc.empty{filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.dpkov{position:fixed;inset:0;z-index:900;overflow-y:auto;overscroll-behavior:contain;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.dpkov.in{animation:dpkin .22s ease-out}
+@keyframes dpkin{from{opacity:0;transform:translateY(14px)}}
+.dpk{max-width:1100px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 16px 40px;display:flex;flex-direction:column;gap:12px}
+.dpkh{display:flex;align-items:center;gap:10px}.dpkh b{font:800 20px var(--f-display);border-bottom:2px solid #2FD07A;padding-bottom:4px}.dpkx{margin-left:auto}
+.dsearch{position:relative;max-width:420px}.dsearch input{width:100%;border:1.5px solid #2FD07A;border-radius:8px;padding:10px 34px 10px 12px}.dqx{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);font-size:15px;cursor:pointer}
+.dchips{display:flex;flex-wrap:wrap;gap:8px}.dchip{position:relative;display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;background:#15181c;color:#fff;font:700 13px var(--f-body);cursor:pointer}.dchip .ei{width:16px;height:16px}
+.dchip.on{background:#2FD07A;color:#062b1a}.dchip select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.dtags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.dtag{border:0;border-radius:99px;padding:4px 10px;background:color-mix(in srgb,var(--muted) 25%,transparent);color:var(--ink);font:700 12px var(--f-body);cursor:pointer}.dclr{background:none;border:0;color:var(--ink);font:800 12.5px var(--f-body);text-decoration:underline;cursor:pointer}
+.dpager{display:flex;justify-content:center;gap:6px;align-items:center}.dpg{min-width:34px;height:34px;border-radius:6px;border:0;background:color-mix(in srgb,var(--muted) 18%,transparent);color:var(--ink);font:800 14px var(--f-body);cursor:pointer}.dpg.on{background:#5BE0A8;color:#062b1a}.dpg:disabled{opacity:.35}.dpdots{color:var(--muted)}
+.dpk .dres{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:14px 12px;max-height:none!important;overflow:visible!important}
+.dpc{position:relative;background:none;border:0;padding:0;cursor:pointer;transition:transform .15s}.dpc .fut{pointer-events:none}.dpc:hover{transform:translateY(-3px)}.dpc:active{transform:scale(.96)}
+.dpc.used{opacity:.5}.dpc em{position:absolute;left:50%;top:46%;transform:translateX(-50%);font:800 10px var(--f-display);font-style:normal;background:rgba(0,0,0,.75);color:#fff;padding:3px 8px;border-radius:99px;text-transform:uppercase;white-space:nowrap}
+.fut .fb .fbt{font:800 4.6cqw var(--f-display);letter-spacing:.03em;opacity:.85;max-width:40cqw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fut .ph.wk img{-webkit-mask-image:radial-gradient(closest-side,#000 72%,transparent);mask-image:radial-gradient(closest-side,#000 72%,transparent)}
+html.dpkopen,html.dpkopen body{overflow:hidden}
+.dpitch .pc.empty .pc-top,.dpitch .pc.empty .pcpip{display:none}
+.dbench .dbs.empty{aspect-ratio:.64;height:auto;border:0;border-radius:0;clip-path:url(#fcShape);background:linear-gradient(160deg,#4a4e55 0%,#2a2d32 55%,#1c1e22 100%) !important}
+.dbench .dbs.empty .plus{display:block;width:44%;aspect-ratio:40/44;color:transparent;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44'%3E%3Cpath d='M20 2 37 11.5v21L20 42 3 32.5v-21z' fill='none' stroke='%232FD07A' stroke-width='2.4'/%3E%3Cpath d='M20 14v16M12 22h16' stroke='%232FD07A' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;margin:auto}
+.dbench .dbrow{grid-template-columns:repeat(auto-fill,minmax(50px,66px))!important;justify-content:center}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1011,6 +1046,7 @@ function toast(t,undo){const d=document.createElement('div');d.className='toast'
   document.body.appendChild(d);setTimeout(()=>d.remove(),undo?6000:2200)}
 /* ---------- In-app icons: one consistent line-icon set (Lucide-style, 24px grid). Emojis in the UI are swapped for these; WhatsApp texts and share images keep emojis. ---------- */
 const IC={
+  save:'<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
 ball:'<circle cx="12" cy="12" r="10"/><path d="m12 7 4 3-1.5 5h-5L8 10Z M12 7V2.5M16 10l4.8-1.6M14.5 15l2.8 4.2M9.5 15l-2.8 4.2M8 10 3.2 8.4"/>',
 assist:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8.5 16.5 3.5-9 3.5 9M9.8 13.5h4.4"/>',
@@ -1429,7 +1465,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021747',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021755',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2897,15 +2933,15 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
 let DE=null,dreamSel=null,dreamQ='';
 const TACTICS=['Balanced','Attacking','Defensive','Counter-attack','Possession','High press','Park the bus','Wing play'];
 /* Star photos for Dream Team: freely licensed images from Wikipedia / Wikimedia Commons, looked up by name once and cached on the phone */
-let WIKI=ls('atb_wiki2')||{};const wikiBusy=new Set();
+let WIKI=ls('atb_wiki2')||{};const wikiBusy=new Set(),wikiFail=new Set();
 // MediaWiki API with origin=* (CORS-enabled), up to 40 names per request; only pages describing a footballer are used
 async function wikiBatch(titles){const u='https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*&redirects=1&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=480&titles='+encodeURIComponent(titles.join('|'));
   const r=await fetch(u);if(!r.ok)throw new Error('wiki '+r.status);const j=await r.json(),q=j.query||{},map={};
   const back={};(q.normalized||[]).forEach(n=>back[n.to]=n.from);(q.redirects||[]).forEach(n=>back[n.to]=back[n.from]||n.from);
   (q.pages||[]).forEach(pg=>{const orig=back[pg.title]||pg.title;const ok=pg.thumbnail&&/football|soccer/i.test(pg.description||'');map[orig]=ok?pg.thumbnail.source:'';map[pg.title]=map[orig]});return map}
-function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!(n in WIKI&&(WIKI[n].u||Date.now()-WIKI[n].t<3*864e5))&&!wikiBusy.has(n));if(!need.length)return;need.forEach(n=>wikiBusy.add(n));
+function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!wikiFail.has(n)&&!(n in WIKI&&(WIKI[n].u||Date.now()-WIKI[n].t<3*864e5))&&!wikiBusy.has(n));if(!need.length)return;need.forEach(n=>wikiBusy.add(n));
   (async()=>{try{const m=await wikiBatch(need);const miss=need.filter(n=>!m[n]);let m2={};if(miss.length)try{m2=await wikiBatch(miss.map(n=>n+' (footballer)'))}catch(e){}
-      need.forEach(n=>{const u=m[n]||m2[n+' (footballer)']||'';WIKI[n]={u,t:Date.now()}});try{ls('atb_wiki2',WIKI)}catch(e){}}catch(e){}
+      need.forEach(n=>{const u=m[n]||m2[n+' (footballer)']||'';WIKI[n]={u,t:Date.now()}});try{ls('atb_wiki2',WIKI)}catch(e){}}catch(e){need.forEach(n=>wikiFail.add(n))}
     need.forEach(n=>wikiBusy.delete(n));if(PM&&view==='dream')bgRender()})()}
 /* Star photos with the background removed (on the phone, once per star, kept in this device's storage) */
 const CUT={},cutQ=[],cutTried=new Set();let cutBusy=false,cutDB=null;
@@ -2930,18 +2966,46 @@ function vpDream(){const L=PM.data.me.dreams||[];
     <div class="dlist">${L.map((d,i)=>`<button class="panel dcard" data-a="dopen" data-i="${i}"><b>${esc(d.name||'Dream team')}</b><span class="small muted">${d.f}${d.gk?' + GK':''} · ${esc(d.tactic||'')} · ${(d.order||[]).filter(Boolean).length}/${(d.order||[]).length} picked</span><span class="small">${(d.order||[]).filter(Boolean).slice(0,4).map(dreamName).map(esc).join(', ')}${(d.order||[]).filter(Boolean).length>4?'…':''}</span></button>`).join('')}
       ${L.length<5?`<button class="panel dcard dnew" data-a="dnew"><b>+ New dream team</b><span class="small muted">Up to 5 teams</span></button>`:''}</div>`;
   const d=DE.d,k=d.order.length,lu={f:d.f,gk:d.gk,order:d.order,n:k},picked=d.order.filter(Boolean).length;
+  const pitch=`${(wikiLoad(d.order.concat(d.bench||[]).filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),cutQueue(d.order.concat(d.bench||[]).filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null&&!DPK.open?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}`;
+  const C=lastDreamChem,AV=dreamAvg(d),sr=C&&C.ovr?C.ovr:0,stars=sr>=86?5:sr>=83?4.5:sr>=80?4:sr>=77?3.5:sr>=74?3:sr>=70?2.5:sr>=65?2:sr>=60?1.5:sr?1:0;
+  const selP=dreamSel!=null&&!DPK.open&&d.order[dreamSel]?dreamRes(d.order[dreamSel]):null;
   return `<div class="row" style="justify-content:space-between;align-items:center"><button class="btn ghost small" data-a="dback">← My dream teams</button><span class="small muted">${picked}/${k} picked</span></div>
-  <div class="dedit"><div class="dleft"><div class="panel stack">
-      <label class="f">Team name<input id="dname" maxlength="30" value="${esc(d.name)}"></label>
-      <div class="fgrid g2"><label class="f">Players<select data-a="dsize">${[5,6,7,8,9,10,11].map(n=>`<option ${n===k?'selected':''}>${n}</option>`).join('')}</select></label>
-        <label class="f">Formation<select data-a="dform">${tbFormOpts(k,d.gk).map(x=>`<option ${x===d.f?'selected':''}>${x}</option>`).join('')}</select></label>
-        <label class="f">Tactic<select data-a="dtac">${TACTICS.map(x=>`<option ${x===d.tactic?'selected':''}>${x}</option>`).join('')}</select></label>
-        <label class="f">Captain<select data-a="dcapt"><option value="">None</option>${d.order.filter(Boolean).map(x=>`<option value="${esc(x)}" ${x===d.cap?'selected':''}>${esc(dreamName(x))}</option>`).join('')}</select></label></div>
-      <label class="small row chk"><input type="checkbox" data-a="dgk" ${d.gk?'checked':''}> Goalkeeper</label>
-      <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
-    ${dreamPicker()}</div>
-    <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or drag cards to swap.`:'Tap a card to pick a player for that spot. Drag cards to swap them.'}</div>
-      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),cutQueue(d.order.concat(d.bench||[]).filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${dreamBench(d)}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
+  <div class="dfb"><div class="dfb-main"><div class="small muted dhint">${selP?`<b>${esc(selP.name)}</b> selected: drag to swap, or <button class="btn small" data-a="dreplace">Replace</button> <button class="btn ghost small" data-a="dclear">Remove</button> <button class="btn ghost small" data-a="dcapt1">Make captain</button>`:'Tap an empty card to search for a player. Drag cards to swap positions.'}</div>
+      <div class="pitchwrap dpitch">${pitch}</div>${dreamBench(d)}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div>
+    <aside class="dfb-side"><div class="dside"><b class="dsh">Create Squad</b>
+        <div class="dname"><input id="dname" maxlength="30" value="${esc(d.name)}" placeholder="Squad name"><button class="btn" data-a="dsave" title="Save">${ICO('save')}</button></div>
+        ${!d.name.trim()?'<div class="small" style="color:#E5484D">Squad name can’t be empty</div>':''}${!picked?'<div class="small" style="color:#E5484D">Squad must have at least one player</div>':''}
+      </div>
+      <div class="dside"><b class="dsh">Squad info</b>
+        <div class="dinfo"><select data-a="dform" aria-label="Formation">${tbFormOpts(k,d.gk).map(x=>`<option ${x===d.f?'selected':''}>${x}</option>`).join('')}</select>
+          <div class="dsr"><small>Squad Rating: ${sr||0}</small><span class="dstars">${[1,2,3,4,5].map(i=>`<i class="${stars>=i?'on':stars>=i-.5?'half':''}">★</i>`).join('')}</span></div></div>
+        <div class="davg">${['PAC','SHO','PAS','DRI','DEF','PHY'].map((l,i)=>`<div><b>${AV.xi[i]??'-'}</b><small>${l}</small></div>`).join('')}</div>
+        <details class="dfull"><summary>Full Squad Averages</summary><div class="davg">${['PAC','SHO','PAS','DRI','DEF','PHY'].map((l,i)=>`<div><b>${AV.all[i]??'-'}</b><small>${l}</small></div>`).join('')}</div><div class="small muted">Starting players plus substitutes (${AV.n} rated).</div></details>
+        <div class="dchem"><b>Total Chemistry</b><span class="chemtot"><i style="--w:${C?Math.round(C.tot/C.max*100):0}%"></i></span><b>${C?C.tot:0}/${C?C.max:k*3}</b></div>
+        ${C&&C.off?`<div class="small" style="color:#E5484D">${C.off} out of position (0 chem)</div>`:''}
+        <div class="fgrid g2"><label class="f">Players<select data-a="dsize">${[5,6,7,8,9,10,11].map(n=>`<option ${n===k?'selected':''}>${n}</option>`).join('')}</select></label>
+          <label class="f">Tactic<select data-a="dtac">${TACTICS.map(x=>`<option ${x===d.tactic?'selected':''}>${x}</option>`).join('')}</select></label>
+          <label class="f">Captain<select data-a="dcapt"><option value="">None</option>${d.order.filter(Boolean).map(x=>`<option value="${esc(x)}" ${x===d.cap?'selected':''}>${esc(dreamName(x))}</option>`).join('')}</select></label>
+          <label class="small row chk" style="align-self:end"><input type="checkbox" data-a="dgk" ${d.gk?'checked':''}> Goalkeeper</label></div>
+        <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
+      ${C?dreamSugHTML(d,DSUG):''}</aside></div>
+  ${(queueMicrotask(dpkSync),'')}`}
+// squad averages (PAC SHO PAS DRI DEF PHY) for the starting players, and with the substitutes
+function dreamAvg(d){const vis=PM&&(PM.data.showRatings||SQR());const six=id=>{if(!id)return null;const p=dreamRes(id);if(p.st)return p.st.slice(2,8);if(!vis||p.ext)return null;const a=R(p.id.replace(/^c:/,'')).a,f=k=>(a[k]||0)*10;return [f('spd'),f('sho'),f('pas'),f('bal'),f('def'),(f('str')+f('sta'))/2]};
+  const av=L=>{const r=L.map(six).filter(Boolean);return {v:r.length?[0,1,2,3,4,5].map(i=>Math.round(r.reduce((n,x)=>n+x[i],0)/r.length)):[],n:r.length}};
+  const x=av(d.order),y=av(d.order.concat(d.bench||[]));return {xi:x.v,all:y.v,n:y.n}}
+const DPK={open:false,page:0};
+// the search sheet lives at the top of the page (outside the view) so nothing can clip it
+function dpkSync(){const want=DE&&DPK.open&&view==='dream'&&PM;let ov=document.querySelector('.dpkov');
+  if(!want){if(ov)ov.remove();document.documentElement.classList.remove('dpkopen');return}
+  const st=ov?ov.scrollTop:0,t=document.createElement('div');t.innerHTML=dreamPicker();const n=t.firstElementChild;if(ov)ov.replaceWith(n);else{n.classList.add('in');document.body.appendChild(n)}n.scrollTop=st;document.documentElement.classList.add('dpkopen')}
+// FC card for a Dream Team search result (club players use their own card)
+function dreamFut(x){if(x.mine){const p=pById(x.id.slice(2));if(p)return cardHTML(p,{btn:false,nonum:x.ovr==null})}
+  const st=STARS[x.name]||[x.pos,x.ovr,0,0,0,0,0,0],t=x.icon?'special':tier(st[1]),art=x.icon?'icon':tier(st[1]),ph=CUT[x.name]||(WIKI[x.name]||{}).u,nm=x.name.length>13?x.name.split(' ').slice(-1)[0]:x.name;
+  return `<div class="fut t-${t} art cc-${art}">${ARTIMG(art,'fart')}<div class="fbody"><div class="ph${CUT[x.name]?' cut':' wk'}">${ph?`<img src="${ph}" alt="" loading="lazy">`:SIL}</div>
+    <div class="fl"><b class="ovr num">${st[1]}</b><span class="ps">${esc(st[0])}</span></div><div class="fn${nm.length>12?' l':''}">${esc(nm)}</div>
+    <div class="fs num">${['PAC','SHO','PAS','DRI','DEF','PHY'].map((l,i)=>`<span><i>${l}</i><b>${st[2+i]}</b></span>`).join('')}</div>
+    <div class="fb">${x.nat?`<img class="flag" src="icons/flags/${x.nat}.svg" alt="" onerror="this.remove()">`:''}<span class="fbt">${esc(x.club==='ICON'?'ICON':LGN[x.lg]||x.club||'')}</span></div></div></div>`}
 let DF={pos:'',nat:'',lg:'',club:'',min:0,any:false},dreamBSel=null;
 const LGN={ENG:'Premier League',ESP:'LALIGA',ITA:'Serie A',GER:'Bundesliga',FRA:'Ligue 1',POR:'Liga Portugal',MLS:'MLS',SAU:'Saudi Pro League',TUR:'Süper Lig',ISL:'Indian Super League',SCO:'Scottish Premiership',EFL:'EFL Championship',BRA:'Brasileirão',ICON:'Icons',AUFC:'Airdrie United'};
 const NATN={ar:'Argentina',be:'Belgium',bg:'Bulgaria',br:'Brazil',ca:'Canada',ci:'Côte d’Ivoire',cm:'Cameroon',cz:'Czechia',de:'Germany',dk:'Denmark',dz:'Algeria',eg:'Egypt',es:'Spain',fr:'France','gb-eng':'England','gb-nir':'Northern Ireland','gb-sct':'Scotland','gb-wls':'Wales',ge:'Georgia',hr:'Croatia',hu:'Hungary',ie:'Ireland',in:'India',it:'Italy',kr:'Korea Republic',lr:'Liberia',ma:'Morocco',ng:'Nigeria',nl:'Netherlands',no:'Norway',pl:'Poland',pt:'Portugal',ro:'Romania',ru:'Russia',se:'Sweden',si:'Slovenia',tr:'Türkiye',ua:'Ukraine',us:'USA',uy:'Uruguay',pk:'Pakistan'};
@@ -2955,17 +3019,24 @@ function dreamPicker(){const d=DE.d;dreamFit(d);const q=dreamQ.trim().toLowerCas
   const slotRole=dreamSel!=null?(slotsOf({f:d.f,gk:d.gk,order:d.order,n:d.order.length}).find(x=>x.idx===dreamSel)||{}).role:null;
   const fitPos=x=>{const want=DF.pos||(!DF.any&&slotRole);if(!want)return true;if(x.mine)return x.row===rowOfRole(want);return posFits(x.pos,want)};
   const R0=pool.filter(x=>(!q||x.name.toLowerCase().includes(q))&&fitPos(x)&&(!DF.nat||x.nat===DF.nat)&&(!DF.lg||x.lg===DF.lg)&&(!DF.club||x.club===DF.club)&&(!DF.min||(x.ovr||0)>=+DF.min))
-    .sort((a,b)=>(b.ovr??-1)-(a.ovr??-1)||a.name.localeCompare(b.name));const res=R0.slice(0,48);
+    .sort((a,b)=>(b.ovr??-1)-(a.ovr??-1)||a.name.localeCompare(b.name));
+  const PS=24,pages=Math.max(1,Math.ceil(R0.length/PS));if(DPK.page>=pages)DPK.page=pages-1;const res=R0.slice(DPK.page*PS,DPK.page*PS+PS);
   wikiLoad(res.filter(x=>x.id.startsWith('x:')).map(x=>x.name));
-  const opt=(k,label,vals)=>`<label class="dfl"><span>${label}</span><select data-a="dfilt" data-k="${k}"><option value="">Any</option>${vals.map(([v,t])=>`<option value="${esc(String(v))}" ${String(DF[k])===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
+  const nat=v=>NATN[v]||(NATIONS.find(n=>n[0].toLowerCase()===v)||[])[1]||v.toUpperCase();
   const uniq=(k,nm)=>[...new Set(pool.map(x=>x[k]).filter(Boolean))].map(v=>[v,nm(v)]).sort((a,b)=>a[1].localeCompare(b[1]));
-  const mc=x=>{const t=x.icon?'icon':x.ovr==null?'gold':tier(x.ovr);return `<button class="dmc t-${t}" data-a="dpick" data-v="${esc(x.id)}" ${used.has(x.id)?'aria-pressed="true"':''} title="${esc(x.name)}"><b>${x.ovr??'–'}</b><i>${esc(x.mine?x.row:x.pos)}</i><span class="dmph">${x.ph?`<img src="${x.ph}" alt="" loading="lazy">`:SIL}</span><span class="dmn">${esc(shortName(x.name))}</span><span class="dmf">${x.nat&&x.nat.length>=2?`<img src="icons/flags/${x.nat}.svg" alt="" onerror="this.remove()">`:''}<small>${esc(x.club==='ICON'?'ICON':x.club==='AUFC'?'AUFC':(LGN[x.lg]||x.lg||''))}</small></span>${used.has(x.id)?'<em>In squad</em>':''}</button>`};
-  const target=dreamBSel!=null?`Bench spot ${dreamBSel+1}`:dreamSel!=null?`${slotRole||'Slot'} slot`:'';
-  return `<div class="panel stack dpk"><div class="row" style="justify-content:space-between;align-items:center"><b>Player search</b>${target?`<span class="pill">${esc(target)}</span><button class="btn ghost small" data-a="dclear">Remove player</button>`:'<span class="small muted">Tap a spot first, or tap a player to fill the best empty spot</span>'}</div>
-    <input id="dq" placeholder="Search by name…" value="${esc(dreamQ)}" autocomplete="off">
-    <div class="dfilters">${opt('pos','Position',['GK','CB','LB','RB','CDM','CM','CAM','LM','RM','LW','RW','ST','CF'].map(v=>[v,v]))}${opt('lg','League',uniq('lg',v=>LGN[v]||v))}${opt('nat','Nation',uniq('nat',v=>NATN[v]||(NATIONS.find(n=>n[0].toLowerCase()===v)||[])[1]||v.toUpperCase()))}${opt('club','Club',uniq('club',v=>v==='ICON'?'Icons':v==='AUFC'?'Airdrie United':v))}${opt('min','Rating',[[75,'75+'],[80,'80+'],[85,'85+'],[90,'90+']])}</div>
-    <div class="row small" style="gap:10px">${slotRole&&!DF.pos?`<label class="row chk"><input type="checkbox" data-a="dfany" ${DF.any?'checked':''}> Any position</label>`:''}${DF.pos||DF.nat||DF.lg||DF.club||DF.min?'<button class="btn ghost small" data-a="dfreset">Reset filters</button>':''}<span class="muted">${R0.length} players${slotRole&&!DF.pos&&!DF.any?` · showing ${esc(slotRole)}s for this spot`:''}</span></div>
-    <div class="dgrps dres">${res.map(mc).join('')||'<div class="small muted">No players match.</div>'}</div></div>`}
+  const F=[['pos','Position','shirt',['GK','CB','LB','RB','CDM','CM','CAM','LM','RM','LW','RW','ST','CF'].map(v=>[v,v])],['lg','League','trophy',uniq('lg',v=>LGN[v]||v)],['nat','Nation','globe',uniq('nat',nat)],['club','Club','shield',uniq('club',v=>v==='ICON'?'Icons':v==='AUFC'?'Airdrie United':v)],['min','Rating','star',[[75,'75+'],[80,'80+'],[85,'85+'],[90,'90+']]]];
+  const chip=([k,l,ic,vals])=>`<label class="dchip${DF[k]?' on':''}">${ICO(ic)}<span>${l}</span><select data-a="dfilt" data-k="${k}"><option value="">${l}: any</option>${vals.map(([v,t])=>`<option value="${esc(String(v))}" ${String(DF[k])===String(v)?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
+  const tags=F.filter(([k])=>DF[k]).map(([k,l,,vals])=>`<button class="dtag" data-a="dftag" data-k="${k}">${l}: ${esc((vals.find(v=>String(v[0])===String(DF[k]))||[,DF[k]])[1])} ✕</button>`).join('')+(slotRole&&!DF.pos&&!DF.any?`<button class="dtag" data-a="dfanyon">All positions: ${esc(slotRole)} ✕</button>`:'');
+  const pg=()=>{if(pages<2)return '';const P=DPK.page,list=[...new Set([0,P-1,P,P+1,pages-1].filter(i=>i>=0&&i<pages))].sort((a,b)=>a-b);let out='',prev=-1;
+    list.forEach(i=>{if(i-prev>1)out+='<span class="dpdots">…</span>';out+=`<button class="dpg${i===P?' on':''}" data-a="dpage" data-v="${i}">${i+1}</button>`;prev=i});
+    return `<div class="dpager"><button class="dpg" data-a="dpage" data-v="${Math.max(0,P-1)}" ${P?'':'disabled'}>‹</button>${out}<button class="dpg" data-a="dpage" data-v="${Math.min(pages-1,P+1)}" ${P<pages-1?'':'disabled'}>›</button></div>`};
+  const target=dreamBSel!=null?`Substitute ${dreamBSel+1}`:dreamSel!=null?`${slotRole||'Slot'} spot`:'Best empty spot';
+  return `<div class="dpkov" role="dialog" aria-modal="true" aria-label="Player search"><div class="dpk">
+    <div class="dpkh"><b>Search</b><span class="pill">${esc(target)}</span><button class="btn ghost small dpkx" data-a="dpkclose" aria-label="Close">${ICO('x')} Close</button></div>
+    <div class="dsearch"><input id="dq" placeholder="Search for player…" value="${esc(dreamQ)}" autocomplete="off">${dreamQ?'<button class="dqx" data-a="dqclear" aria-label="Clear">✕</button>':''}</div>
+    <div class="dchips">${F.map(chip).join('')}</div>
+    <div class="dtags">${tags||tags===''&&(DF.pos||DF.nat||DF.lg||DF.club||DF.min)?'<button class="dclr" data-a="dfreset">Clear all</button>':''}${tags}<span class="small muted">${R0.length} players</span></div>
+    ${pg()}<div class="dres">${res.map(x=>`<button class="dpc${used.has(x.id)?' used':''}" data-a="dpick" data-v="${esc(x.id)}" title="${esc(x.name)}">${dreamFut(x)}${used.has(x.id)?'<em>In squad</em>':''}</button>`).join('')||'<div class="small muted">No players match.</div>'}</div>${pg()}</div></div>`}
 async function dreamSaveAll(list){const r=await prpc('atb_player_dreams',{p_token:PM.tok,p_dreams:list});if(r!=='ok')throw new Error(r);PM.data.me.dreams=list;const me=pById(PM.data.me.id);if(me)me.dreams=list}
 function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.length};
   openModal(`<div class="mh"><h2>Share dream team</h2><button class="btn ghost x" data-a="close">Close</button></div>
@@ -2975,19 +3046,26 @@ function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.len
 async function dreamAction(a,el){
   if(a==='dnew'){DE={i:-1,d:dreamNew()};dreamSel=null;dreamBSel=null;render();return}
   if(a==='dopen'){const L=PM.data.me.dreams||[];DE={i:+el.dataset.i,d:dreamFit(JSON.parse(JSON.stringify(L[+el.dataset.i])))};dreamSel=null;render();return}
-  if(a==='dback'){DE=null;dreamSel=null;render();return}
+  if(a==='dback'){DE=null;dreamSel=null;DPK.open=false;render();return}
   if(!DE)return;const d=DE.d;
   if(a==='dsw'){const i=+el.dataset.i,j=+el.dataset.j;[d.order[i],d.order[j]]=[d.order[j],d.order[i]];dreamSel=null;render();toast('Swapped for better chemistry');return}
   if(a==='dbest'){d.f=el.dataset.f;d.order=JSON.parse(el.dataset.o);dreamSel=null;render();toast('Formation and positions set for best chemistry');return}
-  if(a==='dslot'){const k=+el.dataset.k;if(dreamBSel!=null){dreamFit(d);[d.order[k],d.bench[dreamBSel]]=[d.bench[dreamBSel],d.order[k]];dreamBSel=null;dreamSel=null;render();return}dreamSel=dreamSel===k?null:k;render();return}
-  if(a==='dbslot'){dreamFit(d);const k=+el.dataset.k;if(dreamSel!=null){[d.order[dreamSel],d.bench[k]]=[d.bench[k],d.order[dreamSel]];dreamSel=null;dreamBSel=null;render();return}dreamBSel=dreamBSel===k?null:k;render();return}
+  if(a==='dslot'){const k=+el.dataset.k;if(dreamBSel!=null&&d.bench[dreamBSel]){dreamFit(d);[d.order[k],d.bench[dreamBSel]]=[d.bench[dreamBSel],d.order[k]];dreamBSel=null;dreamSel=null;render();return}
+    dreamBSel=null;if(!d.order[k]){dreamSel=k;DPK.open=true;DPK.page=0;render();return}dreamSel=dreamSel===k?null:k;render();return}
+  if(a==='dpage'){DPK.page=+el.dataset.v;dpkRefresh();const g=document.querySelector('.dpkov');if(g)g.scrollTop=0;return}
+  if(a==='dpkclose'){DPK.open=false;dreamSel=null;dreamBSel=null;render();return}
+  if(a==='dreplace'){DPK.open=true;DPK.page=0;render();return}
+  if(a==='dcapt1'){if(dreamSel!=null&&d.order[dreamSel]){d.cap=d.order[dreamSel];dreamSel=null;render();toast('Captain set')}return}
+  if(a==='dqclear'){dreamQ='';DPK.page=0;dpkRefresh();return}
+  if(a==='dbslot'){dreamFit(d);const k=+el.dataset.k;if(dreamSel!=null&&d.order[dreamSel]){[d.order[dreamSel],d.bench[k]]=[d.bench[k],d.order[dreamSel]];dreamSel=null;dreamBSel=null;render();return}
+    dreamSel=null;if(!d.bench[k]){dreamBSel=k;DPK.open=true;DPK.page=0;render();return}dreamBSel=dreamBSel===k?null:k;render();return}
   if(a==='dpick'){dreamFit(d);const v=el.dataset.v;const wasO=d.order.indexOf(v),wasB=d.bench.indexOf(v);
-    if(dreamBSel!=null){if(wasO>=0)d.order[wasO]=d.bench[dreamBSel];if(wasB>=0)d.bench[wasB]=d.bench[dreamBSel];d.bench[dreamBSel]=v;dreamBSel=null;render();return}
+    if(dreamBSel!=null){if(wasO>=0)d.order[wasO]=d.bench[dreamBSel];if(wasB>=0)d.bench[wasB]=d.bench[dreamBSel];d.bench[dreamBSel]=v;dreamBSel=null;DPK.open=false;render();return}
     let k=dreamSel;const SLs=slotsOf({f:d.f,gk:d.gk,order:d.order,n:d.order.length}),pp=(dreamRes(v).st||[])[0];
     if(k==null){const fit=SLs.find(q=>!d.order[q.idx]&&pp&&posFits(pp,q.role));k=fit?fit.idx:d.order.indexOf('')}
     if(k<0){const bi=d.bench.indexOf('');if(bi>=0){if(wasO>=0||wasB>=0){toast('Already in your squad');return}d.bench[bi]=v;toast('Starting XI is full: added to the bench');render();return}toast('Squad is full. Tap a card first to replace that player');return}
     if(wasO>=0)d.order[wasO]=d.order[k];if(wasB>=0)d.bench[wasB]=d.order[k];d.order[k]=v;
-    dreamSel=null;render();return}
+    dreamSel=null;DPK.open=false;render();return}
   if(a==='dclear'){if(dreamBSel!=null){dreamFit(d);d.bench[dreamBSel]='';dreamBSel=null}else if(dreamSel!=null){if(d.cap===d.order[dreamSel])d.cap='';d.order[dreamSel]='';dreamSel=null}render();return}
   if(a==='dgk'){d.gk=el.checked;d.f=tbFormOpts(d.order.length,d.gk)[0];dreamFit(d);render();return}
   if(a==='dimg'){d.name=$('#dname').value.trim()||'Dream team';dreamImage();return}
@@ -3147,10 +3225,10 @@ document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.cont
 document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;filePick=0;const f=e.target.files&&e.target.files[0];if(!f)return;
   try{const cp=await cropPhoto(f);e.target.value='';if(!cp)return;const th=await makeThumb(cp.src,cp.cut);const r=await prpc('atb_player_photo2',{p_token:PM.tok,p_img:cp.src,p_cut:!!cp.cut,p_thumb:th});if(r==='ok'||r==='live'){toast(r==='live'?'Photo updated on your card':'Photo sent. A manager will approve it');HD[PM.data.me.id]=null;await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a]');if(el&&PM&&['dsize','dform','dtac','dcapt'].includes(el.dataset.a))dreamChange(el.dataset.a,el)});
-const dpkRefresh=()=>{const box=document.querySelector('.dpk');if(box){const g=box.querySelector('.dres'),st=g?g.scrollTop:0;box.outerHTML=dreamPicker()}};
-document.addEventListener('change',e=>{const el=e.target;if(!DE||!el.dataset)return;if(el.dataset.a==='dfilt'){DF[el.dataset.k]=el.value;dpkRefresh()}else if(el.dataset.a==='dfany'){DF.any=el.checked;dpkRefresh()}});
-document.addEventListener('click',e=>{const el=e.target.closest('[data-a="dfreset"]');if(!el||!DE)return;e.stopPropagation();DF={pos:'',nat:'',lg:'',club:'',min:0,any:false};dpkRefresh()},true);
-document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;const box=document.querySelector('.dpk');if(box){const pos=e.target.selectionStart;box.outerHTML=dreamPicker();const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
+const dpkRefresh=()=>{const ov=document.querySelector('.dpkov');if(ov){const st=ov.scrollTop;const t=document.createElement('div');t.innerHTML=dreamPicker();ov.replaceWith(t.firstElementChild);const n=document.querySelector('.dpkov');if(n)n.scrollTop=st}};
+document.addEventListener('change',e=>{const el=e.target;if(!DE||!el.dataset)return;if(el.dataset.a==='dfilt'){DF[el.dataset.k]=el.value;DPK.page=0;dpkRefresh()}else if(el.dataset.a==='dfany'){DF.any=el.checked;dpkRefresh()}});
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a="dfreset"],[data-a="dftag"],[data-a="dfanyon"]');if(!el||!DE)return;e.stopPropagation();const a=el.dataset.a;if(a==='dfreset')DF={pos:'',nat:'',lg:'',club:'',min:0,any:false};else if(a==='dftag')DF[el.dataset.k]=el.dataset.k==='min'?0:'';else DF.any=true;DPK.page=0;dpkRefresh()},true);
+document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;DPK.page=0;const box=document.querySelector('.dpkov');if(box){const pos=e.target.selectionStart;const t=document.createElement('div');t.innerHTML=dreamPicker();box.replaceWith(t.firstElementChild);const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- Tournaments, date of birth, club and equipment ---------- */
@@ -3778,7 +3856,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,stD=p?.st,r=stD?{ovr:stD[1],a:{}}:R(id),showOvr=showOvr0||!!stD||!!(opt?.dream&&p&&!p.ext&&!p.empty&&PM&&(PM.data.showRatings||SQR()));
     const tr=stD?(stD[9]==='ICON'?'special':tier(stD[1])):!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
-    const art=p?.empty?'':artOf(cc,tr,p,stD?stD[1]:showOvr?r.ovr:null);
+    const art=p?.empty?'':stD&&stD[9]==='ICON'?'icon':artOf(cc,tr,p,stD?stD[1]:showOvr?r.ovr:null);
     return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:art&&tr==='special'?' cc-'+art:''}${art?' art':''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
       <span class="pc-card">${ARTIMG(art,'pcart')}${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
