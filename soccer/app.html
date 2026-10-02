@@ -633,7 +633,6 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .btn,#tabs button,.chip{overflow:hidden}#tabs button,.chip{flex-shrink:0;min-width:max-content}
 .rip{position:absolute;left:var(--rx);top:var(--ry);width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:currentColor;opacity:.28;pointer-events:none;transform:scale(0);animation:rip .55s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes rip{to{transform:scale(var(--rs,30));opacity:0}}
-.mlist>.panel,.mlist>details,#main[data-v=p-games] .panel.game{content-visibility:auto;contain-intrinsic-size:auto 140px}
 #modal>.scrim.out{pointer-events:none;animation:mOut .2s ease forwards}#modal-ghost{position:fixed;inset:0;z-index:49;pointer-events:none}#modal-ghost *{pointer-events:none!important}
 #modal-ghost .scrim{animation:mOut .2s ease forwards}#modal-ghost .modal{animation:mOutB .2s ease forwards}
 @keyframes mOut{to{opacity:0}}@keyframes mOutB{to{transform:translateY(14px) scale(.97);opacity:0}}
@@ -1524,6 +1523,11 @@ function axToggle(sec){const c=!sec.classList.contains('closed');sec.classList.a
   clearTimeout(sec._t);sec._t=setTimeout(()=>sec.classList.remove('anim'),380)}
 document.addEventListener('click',e=>{const h=e.target.closest('.ax-h');if(!h||e.target.closest('select,input,textarea,a,button:not(.ax-h),label,[data-a]'))return;axToggle(h.parentElement)});
 document.addEventListener('keydown',e=>{const h=e.target.closest&&e.target.closest('.ax-h');if(h&&e.target===h&&(e.key==='Enter'||e.key===' ')){e.preventDefault();axToggle(h.parentElement)}});
+/* Redraws of the same screen (taps, toggles, refreshes) keep the scroll position exactly where it was */
+let codeScroll=0,selfScroll=false;
+(()=>{const ws=window.scrollTo.bind(window),siv=Element.prototype.scrollIntoView;window.scrollTo=function(...a){if(!selfScroll)codeScroll++;return ws(...a)};Element.prototype.scrollIntoView=function(...a){codeScroll++;return siv.apply(this,a)}})();
+queueMicrotask(()=>{const inner=render;render=function(){const k=view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen'),y=window.scrollY,c0=codeScroll;inner();
+  const fix=()=>{if(codeScroll!==c0)return;if(view+'|'+(PM?1:0)+'|'+document.body.classList.contains('mopen')===k&&Math.abs(window.scrollY-y)>1){selfScroll=true;window.scrollTo({top:y,behavior:'instant'});selfScroll=false}};fix();queueMicrotask(fix)}});
 /* tap ripple on buttons, tabs and chips */
 document.addEventListener('pointerdown',e=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const b=e.target.closest('.btn,#tabs button,.chip');if(!b||b.disabled)return;const r=b.getBoundingClientRect();
   const sp=document.createElement('span');sp.className='rip';sp.style.setProperty('--rx',(e.clientX-r.left)+'px');sp.style.setProperty('--ry',(e.clientY-r.top)+'px');sp.style.setProperty('--rs',Math.ceil(Math.hypot(r.width,r.height)/6));b.appendChild(sp);setTimeout(()=>sp.remove(),600)},{passive:true});
