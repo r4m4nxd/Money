@@ -1262,6 +1262,7 @@ const BESTPOS=['GK','CB','LB','RB','LWB','RWB','CDM','CM','CAM','LM','RM','LW','
 /* card colours a player may pick (gold/silver/bronze/special stay earned) */
 const CARDCOL0={red:['Red','#FF8A8A','#C8202B','#F25C5C','#fff'],blue:['Blue','#8DB8FF','#1E4FC2','#5C8EF0','#fff'],green:['Green','#8EE6A6','#178A43','#4CC274','#fff'],purple:['Purple','#C9A2FF','#5B2BB5','#9566E8','#fff'],pink:['Pink','#FFB3DA','#D63A8C','#F27BB8','#fff'],teal:['Teal','#8FF0E4','#0E8C80','#3CC4B4','#fff'],orange:['Orange','#FFC48A','#E06A0E','#FA9A3C','#2a1300'],navy:['Navy','#7F96C9','#14224A','#3A4F86','#fff'],carbon:['Carbon','#9AA3AE','#2B3038','#5F6873','#fff'],ice:['Ice','#FFFFFF','#9FD6F2','#DDF2FC','#0f2a3a'],lime:['Lime','#E6FF8F','#7DB31A','#B6E04A','#1c2600'],maroon:['Maroon','#D98C9A','#6E1424','#A33B4E','#fff']};
 const CARDCOL={...CARDCOL0};
+const CARDV='4';
 /* Card designs: artwork by Raman's friend (cards/*.webp, HD). [name, top, bottom, mid, ink, label colour] */
 const CARDTHEMES={
   bronze:['Bronze','#CA9F81','#9D6F56','#C89B7F','#3A2410','#6B4426'],
@@ -1293,11 +1294,15 @@ const CARDTHEMES={
 const CARDALIAS={legend:'icon',galaxy:'greats',starball:'premier',inferno:'cornerstones',crimson:'knockout',copper:'bronze',heatwave:'summer',golden:'gold',volt:'summer',emerald:'destined',aqua:'otwglow',pearl:'icon',sky:'premlights',royal:'tots',rose:'fiesta',blackout:'totw',shadow:'halloffame'};
 const TIERART={bronze:'bronze',silver:'silver',gold:'gold'};
 const artOf=(cc,t,p,ovr)=>p&&p.star&&CARDTHEMES[p.starCard]?p.starCard:CARDTHEMES[cc]?cc:cc?'':t==='special'?TIERART[ovr!=null?tier(ovr):'gold']:TIERART[t]||'gold';
-const ARTIMG=(k,c)=>k?`<img class="${c}" src="cards/${k}.webp" alt="" decoding="async">`:'';
+// card art: medium file for small cards, full HD only where the card is big; versioned so phones cache it for good
+const cardUrl=(k,m)=>`cards/${m?'m_':''}${k}.webp?v=${CARDV}`;
+const ARTIMG=(k,c)=>k?(c==='pcart'?`<img class="${c}" src="${cardUrl(k,1)}" alt="" decoding="async">`:`<img class="${c}" src="${cardUrl(k,1)}" srcset="${cardUrl(k,1)} 420w, ${cardUrl(k)} 600w" sizes="(max-width:600px) 34vw, 200px" alt="" decoding="async">`):'';
+// warm every design in the background after start so the first look at any card is instant
+setTimeout(()=>{const go=()=>Object.keys(CARDTHEMES).forEach((k,i)=>setTimeout(()=>{const a=new Image();a.decoding='async';a.src=cardUrl(k,1)},i*60));(window.requestIdleCallback||setTimeout)(go,{timeout:2500})},1200);
 Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top,bot,mid,ink]});
 (()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc]])=>`.fut.fut.cc-${k}{--ink2:${ink};--lab:${acc}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i,.fut.fut.cc-${k} .no{color:${acc}}
 .pc.pc.cc-${k} .pc-card{background:${mid};color:${ink};border-color:transparent}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
-.sty-card.cc-${k}{background:${mid}!important;color:${ink}!important}.ccdot.cc-${k}{background:url(cards/t_${k}.webp) center/cover!important}`).join('\n');
+.sty-card.cc-${k}{background:${mid}!important;color:${ink}!important}.ccdot.cc-${k}{background:url(cards/t_${k}.webp?v=${CARDV}) center/cover!important}`).join('\n');
   const st=document.createElement('style');st.id='cardthemes';st.textContent=css;(document.body||document.head).appendChild(st)})();
 /* Motif artwork per design (our own drawings), rasterised once to PNG so it also shows in saved images */
 const MOTIFS=(()=>{const W=(o,b)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 128" preserveAspectRatio="none"><g opacity="${o}">${b}</g></svg>`;
@@ -1491,7 +1496,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021904',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021911',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2922,7 +2927,7 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
-    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw2" aria-pressed="${(CARDALIAS[pfD.card]||pfD.card||'')===k}" data-a="pfcard" data-v="${k}" title="${esc(l)}">${CARDTHEMES[k]||!k?`<i class="ccimg" style="background-image:url(cards/t_${k||'gold'}.webp)"></i>`:`<i class="ccimg ccflat" style="background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})"></i>`}<span>${k?esc(l):'Earned (auto)'}</span></button>`).join('')}</div>
+    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw2" aria-pressed="${(CARDALIAS[pfD.card]||pfD.card||'')===k}" data-a="pfcard" data-v="${k}" title="${esc(l)}">${CARDTHEMES[k]||!k?`<i class="ccimg" style="background-image:url(cards/t_${k||'gold'}.webp?v=${CARDV})"></i>`:`<i class="ccimg ccflat" style="background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})"></i>`}<span>${k?esc(l):'Earned (auto)'}</span></button>`).join('')}</div>
       <div class="small muted">Your level still shows on your card as a small gold, silver, bronze or ★ badge.</div></div>
     <div><div class="f"><span>Chemistry style <span class="muted">(your signature, pick one)</span></span></div>${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="abgrid">${Object.keys(ABILITIES).filter(k=>ABILITIES[k][3]===c).map(k=>`<button class="abopt" aria-pressed="${abKey(pfD.ability)===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div>`).join('')}</div>
     <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
