@@ -659,6 +659,7 @@ header.top{view-transition-name:hdr}
 .chemp{margin:10px 0;padding:10px 0;border-top:1px solid var(--line)}.chemtot{display:flex;align-items:baseline;gap:6px;position:relative;padding-bottom:8px;margin:4px 0 6px}.chemtot b{font:900 26px/1 var(--f-display)}.chemtot span{color:var(--muted)}
 .chemtot i{position:absolute;left:0;right:0;bottom:0;height:5px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}.chemtot i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#FF5A5F,#F2C94C,#2FD07A);border-radius:9px;transition:width .5s}
 .chemgo{margin-top:8px;white-space:normal;text-align:left}
+.snap .pc-card::before,.snap .chemsvg,.snap .cll,.snap .pcchem{display:none!important}.snap .pc:not(.empty) .pc-card{box-shadow:0 3px 7px rgba(0,0,0,.45)!important}.snap .pc{transition:none!important;animation:none!important}.snap .pc-card{animation:none!important}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -2868,10 +2869,11 @@ async function snapCard(el){const imgs=[...el.querySelectorAll('img')];
   // iPhone Safari often leaves images blank inside html2canvas's hidden copy of the page, so each image goes in as a ready-drawn canvas (nothing left to load)
   const KEEP=['display','position','top','right','bottom','left','margin-top','margin-right','margin-bottom','margin-left','vertical-align','border-radius','z-index','opacity','flex-shrink','flex-grow','float','align-self','justify-self','grid-area','box-shadow','border'];
   const box=imgs.map(i=>{const cs=getComputedStyle(i);return {w:i.offsetWidth||i.getBoundingClientRect().width,h:i.offsetHeight||i.getBoundingClientRect().height,css:KEEP.map(k=>k+':'+cs.getPropertyValue(k)).join(';')}});
-  const out=await html2canvas(el,{backgroundColor:'#0F1B2B',scale:2,useCORS:true,imageTimeout:15000,onclone:doc=>{const cl=doc.getElementById(el.id)||doc.querySelector('#sharecard');
+  el.classList.add('snap');let out;try{out=await html2canvas(el,{backgroundColor:'#0F1B2B',scale:2,useCORS:true,imageTimeout:15000,onclone:doc=>{const cl=doc.getElementById(el.id)||doc.querySelector('#sharecard');cl.classList.add('snap');
     [...cl.querySelectorAll('img')].forEach((i,k)=>{i.removeAttribute('loading');const src=list[k];if(!src)return;
       try{const c=doc.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);c.className=i.className;c.setAttribute('style',box[k].css+';width:'+box[k].w+'px;height:'+box[k].h+'px;max-width:none;max-height:none');i.replaceWith(c)}
       catch(e){i.src=src.toDataURL('image/png');i.removeAttribute('srcset');i.style.objectFit='fill'}})}});
+  }finally{el.classList.remove('snap')}
   list.forEach(c=>{if(c)try{c.width=c.height=0}catch(e){}});return out}
 function resizeImg(file,max=720){return new Promise(res=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};img.onerror=()=>res(null);img.src=u})}
 
