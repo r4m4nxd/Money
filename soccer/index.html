@@ -1465,7 +1465,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021802',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021803',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -3209,7 +3209,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
       toast(r==='ok'?'Vote saved 🗳️':r==='closed'?'Voting has closed for this match':'Could not save your vote');await loadPlayer()}catch(err){toast('Could not save your vote');el.disabled=false}return}
-  if(['dnew','dopen','dback','dslot','dbslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel','dsw','dbest'].includes(a)){await dreamAction(a,el);return}
+  if(['dnew','dopen','dback','dslot','dbslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel','dsw','dbest','dreplace','dpage','dpkclose','dcapt1','dqclear','dbestcalc'].includes(a)){await dreamAction(a,el);return}
   if(a==='pboard'){const fx=(S.fixtures||[]).find(f=>f.date===el.dataset.v),me=PM.data.me.id,t=fx&&fx.teams.find(x=>x.players.includes(me));if(!t)return;const lu=getLU(t.players.filter(id=>pById(id)),t.lu);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.cap),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='ptboard'){const t=S.tourns.find(x=>x.id===el.dataset.id);if(!t)return;const lu=tLU(t);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.captain),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='pub'){pubPage(el.dataset.id);return}
