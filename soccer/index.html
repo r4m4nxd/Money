@@ -950,7 +950,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .pc.art .pc-card>.pcart{inset:auto;top:0;left:-14%;width:128%;height:100%;object-fit:contain;object-position:50% 50%;border-radius:0}
 .pc.art .pc-top{top:15%;left:7%}.pc.art .pc-ph{top:9%;height:54%;left:27%;right:6%}.pc.art .pc-ph.hp::after{display:none}
 .pc.art .pc-ph:not(.cut){-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
-.pc.art .pc-nm{top:62%;text-shadow:0 1px 2px rgba(0,0,0,.25);left:7%;right:7%}.pc.art .pc-ic{bottom:17%}.pc.art .pcpip{bottom:auto!important;top:27%!important;right:9%!important;width:calc(1.5cqw*var(--s))!important;height:calc(1.5cqw*var(--s))!important}
+.pc.art .pc-nm{top:69%;text-shadow:0 1px 2px rgba(0,0,0,.25);left:7%;right:7%}.pc.art .pc-ic{bottom:9%}.pc.art .pcpip{bottom:auto!important;top:15%!important;right:9%!important}
 .pc.art .badge-position.cap,.pc.art .badge-position.star{top:11%!important;right:9%!important}
 .pc.art.sel .pc-card{outline:none;filter:drop-shadow(0 0 .45cqw #FFD54A) drop-shadow(0 0 .45cqw #FFD54A) drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
 .pc.art[data-chemsug] .pc-card{outline:none;filter:drop-shadow(0 0 .5cqw #2FD07A) drop-shadow(0 0 .5cqw #2FD07A)}
@@ -1091,9 +1091,10 @@ label.f .muted,label.f .small{text-transform:none;letter-spacing:0;font-weight:5
 .ps-nav li{min-width:0}.ps-nav a,.ps-nav button{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;min-height:36px;text-align:center;white-space:normal;line-height:1.15;box-sizing:border-box}
 
 /* pitch card: flag + club crest side by side under the position, clear of the name */
-.pc-bdg{display:flex;align-items:center;justify-content:center;gap:calc(.4cqw*var(--s));margin-top:calc(.35cqw*var(--s))}
-.pc-top .pc-bdg .pc-fl{margin-top:0;width:calc(2.2cqw*var(--s));height:calc(1.55cqw*var(--s))}.pc-top .pc-bdg .cb{width:calc(2cqw*var(--s));height:calc(2cqw*var(--s))}
-.pc.art .pc-top{top:13%;width:30%;left:5%}
+.pc-bdg{display:flex;flex-direction:column;align-items:center;gap:calc(.35cqw*var(--s));margin-top:calc(.35cqw*var(--s))}
+.pc-top .pc-bdg .pc-fl{margin-top:0}
+.pc.art .pc-top{top:14%;width:28%;left:6%}
+.pc.art .pc-card:has(.badge-position) .pcpip{top:31%!important}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1571,7 +1572,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022118',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022120',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
