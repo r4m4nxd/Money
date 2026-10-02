@@ -603,6 +603,9 @@ h3{line-height:1.2}
 .pc{position:absolute;transform:translate(-50%,-62%);width:calc(12.6cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
 .pfwrap{margin:14px 0}.pfwrap>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px 16px}.pfwrap>summary::-webkit-details-marker{display:none}.pfsum>span:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}.pfsi{font-size:1.3em}.pfchev{font-size:1.5em;transition:transform .25s;opacity:.6}.pfwrap[open] .pfchev{transform:rotate(90deg)}.pfwrap[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}.pfwrap[open]>.pfed{border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid var(--line,rgba(127,127,127,.2));animation:pfin .28s ease}@keyframes pfin{from{opacity:0;transform:translateY(-6px)}}
 .profb{margin:14px 0;padding:14px;border-radius:14px;background:var(--panel2,rgba(127,127,127,.08))}.profb .favs{margin:0}.profb .gh2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.ccdot{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.pnpop{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));z-index:900;width:min(440px,calc(100% - 24px));transform:translate(-50%,24px);opacity:0;transition:transform .35s cubic-bezier(.2,.9,.25,1.1),opacity .25s;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--line,rgba(127,127,127,.25));border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.35);padding:12px}.pnpop.on{transform:translate(-50%,0);opacity:1}
+.pnph{display:flex;justify-content:space-between;align-items:center;margin:0 4px 6px}.pnr{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-radius:12px;padding:10px 8px;color:inherit;font:inherit;cursor:pointer}.pnr:hover{background:rgba(127,127,127,.1)}
+.pni{font-size:22px;line-height:1;flex:none;width:30px;text-align:center}.pnt{display:flex;flex-direction:column;gap:2px;min-width:0}.pnt span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}.pnlist{display:flex;flex-direction:column;gap:2px}.pnr.new{background:rgba(242,140,40,.1)}.pnr.new b::after{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#e5484d;margin-left:6px;vertical-align:2px}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -768,7 +771,7 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
   <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button><button class="themebtn outbtn" id="outbtn" data-a="hdrout" aria-label="Sign out" title="Sign out" hidden></button></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn godbtn" id="pbell" data-a="pbell" aria-label="Notifications" title="Notifications" hidden>🔔<i id="pbn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button><button class="themebtn outbtn" id="outbtn" data-a="hdrout" aria-label="Sign out" title="Sign out" hidden></button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match"><span>Match Day</span></button>
     <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
@@ -914,7 +917,7 @@ function shrinkPhoto(file){return new Promise((res,rej)=>{const img=new Image();
 /* Photo positioner: drag / pinch / slider inside a square frame that matches the card's photo window. Exports a 640×640 JPEG. */
 function makeThumb(src,cut){return new Promise(res=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=112;const x=c.getContext('2d');
   const s=Math.min(img.width,img.height);x.drawImage(img,(img.width-s)/2,0,s,s,0,0,112,112);res(c.toDataURL(cut?'image/webp':'image/jpeg',.82))};img.onerror=()=>res(null);img.src=src})}
-function cropPhoto(file){return new Promise(resolve=>{const url=URL.createObjectURL(file),img=new Image();
+function cropPhoto(file){return new Promise(resolve=>{if(typeof pnClose==='function')pnClose();const url=URL.createObjectURL(file),img=new Image();
   img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that photo');resolve(null)};
   img.onload=()=>{const ov=document.createElement('div');ov.className='crop';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Position photo');
     ov.innerHTML=`<div class="cbox"><h3>Position the photo</h3><p class="small muted" style="margin:0">Drag to move · pinch or slide to zoom. Put the eyes on the gold line and the face inside the white oval. The dim area fades out on the card.</p>
@@ -1368,9 +1371,9 @@ function bgRender(){if(Date.now()-filePick<12e4)return;
   bgRendering=true;try{render()}finally{bgRendering=false}fRestore();
   if(k){const n=[...m.querySelectorAll('input,textarea,select')].find(el=>fKey(el)===k);if(n){n.focus({preventScroll:true});if(ss)try{n.setSelectionRange(ss[0],ss[1])}catch(e){}}}
   if(Math.abs(scrollY-y)>2)scrollTo(0,y)}
-function render(){tipSync();outSync();if(!bgRendering&&!PM)fClear();
+function render(){tipSync();outSync();if(!PM){const pb=$('#pbell');if(pb)pb.hidden=true}if(!bgRendering&&!PM)fClear();
   if(navRestore&&navRestore.m&&loaded&&!PM){const m=navRestore.m;navRestore=null;setTimeout(()=>navReplay(m,true),60)}
-  if(PM){renderPlayer();fRestore();return}
+  if(PM){renderPlayer();fRestore();if(PM.data)pnSync();return}
   if(!loaded)return;
   CACHE=compute();commitCache=null;
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));
@@ -2059,6 +2062,8 @@ function vSettings(){
     ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="f" style="max-width:420px">Player sign-in<select id="plg" data-a="setportal">${[['on','On: players can sign in to their portal'],['setup','PIN setup only: names listed, players create a PIN, portal stays closed'],['off','Off: sign-in screen closed']].map(([k,l])=>`<option value="${k}" ${portalMode()===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
     <label class="small row chk"><input type="checkbox" data-a="set" data-k="squadRatings" ${s.squadRatings?'checked':''}> Players can see <b>everyone’s</b> ratings in Squad (OVR, attributes, full player pages, compare). Chemistry and favourite teammates stay private.</label>
+    <label class="small row chk"><input type="checkbox" data-a="set" data-k="photoAuto" ${s.photoAuto?'checked':''}> Player photos go live straight away (players crop and remove the background themselves; no approval needed)</label>
+    <div class="stack" style="gap:6px;margin-top:6px"><b class="small">Message to all players</b><textarea id="annt" rows="2" maxlength="280" placeholder="e.g. Bring both kits this Saturday">${esc((s.announce||{}).text||'')}</textarea><div class="row"><button class="btn small primary" data-a="annsend">Send to players</button>${(s.announce||{}).text?`<button class="btn small ghost" data-a="annclear">Clear</button><span class="small muted">Sent ${new Date(s.announce.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</span>`:''}</div><span class="small muted">Shows in every player’s notification bell and pops up when they open the app.</span></div>
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="plprof" data-a="set" data-k="playerProfile" ${s.playerProfile!==false?'checked':''}> Players can edit their profile: nickname, card colour, signature ability, up to 5 PlayStyles, favourites, and send a photo for approval</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
@@ -2523,6 +2528,52 @@ function vpAcct(){const me=PM.data.me;
     <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
   <h2>Help</h2><div class="panel small">New here? Open the <button class="linkb" data-a="goguide">player guide</button> for everything about your profile, XP, badges and attendance.</div>
   <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">${supaUser?'Sign out of profile':'Sign out'}</button></div>`}
+/* ----- Player notifications: built from what the app already knows about this player, remembered per player on this phone ----- */
+const PN_KEY=()=>'atb_pn_'+PM.data.me.id;let pnPopped=false;
+function pnState(){const k=PN_KEY();let st=ls(k);if(!st||typeof st!=='object')st={seen:{},pop:{},first:true};st.seen=st.seen||{};st.pop=st.pop||{};return st}
+function pnItems(){const d=PM.data,me=d.me,id=me.id,t=todayISO(),out=[],ago=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10),recent=ago(14);
+  const day=x=>new Date(x+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}),add=(k,ic,title,body,at,go)=>out.push({k,ic,title,body,at:at||t,go});
+  const an=d.settings&&d.settings.announce;if(an&&an.text&&String(an.at||'').slice(0,10)>=ago(21))add('ann:'+an.at,'📣','Message from the managers',an.text,String(an.at).slice(0,10),'me');
+  (S.fixtures||[]).filter(f=>f.date>=t).forEach(f=>{const ti=(f.teams||[]).findIndex(x=>x.players.includes(id));if(ti<0)return;const tm=f.teams[ti];
+    add('fx:'+f.date+':'+(tm.name||ti)+':'+tm.players.length,'👕','Teams are out',`You’re in ${tm.name||'Team '+(ti+1)} for ${day(f.date)}.`,f.date<=t?t:ago(0),'me');
+    if(tm.cap===id)add('cap:'+f.date,'©️','You’re the captain',`You captain ${tm.name||'your team'} on ${day(f.date)}. Open the Tactic Board to plan.`,ago(0),'me');
+    if(f.date===t)add('today:'+f.date,'⚽','Match day!',`Kick-off ${timeFor(f.date)||'today'}. See you there.`,t,'me')});
+  (d.polls||[]).filter(p=>p.open&&!p.mine&&p.match_date>=t).forEach(p=>add('poll:'+p.id,'🗳️',p.kind==='tournament'?'Tournament availability':'Are you in?',`${p.title||'Saturday Soccer'} · ${day(p.match_date)}. Tap to answer.`,ago(0),'avail'));
+  S.matches.filter(m=>m.date>=recent).forEach(m=>{const played=m.teams.some(x=>x.players.includes(id));
+    if(potmOpen(m)&&played&&!m.myvote)add('potm:'+m.id,'🏅','Vote Player of the Match',`Voting is open for ${day(m.date)}.`,m.date,'me');
+    if(m.potm===id)add('potmwin:'+m.id,'🏆','You’re Player of the Match!',`Voted the best on ${day(m.date)}.`,m.date,'games');
+    if(m.myfb)add('fb:'+m.id,'💬','Feedback from the managers',m.myfb,m.date,'me');
+    if(played&&m.teams.every(x=>x.goals!==''&&x.goals!=null))add('res:'+m.id,'📊','Match saved',`${day(m.date)}: result, stats${d.showRatings||d.growth?' and your ratings':''} are updated.`,m.date,'games')});
+  if(d.totw&&d.totw.order&&d.totw.order.includes(id)&&d.totw.date>=recent)add('totw:'+d.totw.match,'⭐','Team of the Week',`You made the Team of the Week for ${day(d.totw.date)}.`,d.totw.date,'me');
+  (S.tourns||[]).filter(x=>x.date>=t).forEach(x=>{add('tn:'+x.id,'🏟️','New tournament',`${x.name} · ${day(x.date)}${x.venue?' · '+x.venue:''}.`,ago(0),'tourn');
+    if((x.squad||[]).includes(id))add('tsq:'+x.id,'✅','You’re in the squad',`Picked for ${x.name} on ${day(x.date)}.`,ago(0),'tourn');
+    if(x.captain===id)add('tcap:'+x.id,'©️','Tournament captain',`You captain the team at ${x.name}.`,ago(0),'tourn')});
+  const st=pnState();
+  if(st.photoReq&&!me.photoReq)add('ph:'+(st.photoSig||'')+'>'+String((me.photo||'').length),me.photo&&String(me.photo.length)!==st.photoSig?'📸':'🙈',me.photo&&String(me.photo.length)!==st.photoSig?'Photo approved':'Photo not approved',me.photo&&String(me.photo.length)!==st.photoSig?'Your new photo is on your card.':'A manager didn’t approve your new photo. Try another one.',ago(0),'me');
+  if(st.ps)(me.ps||[]).filter(n=>!st.ps.includes(n)).forEach(n=>add('ps:'+n,'✨','New PlayStyle',`Managers awarded you ${n}.`,ago(0),'me'));
+  return out.sort((a,b)=>a.at<b.at?1:a.at>b.at?-1:0)}
+function pnSync(){const b=$('#pbell'),n=$('#pbn');if(!b)return;b.hidden=!PM||!PM.data;if(b.hidden)return;
+  const st=pnState(),items=pnItems(),me=PM.data.me;
+  if(st.first){const old=new Date(Date.now()-3*864e5).toISOString().slice(0,10);items.forEach(x=>{if(x.at<old)st.seen[x.k]=1});st.first=false}
+  // remember photo/PlayStyle state for "approved" and "new PlayStyle" alerts
+  if(me.photoReq){st.photoReq=true;st.photoSig=String((me.photo||'').length)}else if(st.photoReq&&items.some(x=>x.k.startsWith('ph:')&&st.seen[x.k])){st.photoReq=false}
+  if(!st.ps||items.filter(x=>x.k.startsWith('ps:')).every(x=>st.seen[x.k]))st.ps=(me.ps||[]).slice();
+  const un=items.filter(x=>!st.seen[x.k]);n.hidden=!un.length;n.textContent=un.length>9?'9+':un.length;b.setAttribute('aria-label',un.length?un.length+' new notifications':'Notifications');
+  if(!PM.preview)ls(PN_KEY(),st);
+  const pop=un.filter(x=>!st.pop[x.k]);if(pop.length&&!pnPopped&&!PM.preview&&!document.querySelector('.scrim')){pnPopped=true;setTimeout(()=>pnPopup(pop),900)}}
+const pnRow=x=>`<button class="pnr" data-a="pngo" data-v="${x.go}"><span class="pni">${x.ic}</span><span class="pnt"><b>${esc(x.title)}</b><span>${esc(x.body)}</span></span></button>`;
+function pnPopup(pop){if(!PM||document.querySelector('.scrim,.crop')||document.querySelector('.pnpop'))return;const st=pnState();pop.forEach(x=>st.pop[x.k]=1);ls(PN_KEY(),st);
+  const el=document.createElement('div');el.className='pnpop';el.setAttribute('role','dialog');el.setAttribute('aria-label','New for you');
+  el.innerHTML=`<div class="pnph"><b>New for you</b><button class="btn ghost small" data-a="pnclose">Got it</button></div>${pop.slice(0,3).map(pnRow).join('')}${pop.length>3?`<button class="linkb" data-a="pbell">See all ${pop.length}</button>`:''}`;
+  document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));clearTimeout(pnPopup.t);pnPopup.t=setTimeout(()=>pnClose(),12000)}
+function pnClose(){const el=document.querySelector('.pnpop');if(!el)return;el.classList.remove('on');setTimeout(()=>el.remove(),300)}
+function pnOpen(){pnClose();const st=pnState(),items=pnItems();
+  openModal(`<div class="mh"><h2>Notifications</h2><button class="btn ghost x" data-a="close">Close</button></div>
+    ${items.length?`<div class="pnlist">${items.map(x=>pnRow(x).replace('class="pnr"',`class="pnr${st.seen[x.k]?'':' new'}"`)).join('')}</div>`:'<p class="small muted">Nothing new right now. Team news, polls, votes, awards and messages from the managers show up here.</p>'}`);
+  items.forEach(x=>{st.seen[x.k]=1;st.pop[x.k]=1});if(!PM.preview)ls(PN_KEY(),st);pnSync()}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a="pbell"],[data-a="pngo"],[data-a="pnclose"]');if(!el||!PM)return;e.stopPropagation();const a=el.dataset.a;
+  if(a==='pbell'){pnOpen();return}if(a==='pnclose'){const st=pnState();pnClose();return}
+  if(a==='pngo'){pnClose();if(document.body.classList.contains('mopen'))closeModal();const v=el.dataset.v;setTimeout(()=>{if(v&&v!==view)go(v);else window.scrollTo({top:0,behavior:'smooth'})},60)}},true);
 function renderPlayer(){outSync();document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));const m=$('#main');if(m.dataset.v!=='p-'+view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v='p-'+view;
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
@@ -2608,7 +2659,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
 });
 document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open&&!d.hasAttribute('data-auto'))plog('Opened match',d.querySelector('b')?.textContent)},true);
 document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;filePick=0;const f=e.target.files&&e.target.files[0];if(!f)return;
-  try{const img=await resizeImg(f,640);const r=await prpc('atb_player_photo',{p_token:PM.tok,p_img:img});if(r==='ok'){toast('Photo sent. A manager will approve it');await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
+  try{const cp=await cropPhoto(f);e.target.value='';if(!cp)return;const th=await makeThumb(cp.src,cp.cut);const r=await prpc('atb_player_photo2',{p_token:PM.tok,p_img:cp.src,p_cut:!!cp.cut,p_thumb:th});if(r==='ok'||r==='live'){toast(r==='live'?'Photo updated on your card':'Photo sent. A manager will approve it');HD[PM.data.me.id]=null;await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a]');if(el&&PM&&['dsize','dform','dtac','dcapt'].includes(el.dataset.a))dreamChange(el.dataset.a,el)});
 document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;const box=document.querySelector('.dpk');if(box){const pos=e.target.selectionStart;box.outerHTML=dreamPicker();const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
@@ -3289,7 +3340,7 @@ document.addEventListener('click',async e=>{
   if(a==='sharem'){shareModal(S.matches.find(x=>x.id===id));return}
   if(a==='story'&&!PM){storyCard(id);return}
   if(a==='phok'||a==='phno'){const p=pById(id);if(!p||!p.photoReq)return;el.disabled=true;const q={...p};
-    if(a==='phok'){q.photo=p.photoReq.img;q.photoCut=false;q.thumb=await makeThumb(q.photo,false)}delete q.photoReq;await putPlayer(q);logAct(a==='phok'?'Approved photo':'Denied photo',p.name);toast(a==='phok'?'Photo approved':'Photo request denied');return}
+    if(a==='phok'){q.photo=p.photoReq.img;q.photoCut=!!p.photoReq.cut;q.thumb=p.photoReq.thumb||await makeThumb(q.photo,q.photoCut)}delete q.photoReq;await putPlayer(q);logAct(a==='phok'?'Approved photo':'Denied photo',p.name);toast(a==='phok'?'Photo approved':'Photo request denied');return}
   if(a==='potmmsg'){potmShare(S.matches.find(x=>x.id===id));return}
   if(a==='potmcopy'){try{await navigator.clipboard.writeText(potmMsg(S.matches.find(x=>x.id===id)));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}logAct('Copied POTM vote message');return}
   if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),caps:Object.fromEntries(m.teams.map((t,i)=>[i,t.cap||''])),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);draft.pt=0;draft.tfold=false;go('match',{force:true});return}
@@ -3327,6 +3378,7 @@ document.addEventListener('click',async e=>{
       else r=a==='signin'?await supa.auth.signInWithPassword({email,password}):await supa.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
       if(r.error)throw r.error;if(r.data.session){try{sessionStorage.setItem('atb_justin','1')}catch(e){}location.reload();return}
       msg.textContent='Account created. Open the confirmation email, then come back and sign in.'}catch(err){msg.textContent=err.message||'Could not sign in'}el.disabled=false;return}
+  if(a==='annsend'||a==='annclear'){const t=a==='annclear'?'':($('#annt').value||'').trim();if(a==='annsend'&&!t){toast('Write a message first');return}S.settings.announce=t?{text:t,at:new Date().toISOString()}:null;await putSettings();toast(t?'Sent to players':'Message cleared');render();return}
   if(a==='hdrout'){const who=PM&&PM.preview?'':PM?esc(PM.name||''):esc(myName||niceEmail(supaUser?.email||''));
     openModal(`<div class="mh"><h2>Sign out?</h2><button class="btn ghost x" data-a="close">Close</button></div><div class="stack"><p style="margin:0">${PM&&PM.preview?'Leave this player preview?':`You’re signed in as <b>${who}</b>. You’ll need your ${PM?'PIN':'password'} to sign in again.`}</p>
       <div class="row"><button class="btn primary" data-a="hdrout2">${PM&&PM.preview?'Exit preview':'Sign out'}</button><button class="btn" data-a="close">Cancel</button></div></div>`);return}
