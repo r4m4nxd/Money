@@ -136,3 +136,10 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- 2026-10-02: player payload sends 'fc' (manager attribute overrides) with the shared squad ratings
 
 -- 2026-10-02: settings.unlocks {card,cs,ps:{key:xp|-1},owner}; payload sends 'unlocks'; atb_player_profile rejects admin-only (-1) card/ability unless the player is linked to the team owner (private.atb_mgr_links)
+
+-- Admin can force-sign-out managers: the atb-managers edge function ("signout" action, one manager or "all")
+-- calls this with the service role; managers' apps re-check their session every minute and sign out.
+create or replace function public.atb_kill_sessions(p_users uuid[]) returns int language plpgsql security definer set search_path='' as $$
+declare n int; begin delete from auth.sessions where user_id = any(p_users); get diagnostics n = row_count; return n; end $$;
+revoke all on function public.atb_kill_sessions(uuid[]) from public, anon, authenticated;
+grant execute on function public.atb_kill_sessions(uuid[]) to service_role;

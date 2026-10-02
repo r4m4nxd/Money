@@ -1659,7 +1659,7 @@ async function boot(){
       // Managers work on the admin's team data; the admin's own id is the team id.
       try{const {data:mm}=await supa.from('atb_members').select('team_owner,username').eq('member',supaUser.id).maybeSingle();if(mm){teamOwner=mm.team_owner;myName=mm.username}}catch(e){}
       if(!ls('atb_mode')||ls('atb_mode')!=='player')useTheme(supaUser.user_metadata?.theme);
-      teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
+      teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;if(!isAdmin)mgrWatch();
       db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||niceEmail(supaUser.email));
       $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="money"><span>Expenses</span></button>');
       if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button><button role="tab" data-v="changelog"><span>Changelog</span></button>');
@@ -1789,6 +1789,10 @@ function sortTeam(t){const o={DEF:0,MID:1,FWD:2};return t.slice().sort((a,b)=>o[
 function keepDetails(m){const key=d=>(d.dataset.cx||'')+'|'+(d.querySelector(':scope>summary')?.textContent||'').replace(/\d+/g,'#').trim().slice(0,60);
   const was=new Map(),v0=(PM?'p-':'')+view;if(m.dataset.rv===v0)m.querySelectorAll('details:not([data-cx])').forEach(d=>was.set(key(d),d.open));
   return ()=>{m.dataset.rv=v0;m.querySelectorAll('details:not([data-cx])').forEach(d=>{const k=key(d);if(was.has(k)&&d.open!==was.get(k))d.open=was.get(k)})}}
+// the admin can end a manager's sessions: the server then rejects their token, so sign this device out too
+let mgrWatchT=0;function mgrWatch(){const chk=async()=>{if(!supa||!supaUser||isAdmin||document.hidden)return;try{const {error}=await supa.auth.getUser();
+  if(error&&(error.status===401||error.status===403||/session/i.test(error.message||''))){await supa.auth.signOut({scope:'local'}).catch(()=>{});try{localStorage.removeItem('atb_mode')}catch(e){}location.reload()}}catch(e){}};
+  if(mgrWatchT)return;chk();mgrWatchT=setInterval(chk,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}
 function outSync(){const b=document.getElementById('outbtn');if(!b)return;const on=!!(supaUser||(PM&&PM.tok));b.hidden=!on;if(on&&!b.innerHTML)b.innerHTML=ICO('logout')}
 /* Background refreshes (polls, realtime, coming back to the app) must never wipe what someone is typing.
    Fields edited since the last full redraw are remembered (also across an unexpected page reload) and put back. */
@@ -2371,7 +2375,7 @@ function vManagers(){
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=500?'+':''}</summary><ol class="alog">${acts.slice(0,40).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
-      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+appVerPanel()+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
+      <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn" data-a="msout" data-id="${m.member}">Sign out</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div><div class="row" style="margin-top:8px"><button class="btn" data-a="msout" data-id="all">Sign out all managers</button><span class="small muted">They’ll need their password to sign back in.</span></div>`}`+appVerPanel()+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
 }
 // admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
 
@@ -2443,7 +2447,7 @@ function vGuide(){
   const s=S.settings,L=sched().map(x=>x.d).sort();
   return `<h2>Manager guide</h2>
   <p class="gintro">Everything the app does, in the order you use it each week. Numbers shown are your live settings; change them in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['schedule','Seasons and schedule'],['tourn','Tournaments'],['club','Club, kits and equipment'],['ppage','Player pages and PlayStyles'],['security','Security'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link and PINs'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['attend','Attendance (after every game)'],['rate','Rating, goals and notes'],['results','Scores, wins and Player of the Match'],['stats','Stats and reliability'],['awards','Awards'],['cards','Player cards and photos'],['portal','The player portal'],['motiv','Growth, XP and badges'],['control','Controlling player access'],['managers','Managers and activity'],['settings','Every setting explained'],['data','Privacy, sync and devices'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  <nav class="gtoc">${[['life','The weekly cycle'],['schedule','Seasons and schedule'],['tourn','Tournaments'],['club','Club, kits and equipment'],['ppage','Player pages and PlayStyles'],['security','Security'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link and PINs'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['chem','Chemistry and PlayStyles'],['attrs','FC attributes'],['analytics','Stats dashboards'],['unlocks','Unlocks'],['search','Search and changelog'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['attend','Attendance (after every game)'],['rate','Rating, goals and notes'],['results','Scores, wins and Player of the Match'],['stats','Stats and reliability'],['awards','Awards'],['cards','Player cards and photos'],['portal','The player portal'],['motiv','Growth, XP and badges'],['control','Controlling player access'],['managers','Managers and activity'],['settings','Every setting explained'],['data','Privacy, sync and devices'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
     <li><b>Saturday 9 PM (automatic):</b> tonight’s link closes and the next game’s link opens. You get a phone alert with the link: forward it to WhatsApp.</li>
@@ -2666,7 +2670,7 @@ function vGuide(){
     <li><b>Sign out everywhere</b> ends all their sessions. Untick <b>Can sign in to their player profile</b> and save to block them (they’re signed out on their next refresh). <b>Reset PIN</b> clears their PIN.</li>
     <li>Settings → untick <b>Players can sign in</b> to switch the portal off for everyone.</li></ul>`)}
 
-  ${sec('managers','Managers and activity',`<ul>
+  ${sec('managers','Managers and activity',`<ul><li><b>Sign out</b> on a manager (or <b>Sign out all managers</b>) ends their sessions; their devices sign out within a minute and they need their password to get back in.</li>
     <li><b>Admin</b> (${ADMIN_EMAIL}) is the only account with the <b>Managers</b> tab. Add a manager with a username and password (8+ characters); send the login privately. <b>Set password</b> replaces it, <b>Remove</b> deletes the login (their changes stay). Managers can’t use Forgot password.</li>
     <li>Managers see and change everything except the Managers tab and player access controls.</li>
     <li><b>Manager activity</b>: “Active … ago” and a log (opened app, players, teams, matches, ratings, attendance, links, PINs, settings, schedule), 90 days.</li>
@@ -4629,6 +4633,8 @@ document.addEventListener('click',async e=>{
     try{await mgrCall({action:'create',username,password});const t=`Airdrie United Club App\n${location.origin+location.pathname.replace(/[^/]*$/,'')}\nUsername: ${username}\nPassword: ${password}`;
       try{await navigator.clipboard.writeText(t);toast('Added '+username+'. Login details copied')}catch(e){toast('Added '+username)}mgrs.list=null;render()}
     catch(e){msg.textContent=e.message;el.disabled=false}return}
+  if(a==='msout'){if(!el.dataset.sure){el.dataset.sure=1;const t0=el.textContent;el.textContent='Tap again to confirm';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent=t0}},3000);return}
+    el.disabled=true;try{const r=await mgrCall({action:'signout',member:id||el.dataset.id});toast(`Signed out (${r.sessions||0} session${r.sessions===1?'':'s'} ended). Their devices sign out within a minute.`)}catch(e){toast(e.message)}el.disabled=false;delete el.dataset.sure;el.textContent=el.dataset.id==='all'?'Sign out all managers':'Sign out';return}
   if(a==='mreset'){const pw=$('#rp_'+CSS.escape(id)).value;if(pw.length<8){toast('Use at least 8 characters');return}try{await mgrCall({action:'reset',member:id,password:pw});toast('Password updated')}catch(e){toast(e.message)}return}
   if(a==='mdel'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again to remove';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Remove'}},3000);return}
     try{await mgrCall({action:'remove',member:id});toast('Manager removed. They can no longer sign in');mgrs.list=null;render()}catch(e){toast(e.message)}return}
