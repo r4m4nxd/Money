@@ -875,6 +875,79 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
   .cards{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
   #main[data-v=history] .mlist{grid-template-columns:repeat(auto-fill,minmax(680px,1fr))}
 }
+
+/* ---------- Card artwork (cards/*.webp): FC-style layout placed on the design's own blank areas ---------- */
+.fut.art{position:relative;aspect-ratio:100/159;filter:drop-shadow(0 8px 14px rgba(0,0,0,.4))}
+.fut.art>.fart{position:absolute;top:0;bottom:0;left:-14%;width:128%;height:100%;object-fit:contain;object-position:50% 50%;pointer-events:none;z-index:0;max-width:none}
+.fut.art .fbody{clip-path:none;background:none;overflow:visible;z-index:1}
+.fut.art .fbody::before,.fut.art .fmot,.fut.art .streak,.fut.art .fs::before{display:none}
+.fut.art .fshine{clip-path:none;inset:2cqw 3cqw;border-radius:6cqw 6cqw 30cqw 30cqw/6cqw 6cqw 12cqw 12cqw;opacity:.55!important}
+.fut.art .ph{left:20cqw;top:13cqw;width:72cqw;height:78cqw}.fut.art .ph:not(.cut){-webkit-mask-image:radial-gradient(75% 80% at 50% 38%,#000 55%,transparent 100%);mask-image:radial-gradient(75% 80% at 50% 38%,#000 55%,transparent 100%)}
+.fut.art .fl{left:8cqw;top:21cqw}
+.fut.art .ovr{font-size:21cqw}.fut.art .ps{font-size:8.6cqw}
+.fut.art .fn{top:89.5cqw;font-size:11cqw;text-shadow:0 .4cqw 1.2cqw rgba(0,0,0,.25)}.fut.art .fn.l{top:90.5cqw;font-size:9.4cqw}.fut.art .fn.xl{top:91.5cqw;font-size:8cqw}
+.fut.art .fs{top:106cqw;left:13cqw;right:13cqw;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,9.4cqw);grid-auto-flow:column;column-gap:10cqw}
+.fut.art .fs span{flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:2cqw}
+.fut.art .fs span:nth-child(n+4){justify-content:flex-start;flex-direction:row-reverse;padding-left:1cqw}
+.fut.art .fs b{font-size:9cqw;min-width:10cqw;text-align:right}.fut.art .fs i{font-size:6.4cqw}
+.fut.art .fb{top:143cqw;gap:3cqw}
+.fut.art .tpip{top:10cqw;right:9cqw}
+.fut.art.t-special .ovr,.fut.art.t-special .fn,.fut.art.t-special .ps,.fut.art.t-special .fs b{color:#3A2D10}.fut.art.t-special{--lab:#8A6A22;--ink2:#3A2D10}
+.pc-card>.pcart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 34%;border-radius:inherit;z-index:0;pointer-events:none;max-width:none}
+.pc-card:has(>.pcart){border-color:rgba(255,255,255,.35)}
+.abil.chs .abb{display:inline-grid;place-items:center;min-width:34px;height:20px;padding:0 5px;border-radius:5px;background:linear-gradient(135deg,#2FD07A,#0E8C5A);color:#04140b;font:900 11px/1 var(--f-display);letter-spacing:.04em}.abil.chs.sm .abb{min-width:28px;height:16px;font-size:9.5px}.abcat{margin:8px 0 4px;font-weight:700}
+
+/* ---------- player page: FC stats board ---------- */
+.ppcard{position:relative}.ppcard{margin-right:44px!important}.ppalt{position:absolute;right:-42px;top:22%;display:flex;flex-direction:column;gap:3px}.ppalt span{font:800 11px/1 var(--f-display);padding:5px 6px;border-radius:5px;background:var(--surface2);border:1px solid var(--line)}
+.ppstrip{display:flex;justify-content:center;align-items:center;gap:0;margin-top:6px}.ppstrip>*{font:800 12px/1 var(--f-display);padding:5px 9px;background:var(--surface2);border:1px solid var(--line)}.ppstrip>:first-child{border-radius:8px 0 0 8px}.ppstrip>:last-child{border-radius:0 8px 8px 0}.ppstrip b{background:#5BE0A8;color:#062b1a;border-color:#5BE0A8}
+.ppearn{display:flex;flex-wrap:wrap;gap:6px 10px;border-top:1px solid var(--line);padding-top:10px}.ppearn>span{display:flex;flex-direction:column;align-items:center;width:62px;gap:2px}.ppearn small{font-size:10px;line-height:1.1;text-align:center;color:var(--muted)}.ppearn .psb{width:34px;height:34px}
+.pproles{display:flex;flex-wrap:wrap;gap:4px 14px;border-top:1px solid var(--line);padding-top:8px;font-size:13px;color:var(--muted)}.pproles b{color:var(--good)}
+.fcpanel{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1.6fr) minmax(0,1.4fr);gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+@media(max-width:1000px){.fcpanel{grid-template-columns:1fr 1fr}.fcstats{grid-column:1/-1}}@media(max-width:620px){.fcpanel{grid-template-columns:1fr}}
+.fcstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 18px}
+.fcg2 .gh2{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 6px}.fcg2 .gh2 b:first-child{font:800 17px var(--f-display)}.fcg2 .gh2 .num{font:900 18px var(--f-display)}
+.pbar2{height:5px;border-radius:3px;background:color-mix(in srgb,var(--muted) 30%,transparent);overflow:hidden;margin-bottom:8px}.pbar2 i{display:block;height:100%;background:currentColor;border-radius:3px}
+.fcg2 .sub{display:flex;justify-content:space-between;font-size:14px;line-height:1.75;color:var(--muted)}.fcg2 .sub b{font-weight:800}.fcg2 sup{font-size:9px;color:#2FD07A;margin-left:1px}
+.v80{color:#2FBF55}.v70{color:#8BCF3A}.v60{color:#E8B923}.v50{color:#F08A24}.v40{color:#E5483B}.pbar2.v80 i,.pbar2.v70 i,.pbar2.v60 i,.pbar2.v50 i,.pbar2.v40 i{background:currentColor}
+.fctot{display:flex;flex-direction:column;gap:10px}.fctot>div>i{display:block;font-style:normal;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.fctot b{font:900 20px var(--f-display);color:#2FBF55}
+.fch{display:block;font:800 17px var(--f-display);margin-bottom:6px}.fcchem,.fcbest{display:flex;flex-direction:column;gap:6px;min-width:0}
+.arate{align-self:flex-start;font:900 11px/1 var(--f-display);letter-spacing:.06em;padding:6px 26px;border-radius:4px;background:linear-gradient(135deg,#F7E39A,#C9A53A);color:#2a1d07;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.fcfits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.fcfits b{font:800 13px var(--f-display)}.fcfits span{font-size:12px;color:var(--muted)}.fcfits .pbar2{margin:4px 0 2px;color:#5BE0A8}
+.fch2{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.fcstyles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:4px}.fcstyles span{display:flex;gap:6px;align-items:center;font-size:12px;padding:5px 7px;border-radius:5px;background:var(--surface2);border:1px solid var(--line)}.fcstyles i{font:900 9px var(--f-display);font-style:normal;color:var(--muted)}.fcstyles .on{border-color:#2FD07A;background:color-mix(in srgb,#2FD07A 18%,var(--surface2))}.fcstyles .on i{color:#2FD07A}
+.fcbr{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--line)}.fcbr>div:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}.fcbr b{font-size:13px}.fcbr em{font-style:normal;color:#2FBF55}.fcbr small{font-size:11px;color:var(--muted)}
+.hexv{align-self:flex-start;font:900 13px/1 var(--f-display);padding:5px 10px;background:#2FBF55;color:#06210f;clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)}
+.fcbc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-left:1px solid var(--line);padding-left:10px}.fcbc small{font-size:8.5px;text-transform:uppercase;color:var(--muted)}.fcbc i{font:900 11px var(--f-display);font-style:normal;color:#2FBF55}
+
+/* ---------- square share image: player card + stats board ---------- */
+.sbwrap{overflow-x:auto;display:flex;justify-content:center}
+.sboard{position:relative;flex:none;width:540px;height:540px;box-sizing:border-box;padding:22px 26px 16px;display:grid;grid-template-columns:200px 1fr;grid-template-rows:1fr auto;gap:8px 22px;color:#EEF3F8;overflow:hidden;font-family:var(--f-body);
+  background:radial-gradient(60% 40% at 72% 18%,rgba(120,200,255,.22),transparent 70%),radial-gradient(50% 30% at 20% 0%,rgba(255,255,255,.12),transparent 70%),linear-gradient(180deg,#14283A 0%,#0B1824 58%,#0E2416 100%)}
+.sb-pitch{position:absolute!important;z-index:0!important;inset:auto 0 0;height:30%;background:linear-gradient(90deg,rgba(60,140,70,.16) 0.00%,rgba(60,140,70,.16) 6.00%,rgba(40,110,55,.08) 6.00%,rgba(40,110,55,.08) 14.29%,rgba(60,140,70,.16) 14.29%,rgba(60,140,70,.16) 20.29%,rgba(40,110,55,.08) 20.29%,rgba(40,110,55,.08) 28.57%,rgba(60,140,70,.16) 28.57%,rgba(60,140,70,.16) 34.57%,rgba(40,110,55,.08) 34.57%,rgba(40,110,55,.08) 42.86%,rgba(60,140,70,.16) 42.86%,rgba(60,140,70,.16) 48.86%,rgba(40,110,55,.08) 48.86%,rgba(40,110,55,.08) 57.14%,rgba(60,140,70,.16) 57.14%,rgba(60,140,70,.16) 63.14%,rgba(40,110,55,.08) 63.14%,rgba(40,110,55,.08) 71.43%,rgba(60,140,70,.16) 71.43%,rgba(60,140,70,.16) 77.43%,rgba(40,110,55,.08) 77.43%,rgba(40,110,55,.08) 85.71%,rgba(60,140,70,.16) 85.71%,rgba(60,140,70,.16) 91.71%,rgba(40,110,55,.08) 91.71%,rgba(40,110,55,.08) 100.00%);pointer-events:none}
+.sboard>*{position:relative;z-index:1}.sb-str{position:absolute!important;width:16px;z-index:0!important;background:linear-gradient(160deg,#fff 0.00%,#fff 2.62%,transparent 2.62%,transparent 6.25%,#fff 6.25%,#fff 8.88%,transparent 8.88%,transparent 12.50%,#fff 12.50%,#fff 15.12%,transparent 15.12%,transparent 18.75%,#fff 18.75%,#fff 21.38%,transparent 21.38%,transparent 25.00%,#fff 25.00%,#fff 27.62%,transparent 27.62%,transparent 31.25%,#fff 31.25%,#fff 33.88%,transparent 33.88%,transparent 37.50%,#fff 37.50%,#fff 40.12%,transparent 40.12%,transparent 43.75%,#fff 43.75%,#fff 46.38%,transparent 46.38%,transparent 50.00%,#fff 50.00%,#fff 52.62%,transparent 52.62%,transparent 56.25%,#fff 56.25%,#fff 58.88%,transparent 58.88%,transparent 62.50%,#fff 62.50%,#fff 65.12%,transparent 65.12%,transparent 68.75%,#fff 68.75%,#fff 71.38%,transparent 71.38%,transparent 75.00%,#fff 75.00%,#fff 77.62%,transparent 77.62%,transparent 81.25%,#fff 81.25%,#fff 83.88%,transparent 83.88%,transparent 87.50%,#fff 87.50%,#fff 90.12%,transparent 90.12%,transparent 93.75%,#fff 93.75%,#fff 96.38%,transparent 96.38%,transparent 100.00%)}.sb-str.l{left:0;top:0;height:42%}.sb-str.r{right:0;bottom:0;height:34%}.sb-ar span{white-space:nowrap;padding:5px 10px}
+.sb-l{display:flex;flex-direction:column;align-items:center;gap:7px;padding-top:4px}.sb-card{width:150px}.sb-card .fut{filter:drop-shadow(0 10px 16px rgba(0,0,0,.55))}
+.sb-strip{display:flex}.sb-strip>*{font:800 10.5px/1 var(--f-display);padding:4px 7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25)}.sb-strip>:first-child{border-radius:6px 0 0 6px}.sb-strip>:last-child{border-radius:0 6px 6px 0}.sb-strip b{background:#5BE0A8;color:#062b1a}
+.sb-ar{display:flex;align-items:center;gap:8px}.sb-ar b{font:800 12px var(--f-display)}.sb-ar span{font:900 10px/1 var(--f-display);letter-spacing:.05em;padding:5px 14px;border-radius:3px;background:linear-gradient(100deg,#2AA7C9,#1B5E8C 60%,#3FD0E0);color:#fff}
+.sb-cs .abil{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
+.sb-ps{display:flex;flex-wrap:wrap;justify-content:center;gap:3px}.sb-ps .psb{width:26px;height:26px}
+.sb-roles{font-size:9.5px;line-height:1.5;align-self:stretch}.sb-roles b{color:#fff}.sb-roles span{color:#4BE08A;font-weight:700;margin-right:4px}
+.sb-r{display:flex;flex-direction:column;min-width:0}.sb-t{font:900 italic 38px/1 var(--f-display);letter-spacing:.02em;color:#4BE0A0;text-align:center;margin-bottom:10px;transform:skewX(-6deg)}
+.sb-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}.sb-gh{display:flex;justify-content:space-between;font:800 14px/1 var(--f-display)}.sb-bar{height:3px;margin:4px 0 4px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}.sb-bar i{display:block;height:100%;background:currentColor}
+.sb-s{display:flex;justify-content:space-between;font-size:10.5px;line-height:1.48;color:#E6ECF2}.sb-s b{font-weight:800}
+.sboard .v80{color:#3BD16F}.sboard .v70{color:#9BDB4A}.sboard .v60{color:#F2C230}.sboard .v50{color:#F59A3A}.sboard .v40{color:#F0574A}
+.sb-car{display:grid;gap:10px}.sb-car>div{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px}.sb-car b{font:900 30px var(--f-display);color:#4BE0A0}.sb-car span{font-weight:700}
+.sb-nums{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;background:rgba(255,255,255,.07);border-radius:8px;padding:5px 2px}.sb-nums b{display:block;font:900 15px/1.1 var(--f-display)}.sb-nums i{font-style:normal;font-size:8.5px;color:#A9B8D2;text-transform:uppercase}
+.sb-foot{grid-column:1/-1;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.14);padding-top:8px}.sb-foot img{width:30px;height:30px;border-radius:50%}.sb-foot b{display:block;font:900 13px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.05em}.sb-foot span{font-size:10px;color:#A9B8D2}.sb-foot em{margin-left:auto;font:900 italic 12px var(--f-display);color:#4BE0A0}
+
+/* ---------- abstract app background (diagonal bands, streak lines, brushed texture), light + dark ---------- */
+:root{--abs1:rgba(7,47,99,.05);--abs2:rgba(224,122,31,.22);--abs3:rgba(7,47,99,.028);--abs4:rgba(224,122,31,.12);--abs5:rgba(7,47,99,.07)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--abs1:rgba(255,255,255,.035);--abs2:rgba(242,196,107,.26);--abs3:rgba(255,255,255,.02);--abs4:rgba(242,196,107,.09);--abs5:rgba(90,140,255,.08)}}
+:root[data-theme="dark"]{--abs1:rgba(255,255,255,.035);--abs2:rgba(242,196,107,.26);--abs3:rgba(255,255,255,.02);--abs4:rgba(242,196,107,.09);--abs5:rgba(90,140,255,.08)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 0 34%,var(--abs1) 34% 44%,transparent 44%),linear-gradient(115deg,transparent 0 51%,var(--abs2) 51% 51.5%,transparent 51.5%),
+  linear-gradient(115deg,transparent 0 56%,var(--abs1) 56% 71%,transparent 71%),linear-gradient(115deg,transparent 0 78%,var(--abs2) 78% 78.35%,transparent 78.35%),
+  linear-gradient(115deg,transparent 0 12%,var(--abs2) 12% 12.25%,transparent 12.25%),linear-gradient(295deg,transparent 0 86%,var(--abs1) 86% 100%),
+  repeating-linear-gradient(115deg,var(--abs3) 0 1px,transparent 1px 6px),radial-gradient(55% 45% at 88% 0%,var(--abs4),transparent 70%),radial-gradient(50% 45% at 0% 100%,var(--abs5),transparent 70%)}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1110,35 +1183,42 @@ const BESTPOS=['GK','CB','LB','RB','LWB','RWB','CDM','CM','CAM','LM','RM','LW','
 /* card colours a player may pick (gold/silver/bronze/special stay earned) */
 const CARDCOL0={red:['Red','#FF8A8A','#C8202B','#F25C5C','#fff'],blue:['Blue','#8DB8FF','#1E4FC2','#5C8EF0','#fff'],green:['Green','#8EE6A6','#178A43','#4CC274','#fff'],purple:['Purple','#C9A2FF','#5B2BB5','#9566E8','#fff'],pink:['Pink','#FFB3DA','#D63A8C','#F27BB8','#fff'],teal:['Teal','#8FF0E4','#0E8C80','#3CC4B4','#fff'],orange:['Orange','#FFC48A','#E06A0E','#FA9A3C','#2a1300'],navy:['Navy','#7F96C9','#14224A','#3A4F86','#fff'],carbon:['Carbon','#9AA3AE','#2B3038','#5F6873','#fff'],ice:['Ice','#FFFFFF','#9FD6F2','#DDF2FC','#0f2a3a'],lime:['Lime','#E6FF8F','#7DB31A','#B6E04A','#1c2600'],maroon:['Maroon','#D98C9A','#6E1424','#A33B4E','#fff']};
 const CARDCOL={...CARDCOL0};
-/* Special card designs (inspired by FC promo cards; our own names and artwork, drawn with CSS so they work in saved images too).
-   [name, top, bottom, mid, ink, accent, rimLight, rimDark, art layers] */
-const SP=(x,y,a,r)=>`radial-gradient(circle at ${x}% ${y}%,rgba(255,255,255,${a}) 0 ${r}%,transparent ${r*2.2}%)`;
-const SPK=SP(18,14,.7,1.2)+','+SP(82,24,.55,.9)+','+SP(66,62,.45,.8)+','+SP(26,48,.4,.7)+','+SP(48,84,.4,.7);
-const GT=c=>`radial-gradient(120% 55% at 50% 0%,${c},transparent 62%)`,GC=c=>`radial-gradient(75% 55% at 68% 34%,${c},transparent 72%)`,GE=c=>`radial-gradient(140% 70% at 50% 112%,${c},transparent 58%)`;
+/* Card designs: artwork by Raman's friend (cards/*.webp, HD). [name, top, bottom, mid, ink, label colour] */
 const CARDTHEMES={
-  legend:['Legend','#FFFDF5','#CDB98A','#EFE6CF','#3A2E14','#8A6A22','#F8EBBE','#A8822E',GT('rgba(255,255,255,.85)')+','+GE('rgba(186,150,70,.35)')],
-  hero:['Hero Storm','#C9A6FF','#2B0C6E','#7A3BEA','#FFFFFF','#FFD86B','#E6D2FF','#5B21C2',GC('rgba(255,90,220,.45)')+','+SPK+','+GE('rgba(40,200,255,.35)')],
-  galaxy:['Galaxy','#7FA0FF','#170936','#5B2CCB','#FFFFFF','#FFC6F4','#D8C8FF','#3B1C8E',GC('rgba(255,110,200,.42)')+','+SPK],
-  starball:['Starball','#6BB8FF','#081A5C','#1B46C4','#FFFFFF','#CFE6FF','#CFE6FF','#1B3A9E',SPK+','+GT('rgba(255,255,255,.35)')],
-  inferno:['Inferno','#FFC15A','#5E0B17','#F04A1C','#FFFFFF','#FFE6A3','#FFD27A','#B31E12',GC('rgba(255,230,120,.55)')+','+GE('rgba(120,0,60,.5)')],
-  crimson:['Crimson','#FF7A7A','#5C0010','#D51A2E','#FFFFFF','#FFE3A0','#FFC2C2','#8E0A1C',GT('rgba(255,255,255,.35)')],
-  copper:['Copper Storm','#FFD3A6','#3E1A0E','#B8683A','#FFFFFF','#FFE3C2','#FFD9B0','#7A3E1E',GC('rgba(255,200,120,.45)')+','+GE('rgba(40,10,0,.45)')],
-  heatwave:['Heatwave','#FFF06A','#2FA85A','#FF8A1E','#1D1300','#3A1E00','#FFF7A8','#C25A00',GC('rgba(255,255,255,.35)')],
-  golden:['Golden Glow','#FFF59A','#7A5A00','#F2B705','#241A00','#5A4000','#FFF7B8','#B88A00',GC('rgba(255,255,255,.5)')+','+SPK],
-  volt:['Volt','#E4FF4F','#0A1204','#4C7A00','#FFFFFF','#E4FF4F','#E4FF4F','#2E4A00',GC('rgba(200,255,60,.45)')+','+GE('rgba(0,0,0,.5)')],
-  emerald:['Emerald','#B9F5CF','#063D20','#1FA556','#FFFFFF','#E3FFD9','#D8FFE6','#0E6B35',GC('rgba(255,255,255,.3)')],
-  aqua:['Aqua Future','#9CF6E4','#05463F','#17A891','#FFFFFF','#D6FFF6','#C8FFF1','#0C7466',GT('rgba(255,255,255,.4)')+','+SPK],
-  pearl:['Pearl Mint','#FFFFFF','#56C6A8','#BDF2E2','#0B3A30','#0E6B55','#FFFFFF','#7FD9C0',GT('rgba(255,255,255,.8)')],
-  sky:['Sky','#F2FAFF','#2B86D9','#8ED0FF','#06294A','#0D4C86','#FFFFFF','#4AA3EC',GT('rgba(255,255,255,.7)')],
-  royal:['Royal Gold','#4F6BD0','#060E2C','#15276A','#FFFFFF','#F4D98A','#F4D98A','#9C7A2A',GT('rgba(244,217,138,.35)')+','+SPK],
-  rose:['Rose Holo','#FFD3EC','#7A1450','#F05BAE','#FFFFFF','#FFF0F8','#FFE4F3','#B02A78',SPK+','+GT('rgba(255,255,255,.4)')],
-  blackout:['Matchday Black','#5A606A','#0C0D10','#24272D','#FFFFFF','#E9EDF2','#D9DEE5','#3A3F47',GT('rgba(255,255,255,.18)')+','+SPK],
-  shadow:['Shadow Red','#70747D','#0E0F12','#2B2E35','#FFFFFF','#FF5A5A','#FF6B6B','#2B2E35',GE('rgba(255,40,40,.45)')+','+GT('rgba(255,255,255,.15)')]};
+  bronze:['Bronze','#CA9F81','#9D6F56','#C89B7F','#3A2410','#6B4426'],
+  silver:['Silver','#BCBDC1','#ACAEB3','#D3D4D8','#1F252C','#4A545E'],
+  gold:['Gold','#E3C475','#CDAB5C','#EED07C','#3A2D10','#6B5320'],
+  debut:['Debut','#DED6CC','#D7D3CE','#E1DCD8','#3A2D10','#8A6A22'],
+  icon:['Icon','#E5E0D7','#D4D1CB','#DFDCD8','#3A2D10','#8A6A22'],
+  proicon:['Pro Icon','#D5D1CD','#D8D6D3','#E4E2E2','#3A2D10','#8A6A22'],
+  greats:['Greats Hero','#ABBDEE','#CED7F0','#A9E2F9','#1B1F4D','#4B3FA0'],
+  halloffame:['Hall of Fame','#A9A5A5','#2A2A2A','#4F4F4F','#FFFFFF','#E8E8E8'],
+  cornerstones:['Cornerstones','#573E3E','#161419','#302224','#FFFFFF','#FFC27A'],
+  destined:['Destined for Glory','#4B7E5C','#102521','#1A4537','#FFFFFF','#F4D98A'],
+  premier:['Premier Blue','#30C6FA','#231658','#254483','#FFFFFF','#BFEAFF'],
+  premlights:['Premier Lights','#2F58A4','#2A0B48','#292A75','#FFFFFF','#BFD4FF'],
+  fiesta:['Fiesta','#CC5D64','#971B4E','#A92B5D','#FFFFFF','#FFE08A'],
+  hero:['Hero','#3D2196','#170A44','#160649','#FFFFFF','#D9C2FF'],
+  knockout:['Knockout Royalty','#7D2A17','#5B0A07','#600304','#FFFFFF','#F4D98A'],
+  otw:['Ones to Watch','#142F49','#0C1431','#0D1C37','#FFFFFF','#7CF0B0'],
+  otwglow:['Ones to Watch Glow','#125B5D','#05102A','#061F30','#FFFFFF','#7CF0D0'],
+  prime:['Prime Heroes','#8E2954','#390219','#460826','#FFFFFF','#FFC2DA'],
+  risingstar:['Rising Star','#C79EF3','#A580EA','#B995F9','#2D1A5A','#5B3AA8'],
+  sponsor:['Sponsorship','#4D4C4B','#2C3031','#333535','#FFFFFF','#E6C88A'],
+  foundation:['Squad Foundation','#367369','#16363B','#194343','#FFFFFF','#8CF5C8'],
+  summer:['Summer Stars','#585475','#190D3D','#342B54','#FFFFFF','#D8FF8A'],
+  tots:['Team of the Season','#4D4D58','#060E33','#121D45','#FFFFFF','#F4D98A'],
+  totw:['Team of the Week','#312D23','#11110E','#26241A','#FFFFFF','#F4D98A'],
+  scream:['Ultimate Scream','#A77247','#503259','#1F1115','#FFFFFF','#FFB060']};
+// designs players picked before the new artwork map onto the closest new one
+const CARDALIAS={legend:'icon',galaxy:'greats',starball:'premier',inferno:'cornerstones',crimson:'knockout',copper:'bronze',heatwave:'summer',golden:'gold',volt:'summer',emerald:'destined',aqua:'otwglow',pearl:'icon',sky:'premlights',royal:'tots',rose:'fiesta',blackout:'totw',shadow:'halloffame'};
+const TIERART={bronze:'bronze',silver:'silver',gold:'gold',special:'icon'};
+const artOf=(cc,t)=>CARDTHEMES[cc]?cc:cc?'':TIERART[t]||'gold';
+const ARTIMG=(k,c)=>k?`<img class="${c}" src="cards/${k}.webp" alt="" decoding="async">`:'';
 Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top,bot,mid,ink]});
-(()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc,rl,rd,art]])=>{const bg=`${art},linear-gradient(180deg,${top} 0%,${mid} 46%,${bot} 100%)`;
-  return `.fut.fut.cc-${k}{--c1:${top};--c2:${bot};--c3:${mid};--ink2:${ink};--lab:${acc};--glow:rgba(255,255,255,.32);--rim:linear-gradient(160deg,${rl} 0%,${rd} 40%,${rl} 66%,${rd} 100%)}
-.fut.fut.cc-${k} .fbody::before{background:${bg}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i{color:${acc}}.pc.pc.cc-${k} .pc-card{background:${bg};color:${ink};border-color:${rl}}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
-.sty-card.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}.ccsw.cc-${k},.ccdot.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}`}).join('\n');
+(()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc]])=>`.fut.fut.cc-${k}{--ink2:${ink};--lab:${acc}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i,.fut.fut.cc-${k} .no{color:${acc}}
+.pc.pc.cc-${k} .pc-card{background:${mid};color:${ink};border-color:transparent}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
+.sty-card.cc-${k}{background:${mid}!important;color:${ink}!important}.ccsw.cc-${k}{background:url(cards/t_${k}.webp) center top/auto 84% no-repeat!important;color:#fff!important;border-color:transparent!important}.ccdot.cc-${k}{background:url(cards/t_${k}.webp) center/cover!important}`).join('\n');
   const st=document.createElement('style');st.id='cardthemes';st.textContent=css;(document.body||document.head).appendChild(st)})();
 /* Motif artwork per design (our own drawings), rasterised once to PNG so it also shows in saved images */
 const MOTIFS=(()=>{const W=(o,b)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 128" preserveAspectRatio="none"><g opacity="${o}">${b}</g></svg>`;
@@ -1155,23 +1235,33 @@ const MOTIFS=(()=>{const W=(o,b)=>`<svg xmlns="http://www.w3.org/2000/svg" viewB
   holo:c=>W(.5,`<defs><linearGradient id="h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".3" stop-color="#9ff" stop-opacity=".5"/><stop offset=".45" stop-color="#f9f" stop-opacity=".5"/><stop offset=".6" stop-color="#ff9" stop-opacity=".45"/><stop offset=".8" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path d="M0 20L100 0V40L0 76Z" fill="url(#h)"/><path d="M0 92L100 64V80L0 110Z" fill="url(#h)" opacity=".6"/>`+stars('#fff')),
   shards:c=>W(.3,`<g fill="${c}"><path d="M0 0L40 0L0 50Z" opacity=".5"/><path d="M100 10L60 60L100 74Z"/><path d="M0 84L34 128H0Z" opacity=".7"/><path d="M100 96L70 128H100Z" opacity=".5"/><path d="M58 0L100 0L80 30Z" opacity=".35"/></g>`),
   bokeh:c=>W(.45,[[18,20,9,.25],[80,26,6,.35],[66,64,12,.15],[24,82,7,.3],[88,96,10,.2],[44,40,4,.45],[56,110,6,.3]].map(([x,y,r,o])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" opacity="${o}"/>`).join('')+stars('#fff'))}})();
-const THEMEMOTIF={legend:['marble','#B8892E'],hero:['lightning','#FFFFFF'],galaxy:['bokeh','#FFC6F4'],starball:['starburst','#FFFFFF'],inferno:['flames','#FFD36B'],crimson:['shards','#FFFFFF'],copper:['swirl','#FFE3C2'],heatwave:['waves','#FFFFFF'],golden:['starburst','#FFFFFF'],volt:['grid','#E4FF4F'],emerald:['waves','#E3FFD9'],aqua:['waves','#FFFFFF'],pearl:['marble','#4FB89B'],sky:['holo','#FFFFFF'],royal:['starburst','#F4D98A'],rose:['holo','#FFFFFF'],blackout:['shards','#FFFFFF'],shadow:['lightning','#FF5A5A']};
+const THEMEMOTIF={};const THEMEMOTIF0={legend:['marble','#B8892E'],hero:['lightning','#FFFFFF'],galaxy:['bokeh','#FFC6F4'],starball:['starburst','#FFFFFF'],inferno:['flames','#FFD36B'],crimson:['shards','#FFFFFF'],copper:['swirl','#FFE3C2'],heatwave:['waves','#FFFFFF'],golden:['starburst','#FFFFFF'],volt:['grid','#E4FF4F'],emerald:['waves','#E3FFD9'],aqua:['waves','#FFFFFF'],pearl:['marble','#4FB89B'],sky:['holo','#FFFFFF'],royal:['starburst','#F4D98A'],rose:['holo','#FFFFFF'],blackout:['shards','#FFFFFF'],shadow:['lightning','#FF5A5A']};
 (()=>{const st=document.createElement('style');st.id='cardmotifs';(document.body||document.head).appendChild(st);const rules={};
   const put=(k,url)=>{rules[k]=`.cc-${k} .fmot{background-image:url("${url}")}`;st.textContent=Object.values(rules).join('\n')};
   Object.entries(THEMEMOTIF).forEach(([k,[m,c]])=>{const svg='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(MOTIFS[m](c));put(k,svg);
     const im=new Image();im.onload=()=>{try{const cv=document.createElement('canvas');cv.width=300;cv.height=384;cv.getContext('2d').drawImage(im,0,0,300,384);put(k,cv.toDataURL('image/png'))}catch(e){}};im.src=svg})})();
 
 /* one signature ability per player: icon + plain label so its meaning is obvious */
-const ABILITIES={speed:['zap','Speedster','rapid pace'],sniper:['target','Sniper','clinical finisher'],vision:['eye','Playmaker','sees the pass'],wall:['shield','Brick Wall','tough to beat'],engine:['battery','Engine','runs all game'],magic:['wand','Magician','dribbling skills'],captain:['crown','Captain','leads the team'],rocket:['rocket','Long Ranger','long shots'],gloves:['glove','Safe Hands','great keeper'],clutch:['flame','Clutch','big-game player'],tank:['dumb','Tank','strength'],fox:['ball','Fox in the Box','poacher'],thief:['swap','Ball Winner','wins it back'],flair:['spark','Showman','tricks and flair'],assist:['assist','Assist King','sets up goals']};
+// signature ability = the player's chemistry style: [abbreviation, name, boosted attributes, category]
+const CHEMCATS=[['att','Attacking'],['mid','Midfield / Playmaking'],['def','Defending'],['gk','Goalkeeper'],['gen','General']];
+const ABILITIES={hunter:['HUN','Hunter',['Pace','Shooting'],'att'],hawk:['HWK','Hawk',['Pace','Shooting','Physical'],'att'],marksman:['MRK','Marksman',['Shooting','Dribbling','Physical'],'att'],finisher:['FIN','Finisher',['Shooting','Dribbling'],'att'],deadeye:['EYE','Deadeye',['Shooting','Passing'],'att'],sniper:['SNI','Sniper',['Shooting','Physical'],'att'],
+  engine:['ENG','Engine',['Pace','Passing','Dribbling'],'mid'],maestro:['MAE','Maestro',['Shooting','Passing','Dribbling'],'mid'],artist:['ART','Artist',['Passing','Dribbling'],'mid'],architect:['ARC','Architect',['Passing','Physical'],'mid'],powerhouse:['PWR','Powerhouse',['Passing','Defending'],'mid'],
+  shadow:['SHA','Shadow',['Pace','Defending'],'def'],anchor:['ANC','Anchor',['Pace','Defending','Physical'],'def'],sentinel:['SEN','Sentinel',['Defending','Physical'],'def'],guardian:['GUA','Guardian',['Dribbling','Defending'],'def'],gladiator:['GLA','Gladiator',['Shooting','Defending'],'def'],backbone:['BAC','Backbone',['Passing','Defending','Physical'],'def'],
+  gkwall:['WAL','Wall',['Diving','Handling','Kicking'],'gk'],shield:['SLD','Shield',['Kicking','Reflexes','Speed'],'gk'],cat:['CAT','Cat',['Reflexes','Speed','Positioning'],'gk'],glove:['GTV','Glove',['Diving','Handling','Positioning'],'gk'],gkbasic:['GKB','GK Basic',['All goalkeeper stats (minor)'],'gk'],
+  basic:['BAS','Basic',['All outfield stats (minor)'],'gen']};
+// abilities picked before chemistry styles map onto the closest style
+const ABALIAS={speed:'hunter',vision:'artist',wall:'sentinel',magic:'artist',captain:'backbone',rocket:'marksman',gloves:'glove',clutch:'finisher',tank:'anchor',fox:'finisher',thief:'shadow',flair:'artist',assist:'deadeye'};
+const abKey=k=>ABILITIES[k]?k:ABALIAS[k]||'';
 const prof=p=>p&&p.prof||{};
-const abilityChip=(k,small)=>{const a=ABILITIES[k];return a?`<span class="abil${small?' sm':''}" title="${esc(a[1])}: ${esc(a[2])}">${ICO(a[0])}<b>${esc(a[1])}</b>${small?'':`<i>${esc(a[2])}</i>`}</span>`:''};
-const ccOf=p=>{const c=prof(p).card;return c&&CARDCOL[c]?c:''};
+const abilityChip=(k,small)=>{const a=ABILITIES[abKey(k)];return a?`<span class="abil chs${small?' sm':''}" title="Chemistry style ${esc(a[1])}: boosts ${esc(a[2].join(', '))}"><b class="abb">${a[0]}</b><b>${esc(a[1])}</b>${small?'':`<i>${esc(a[2].join(' · '))}</i>`}</span>`:''};
+const ccOf=p=>{let c=prof(p).card;c=CARDALIAS[c]||c;return c&&CARDCOL[c]?c:''};
 const optGroups=(groups,cur)=>groups.map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(n=>`<option ${n===cur?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('');
 // FC card (EA FC layout): metal body by tier, OVR + position top-left, photo centre fading into the card, name, six stats, flag + crest.
 function cardHTML(p,{btn=true,tier:tv,nonum=false}={}){const r=R(p.id),t=tv||(p.star?'special':hideR?'gold':tier(r.ovr)),f=k=>rv(Math.round((r.a[k]||0)*10)),cc=ccOf(p),known=!!(tv||p.star||!hideR),pic=p.photo||p.thumb;
   const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',rv(Math.round(((r.a.str||0)+(r.a.sta||0))*5))]];
   const tag=btn?'button':'div';
-  return `<${tag} class="fut t-${t}${cc?' cc-'+cc:''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}><div class="fbody">
+  const art=artOf(cc,t);
+  return `<${tag} class="fut t-${t}${cc?' cc-'+cc:''}${art?' art':''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}>${ARTIMG(art,'fart')}<div class="fbody">
     <i class="fmot"></i><span class="streak s1"></span><span class="streak s2"></span><span class="streak s3"></span><i class="fshine"></i>
     ${cc&&known?`<span class="tpip ${t}" title="${t} card">${t==='special'?'★ Special':t}</span>`:''}<div class="ph${pic&&p.photoCut?' cut':''}">${pic?`<img src="${pic}" alt="">`:SIL}</div>
     <div class="fl"><b class="ovr num">${rv(r.ovr)}</b><span class="ps">${p.pos}</span>${p.number?`<span class="no num">#${esc(p.number)}</span>`:''}${p.star?'<span class="st" title="Star player">★</span>':''}</div>
@@ -1322,7 +1412,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021529',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021733',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2713,13 +2803,13 @@ const dispName=p=>esc(titleName(p?.name||''))+(prof(p).nick?` <span class="nick"
 function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!pfD)pfD={card:pr.card||'',ability:pr.ability||'',ps:(pr.ps||[]).slice()};
   if(PM.data.settings?.playerProfile===false)return '';
   const req=me.photoReq,mates=S.players.filter(p=>p.id!==me.id&&!p.guest&&p.active!==false).sort((a,b)=>a.name.localeCompare(b.name));
-  return `<details class="pfwrap" id="pfwrap"${pfOpen?' open':''}><summary class="panel pfsum"><span class="pfsi">✏️</span><span><b>Edit my profile</b><span class="small muted">Nickname, card colour, ability, PlayStyles, favourites, photo</span></span><span class="pfchev">›</span></summary><div class="panel stack pfed">
+  return `<details class="pfwrap" id="pfwrap"${pfOpen?' open':''}><summary class="panel pfsum"><span class="pfsi">✏️</span><span><b>Edit my profile</b><span class="small muted">Nickname, card design, chemistry style, PlayStyles, favourites, photo</span></span><span class="pfchev">›</span></summary><div class="panel stack pfed">
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
     <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw${k?' cc-'+k:''}" aria-pressed="${pfD.card===k}" data-a="pfcard" data-v="${k}" title="${l}" style="${k?`background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})`:''}"><span>${l}</span></button>`).join('')}</div>
       <div class="small muted">Your level still shows on your card as a small gold, silver, bronze or ★ badge.</div></div>
-    <div><div class="f"><span>Signature ability <span class="muted">(pick one)</span></span></div><div class="abgrid">${Object.keys(ABILITIES).map(k=>`<button class="abopt" aria-pressed="${pfD.ability===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div></div>
+    <div><div class="f"><span>Chemistry style <span class="muted">(your signature, pick one)</span></span></div>${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="abgrid">${Object.keys(ABILITIES).filter(k=>ABILITIES[k][3]===c).map(k=>`<button class="abopt" aria-pressed="${abKey(pfD.ability)===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div>`).join('')}</div>
     <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
     <div class="fgrid g2"><label class="f">Favourite player<select id="pffav"><option value="">–</option>${optGroups(FAVPLAYERS,pr.favPlayer)}</select></label>
       <label class="f">Favourite teammate<select id="pfmate"><option value="">–</option>${mates.map(p=>`<option value="${p.id}" ${p.id===pr.favMate?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
@@ -2757,28 +2847,35 @@ function cmpPage(id){const me=PM.data.me.id,A=pById(me),B=pById(id),sa=pubStats(
   const pct=s=>s.res?Math.round(s.W/s.res*100):0,gpm=s=>s.apps?Math.round((s.g+s.a)/s.apps*10)/10:0;
   const rows=[['Apps',sa.apps,sb.apps],['Wins',sa.W,sb.W],['Win %',pct(sa),pct(sb)],['Goals',sa.g,sb.g],['Assists',sa.a,sb.a],['G+A per match',gpm(sa),gpm(sb)],['Player of the Match',sa.potm,sb.potm],['Tournaments',sa.tn,sb.tn],['Titles',sa.titles,sb.titles]];
   if(SQR()){const ra=R(me),rb=R(id),g=(r,ks)=>Math.round(ks.reduce((n,k)=>n+(r.a[k]||0),0)/ks.length*10);rows.unshift(['OVR',Math.round(ra.ovr),Math.round(rb.ovr)],...FCGROUPS.map(([nm,ks])=>[nm,g(ra,ks),g(rb,ks)]))}
-  const txt=[['Position',A.pos,B.pos],['Best position',pa.bestPos||'–',pb.bestPos||'–'],['Shirt',A.number?'#'+A.number:'–',B.number?'#'+B.number:'–'],['Ability',pa.ability?ABILITIES[pa.ability][1]:'–',pb.ability?ABILITIES[pb.ability][1]:'–'],['Favourite player',pa.favPlayer||'–',pb.favPlayer||'–']];
+  const txt=[['Position',A.pos,B.pos],['Best position',pa.bestPos||'–',pb.bestPos||'–'],['Shirt',A.number?'#'+A.number:'–',B.number?'#'+B.number:'–'],['Chemistry style',abKey(pa.ability)?ABILITIES[abKey(pa.ability)][1]:'–',abKey(pb.ability)?ABILITIES[abKey(pb.ability)][1]:'–'],['Favourite player',pa.favPlayer||'–',pb.favPlayer||'–']];
   openModal(`<div class="mh"><h2>You vs ${esc(B.name.split(' ')[0])}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="cmp"><div class="cmph"><div>${cardHTML(A,{btn:false,nonum:!SQR()})}<b>${dispName(A)}</b></div><div class="vs">VS</div><div>${cardHTML(B,{btn:false,nonum:!SQR()})}<b>${dispName(B)}</b></div></div>
     <div class="cmpt">${rows.map(([l,x,y])=>{const mx=Math.max(x,y)||1;return `<div class="cmpr"><b class="num ${x>y?'win':''}">${x}${l==='Win %'?'%':''}</b><div class="cmpb"><i style="width:${x/mx*100}%"></i></div><span>${l}</span><div class="cmpb r"><i style="width:${y/mx*100}%"></i></div><b class="num ${y>x?'win':''}">${y}${l==='Win %'?'%':''}</b></div>`}).join('')}
     ${txt.map(([l,x,y])=>`<div class="cmpr t"><b>${esc(x)}</b><span>${l}</span><b>${esc(y)}</b></div>`).join('')}</div></div>`);document.querySelector('.modal').classList.add('wide')}
 /* story-size image of a player page (WhatsApp status, Instagram story, Facebook) with the developer's signature */
-function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubStats(id),show=!PM||PM.data.showRatings,r=R(id),cc=ccOf(p),t=p.star?'special':tier(r.ovr),known=show||p.star||(PM&&PM.data.growth),pic=p.photo||p.thumb;
-  const tr=cc?'':known?t:'gold',col=cc?CARDCOL[cc]:null,bg=col?`background:linear-gradient(180deg,${col[1]} 0%,${col[3]} 45%,${col[2]} 100%);color:${col[4]}`:'';
-  const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
-  openModal(`<div class="mh"><h2>Share my player page</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <div id="sharecard" class="story"><div class="sty-h"><img src="icons/crest-640.jpg" alt=""><div><b>${esc((S.settings.club||{}).name||'Airdrie United')}</b><span>Player card · ${esc(S.settings.season||new Date().getFullYear())}</span></div></div>
-    <div class="sty-card t-${tr}${cc?' cc-'+cc:''}" style="${bg}"><i class="fmot"></i>${cc&&known?`<span class="sty-pip ${t}">${t==='special'?'★ Special':t}</span>`:''}
-      <div class="sty-top">${show?`<b>${r.ovr}</b>`:''}<span>${esc(pr.bestPos||p.pos)}</span></div>
-      <div class="sty-ph${pic?' hp':''}${pic&&p.photoCut?' cut':''}" style="${col?`--cf:${col[2]};--cf0:${col[2]}00`:''}">${pic?`<img src="${pic}" alt="">`:`<img class="sil" src="${SILURI('rgba(70,45,10,.3)')}" alt="">`}</div>
-      <div class="sty-nm">${esc(titleName(p.name))}</div><div class="sty-ic">${p.nation?`<img src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${club?clubBadge(p.club,'cb'):''}${p.number?`<span>#${esc(p.number)}</span>`:''}</div></div>
-    ${pr.nick?`<div class="sty-nick">“${esc(pr.nick)}”</div>`:''}${pr.ability?`<div class="sty-ab">${abilityChip(pr.ability)}</div>`:''}
-    <div class="sty-nums"><div><b>${st.apps}</b><i>Apps</i></div><div><b>${st.g}</b><i>Goals</i></div><div><b>${st.a}</b><i>Assists</i></div><div><b>${st.potm}</b><i>POTM</i></div><div><b>${st.W}</b><i>Wins</i></div></div>
-    <div class="sty-favs">${nat?`<span>${esc(nat)}</span>`:''}${club?`<span>${esc(club.n)} fan</span>`:''}${pr.favPlayer?`<span>Idol: ${esc(pr.favPlayer)}</span>`:''}${pr.boots?`<span>${esc(pr.boots)}</span>`:''}</div>
-    ${(pr.ps||[]).length?`<div class="sty-ps">${pr.ps.map(n=>`<span>${psBadge(n,'on')}<small>${esc(n)}</small></span>`).join('')}</div>`:''}
-    <div class="sty-sig">Developed by Raman · AUFC App</div></div>
+function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubStats(id),show=!PM||PM.data.showRatings,r=R(id),M=fcModel(p),pic=p.photo||p.thumb;
+  const a=M.A;psCur=p.ps||null;psSelf=new Set(pr.ps||[]);const earned=PSTYLES.flatMap(([,l])=>l).filter(x=>psEarned(a,x[2],x[1])).slice(0,7);psSelf=null;
+  const club=(S.settings.club||{}).name||'Airdrie United',v=n=>show?n:'•';
+  const roles=M.best.slice(0,4).reduce((o,x)=>{(o[x.pos]=o[x.pos]||[]).push(x.nm+x.fam);return o},{});
+  openModal(`<div class="mh"><h2>Share my player card</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div class="sbwrap"><div id="sharecard" class="sboard"><i class="sb-str l"></i><i class="sb-str r"></i><i class="sb-pitch"></i>
+    <div class="sb-l">
+      <div class="sb-card">${cardHTML(p,{btn:false,nonum:!show,tier:!show&&PM?.data?.growth?tier(r.ovr):undefined})}</div>
+      <div class="sb-strip"><span>${esc((p.foot||'–')[0])}</span><span>${+p.skills||'–'}★</span><span>${+p.wf||'–'}WF</span>${show&&M.best[0]?`<b>${M.best[0].sc}</b>`:''}</div>
+      <div class="sb-ar"><b>AcceleRATE</b><span>${M.ar.toUpperCase()}</span></div>
+      ${M.cs?`<div class="sb-cs">${abilityChip(abKey(pr.ability),true)}</div>`:''}
+      ${earned.length?`<div class="sb-ps">${earned.map(x=>psBadge(x[1],psPlus(a,x[2])?'plus':'on')).join('')}</div>`:''}
+      ${show?`<div class="sb-roles">${Object.entries(roles).map(([q,l])=>`<div><b>${q}:</b> ${l.map(n=>`<span>${esc(n)}</span>`).join(' ')}</div>`).join('')}</div>`:''}
+    </div>
+    <div class="sb-r"><div class="sb-t">STATS</div>
+      ${show?`<div class="sb-g">${M.groups.map(g=>`<div class="sb-grp"><div class="sb-gh"><b>${g.nm}</b><b class="${vcls(g.v)}">${g.v}</b></div><div class="sb-bar ${vcls(g.v)}"><i style="width:${g.v}%"></i></div>${g.sub.map(([l,x])=>`<div class="sb-s"><span>${l}</span><b class="${vcls(x)}">${x}</b></div>`).join('')}</div>`).join('')}</div>`
+      :`<div class="sb-car">${[['Apps',st.apps],['Goals',st.g],['Assists',st.a],['Player of the Match',st.potm],['Wins',st.W]].map(([l,n])=>`<div><b>${n}</b><span>${l}</span></div>`).join('')}</div>`}
+      <div class="sb-nums">${[['Apps',st.apps],['Goals',st.g],['Assists',st.a],['POTM',st.potm]].map(([l,n])=>`<div><b>${n}</b><i>${l}</i></div>`).join('')}</div>
+    </div>
+    <div class="sb-foot"><img src="icons/crest-640.jpg" alt=""><div><b>${esc(club)}</b><span>${esc(titleName(p.name))}${pr.nick?` · “${esc(pr.nick)}”`:''} · ${esc(S.settings.season||new Date().getFullYear())}</span></div><em>AUFC App · Developed by Raman</em></div>
+  </div></div>
   <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button></div>
-  <p class="small muted" style="text-align:center">Post it on your WhatsApp status, Instagram story or Facebook.</p>`);prepImg((p.name||'player').toLowerCase().replace(/\W+/g,'-')+'-aufc.png')}
+  <p class="small muted" style="text-align:center">Post it on WhatsApp, Instagram or Facebook.</p>`);document.querySelector('.modal').classList.add('wide');prepImg((p.name||'player').toLowerCase().replace(/\W+/g,'-')+'-aufc.png')}
 /* ---------- Dream Team builder (each player's private teams: club players + the top-200 list) ---------- */
 let DE=null,dreamSel=null,dreamQ='';
 const TACTICS=['Balanced','Attacking','Defensive','Counter-attack','Possession','High press','Park the bus','Wing play'];
@@ -3003,7 +3100,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='cmp'){cmpPage(el.dataset.id);return}
   if(a==='ppage2'){closeModal();setTimeout(()=>playerPage(el.dataset.id),60);return}
   if(a==='story'){storyCard(el.dataset.id);return}
-  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();const hc=document.querySelector('.phero .pcard');if(hc){const me=pById(PM.data.me.id)||PM.data.me,inf=hc.querySelector('.inform');hc.innerHTML=cardHTML({...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}},{btn:false,tier:PM.data.growth?tier(R(me.id).ovr):undefined})+(inf?inf.outerHTML:'')}return}
+  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&abKey(pfD[k])===el.dataset.v?'':el.dataset.v;(a==='pfabil'?document.querySelectorAll('[data-a=pfabil]'):el.parentNode.querySelectorAll('button')).forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();const hc=document.querySelector('.phero .pcard');if(hc){const me=pById(PM.data.me.id)||PM.data.me,inf=hc.querySelector('.inform');hc.innerHTML=cardHTML({...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}},{btn:false,tier:PM.data.growth?tier(R(me.id).ovr):undefined})+(inf?inf.outerHTML:'')}return}
   if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';pfKeep();return}
   if(a==='pfsave'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const msg=$('#pfmsg');el.disabled=true;
     const p={nick:$('#pfnick').value,bestPos:$('#pfpos').value,card:pfD.card,ability:pfD.ability,ps:pfD.ps,favPlayer:$('#pffav').value,favMate:$('#pfmate').value,boots:$('#pfboots').value,stadium:$('#pfstad').value,dreamNo:$('#pfno').value.trim()};
@@ -3258,6 +3355,37 @@ let psCur=null,psSelf=null;const psEarned=(a,req,name)=>{if(psSelf&&psSelf.has(n
 const PSTYLE={pas:['🎯','Tiki Taka'],sho:['💥','Power Shot'],def:['🛡️','Intercept'],bal:['✨','Technical'],min:['🔥','Relentless'],tea:['🤝','Press Proven'],spd:['⚡','Rapid'],sta:['🔋','Engine'],str:['🦾','Bruiser']};
 const PITCHFULL=`<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true">${[...Array(11)].map((_,i)=>`<rect y="${i*30}" width="300" height="30" fill="${i%2?'#2C7A36':'#338A3E'}"/>`).join('')}<g fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.4"><rect x="8" y="8" width="284" height="314"/><path d="M8 165H292"/><circle cx="150" cy="165" r="34"/><rect x="80" y="8" width="140" height="52"/><rect x="80" y="270" width="140" height="52"/></g></svg>`;
 const FCGROUPS=[['Pace',['spd']],['Shooting',['sho']],['Passing',['pas','tea']],['Dribbling',['bal','min']],['Defending',['def']],['Physical',['str','sta']]];
+/* FC-style detail for a player: sub-stats, AcceleRATE, roles and best ratings, all worked out from the 9 match-rating skills */
+const FCSUBS=[['Pace','PAC',a=>a.spd,[['Acceleration','bal'],['Sprint Speed','spd']]],
+  ['Shooting','SHO',a=>a.sho,[['Att. Position','min'],['Finishing','sho'],['Shot Power','str'],['Long Shots','sho'],['Volleys','bal'],['Penalties','min']]],
+  ['Passing','PAS',a=>a.pas,[['Vision','min'],['Crossing','pas'],['FK Acc.','sho'],['Short Pass','tea'],['Long Pass','pas'],['Curve','bal']]],
+  ['Dribbling','DRI',a=>a.bal,[['Agility','spd'],['Balance','bal'],['Reactions','min'],['Ball Control','bal'],['Dribbling','bal'],['Composure','min']]],
+  ['Defending','DEF',a=>a.def,[['Interceptions','min'],['Heading Acc.','str'],['Def. Aware','tea'],['Stand Tackle','def'],['Slide Tackle','sta']]],
+  ['Physical','PHY',a=>(a.str+a.sta)/2,[['Jumping','str'],['Stamina','sta'],['Strength','str'],['Aggression','min']]]];
+const FCROLES={ST:[['Advanced Forward','spd','sho'],['Poacher','sho','min'],['False 9','pas','bal'],['Target Forward','str','sho']],LW:[['Winger','spd','bal'],['Inside Forward','sho','bal'],['Wide Playmaker','pas','bal']],
+  CAM:[['Playmaker','pas','min'],['Shadow Striker','sho','spd'],['Classic 10','pas','bal']],LM:[['Winger','spd','bal'],['Wide Midfielder','sta','tea'],['Wide Playmaker','pas','bal']],
+  CM:[['Box-to-Box','sta','tea'],['Deep-Lying Playmaker','pas','min'],['Holding','def','tea'],['Playmaker','pas','bal']],CDM:[['Holding','def','tea'],['Centre-Half','def','str'],['Deep-Lying Playmaker','pas','def']],
+  LB:[['Fullback','def','tea'],['Wingback','spd','sta'],['Falseback','pas','def'],['Attacking Wingback','spd','pas']],CB:[['Defender','def','str'],['Stopper','def','min'],['Ball-Playing Defender','pas','def']]};
+FCROLES.RW=FCROLES.LW;FCROLES.RM=FCROLES.LM;FCROLES.RB=FCROLES.LB;
+const GRPKEY={Pace:['spd'],Shooting:['sho'],Passing:['pas'],Dribbling:['bal'],Defending:['def'],Physical:['str','sta']};
+const hashN=t=>{let h=7;for(const c of String(t))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+const vcls=n=>n>=80?'v80':n>=70?'v70':n>=60?'v60':n>=50?'v50':'v40';
+function fcModel(p){const r=R(p.id),A=Object.fromEntries(K.map(k=>[k,Math.round((r.a[k]||7)*10)])),cs=ABILITIES[abKey(prof(p).ability)];let added=0;
+  const groups=FCSUBS.map(([nm,ab,gf,subs])=>{const G=gf(A),boost=cs&&cs[3]!=='gk'?(cs[0]==='BAS'?1:cs[2].includes(nm)?3:0):0;
+    const sub=subs.map(([l,k])=>{const j=hashN(p.id+l)%7-3,v=Math.max(20,Math.min(99,Math.round(G+.5*(A[k]-G)+j)));const b=Math.min(99,v+boost)-v;added+=b;return [l,v+b,b]});
+    return {nm,ab,v:Math.round(sub.reduce((n,x)=>n+x[1],0)/sub.length),base:Math.round(G),sub,boost}});
+  const gv=Object.fromEntries(groups.map(g=>[g.nm,g.v])),sv=Object.fromEntries(groups.flatMap(g=>g.sub.map(x=>[x[0],x[1]])));
+  const h=+p.height||176,acc=sv.Acceleration,str=sv.Strength,d=acc-str;
+  const ar=d>=10&&h<=182?'Explosive':d>=5&&h<=186?'Mostly Explosive':-d>=10&&h>=174?'Lengthy':-d>=5&&h>=172?'Mostly Lengthy':'Controlled';
+  const PR=posRatings(r),roles=[];Object.entries(FCROLES).forEach(([pos,l])=>l.forEach(([nm,k1,k2])=>{const sc=Math.round((PR[pos]*.7+(A[k1]+A[k2])/2*.3)*10)/10;roles.push({pos,nm,sc,k:[k1,k2]})}));
+  roles.sort((x,y)=>y.sc-x.sc);const seen=new Set(),best=roles.filter(x=>{const id=x.pos.replace(/^[LR]/,'')+x.nm;if(seen.has(id))return false;seen.add(id);return true}).slice(0,5);
+  const top=best[0]?.sc||0;best.forEach(x=>{x.fam=x===best[0]?'++':top-x.sc<=2.5?'+':'';const want=new Set(x.k.flatMap(k=>Object.keys(GRPKEY).filter(g=>GRPKEY[g].includes(k))));
+    x.chem=Object.entries(ABILITIES).filter(([,c])=>c[3]!=='gk'&&c[3]!=='gen').map(([k,c])=>[k,c[2].filter(g=>want.has(g)).length*10-c[2].length]).sort((a,b)=>b[1]-a[1])[0][0]});
+  const alt=Object.entries(PR).filter(([q])=>q!==p.pos).sort((x,y)=>y[1]-x[1]).slice(0,3).map(x=>x[0]);
+  const fits=Object.entries(ABILITIES).filter(([,c])=>c[3]!=='gk'&&c[3]!=='gen').map(([k,c])=>[k,c[2].reduce((n,g)=>n+(gv[g]||0),0)/c[2].length+(c[2].length===3?1:0)]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const fs=fits.reduce((n,x)=>n+x[1]**4,0);fits.forEach(x=>x[2]=Math.round(x[1]**4/fs*100));
+  const bt=(h<170?'Short':h>185?'Tall':'Average')+' · '+(A.str>=75?'Stocky':A.spd>=75?'Lean':'Normal');
+  return {A,groups,added,ar,best,alt,fits,cs,PR,bt,igs:groups.reduce((n,g)=>n+g.sub.reduce((m,x)=>m+x[1],0),0),bs:groups.reduce((n,g)=>n+g.v,0)}}
 function posRatings(r){const f=r.fwd*100,m=r.mid*100,d=r.def*100,pc=r.pace*100,x=v=>Math.round(v);
   return {ST:x(f),LW:x((f+pc)/2),RW:x((f+pc)/2),CAM:x((f+m)/2),LM:x((m+pc)/2),CM:x(m),RM:x((m+pc)/2),CDM:x((m+d)/2),LB:x((d+pc)/2),CB:x(d),RB:x((d+pc)/2)}}
 /* What a player chose for their own profile, shown to every player and manager */
@@ -3267,7 +3395,7 @@ function profBlock(p,noPs){const pr=prof(p),mate=pr.favMate&&(!PM||p.id===PM.dat
   const ps=noPs?[]:(pr.ps||[]).filter(n=>PSTYLES.some(([,l])=>l.some(x=>x[1]===n)));
   if(!f.length&&!pr.ability&&!ps.length)return `<div class="profb"><div class="gh2"><b>Profile</b></div><div class="small muted">${PM&&p.id===PM.data.me.id?'You haven’t personalised your profile yet. Tap “Edit my profile”.':'Hasn’t personalised their profile yet.'}</div></div>`;
   return `<div class="profb"><div class="gh2"><b>Profile</b><span class="small muted">picked by ${PM&&p.id===PM.data.me.id?'you':esc(p.name.split(' ')[0])}</span></div>
-    ${pr.ability&&ABILITIES[pr.ability]?`<div style="margin:2px 0 8px">${abilityChip(pr.ability)}</div>`:''}
+    ${abKey(pr.ability)?`<div style="margin:2px 0 8px">${abilityChip(pr.ability)}</div>`:''}
     ${f.length?`<dl class="favs">${f.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`:''}
     ${ps.length?`<div class="small muted" style="margin-top:8px">Self-picked PlayStyles</div><div class="pubps">${ps.map(n=>`<span class="psx on">${psBadge(n,'on')}<small>${esc(n)}</small></span>`).join('')}</div>`:''}</div>`}
 function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||PM.data.showRatings,v=n=>show?rv(n):'•';
@@ -3277,20 +3405,26 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
   const ms=S.matches.filter(m=>playedIn(m,id)),g=ms.reduce((n,m)=>n+(+m.stats?.[id]?.g||0),0),as=ms.reduce((n,m)=>n+(+m.stats?.[id]?.a||0),0),potm=S.matches.filter(m=>m.potm===id).length;
   const tr=S.tourns.filter(x=>(x.squad||[]).includes(id)&&x.date<=todayISO());const star=n=>'★'.repeat(n||0)+'☆'.repeat(5-(n||0));
   const PR=posRatings(r),PP={ST:[50,12],LW:[17,17],RW:[83,17],CAM:[50,32],LM:[15,48],CM:[50,50],RM:[85,48],CDM:[50,67],LB:[17,82],CB:[50,86],RB:[83,82]};
-  const best=Object.entries(PR).sort((x,y)=>y[1]-x[1])[0][0];
+  const best=Object.entries(PR).sort((x,y)=>y[1]-x[1])[0][0],M=fcModel(p),foot=(p.foot||'')[0]||'–';
   openModal(`<div class="mh"><h2>${esc(titleName(p.name))}</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="pp">
-    <div class="pptop"><div class="ppcard">${cardHTML(p,{btn:false,tier:!show&&PM?.data?.growth?tier(r.ovr):undefined})}</div>
+    <div class="pptop"><div class="ppcard">${cardHTML(p,{btn:false,tier:!show&&PM?.data?.growth?tier(r.ovr):undefined})}${show?`<div class="ppalt">${M.alt.map(q=>`<span>${q}</span>`).join('')}</div>`:''}<div class="ppstrip"><span>${esc(foot)}</span><span>${+p.skills||'–'}★</span><span>${+p.wf||'–'}WF</span>${show&&M.best[0]?`<b>${M.best[0].sc}</b>`:''}</div></div>
       <div class="ppinfo"><div class="ppchips">${nat?`<span>${flagImg(p.nation)} ${esc(nat)}</span>`:''}${club?`<span>${clubBadge(p.club,'cb')} ${esc(club.n)}</span>`:''}<span><img src="icons/crest-640.jpg" class="cb" alt=""> ${esc((S.settings.club||{}).name||'Airdrie United')}</span><span class="tierc t-${tier(r.ovr)}">${t}</span>${prof(p).nick?`<span>“${esc(prof(p).nick)}”</span>`:''}${prof(p).bestPos?`<span>Likes ${esc(prof(p).bestPos)}</span>`:''}</div>${prof(p).ability?`<div style="margin:6px 0">${abilityChip(prof(p).ability)}</div>`:''}
         <div class="ppfacts"><div><i>Position</i><b>${p.pos}${show?` · best ${best}`:''}</b></div>${age!=null?`<div><i>Age</i><b>${age} years</b></div>`:''}
-          <div><i>Foot</i><b>${esc(p.foot||'–')}</b></div><div><i>Height</i><b>${p.height?esc(p.height)+' cm':'–'}</b></div><div><i>Skills</i><b class="stars">${star(+p.skills)}</b></div><div><i>Weak foot</i><b class="stars">${star(+p.wf)}</b></div>
+          <div><i>Foot</i><b>${esc(p.foot||'–')}</b></div><div><i>Height</i><b>${p.height?esc(p.height)+' cm':'–'}</b></div><div><i>Skills</i><b class="stars">${star(+p.skills)}</b></div><div><i>Weak foot</i><b class="stars">${star(+p.wf)}</b></div><div><i>Body type</i><b>${esc(M.bt)}</b></div><div><i>AcceleRATE</i><b>${M.ar}</b></div>
           ${p.number?`<div><i>Shirt</i><b>#${esc(p.number)}</b></div>`:''}</div>
-        <div class="ppnums"><div><b>${ms.length}</b><i>Apps</i></div><div><b>${g}</b><i>Goals</i></div><div><b>${as}</b><i>Assists</i></div><div><b>${potm}</b><i>POTM</i></div><div><b>${tr.length}</b><i>Tournaments</i></div><div><b>${tr.filter(x=>x.place==='champ').length}</b><i>Titles</i></div></div></div></div>
+        ${earned.length?`<div class="ppearn">${earned.map(x=>`<span title="${esc(x[1])}">${psBadge(x[1],psPlus(a,x[2])?'plus':'on')}<small>${esc(x[1])}</small></span>`).join('')}</div>`:''}${show?`<div class="pproles">${M.best.map(x=>`<span>${x.pos} <b>${esc(x.nm)}${x.fam}</b></span>`).join('')}</div>`:''}<div class="ppnums"><div><b>${ms.length}</b><i>Apps</i></div><div><b>${g}</b><i>Goals</i></div><div><b>${as}</b><i>Assists</i></div><div><b>${potm}</b><i>POTM</i></div><div><b>${tr.length}</b><i>Tournaments</i></div><div><b>${tr.filter(x=>x.place==='champ').length}</b><i>Titles</i></div></div></div></div>
     ${profBlock(p,true)}
     <div class="psgrid"><div class="gh2"><b>PlayStyles</b><span class="small muted">${earned.length} of ${PSTYLES.flatMap(([,l])=>l).length} awarded</span></div>${PSTYLES.map(([cat,l])=>`<div class="psrow"><i>${cat}</i><div>${l.map(x=>{const on=psEarned(a,x[2],x[1]),pl=on&&psPlus(a,x[2]);const me=psSelf.has(x[1]);return `<div class="psx${on?' on':''}${me?' self':''}" title="${esc(x[1])}${me?' · picked by the player':on?' · awarded':' · not awarded yet'}">${psBadge(x[1],on?(pl?'plus':'on'):'')}<small>${x[1]}${pl?'+':''}</small></div>`}).join('')}</div></div>`).join('')}<p class="small muted" style="margin:2px 0 0">Coloured = awarded by the managers${S.settings.psAuto!==false?' or earned from match ratings':''}. Grey = not yet. Gold = elite (＋).</p></div>
-    <div class="ppgrid">
-      <div class="ppstats">${FCGROUPS.map(([nm,ks])=>{const gv=Math.round(ks.reduce((n,k)=>n+a[k],0)/ks.length);return `<div class="fcg"><div class="gh2"><b>${nm}</b><b class="num ${gv>=80?'hi':gv>=70?'md':'lo'}">${v(gv)}</b></div><div class="pbar"><i style="width:${show?gv:50}%"></i></div>${ks.map(k=>`<div class="sub"><span>${esc(KL[k])}</span><b class="num ${a[k]>=80?'hi':a[k]>=70?'md':'lo'}">${v(a[k])}</b></div>`).join('')}</div>`}).join('')}</div>
-      <div class="pprpp"><b>Rating per position</b><div class="rpp">${PITCHFULL}${Object.entries(PP).map(([pos,[x,y]])=>`<span class="rp${pos===best&&show?' best':''}" style="left:${x}%;top:${y}%"><small>${pos}</small>${v(PR[pos])}</span>`).join('')}</div></div>
+    <div class="fcpanel">
+      <div class="fcstats">${M.groups.map(g=>`<div class="fcg2"><div class="gh2"><b>${g.nm}</b><b class="num ${vcls(g.v)}">${v(g.v)}</b></div><div class="pbar2 ${vcls(g.v)}"><i style="width:${show?g.v:50}%"></i></div>${g.sub.map(([l,x,b])=>`<div class="sub"><span>${l}</span><b class="num ${vcls(x)}">${v(x)}${b&&show?`<sup>+${b}</sup>`:''}</b></div>`).join('')}</div>`).join('')}
+        <div class="fcg2 fctot"><div><i>Total chem. style added</i><b class="num">${show?M.added:'•'}</b></div><div><i>Base stats</i><b class="num">${v(M.bs)}</b><div class="pbar2 v80"><i style="width:${show?M.bs/6:50}%"></i></div></div><div><i>In-game stats</i><b class="num">${v(M.igs)}</b><div class="pbar2 v80"><i style="width:${show?M.igs/29:50}%"></i></div></div></div></div>
+      <div class="fcchem"><b class="fch">AcceleRATE &amp; Chemistry</b><span class="arate">${M.ar.toUpperCase()}</span>
+        <div class="small muted">Best chemistry styles for ${esc(p.name.split(' ')[0])}</div><div class="fcfits">${M.fits.map(([k,,pc])=>`<div><b>${esc(ABILITIES[k][1])}</b><div class="pbar2 v80"><i style="width:${pc}%"></i></div><span>${pc}%</span></div>`).join('')}</div>
+        <div class="fch2"><b>Chemistry style</b>${M.cs?abilityChip(abKey(prof(p).ability),true):'<span class="small muted">Not picked yet</span>'}</div>
+        ${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="fcstyles">${Object.entries(ABILITIES).filter(([,x])=>x[3]===c).map(([k,x])=>`<span class="${abKey(prof(p).ability)===k?'on':''}" title="${esc(x[2].join(', '))}"><i>${x[0]}</i>${esc(x[1])}</span>`).join('')}</div>`).join('')}</div>
+      <div class="fcbest"><b class="fch">Best ratings</b>${M.best.map((x,i)=>`<div class="fcbr"><div><span class="hexv">${v(x.sc)}</span><b>${x.pos} <em>${esc(x.nm)}${x.fam}</em></b><small>Rank #${i+1} for ${esc(p.name.split(' ')[0])}</small></div><div class="fcbc"><small>Best chem.</small><i>${ABILITIES[x.chem][0]}</i></div></div>`).join('')}
+        <b class="fch" style="margin-top:6px">Rating per position</b><div class="rpp">${PITCHFULL}${Object.entries(PP).map(([pos,[x,y]])=>`<span class="rp${pos===best&&show?' best':''}" style="left:${x}%;top:${y}%"><small>${pos}</small>${v(PR[pos])}</span>`).join('')}</div></div>
     </div>
     ${!PM||id===PM.data.me.id?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" data-a="story" data-id="${id}">Save as image (story)</button>${PM&&!PM.preview&&id===PM.data.me.id?'<button class="btn" data-a="pfedit">✏️ Edit my profile</button>':''}</div>`:''}
     ${!show?'<p class="small muted">Numbers are private. Your managers can turn on “Players can see their own ratings”.</p>':''}
@@ -3613,7 +3747,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     const tr=stD?(stD[9]==='ICON'?'special':tier(stD[1])):!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
     return `<${tag} data-pid="${esc(String(id))}" class="pc t-${tr}${cc?' cc-'+cc:''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
-      <span class="pc-card"><i class="fmot"></i>${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
+      <span class="pc-card">${p?.empty?'':ARTIMG(artOf(cc,tr),'pcart')}${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr num${stD?' stv':' player-ovr-stat'}">${stD?stD[1]:rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span>${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       ${p?.number?`<span class="pc-ic"><span class="pcno">${esc(p.number)}</span></span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
       <span class="pc-role">${role}</span></${tag}>`};
