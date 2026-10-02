@@ -125,3 +125,4 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Player photo v2: public.atb_player_photo2(token,img,cut,thumb) -> 'ok' (photoReq {img,cut,thumb,at}) or 'live' when settings.photoAuto. Payload settings adds announce {text,at}, photoAuto.
 -- Manager ↔ own player: private.atb_mgr_links(uid,owner,player_id); public.atb_mgr_link(token) (authenticated; set on PIN sign-in / player-mode boot); public.atb_mgr_player_token() issues a player session for the linked player (no PIN).
 -- atb_player_profile: card accepts any ^[a-z]{2,12}$ key (client renders known designs: 18 special designs + legacy colours).
+-- Feedback: public.atb_feedback (RLS read: team owner only); atb_player_feedback(token,area,rating,body,usage) (5/day, logs 'Sent feedback'); atb_mgr_feedback(team,area,rating,body). Expenses: atb_docs col 'expenses' (managers only; not in player payload).

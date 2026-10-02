@@ -1,4 +1,4 @@
-<title>Airdrie Team Builder</title>
+<title>Airdrie United FC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap">
 <style>
@@ -697,6 +697,12 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .dbench{margin-top:10px;padding:10px;border-radius:14px;background:var(--surface2,rgba(127,127,127,.1))}.dbrow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:6px 0}
 .dbs{padding:4px 2px 6px;min-height:84px}.dbs>b{position:absolute;left:4px;top:3px;font:900 13px/1 var(--f-display)}.dbs>i{font:800 9px var(--f-display);font-style:normal}.dbs .dmph{width:70%;margin-left:15%}.dbs .dmn{font-size:9px}.dbs.empty{background:rgba(255,255,255,.12);border:2px dashed rgba(127,127,127,.5);box-shadow:none;justify-content:center}.dbs .plus{font:900 22px var(--f-display);color:var(--muted)}.dbs.sel{outline:3px solid #FFD54A;outline-offset:2px}
 @media(max-width:560px){.dbrow{grid-template-columns:repeat(4,1fr)}}
+.exk .kpi{min-width:0}.exform .exthumb{width:56px;height:56px;object-fit:cover;border-radius:8px}.exfil{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.exbar{display:grid;grid-template-columns:minmax(110px,30%) 1fr auto;gap:10px;align-items:center;padding:4px 0}.exbar span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.exbar i{height:9px;border-radius:9px;background:rgba(127,127,127,.18);position:relative;overflow:hidden}.exbar i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,var(--accent),#FFC36B);border-radius:9px}.exbar b{font-size:13px}
+.exlist{display:flex;flex-direction:column}.exrow{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}.exd{width:64px;font-size:12px;color:var(--muted);flex:none}.exm{flex:1 1 180px;min-width:0}.exa{font:800 16px var(--f-display);color:#E5484D}.exrow.in .exa{color:#2FB36B}
+.fbstars{display:inline-flex;gap:4px}.fbstars .cst{font-size:26px}.fbavg{display:flex;flex-wrap:wrap;gap:6px}.fbrow{padding:10px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px}.fbr{color:#E2B13C}
+.hello{position:fixed;left:50%;top:calc(var(--hdrh,96px) + 10px);z-index:880;transform:translate(-50%,-14px);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.25,1.15),opacity .3s;width:min(460px,calc(100% - 24px));display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(135deg,#16244A,#0E1A33);color:#fff;box-shadow:0 16px 40px rgba(0,0,0,.35);font:inherit;cursor:pointer}
+.hello.on{transform:translate(-50%,0);opacity:1}.hello img{width:40px;height:40px;border-radius:50%;flex:none}.hl{display:flex;flex-direction:column;gap:3px;font-size:14px;line-height:1.35}.hl b{font:800 16px var(--f-display)}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -861,9 +867,9 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 <div id="splash" aria-hidden="true"><div class="sp-in">
   <svg class="sp-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
   <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
-  <div class="sp-t">Airdrie United</div><div class="sp-s">Team Builder</div></div></div>
+  <div class="sp-t">Airdrie United</div><div class="sp-s">Club App</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
-  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Team Builder</small><span class="sync" id="sync"></span></div></div><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn godbtn" id="pbell" data-a="pbell" aria-label="Notifications" title="Notifications" hidden>🔔<i id="pbn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button><button class="themebtn outbtn" id="outbtn" data-a="hdrout" aria-label="Sign out" title="Sign out" hidden></button></div>
+  <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Club App</small><span class="sync" id="sync"></span></div></div><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn godbtn" id="pbell" data-a="pbell" aria-label="Notifications" title="Notifications" hidden>🔔<i id="pbn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button><button class="themebtn outbtn" id="outbtn" data-a="hdrout" aria-label="Sign out" title="Sign out" hidden></button></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-v="match"><span>Match Day</span></button>
     <button role="tab" data-v="history"><span>Matches &amp; Ratings</span></button>
@@ -1369,6 +1375,7 @@ async function boot(){
       if(!ls('atb_mode')||ls('atb_mode')!=='player')useTheme(supaUser.user_metadata?.theme);
       teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
       db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||niceEmail(supaUser.email));
+      $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="money"><span>Expenses</span></button>');
       if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>');
       $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="toplayer"><span>My profile</span></button>')}
   }
@@ -1384,7 +1391,7 @@ async function boot(){
       if(cloud==='supa'){try{localStorage.removeItem('atb_state')}catch(e){}}
       await syncRoster();if(cloud==='supa'&&!Array.isArray(S.settings.seasons)){S.settings.seasons=[{id:'w2627',name:'Winter 2026–27',kind:'indoor',venue:S.settings.venue||'Genesis Centre, Airdrie',time:S.settings.time,games:(Array.isArray(S.settings.schedule)?S.settings.schedule:WINTER).map(g=>g.t?{d:g.d,t:g.t}:{d:g.d})},{id:'s27',name:'Summer 2027',kind:'outdoor',venue:'Bayview, Airdrie',time:S.settings.time,games:[]}];S.settings.schedule=flatSched(S.settings.seasons);S.settings.club=S.settings.club||{name:'Airdrie United',founded:'2025',home:'Bayview, Airdrie',indoor:'Genesis Centre, Airdrie'};await putSettings()}
       if(sched().length&&!draft.teams&&!draft.editing&&!schedAt(draft.date)&&nextGame()){draft.date=nextGame();saveDraft()}
-      quietLog=false;loaded=true;render();watchExtra();
+      quietLog=false;loaded=true;render();watchExtra();setTimeout(()=>{try{helloMgr()}catch(e){}},1400);
       if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();let ji=null;try{ji=sessionStorage.getItem('atb_justin');sessionStorage.removeItem('atb_justin')}catch(e){}deviceStr().then(dv=>logAct(ji?'Signed in':'Opened app',dv))}};
     db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender();done('p')},e=>{done('p')});
     db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender();done('m')},e=>{done('m')});
@@ -1571,7 +1578,7 @@ function render(){const _fs=flipSnap();queueMicrotask(()=>{axify();flipPlay(_fs)
   if(view==='toplayer'){if(!mgrAutoTried){mgrAutoTried=true;m.innerHTML='<div class="panel small muted" style="text-align:center;padding:30px">Opening your player profile…</div>';mgrToPlayer().then(ok=>{if(!ok&&view==='toplayer')render()});return}m.innerHTML=vSwitchPlayer();pLoadRoster();return}
   if(m.dataset.v!==view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v=view;
   const keep=keepDetails(m);
-  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='tourn'?vTourn():view==='club'?vClub():view==='guide'?vGuide():view==='managers'&&isAdmin?vManagers():vSettings();keep();
+  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='tourn'?vTourn():view==='club'?vClub():view==='guide'?vGuide():view==='money'&&supaUser?vMoney():view==='managers'&&isAdmin?vManagers():vSettings();keep();
 }
 
 /* Collapsible sections: header keeps the key facts, open/closed is remembered per section */
@@ -1902,10 +1909,108 @@ async function loadMgrs(){mgrs.loading=true;mgrs.err='';try{mgrs.list=(await mgr
   try{const b=await supa.from('atb_player_activity').select('player_id,action,detail,at').eq('team',supaUser.id).order('at',{ascending:false}).limit(3000);mgrs.pact=b.data||[]}catch(e){mgrs.pact=[]}mgrs.loading=false;if(view==='managers')render()}
 const genPw=()=>{const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';const b=new Uint32Array(12);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('')};
 const ago=t=>{const s=(Date.now()-new Date(t))/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':Math.round(s/86400)+' days ago'};
+
+/* ---------- Club expenses (managers + admin only; never sent to players) ---------- */
+const EXCAT=['Field booking','Kits & bibs','Balls & equipment','Tournament fees','Referee','Food & drinks','Trophies & awards','Medical','Transport','Sponsorship','Player contributions','Other'];
+let exF={season:'all',cat:'',who:'',kind:''},exEdit=null,exImg=null;
+const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const myUid=()=>supaUser&&supaUser.id,myLabel=()=>myName||(isAdmin?'Admin':niceEmail(supaUser?.email||''));
+function exSeasonOf(d){const L=Array.isArray(S.settings.seasons)?S.settings.seasons:[];const x=L.find(z=>z.from&&z.to&&d>=z.from&&d<=z.to);return x?x.name:d.slice(0,4)}
+function vMoney(){const L=(S.exp||[]).filter(e=>e&&e.date&&+e.amt>0).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.at||'').localeCompare(a.at||''));
+  const seasons=[...new Set(L.map(e=>exSeasonOf(e.date||'')))],whos=[...new Set(L.map(e=>e.paidBy).filter(Boolean))].sort();
+  const F=L.filter(e=>(exF.season==='all'||exSeasonOf(e.date)===exF.season)&&(!exF.cat||e.cat===exF.cat)&&(!exF.who||e.paidBy===exF.who)&&(!exF.kind||e.kind===exF.kind));
+  const inc=F.filter(e=>e.kind==='in').reduce((n,e)=>n+(+e.amt||0),0),out=F.filter(e=>e.kind!=='in').reduce((n,e)=>n+(+e.amt||0),0);
+  const mon=todayISO().slice(0,7),monOut=L.filter(e=>e.kind!=='in'&&(e.date||'').startsWith(mon)).reduce((n,e)=>n+(+e.amt||0),0);
+  const grp=(k)=>{const m={};F.filter(e=>e.kind!=='in').forEach(e=>{const g=e[k]||'—';m[g]=(m[g]||0)+(+e.amt||0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  const bars=(rows)=>{const mx=Math.max(1,...rows.map(r=>r[1]));return rows.map(([n,v])=>`<div class="exbar"><span>${esc(n)}</span><i style="--w:${Math.round(v/mx*100)}%"></i><b>${money(v)}</b></div>`).join('')||'<div class="small muted">Nothing yet.</div>'};
+  const e=exEdit||{date:todayISO(),kind:'out',cat:'Field booking',amt:'',paidBy:myLabel(),note:''};
+  const canEdit=x=>isAdmin||x.byUid===myUid();
+  const sel=(id,opts,v)=>`<select id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}" ${o[0]===v?'selected':''}>${esc(o[1])}</option>`:`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  return `<h2>Club expenses</h2><p class="small muted" style="margin-top:-4px">Money spent on and given to the club. Only managers and the admin can see this; players never do.</p>
+  <div class="kpis exk">${kpi(money(out),'Spent'+(exF.season==='all'?' (all time)':' · '+exF.season))}${kpi(money(inc),'Received')}${kpi(money(inc-out),'Balance',inc-out<0?'warnk':'')}${kpi(money(monOut),'Spent this month')}</div>
+  <h2>${exEdit?'Edit entry':'Add an entry'}</h2><div class="panel stack exform">
+    <div class="fgrid g2"><label class="f">Type${sel('exkind',[['out','Expense (money out)'],['in','Income (sponsor, contributions)']],e.kind)}</label><label class="f">Date<input id="exdate" type="date" value="${esc(e.date)}" max="${todayISO()}"></label>
+      <label class="f">Amount (CAD)<input id="examt" inputmode="decimal" placeholder="0.00" value="${esc(String(e.amt??''))}"></label><label class="f">Category${sel('excat',EXCAT,e.cat)}</label>
+      <label class="f">Paid by / from<input id="exwho" list="exwhos" value="${esc(e.paidBy||'')}" placeholder="Manager, sponsor, club fund…"><datalist id="exwhos">${[...new Set([myLabel(),'Club fund',...whos])].map(w=>`<option value="${esc(w)}">`).join('')}</datalist></label>
+      <label class="f">Note<input id="exnote" maxlength="140" value="${esc(e.note||'')}" placeholder="e.g. Genesis Centre, Oct 3"></label></div>
+    <div class="row"><label class="btn" for="exfile">${exImg||e.img?'Change receipt photo':'Add receipt photo'}</label><input type="file" id="exfile" accept="image/*" hidden>${exImg||e.img?`<img class="exthumb" src="${exImg||e.img}" alt="Receipt">`:''}</div>
+    <div class="row"><button class="btn primary" data-a="exsave">${exEdit?'Save changes':'Add entry'}</button>${exEdit?'<button class="btn ghost" data-a="excancel">Cancel</button>':''}</div></div>
+  <h2>By category</h2><div class="panel">${bars(grp('cat'))}</div>
+  <h2>By who paid</h2><div class="panel">${bars(grp('paidBy'))}</div>
+  <h2>Log</h2><div class="panel stack">
+    <div class="fgrid exfil"><label class="f">Season${sel('exfs',[['all','All time'],...seasons.map(x=>[x,x])],exF.season)}</label><label class="f">Type${sel('exfk',[['','All'],['out','Expenses'],['in','Income']],exF.kind)}</label><label class="f">Category${sel('exfc',[['','All'],...EXCAT.map(x=>[x,x])],exF.cat)}</label><label class="f">Paid by${sel('exfw',[['','Everyone'],...whos.map(x=>[x,x])],exF.who)}</label></div>
+    <div class="row"><button class="btn small" data-a="excsv">Export CSV</button><span class="small muted">${F.length} entries</span></div>
+    <div class="exlist">${F.map(x=>`<div class="exrow ${x.kind==='in'?'in':''}"><div class="exd">${new Date(x.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'2-digit'})}</div>
+      <div class="exm"><b>${esc(x.cat||'')}</b>${x.note?` · ${esc(x.note)}`:''}<div class="small muted">${x.kind==='in'?'From':'Paid by'} ${esc(x.paidBy||'—')} · added by ${esc(x.byName||'')}</div></div>
+      ${x.img?`<button class="btn ghost small" data-a="eximg" data-id="${x.id}">Receipt</button>`:''}<div class="exa num">${x.kind==='in'?'+':'−'}${money(+x.amt||0)}</div>
+      ${canEdit(x)?`<button class="btn ghost small" data-a="exedit" data-id="${x.id}">Edit</button><button class="btn ghost small danger" data-a="exdel" data-id="${x.id}">Delete</button>`:''}</div>`).join('')||'<div class="small muted">No entries yet.</div>'}</div></div>`}
+document.addEventListener('change',async e=>{const id=e.target.id;if(!['exfs','exfk','exfc','exfw','exfile'].includes(id))return;
+  if(id==='exfile'){const f=e.target.files&&e.target.files[0];if(!f)return;filePick=0;exImg=await resizeImg(f,1000);render();return}
+  exF[{exfs:'season',exfk:'kind',exfc:'cat',exfw:'who'}[id]]=e.target.value;render()});
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^="ex"]');if(!el||PM)return;const a=el.dataset.a;if(!['exsave','excancel','exedit','exdel','excsv','eximg'].includes(a))return;e.stopPropagation();
+  if(a==='excancel'){exEdit=null;exImg=null;render();return}
+  if(a==='exedit'){exEdit={...(S.exp||[]).find(x=>x.id===el.dataset.id)};exImg=null;render();window.scrollTo({top:0,behavior:'smooth'});return}
+  if(a==='eximg'){const x=(S.exp||[]).find(z=>z.id===el.dataset.id);if(x&&x.img)openModal(`<div class="mh"><h2>Receipt</h2><button class="btn ghost x" data-a="close">Close</button></div><img src="${x.img}" alt="Receipt" style="width:100%;border-radius:10px">`);return}
+  if(a==='exdel'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again';return}const x=(S.exp||[]).find(z=>z.id===el.dataset.id);if(!x||!(isAdmin||x.byUid===myUid()))return;await delDoc('expenses',x.id);toast('Entry deleted');return}
+  if(a==='excsv'){const L=(S.exp||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+    const csv=['Date,Type,Category,Amount,Paid by / from,Note,Added by'].concat(L.map(x=>[x.date,x.kind==='in'?'Income':'Expense',x.cat,(+x.amt||0).toFixed(2),x.paidBy,x.note,x.byName].map(q).join(','))).join('\n');
+    await saveFile('aufc-expenses-'+todayISO()+'.csv',new Blob([csv],{type:'text/csv'}),'text/csv');return}
+  if(a==='exsave'){const amt=Math.round(parseFloat(($('#examt').value||'').replace(/[$,\s]/g,''))*100)/100;if(!(amt>0)){toast('Enter an amount');return}
+    const date=$('#exdate').value||todayISO(),old=exEdit;if(old&&!(isAdmin||old.byUid===myUid()))return;
+    const rec={...(old||{}),date,kind:$('#exkind').value,amt,cat:$('#excat').value,paidBy:$('#exwho').value.trim().slice(0,40),note:$('#exnote').value.trim().slice(0,140),
+      byUid:old?old.byUid:myUid(),byName:old?old.byName:myLabel(),at:old?old.at:new Date().toISOString(),edited:old?new Date().toISOString():undefined};
+    if(exImg)rec.img=exImg;const id=old?old.id:'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);rec.name=`${rec.kind==='in'?'+':'−'}${money(amt)} ${rec.cat}`;delete rec.id;
+    el.disabled=true;try{await putDoc('expenses',id,rec);toast(old?'Entry updated':'Entry added');exEdit=null;exImg=null;render()}catch(err){toast('Could not save');el.disabled=false}return}},true);
+
+/* ---------- Feedback: players can send it after real use (2+ match weeks); managers any time; only the admin reads it ---------- */
+const FBAREAS=['Me page','Availability','Next match & teams','Squad & player pages','Dream Team','Tactic board','Matches & stats','Notifications','Photos & profile','Something else'];
+let fbStars=0;
+function useTrack(){if(!PM||PM.preview)return;const k='atb_use_'+PM.data.me.id,u=ls(k)||{first:todayISO(),days:[]};if(!u.days.includes(todayISO())){u.days.push(todayISO());u.days=u.days.slice(-60)}ls(k,u);return u}
+function fbUnlock(){const u=(PM&&ls('atb_use_'+PM.data.me.id))||{first:todayISO(),days:[]},since=Math.round((Date.now()-new Date(u.first+'T12:00'))/864e5);
+  const ok=since>=10&&u.days.length>=3;const when=new Date(new Date(u.first+'T12:00').getTime()+10*864e5);return {ok,u,since,when}}
+const fbForm=(who)=>`<div class="stack fbf"><label class="f">Which part?<select id="fbarea">${FBAREAS.map(a=>`<option>${a}</option>`).join('')}</select></label>
+  <div class="f"><span>How do you rate it?</span><span class="fbstars" role="group" aria-label="Rating">${[1,2,3,4,5].map(n=>`<button type="button" class="cst${n<=fbStars?' on':''}" data-a="fbstar" data-v="${n}" aria-label="${n} of 5">★</button>`).join('')}</span></div>
+  <label class="f">Tell us more<textarea id="fbbody" rows="4" maxlength="1500" placeholder="What were you trying to do? What happened? What would make it better?"></textarea></label>
+  <div class="row"><button class="btn primary" data-a="fbsend" data-w="${who}">Send feedback</button><span class="small muted" id="fbmsg" role="status"></span></div></div>`;
+function pfbPanel(){if(PM.preview)return '';const f=fbUnlock();
+  return `<h2>Feedback</h2><div class="panel stack">${f.ok?`<p class="small muted" style="margin:0">Thanks for using the app for ${f.u.days.length} days. Your feedback goes straight to the admin.</p>${fbForm('p')}`
+    :`<p class="small" style="margin:0">🔒 <b>Feedback opens after two match weeks of using the app</b> (around ${f.when.toLocaleDateString(undefined,{month:'short',day:'numeric'})}). Use it for a couple of Saturdays first, so your ideas come from real use. You’ve used it on ${f.u.days.length} day${f.u.days.length===1?'':'s'} so far.</p>`}</div>`}
+function mfbPanel(){if(isAdmin)return '';return `<h2>Feedback to the admin</h2><div class="panel stack"><p class="small muted" style="margin:0">Found a bug or have an idea? Only the admin sees this.</p>${fbForm('m')}</div>`}
+let fbAdm={rows:null,loading:false};
+async function fbLoad(){if(fbAdm.loading)return;fbAdm.loading=true;try{const r=await supa.from('atb_feedback').select('*').eq('team',supaUser.id).order('at',{ascending:false}).limit(300);fbAdm.rows=r.data||[]}catch(e){fbAdm.rows=[]}fbAdm.loading=false;if(view==='managers')render()}
+function fbAdminPanel(){if(!fbAdm.rows){setTimeout(fbLoad,0);return '<h2>Feedback</h2><div class="panel small muted">Loading feedback…</div>'}const R=fbAdm.rows;
+  const by={};R.filter(x=>x.rating).forEach(x=>{(by[x.area]=by[x.area]||[]).push(x.rating)});
+  const who=x=>x.kind==='player'?(pById(x.who)?.name||x.who):(mgrs.list||[]).find(m=>m.member===x.who)?.username||'Manager';
+  return `<h2>Feedback (${R.length})</h2><div class="panel stack">${Object.keys(by).length?`<div class="fbavg">${Object.entries(by).map(([a,v])=>`<span class="pill">${esc(a)} <b>${(v.reduce((s,x)=>s+x,0)/v.length).toFixed(1)}★</b> <small>(${v.length})</small></span>`).join('')}</div>`:''}
+    ${R.map(x=>`<div class="fbrow"><div><b>${esc(who(x))}</b> <span class="small muted">· ${x.kind==='player'?'player':'manager'} · ${esc(x.area||'')} · ${new Date(x.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}${x.usage&&x.usage.days?` · used ${x.usage.days} days`:''}</span>${x.rating?` <span class="fbr">${'★'.repeat(x.rating)}</span>`:''}</div><div class="small">${esc(x.body||'')}</div></div>`).join('')||'<div class="small muted">No feedback yet.</div>'}
+    <div><button class="btn small ghost" data-a="fbreload">Refresh</button></div></div>`}
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-a="fbstar"],[data-a="fbsend"],[data-a="fbreload"]');if(!el)return;e.stopPropagation();const a=el.dataset.a;
+  if(a==='fbreload'){fbAdm.rows=null;render();return}
+  if(a==='fbstar'){fbStars=+el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v<=fbStars));return}
+  const body=($('#fbbody').value||'').trim(),area=$('#fbarea').value,msg=$('#fbmsg');if(body.length<10&&!fbStars){msg.textContent='Add a rating or a few words first.';return}
+  el.disabled=true;try{let r;if(el.dataset.w==='p'){const f=fbUnlock();r=await prpc('atb_player_feedback',{p_token:PM.tok,p_area:area,p_rating:fbStars||null,p_body:body,p_usage:{days:f.u.days.length,since:f.since}})}else r=(await supa.rpc('atb_mgr_feedback',{p_team:teamOwner,p_area:area,p_rating:fbStars||null,p_body:body})).data;
+    if(r==='ok'){toast('Thanks! Feedback sent');fbStars=0;$('#fbbody').value='';msg.textContent='Sent ✓'}else msg.textContent=r==='limit'?'That’s plenty for today, thanks!':'Could not send'}catch(err){msg.textContent='Could not send. Check your connection.'}el.disabled=false},true);
+
+/* ---------- A warm hello every time someone opens the app (once per visit) ---------- */
+const CHEERS=['Every Saturday is a chance to be the hero. ⚽','Show up, work hard, have fun. That’s the AUFC way.','The best players make everyone around them better.','Small improvements every week add up. Keep going!','Talent wins games, teamwork wins championships.','Your teammates are counting on you this week. 💪','Play with your heart, pass with your head.','Champions keep playing until they get it right.','Football is better together. See you on the pitch!','One more match, one more memory. Let’s go!'];
+function helloPlayer(){if(!PM||PM.preview||sessionStorage.getItem('atb_hello'))return;try{sessionStorage.setItem('atb_hello','1')}catch(e){}
+  const d=PM.data,me=d.me,nm=esc(prof(me).nick||me.name.split(' ')[0]),h=new Date().getHours(),hi=h<12?'Good morning':h<18?'Good afternoon':'Good evening',t=todayISO();
+  const fx=myFixture(),poll=(d.polls||[]).find(p=>p.open&&!p.mine&&p.match_date>=t),games=allGames();let streak=0;const ms=S.matches.slice().sort((a,b)=>a.date<b.date?1:-1);for(const m of ms){if(m.teams.some(x=>x.players.includes(me.id)))streak++;else break}
+  const days=fx?Math.round((new Date(fx.date+'T12:00')-new Date(t+'T12:00'))/864e5):null,last=games[0];
+  const line=fx&&days===0?`Match day! Kick-off ${esc(timeFor(fx.date)||'today')}. Bring your A-game. 🔥`:fx?`You’re in <b>${esc((fx.teams.find(x=>x.players.includes(me.id))||{}).name||'a team')}</b> ${days===1?'tomorrow':'in '+days+' days'}. Go get that win!`
+    :poll?`Are you in for ${new Date(poll.match_date+'T12:00').toLocaleDateString(undefined,{weekday:'long'})}? Let the managers know.`:last&&last.potm?'Last time out you were Player of the Match. Do it again! 🏆'
+    :streak>=3?`🔥 ${streak} matches in a row. Keep the streak alive!`:CHEERS[Math.floor(Math.random()*CHEERS.length)];
+  helloShow(`<b>${hi}, ${nm}!</b><span>${line}</span>`,poll?'avail':'me')}
+function helloMgr(){if(PM||!supaUser||sessionStorage.getItem('atb_hello_m'))return;try{sessionStorage.setItem('atb_hello_m','1')}catch(e){}
+  const h=new Date().getHours(),hi=h<12?'Good morning':h<18?'Good afternoon':'Good evening',nx=nextGame?.();const act=S.players.filter(p=>p.active!==false&&!p.guest).length;
+  helloShow(`<b>${hi}, ${esc(myName||'coach')}!</b><span>${act} players in the squad${nx?` · next game ${new Date(nx+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}`:''}. Thanks for running the club. 🙌</span>`,null)}
+function helloShow(html,dest){if(document.querySelector('.hello'))return;const el=document.createElement('button');el.className='hello';el.innerHTML=`<img src="icons/crest-640.jpg" alt=""><span class="hl">${html}</span>`;
+  el.addEventListener('click',()=>{el.classList.remove('on');setTimeout(()=>el.remove(),300);if(dest&&view!==dest)go(dest)});document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('on'));setTimeout(()=>{el.classList.remove('on');setTimeout(()=>el.remove(),400)},6500)}
 function vManagers(){
   if(!mgrs.list&&!mgrs.loading&&!mgrs.err)setTimeout(loadMgrs,0);
   const when=t=>t?new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Never';
-  return `<h2>Managers</h2>
+  return fbAdminPanel()+`<h2>Managers</h2>
   <div class="panel stack"><p class="small muted" style="margin:0">Managers sign in with a username and password you give them. They can do everything in the app (squad, ratings, matches, links) on this team’s data. Only you (${ADMIN_EMAIL}) can see this page and add or remove managers.</p>
     <div class="row" style="align-items:flex-end"><label class="f" style="flex:1 1 160px">Username<input id="mu" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="e.g. harjot"></label>
     <label class="f" style="flex:1 1 160px">Password<input id="mp" autocomplete="new-password" value="${genPw()}"></label>
@@ -2223,7 +2328,7 @@ function notifyPanel(){if(!ntf){setTimeout(loadNtf,0);return `<h2>Vote alerts</h
     <p class="small muted" style="margin:0">Email alerts are sent by ntfy.sh’s free service, which limits how many emails it sends per day. Phone alerts are more reliable.</p></div>`}
 function vSettings(){
   const s=S.settings;
-  return `<h2>Rating model</h2><div class="panel stack">
+  return (supaUser?mfbPanel():'')+`<h2>Rating model</h2><div class="panel stack">
     <div class="fgrid">
       <label class="f">Last season counts as<select id="bw" data-a="set" data-k="baseW">${[0,1,2,3,5,8].map(n=>`<option value="${n}" ${n==s.baseW?'selected':''}>${n} match${n==1?'':'es'}</option>`).join('')}</select></label>
       <label class="f">Average over<select id="rn" data-a="set" data-k="recentN">${[0,3,5,8,12].map(n=>`<option value="${n}" ${n==s.recentN?'selected':''}>${n?'last '+n+' matches':'all matches'}</option>`).join('')}</select></label>
@@ -2328,6 +2433,7 @@ async function bootPlayer(saved){
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   if(supaUser&&saved.tok)supa.rpc('atb_mgr_link',{p_token:saved.tok}).then(()=>{},()=>{});
   await loadPlayer();
+  try{useTrack()}catch(e){}setTimeout(()=>{try{helloPlayer()}catch(e){}},1600);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer(true)});
   setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer(true)},90000);
 }
@@ -2754,7 +2860,7 @@ function dreamChange(a,el){if(!DE)return;const d=DE.d;
   else if(a==='dform')d.f=el.value;else if(a==='dtac')d.tactic=el.value;else if(a==='dcapt')d.cap=el.value;else return;
   d.name=($('#dname')?.value||d.name);dreamSel=null;render()}
 function vpAcct(){const me=PM.data.me;
-  return `${PM.data.canDob&&!PM.data.canEdit?`<h2>My details</h2><div class="panel stack"><label class="f" style="max-width:240px">Date of birth <span class="small muted">(only managers see it; used for age-group tournaments)</span><input id="mdob" type="date" value="${esc(me.dob||'')}" max="${todayISO()}"></label><div class="row"><button class="btn primary" data-a="pedit">Save</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
+  return pfbPanel()+`${PM.data.canDob&&!PM.data.canEdit?`<h2>My details</h2><div class="panel stack"><label class="f" style="max-width:240px">Date of birth <span class="small muted">(only managers see it; used for age-group tournaments)</span><input id="mdob" type="date" value="${esc(me.dob||'')}" max="${todayISO()}"></label><div class="row"><button class="btn primary" data-a="pedit">Save</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
     <div class="fgrid g2"><label class="f">Shirt no.<input id="mno" inputmode="numeric" maxlength="2" value="${esc(me.number||'')}"></label>
     <label class="f">Nation<select id="mnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(me.nation||'')?'selected':''}>${n}</option>`).join('')}</select></label></div>
     <div class="fgrid"><label class="f">Favourite club<span class="clubsel"><span id="pcbadge">${clubBadge(me.club)||'<span class="cb"></span>'}</span><select id="pclub" data-a="clubprev"><option value="">None</option>${Object.entries(CLUBS).map(([lg,a])=>`<optgroup label="${lg}">${a.map(([cid,n])=>`<option value="${cid}" ${cid===me.club?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></span></label></div>
@@ -2915,12 +3021,13 @@ function ruleTxt(t){const r=t.rule||{};return r.type==='min'?`${r.min}+ years`:r
 function eligible(t,p){const r=t.rule||{};if(!r.type||r.type==='open')return true;const a=ageAt(p.dob,r.asOf||t.date);if(a==null)return null;
   return (r.type==='max'||+r.min<=a||r.min==null||r.min==='')&&(r.type==='min'||+r.max>=a||r.max==null||r.max==='')}
 const tRecord=t=>{const g=(t.games||[]).filter(x=>x.gf!==''&&x.gf!=null&&x.ga!==''&&x.ga!=null);return {W:g.filter(x=>+x.gf>+x.ga).length,D:g.filter(x=>+x.gf===+x.ga).length,L:g.filter(x=>+x.gf<+x.ga).length,GF:g.reduce((n,x)=>n+ +x.gf,0),GA:g.reduce((n,x)=>n+ +x.ga,0),n:g.length}};
-const localCol=col=>col==='tournaments'?'tourns':col==='gear'?'gear':col==='fixtures'?'fixtures':null;
-const DOCN={tournaments:'tournament',gear:'equipment',fixtures:'finalized teams'};let docAct='';
+const localCol=col=>col==='tournaments'?'tourns':col==='gear'?'gear':col==='fixtures'?'fixtures':col==='expenses'?'exp':null;
+const DOCN={tournaments:'tournament',gear:'equipment',fixtures:'finalized teams',expenses:'money entry'};let docAct='';
 async function putDoc(col,id,data){if(mode!=='db'){toast('Needs sync');return}const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]){const nm=data.name||data.title||data.opp||(col==='fixtures'?fmtDate(id):id),d=old?diffTxt(old,data):'';const lab=docAct;docAct='';logAct(lab||(old?'Edited ':'Added ')+DOCN[col],nm+(d?' — '+d:''))}try{await db.doc(col+'/'+id).set(data);const k=localCol(col);if(k){S[k]=[...S[k].filter(x=>x.id!==id),{...data,id}];render()}}catch(e){toast('Could not save: '+(e.message||e.code))}}
 async function delDoc(col,id){const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]&&col!=='tournaments')logAct((col==='fixtures'?'Unpublished ':'Deleted ')+DOCN[col],old&&(old.name||old.title)||id);if(mode==='db'){try{await db.doc(col+'/'+id).delete();const k=localCol(col);if(k){S[k]=S[k].filter(x=>x.id!==id);render()}}catch(e){toast('Could not delete')}}}
 function watchExtra(){if(mode!=='db'||watchExtra.on)return;watchExtra.on=1;
   db.collection('tournaments').onSnapshot(s=>{S.tourns=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
+  db.collection('expenses').onSnapshot(s=>{S.exp=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
   db.collection('fixtures').onSnapshot(s=>{S.fixtures=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
   db.collection('gear').onSnapshot(s=>{S.gear=s.docs.map(d=>({...d.data(),id:d.id}));if(!S.gear.length&&isAdmin&&cloud==='supa'&&!watchExtra.seeded){watchExtra.seeded=1;seedGear()}loaded&&bgRender()},()=>{})}
 function seedGear(){[{cat:'kit',kit:'home',name:'Home kit',c1:'#16244A',c2:'#F28C28',desc:'Add a photo when the new kit arrives.'},{cat:'kit',kit:'away',name:'Away kit',c1:'#F4F4F4',c2:'#16244A',desc:'Add a photo when the new kit arrives.'},
@@ -3824,7 +3931,7 @@ document.addEventListener('click',async e=>{
   if(a==='mgen'){$('#mp').value=genPw();return}
   if(a==='mreload'){mgrs={list:null,loading:false,err:''};render();return}
   if(a==='madd'){const username=$('#mu').value.trim().toLowerCase(),password=$('#mp').value;const msg=$('#mmsg');el.disabled=true;msg.textContent='Adding…';
-    try{await mgrCall({action:'create',username,password});const t=`Airdrie United Team Builder\n${location.origin+location.pathname.replace(/[^/]*$/,'')}\nUsername: ${username}\nPassword: ${password}`;
+    try{await mgrCall({action:'create',username,password});const t=`Airdrie United Club App\n${location.origin+location.pathname.replace(/[^/]*$/,'')}\nUsername: ${username}\nPassword: ${password}`;
       try{await navigator.clipboard.writeText(t);toast('Added '+username+'. Login details copied')}catch(e){toast('Added '+username)}mgrs.list=null;render()}
     catch(e){msg.textContent=e.message;el.disabled=false}return}
   if(a==='mreset'){const pw=$('#rp_'+CSS.escape(id)).value;if(pw.length<8){toast('Use at least 8 characters');return}try{await mgrCall({action:'reset',member:id,password:pw});toast('Password updated')}catch(e){toast(e.message)}return}
