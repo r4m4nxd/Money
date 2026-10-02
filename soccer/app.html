@@ -981,6 +981,24 @@ html.dpkopen,html.dpkopen body{overflow:hidden}
 .dbench .dbs.empty{aspect-ratio:.64;height:auto;border:0;border-radius:0;clip-path:url(#fcShape);background:linear-gradient(160deg,#4a4e55 0%,#2a2d32 55%,#1c1e22 100%) !important}
 .dbench .dbs.empty .plus{display:block;width:44%;aspect-ratio:40/44;color:transparent;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 44'%3E%3Cpath d='M20 2 37 11.5v21L20 42 3 32.5v-21z' fill='none' stroke='%232FD07A' stroke-width='2.4'/%3E%3Cpath d='M20 14v16M12 22h16' stroke='%232FD07A' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;margin:auto}
 .dbench .dbrow{grid-template-columns:repeat(auto-fill,minmax(50px,66px))!important;justify-content:center}
+
+/* card design picker: image tile + readable label underneath */
+.ccpick{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important}
+.ccsw2{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px 7px;border-radius:12px;border:1.5px solid transparent;background:color-mix(in srgb,var(--surface2) 70%,transparent);cursor:pointer;font:inherit;color:var(--ink);transition:transform .15s,border-color .15s,background .15s}
+.ccsw2 .ccimg{display:block;width:62%;aspect-ratio:.64;background:center/contain no-repeat;filter:drop-shadow(0 3px 5px rgba(0,0,0,.28))}
+.ccsw2 .ccflat{clip-path:url(#fcShape);background-size:cover!important}
+.ccsw2 span{font:700 11px/1.2 var(--f-body);text-align:center;color:var(--ink);min-height:2.4em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ccsw2:hover{border-color:var(--line)}.ccsw2[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}.ccsw2[aria-pressed=true] span{color:var(--accent)}
+.ccsw2:active{transform:scale(.96)}
+
+/* ---------- consistency pass: headings, form fields, small layouts ---------- */
+h2 .small,h2 .muted{font:600 12px/1.2 var(--f-body)!important;text-transform:none;letter-spacing:0;color:var(--muted);margin-left:4px;white-space:nowrap}
+@media(max-width:520px){h2{font-size:19px;letter-spacing:.045em}}
+label.f input,label.f select,label.f textarea,.fgrid input,.fgrid select{font:500 16px/1.25 var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);padding:10px 12px;min-height:44px;border-radius:9px;text-overflow:ellipsis}
+label.f textarea{min-height:88px}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75;font-weight:400}
+select{text-overflow:ellipsis}
+.lvh{flex-wrap:wrap;row-gap:8px}.lvh>div{min-width:150px!important}.lvh .pill{margin-left:auto}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1258,7 +1276,7 @@ const ARTIMG=(k,c)=>k?`<img class="${c}" src="cards/${k}.webp" alt="" decoding="
 Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top,bot,mid,ink]});
 (()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc]])=>`.fut.fut.cc-${k}{--ink2:${ink};--lab:${acc}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i,.fut.fut.cc-${k} .no{color:${acc}}
 .pc.pc.cc-${k} .pc-card{background:${mid};color:${ink};border-color:transparent}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
-.sty-card.cc-${k}{background:${mid}!important;color:${ink}!important}.ccsw.cc-${k}{background:url(cards/t_${k}.webp) center top/auto 84% no-repeat!important;color:#fff!important;border-color:transparent!important}.ccdot.cc-${k}{background:url(cards/t_${k}.webp) center/cover!important}`).join('\n');
+.sty-card.cc-${k}{background:${mid}!important;color:${ink}!important}.ccdot.cc-${k}{background:url(cards/t_${k}.webp) center/cover!important}`).join('\n');
   const st=document.createElement('style');st.id='cardthemes';st.textContent=css;(document.body||document.head).appendChild(st)})();
 /* Motif artwork per design (our own drawings), rasterised once to PNG so it also shows in saved images */
 const MOTIFS=(()=>{const W=(o,b)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 128" preserveAspectRatio="none"><g opacity="${o}">${b}</g></svg>`;
@@ -2168,7 +2186,7 @@ function vManagers(){
       <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+appVerPanel()+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
 }
 // admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
-function appVerPanel(){if(!isAdmin||BUILDN==='0')return '';const fmt=b=>b&&b!=='0'?`${b.slice(0,4)}-${b.slice(4,6)}-${b.slice(6,8)} ${b.slice(8,10)}:${b.slice(10,12)} UTC`:'none';
+function appVerPanel(){if(!isAdmin||BUILDN==='0')return '';const fmt=b=>/^\d{12}$/.test(String(b||''))?`${b.slice(0,4)}-${b.slice(4,6)}-${b.slice(6,8)} ${b.slice(8,10)}:${b.slice(10,12)} UTC`:'none';
   return `<h2>App version</h2><div class="panel stack"><p style="margin:0">This copy: <b>${fmt(BUILDN)}</b> · Required for everyone: <b>${fmt(buildMin)}</b></p>
     <p class="small muted" style="margin:0">After an update, press this so managers and players on an older copy get a <b>Reload</b> screen and can’t save anything until they reload.</p>
     <div class="row"><button class="btn primary" data-a="reqbuild" ${buildMin===BUILDN?'disabled':''}>${buildMin===BUILDN?'Everyone must use this version':'Require this version for everyone'}</button></div></div>`}
@@ -2862,7 +2880,7 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
-    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw${k?' cc-'+k:''}" aria-pressed="${pfD.card===k}" data-a="pfcard" data-v="${k}" title="${l}" style="${k?`background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})`:''}"><span>${l}</span></button>`).join('')}</div>
+    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw2" aria-pressed="${(CARDALIAS[pfD.card]||pfD.card||'')===k}" data-a="pfcard" data-v="${k}" title="${esc(l)}">${CARDTHEMES[k]||!k?`<i class="ccimg" style="background-image:url(cards/t_${k||'gold'}.webp)"></i>`:`<i class="ccimg ccflat" style="background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})"></i>`}<span>${k?esc(l):'Earned (auto)'}</span></button>`).join('')}</div>
       <div class="small muted">Your level still shows on your card as a small gold, silver, bronze or ★ badge.</div></div>
     <div><div class="f"><span>Chemistry style <span class="muted">(your signature, pick one)</span></span></div>${CHEMCATS.map(([c,l])=>`<div class="small muted abcat">${l}</div><div class="abgrid">${Object.keys(ABILITIES).filter(k=>ABILITIES[k][3]===c).map(k=>`<button class="abopt" aria-pressed="${abKey(pfD.ability)===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div>`).join('')}</div>
     <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
@@ -3298,7 +3316,7 @@ function vClub(){const c=S.settings.club||{},mgr=!PM;const byOrd=(a,b)=>(a.order
       <div class="grounds"><span>🌳 <b>Home ground</b> ${esc(c.home||'Bayview, Airdrie')} <span class="muted">(outdoor, summer)</span></span><span>🏟️ <b>Winter</b> ${esc(c.indoor||'Genesis Centre, Airdrie')} <span class="muted">(indoor)</span></span></div></div>
       ${mgr?'<button class="btn ghost small" data-a="clubedit">Edit</button>':''}</div>
     <div class="kpis">${kpi(nPl,'Squad players')}${kpi(S.matches.length,'Club matches')}${kpi(S.tourns.filter(t=>t.date<=todayISO()).length,'Tournaments')}${kpi(S.tourns.filter(t=>t.place==='champ').length+S.gear.filter(g=>g.cat==='trophy'&&!g.tourn&&(g.place||'champ')==='champ').length,'🏆 Trophies')}</div>
-    <div class="cab">${SHELVES.map(shelf).join('')}</div>
+    ${(sh=>sh?`<div class="cab">${sh}</div>`:'')(SHELVES.map(shelf).join(''))}
     ${mgr?'<p class="small muted" style="text-align:center">Tap an item to see its photos. Tap ＋ Add on any shelf to add a new item with up to 4 photos.</p>':''}${tipCard()}`}
 
 function gearView(id){const g=S.gear.find(x=>x.id===id);if(!g)return;const ims=gImgs(g),t=g.tourn&&S.tourns.find(x=>x.id===g.tourn);
