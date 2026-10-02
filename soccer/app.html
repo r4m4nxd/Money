@@ -2042,12 +2042,15 @@ function spotlight(pool,{who,canCmp=true,showR=true,me}={}){const P=pool.filter(
       <div class="anl-card"><h3>${showR?'Form':'Results'}</h3>${showR?`<div class="small muted">Match rating (OVR), last ${hist.length} rated matches</div>${lineSVG(hist.map(h=>({k:new Date(h.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}),v:Math.round(h.ovr),tip:`${fmtDate(h.date)}: OVR ${Math.round(h.ovr)}`})),{label:'Form line'})}`:''}
         ${st?`<div class="kps">${kpiT(st.apps,'Apps')}${kpiT(st.g,'Goals')}${kpiT(st.a,'Assists')}${kpiT(st.potm,'POTM')}</div>${wdlBar(st.W||0,st.D||0,st.L||0)}`:''}</div></div></div>`}
 // two teams side by side (next match teams, else last match)
-function teamVsTeam(){let T=null,names=[];if(draft.teams&&draft.teams.length>1){T=draft.teams;names=T.map((_,i)=>draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]])}
-  else{const m=S.matches.slice().sort((a,b)=>a.date<b.date?1:-1)[0];if(m){T=m.teams.map(t=>t.players);names=m.teams.map(t=>t.name)}}
-  if(!T||T.length<2)return '';const A=Math.min(STA.ta,T.length-1),B=STA.tb===A?(A+1)%T.length:Math.min(STA.tb,T.length-1);
+function teamVsTeam(){const hasNext=!!(draft.teams&&draft.teams.length>1),past=S.matches.filter(m=>m.teams.length>1).sort((a,b)=>a.date<b.date?1:-1);
+  if(!STA.tm||(STA.tm==='next'&&!hasNext)||(STA.tm!=='next'&&!past.some(m=>m.id===STA.tm)))STA.tm=hasNext?'next':past[0]?.id||'';
+  let T=null,names=[],res=null;if(STA.tm==='next'){T=draft.teams;names=T.map((_,i)=>draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]])}
+  else{const m=past.find(x=>x.id===STA.tm);if(m){T=m.teams.map(t=>t.players);names=m.teams.map(t=>t.name);res=m.teams.map(t=>t.goals)}}
+  if(!T||T.length<2)return '';
+  const mSel=`<label class="f">Match<select data-sta="tm">${hasNext?`<option value="next" ${STA.tm==='next'?'selected':''}>Next match · ${esc(fmtDate(draft.date))} (teams being made)</option>`:''}${past.map(m=>`<option value="${esc(m.id)}" ${m.id===STA.tm?'selected':''}>${esc(fmtDate(m.date))} · ${m.teams.map(t=>esc(t.name)+(t.goals!=null&&t.goals!==''?' '+t.goals:'')).join(' · ')}</option>`).join('')}</select></label>`;const A=Math.min(STA.ta,T.length-1),B=STA.tb===A?(A+1)%T.length:Math.min(STA.tb,T.length-1);
   const av=i=>avg6(T[i].map(pById).filter(Boolean)),ov=i=>Math.round(avg(T[i].map(id=>R(id).ovr)));
-  return `<div class="anl-card wide"><h3>Team vs team</h3><div class="anl-pick"><label class="f">Team<select data-sta="ta">${names.map((n,i)=>`<option value="${i}" ${i===A?'selected':''}>${esc(n)}</option>`).join('')}</select></label><label class="f">Against<select data-sta="tb">${names.map((n,i)=>`<option value="${i}" ${i===B?'selected':''}>${esc(n)}</option>`).join('')}</select></label></div>
-    <div class="anl-grid"><div>${radarSVG([{name:names[A],v:av(A)},{name:names[B],v:av(B)}])}</div><div><div class="kps">${kpiT(ov(A),names[A]+' OVR')}${kpiT(ov(B),names[B]+' OVR')}${kpiT(Math.abs(ov(A)-ov(B)),'Gap','lower is fairer')}</div>
+  return `<div class="anl-card wide"><h3>Team vs team</h3><div class="anl-pick">${mSel}</div><div class="anl-pick"><label class="f">Team<select data-sta="ta">${names.map((n,i)=>`<option value="${i}" ${i===A?'selected':''}>${esc(n)}</option>`).join('')}</select></label><label class="f">Against<select data-sta="tb">${names.map((n,i)=>`<option value="${i}" ${i===B?'selected':''}>${esc(n)}</option>`).join('')}</select></label></div>
+    <div class="anl-grid"><div>${radarSVG([{name:names[A],v:av(A)},{name:names[B],v:av(B)}])}</div><div><div class="kps">${kpiT(ov(A),names[A]+' OVR')}${kpiT(ov(B),names[B]+' OVR')}${kpiT(Math.abs(ov(A)-ov(B)),'Gap','lower is fairer')}${res&&res[A]!=null&&res[A]!==''&&res[B]!=null&&res[B]!==''?kpiT(`${res[A]}–${res[B]}`,'Score','final result'):''}</div>
       <table class="tvt"><tr><th></th><th>${esc(names[A])}</th><th>${esc(names[B])}</th></tr>${GNM.map((g,i)=>{const x=av(A)[i],y=av(B)[i];return `<tr><td>${g}</td><td class="${x>y?'win':''}">${x}</td><td class="${y>x?'win':''}">${y}</td></tr>`}).join('')}</table></div></div></div>`}
 function vAnalytics(){const P=S.players.filter(p=>!p.guest&&p.active!==false),PS=playerStats(),ms=S.matches;const goals=ms.reduce((a,m)=>a+m.teams.reduce((b,t)=>b+(+t.goals||0),0),0);
   const att=PS.filter(x=>x.att!=null),tiers={gold:0,silver:0,bronze:0};P.forEach(p=>tiers[tier(R(p.id).ovr)]++);const pos={DEF:0,MID:0,FWD:0};P.forEach(p=>pos[p.pos]=(pos[p.pos]||0)+1);
@@ -2063,7 +2066,7 @@ function vAnalytics(){const P=S.players.filter(p=>!p.guest&&p.active!==false),PS
 function vpAnalytics(){const me=PM.data.me.id,showMine=!!(PM.data.showRatings||SQR()),all=SQR();const P=S.players.filter(p=>!p.guest&&p.active!==false&&(all||p.id===me));
   if(!STA.a||(!all&&STA.a!==me))STA.a=me;
   return `<h2>My stats</h2><div class="anl"><div class="anl-card wide">${spotlight(all?P:[pById(me)],{who:me,canCmp:all,showR:showMine,me})}${showMine?'':'<p class="small muted" style="margin:8px 0 0">Your ability chart appears when the managers turn on “Players can see their own ratings”.</p>'}</div></div>`}
-document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!el.dataset.sta)return;const k=el.dataset.sta;STA[k]=k==='ta'||k==='tb'?+el.value:el.value;if(k==='a'&&STA.b===el.value)STA.b='avg';render()});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!el.dataset.sta)return;const k=el.dataset.sta;STA[k]=k==='ta'||k==='tb'?+el.value:el.value;if(k==='tm'){STA.ta=0;STA.tb=1}if(k==='a'&&STA.b===el.value)STA.b='avg';render()});
 function vStats(){
   if(cloud==='supa'&&!st.loaded&&!st.loading&&!st.err)setTimeout(loadStats,0);
   const ms=S.matches.slice().sort((a,b)=>a.date<b.date?-1:1),PS=playerStats();
