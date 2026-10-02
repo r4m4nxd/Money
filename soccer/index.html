@@ -1299,7 +1299,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020358',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020600',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2656,7 +2656,14 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
 /* ---------- Dream Team builder (each player's private teams: club players + the top-200 list) ---------- */
 let DE=null,dreamSel=null,dreamQ='';
 const TACTICS=['Balanced','Attacking','Defensive','Counter-attack','Possession','High press','Park the bus','Wing play'];
-const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}return {id,name:id.slice(2),ext:true}};
+/* Star photos for Dream Team: freely licensed images from Wikipedia / Wikimedia Commons, looked up by name once and cached on the phone */
+let WIKI=ls('atb_wiki')||{};const wikiBusy=new Set();
+async function wikiPhoto(name){const tryT=async t=>{const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t.replace(/ /g,'_')),{headers:{'Accept':'application/json'}});if(!r.ok)return null;const j=await r.json();
+    if(j.type==='disambiguation'||!j.thumbnail)return null;if(!/football|soccer/i.test((j.description||'')+' '+(j.extract||'').slice(0,300)))return null;return (j.thumbnail.source||'').replace(/\/\d+px-/,'/480px-')};
+  try{return (await tryT(name))||(await tryT(name+' (footballer)'))||''}catch(e){return null}}
+function wikiLoad(names){const need=names.filter(n=>n&&!(n in WIKI&&(WIKI[n].u||Date.now()-WIKI[n].t<7*864e5))&&!wikiBusy.has(n));if(!need.length)return;
+  need.forEach(n=>wikiBusy.add(n));Promise.all(need.map(async n=>{const u=await wikiPhoto(n);if(u!==null)WIKI[n]={u:u||'',t:Date.now()};wikiBusy.delete(n)})).then(()=>{try{ls('atb_wiki',WIKI)}catch(e){}if(PM&&view==='dream')bgRender()})}
+const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n];return {id,name:n,ext:true,photo:w&&w.u||undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
 function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill('')}}
 function dreamFit(d){const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
@@ -2675,8 +2682,8 @@ function vpDream(){const L=PM.data.me.dreams||[];
       <label class="small row chk"><input type="checkbox" data-a="dgk" ${d.gk?'checked':''}> Goalkeeper</label>
       <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
     ${dreamPicker()}</div>
-    <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or tap another card to swap.`:'Tap a card to pick a player for that spot. Tap two cards to swap them.'}</div>
-      <div class="pitchwrap dpitch">${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null})}</div></div></div>`}
+    <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or drag cards to swap.`:'Tap a card to pick a player for that spot. Tap two cards to swap them.'}</div>
+      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null})}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
 function dreamPicker(){const d=DE.d,q=dreamQ.trim().toLowerCase(),used=new Set(d.order.filter(Boolean)),hit=n=>!q||n.toLowerCase().includes(q);
   const club=S.players.filter(p=>!p.guest&&p.active!==false&&hit(p.name)).sort((a,b)=>a.name.localeCompare(b.name));
   const grp=(t,items)=>items.length?`<div class="dgrp"><b>${esc(t)}</b><div class="chips">${items.join('')}</div></div>`:'';
@@ -2688,7 +2695,7 @@ async function dreamSaveAll(list){const r=await prpc('atb_player_dreams',{p_toke
 function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.length};
   openModal(`<div class="mh"><h2>Share dream team</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div id="sharecard" class="sharecard dshare"><div class="sty-h"><img src="icons/crest-640.jpg" alt=""><div><b>${esc(d.name)}</b><span>${esc(PM.data.me.name)}’s dream team · ${d.f}${d.gk?' + GK':''} · ${esc(d.tactic)}${d.cap?' · Captain '+esc(dreamName(d.cap)):''}</span></div></div>
-    <div style="margin-top:10px">${pitchHTML({kit:''},lu,0,false,'',{res:dreamRes,captain:d.cap})}</div><div class="sty-sig" style="position:static;text-align:right;margin-top:8px">Developed by Raman · AUFC App</div></div>
+    <div style="margin-top:10px">${pitchHTML({kit:''},lu,0,false,'',{res:dreamRes,captain:d.cap})}</div><div class="sty-sig" style="position:static;text-align:right;margin-top:8px">${d.order.some(x=>x&&x.startsWith('x:'))?'Photos: Wikimedia Commons · ':''}Developed by Raman · AUFC App</div></div>
   <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button></div>`);prepImg('dream-team.png')}
 async function dreamAction(a,el){
   if(a==='dnew'){DE={i:-1,d:dreamNew()};dreamSel=null;render();return}
