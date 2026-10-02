@@ -939,11 +939,11 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .sb-nums{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;background:rgba(255,255,255,.07);border-radius:8px;padding:5px 2px}.sb-nums b{display:block;font:900 15px/1.1 var(--f-display)}.sb-nums i{font-style:normal;font-size:8.5px;color:#A9B8D2;text-transform:uppercase}
 .sb-foot{grid-column:1/-1;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,.14);padding-top:8px}.sb-foot img{width:30px;height:30px;border-radius:50%}.sb-foot b{display:block;font:900 13px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.05em}.sb-foot span{font-size:10px;color:#A9B8D2}.sb-foot em{margin-left:auto;font:900 italic 12px var(--f-display);color:#4BE0A0}
 
-/* ---------- luxury backdrop: soft gold light beams, silk ribbon, glows and gold dust (rendered images, no fine lines) ---------- */
-:root{--lux:url(icons/bg-light.webp)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lux:url(icons/bg-dark.webp)}}
-:root[data-theme="dark"]{--lux:url(icons/bg-dark.webp)}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--lux) center/cover no-repeat;transform:translateZ(0)}
+/* ---------- backdrop: simple luxurious gradients (no images, no line art) ---------- */
+:root{--lux:radial-gradient(120% 80% at 85% -10%,rgba(214,178,110,.16),transparent 55%),radial-gradient(90% 70% at -10% 110%,rgba(80,170,150,.12),transparent 60%),linear-gradient(165deg,#FBFAF7 0%,#F1F3F7 55%,#E7EBF2 100%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lux:radial-gradient(110% 75% at 88% -12%,rgba(212,175,95,.13),transparent 55%),radial-gradient(90% 70% at -12% 112%,rgba(30,140,110,.16),transparent 60%),linear-gradient(165deg,#0E1420 0%,#090D16 55%,#05080E 100%)}}
+:root[data-theme="dark"]{--lux:radial-gradient(110% 75% at 88% -12%,rgba(212,175,95,.13),transparent 55%),radial-gradient(90% 70% at -12% 112%,rgba(30,140,110,.16),transparent 60%),linear-gradient(165deg,#0E1420 0%,#090D16 55%,#05080E 100%)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--lux);transform:translateZ(0)}
 
 /* pitch cards keep the real card outline (artwork shape, or the FC shape for plain colours) */
 .pc.art .pc-card{aspect-ratio:.64;background:none!important;border:0!important;border-radius:0;box-shadow:none!important;filter:drop-shadow(0 .6cqw .9cqw rgba(0,0,0,.5))}
@@ -1465,7 +1465,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021808',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021809',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
