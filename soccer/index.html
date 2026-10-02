@@ -886,11 +886,11 @@ html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .fut.art .fl{left:8cqw;top:21cqw}
 .fut.art .ovr{font-size:21cqw}.fut.art .ps{font-size:8.6cqw}
 .fut.art .fn{top:89.5cqw;font-size:11cqw;text-shadow:0 .4cqw 1.2cqw rgba(0,0,0,.25)}.fut.art .fn.l{top:90.5cqw;font-size:9.4cqw}.fut.art .fn.xl{top:91.5cqw;font-size:8cqw}
-.fut.art .fs{top:106cqw;left:13cqw;right:13cqw;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,9.4cqw);grid-auto-flow:column;column-gap:10cqw}
+.fut.art .fs{top:104cqw;left:13cqw;right:13cqw;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,8.6cqw);grid-auto-flow:column;column-gap:10cqw}
 .fut.art .fs span{flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:2cqw}
 .fut.art .fs span:nth-child(n+4){justify-content:flex-start;flex-direction:row-reverse;padding-left:1cqw}
-.fut.art .fs b{font-size:9cqw;min-width:10cqw;text-align:right}.fut.art .fs i{font-size:6.4cqw}
-.fut.art .fb{top:143cqw;gap:3cqw}
+.fut.art .fs b{font-size:8.4cqw;min-width:10cqw;text-align:right}.fut.art .fs i{font-size:6.4cqw}
+.fut.art .fb{top:131.5cqw;gap:3cqw}.fut.art .fb .flag{width:7.5cqw;height:5.4cqw}.fut.art .fb .club,.fut.art .fb .cb{width:6.8cqw;height:6.8cqw}
 .fut.art .tpip{top:10cqw;right:9cqw}
 .fut.art.t-special .ovr,.fut.art.t-special .fn,.fut.art.t-special .ps,.fut.art.t-special .fs b{color:#3A2D10}.fut.art.t-special{--lab:#8A6A22;--ink2:#3A2D10}
 .pc-card>.pcart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 34%;border-radius:inherit;z-index:0;pointer-events:none;max-width:none}
@@ -1178,7 +1178,13 @@ const STADIUMS=[
  ['South America',['Maracanã','La Bombonera','Estadio Monumental (River Plate)','Morumbi','Allianz Parque','Estadio Centenario','Estadio Nacional (Chile)','Estadio Metropolitano (Barranquilla)']],
  ['North America',['Estadio Azteca','Estadio BBVA','Estadio Akron','SoFi Stadium','MetLife Stadium','AT&T Stadium','Mercedes-Benz Stadium','Rose Bowl','BMO Field','BC Place','Stade Saputo','Commonwealth Stadium (Edmonton)','McMahon Stadium (Calgary)','Tim Hortons Field','Lumen Field','Providence Park','Inter&Co Stadium','Chase Stadium (Inter Miami)']],
  ['Asia, Middle East, Africa, Oceania',['Lusail Stadium','Khalifa International Stadium','Al Bayt Stadium','King Fahd International Stadium','Kingdom Arena (Al Hilal)','Al-Awwal Park (Al Nassr)','Saitama Stadium 2002','Seoul World Cup Stadium','Salt Lake Stadium (Kolkata)','Jawaharlal Nehru Stadium (Delhi)','Guangzhou Tianhe Stadium','FNB Stadium (Soccer City)','Cairo International Stadium','Stade Mohammed V','Accor Stadium (Sydney)']]];
-const BOOTS=[['Nike',['Mercurial Superfly','Mercurial Vapor','Phantom GX','Phantom Luna','Tiempo Legend','Premier III']],['adidas',['Predator','F50','X Crazyfast','Copa Pure','Copa Mundial']],['Puma',['Future','Ultra','King']],['New Balance',['Furon','Tekela','442']],['Mizuno',['Morelia Neo','Morelia II','Alpha']],['Others',['Under Armour Magnetico','Skechers SKX_01','Skechers Razor','Umbro Speciali','Lotto Stadio','Diadora Brasil','Joma Aguila','Asics DS Light','Kipsta Viralto','Turf / indoor shoes']]];
+// [brand, models]; "(…)" = who wears / made it famous
+const BOOTS=[['Nike',['Mercurial Superfly 10 (Kylian Mbappé, Vinícius Jr)','Mercurial Superfly CR7 edition (Cristiano Ronaldo)','Mercurial Superfly Mbappé edition (Kylian Mbappé)','Mercurial Vapor 16','Mercurial Dream Speed','Phantom Luna II (Erling Haaland)','Phantom GX 2','Tiempo Legend 10 (Virgil van Dijk)','Premier III','Total 90 (classic)','R9 Mercurial 1998 (Ronaldo Nazário)']],
+  ['adidas',['Predator Elite (Jude Bellingham)','Predator Mania (David Beckham, Zinedine Zidane)','F50 Elite (Lionel Messi, Lamine Yamal)','F50 Messi edition (Lionel Messi)','F50 Lamine Yamal edition (Lamine Yamal)','X Crazyfast (Mohamed Salah)','Copa Pure','Copa Mundial (classic)']],
+  ['Puma',['Future 8 (Neymar Jr)','Future Neymar edition (Neymar Jr)','Ultra 5 (Christian Pulisic)','King Platinum','King (Pelé, Diego Maradona)']],
+  ['New Balance',['Furon (Bukayo Saka)','Tekela','442']],['Mizuno',['Morelia Neo IV','Morelia II (classic)','Alpha']],
+  ['Skechers',['SKX_01 (Harry Kane)','Razor (Harry Kane)']],
+  ['Others',['Under Armour Magnetico','Umbro Speciali','Lotto Stadio','Diadora Brasil','Joma Aguila','Asics DS Light','Kipsta Viralto','Turf / indoor shoes']]];
 const BESTPOS=['GK','CB','LB','RB','LWB','RWB','CDM','CM','CAM','LM','RM','LW','RW','CF','ST'];
 /* card colours a player may pick (gold/silver/bronze/special stay earned) */
 const CARDCOL0={red:['Red','#FF8A8A','#C8202B','#F25C5C','#fff'],blue:['Blue','#8DB8FF','#1E4FC2','#5C8EF0','#fff'],green:['Green','#8EE6A6','#178A43','#4CC274','#fff'],purple:['Purple','#C9A2FF','#5B2BB5','#9566E8','#fff'],pink:['Pink','#FFB3DA','#D63A8C','#F27BB8','#fff'],teal:['Teal','#8FF0E4','#0E8C80','#3CC4B4','#fff'],orange:['Orange','#FFC48A','#E06A0E','#FA9A3C','#2a1300'],navy:['Navy','#7F96C9','#14224A','#3A4F86','#fff'],carbon:['Carbon','#9AA3AE','#2B3038','#5F6873','#fff'],ice:['Ice','#FFFFFF','#9FD6F2','#DDF2FC','#0f2a3a'],lime:['Lime','#E6FF8F','#7DB31A','#B6E04A','#1c2600'],maroon:['Maroon','#D98C9A','#6E1424','#A33B4E','#fff']};
@@ -1412,7 +1418,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021733',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021739',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2813,7 +2819,7 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
     <div class="fgrid g2"><label class="f">Favourite player<select id="pffav"><option value="">–</option>${optGroups(FAVPLAYERS,pr.favPlayer)}</select></label>
       <label class="f">Favourite teammate<select id="pfmate"><option value="">–</option>${mates.map(p=>`<option value="${p.id}" ${p.id===pr.favMate?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
-      <label class="f">Dream boots<select id="pfboots"><option value="">–</option>${BOOTS.map(([b,l])=>`<optgroup label="${b}">${l.map(n=>{const v=b==='Others'?n:b+' '+n;return `<option ${v===pr.boots?'selected':''}>${esc(v)}</option>`}).join('')}</optgroup>`).join('')}</select></label>
+      <label class="f">Dream boots<select id="pfboots"><option value="">–</option>${pr.boots&&!BOOTS.some(([b,l])=>l.some(n=>(b==='Others'?n:b+' '+n)===pr.boots))?`<option selected>${esc(pr.boots)}</option>`:''}${BOOTS.map(([b,l])=>`<optgroup label="${b}">${l.map(n=>{const v=b==='Others'?n:b+' '+n;return `<option ${v===pr.boots?'selected':''}>${esc(v)}</option>`}).join('')}</optgroup>`).join('')}</select></label>
       <label class="f">Favourite stadium<select id="pfstad"><option value="">–</option>${optGroups(STADIUMS,pr.stadium)}</select></label>
       <label class="f">Dream shirt number<input id="pfno" inputmode="numeric" maxlength="2" value="${esc(pr.dreamNo||'')}"></label></div>
     <div class="pfphoto"><div class="f"><span>Profile photo</span></div>
