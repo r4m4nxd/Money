@@ -1012,6 +1012,14 @@ label.f textarea{min-height:88px}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75;font-weight:400}
 select{text-overflow:ellipsis}
 .lvh{flex-wrap:wrap;row-gap:8px}.lvh>div{min-width:150px!important}.lvh .pill{margin-left:auto}
+
+.clog{display:flex;flex-direction:column;gap:12px}
+.clnext{border:1px dashed var(--accent);border-radius:10px;padding:10px 12px;background:color-mix(in srgb,var(--accent) 7%,transparent)}.clnext b{font:800 13px var(--f-display);text-transform:uppercase;letter-spacing:.05em;color:var(--accent)}.clnext ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.cltl{list-style:none;margin:0;padding:0 0 0 22px;position:relative}.cltl::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.cltl>li{position:relative;padding:0 0 12px}.cldot{position:absolute;left:-20px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--muted)}.cltl>li.now .cldot{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
+.cltl summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;cursor:pointer;list-style:none}.cltl summary::-webkit-details-marker{display:none}
+.clv{font:900 12px var(--f-display);padding:2px 8px;border-radius:99px;background:var(--surface2);border:1px solid var(--line)}.cltl li.now .clv{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cltl summary b{font-size:15px}.cld{font-size:12px;color:var(--muted)}.cltl details p{margin:6px 0 4px}.cltl details ul{margin:0;padding-left:18px;font-size:14px;line-height:1.55}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1483,7 +1491,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021851',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021904',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1550,7 +1558,7 @@ async function boot(){
       teamOwner=teamOwner||supaUser.id;isAdmin=(supaUser.email||'').toLowerCase()===ADMIN_EMAIL;
       db=supaDB(supa,teamOwner);cloud='supa';$('#sync').textContent=myName?'Manager · '+myName:'Synced';$('#sync').title='Signed in as '+(myName||niceEmail(supaUser.email));
       $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="money"><span>Expenses</span></button>');
-      if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button>');
+      if(isAdmin)$('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="managers"><span>Managers</span></button><button role="tab" data-v="changelog"><span>Changelog</span></button>');
       $('#tabs').insertAdjacentHTML('beforeend','<button role="tab" data-v="toplayer"><span>My profile</span></button>')}
   }
   // The hosted app is manager-only: without a signed-in session nothing loads, not even the roster file.
@@ -1751,7 +1759,7 @@ function render(){const _fs=flipSnap();queueMicrotask(()=>{axify();flipPlay(_fs)
   if(view==='toplayer'){if(!mgrAutoTried){mgrAutoTried=true;m.innerHTML='<div class="panel small muted" style="text-align:center;padding:30px">Opening your player profile…</div>';mgrToPlayer().then(ok=>{if(!ok&&view==='toplayer')render()});return}m.innerHTML=vSwitchPlayer();pLoadRoster();return}
   if(m.dataset.v!==view){m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._et);m._et=setTimeout(()=>m.classList.remove('enter'),900)}m.dataset.v=view;
   const keep=keepDetails(m);
-  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='tourn'?vTourn():view==='club'?vClub():view==='guide'?vGuide():view==='money'&&supaUser?vMoney():view==='managers'&&isAdmin?vManagers():vSettings();keep();
+  m.innerHTML=view==='match'?vMatch():view==='history'?vHistory():view==='squad'?vSquad():view==='stats'?vStats():view==='tourn'?vTourn():view==='club'?vClub():view==='guide'?vGuide():view==='money'&&supaUser?vMoney():view==='changelog'&&isAdmin?changelogPanel():view==='managers'&&isAdmin?vManagers():vSettings();keep();
 }
 
 /* Collapsible sections: header keeps the key facts, open/closed is remembered per section */
@@ -2199,6 +2207,27 @@ function vManagers(){
       <div class="row"><input id="rp_${m.member}" placeholder="New password" style="flex:1 1 140px"><button class="btn" data-a="mreset" data-id="${m.member}">Set password</button><button class="btn danger" data-a="mdel" data-id="${m.member}">Remove</button></div></div>`}).join('')}</div>`}`+appVerPanel()+godAlertPanel()+tipAdminPanel(when)+playerActPanel(when);
 }
 // admin only: Support button switch + who opened the popup, went to Ko-fi, or closed it
+
+/* ---------- Changelog & roadmap (admin only): how the app grew, version by version ---------- */
+const CHANGELOG=[
+ ['1.0','Sep 29','Team Builder is born','Squad ratings, balanced team generator and WhatsApp sharing.',['Squad with 9 skill ratings per player','Balanced team generator with re-roll options','Formations on a pitch view, star players, per-team share','2026 roster loaded; players-on-pitch limit with subs','Match-night rotation on the share card']],
+ ['1.1','Sep 29','Club identity & FC look','The app starts to feel like an FC game.',['Airdrie United crest: icon, launch animation, home-screen app','Guide tab explaining every rule','FC-style reskin with player cards, photos, flags and shirt numbers','Theme toggle, offline mode, undo delete']],
+ ['1.2','Sep 29','Managers & availability links','From one person’s tool to a shared club app.',['Manager-only sign-in; admin-only Managers tab with usernames','Availability link page for players with live answers','Quick rate, guest players, Player of the Match','Stats tab with charts and leaderboards; answer log with late flags','Hide-ratings mode']],
+ ['1.3','Sep 30','Player accounts & PINs','Players get their own space.',['Voting PINs so nobody votes for someone else','Player accounts and player home page with XP','Photo positioner and background removal','Favourite club crests (58 bundled + more)','Auto weekly link: closes Saturday 9 PM, opens next week']],
+ ['1.4','Sep 30','Seasons, tournaments & the club','A whole club, not just Saturdays.',['Schedule, attendance marking and player growth','Tournaments with squads, line-ups and publishing','Club page with trophy cabinet, kits and gear photos','EA-style PlayStyles (36, with PlayStyle+) and manager awards','Perspective pitch, manager and player guides, security headers']],
+ ['1.5','Oct 1','Launch readiness','Everything needed to hand the app to the whole squad.',['Phone image saving via the share sheet','Player app setup tracker and PIN-on-login','Portal access control and PIN-only mode','Support the builder (Ko-fi) card with admin analytics','Admin activity bell and phone alerts']],
+ ['1.6','Oct 1','Match Day redesign','The manager’s main screen gets the FC treatment.',['Match Day with one large FC-style pitch and 3D goals','Finalize teams so players see them; teams accordion','Version gate: everyone must update to the latest build','Wide-screen layout, collapsible sections, SVG icons, light/dark','Yellow kit, VIBGYOR bibs, all-pitches toggle']],
+ ['2.0','Oct 2','Players own their profile','The player portal becomes personal.',['Players set nickname, card design, best position, favourites','Squad page with Compare, team chemistry ratings','Photo cropper with approvals and auto-approve option','Notifications bell, welcome messages, story share image','Manager’s own player profile opens without a PIN']],
+ ['2.1','Oct 2','Dream Team & tactics','A fantasy layer for the whole squad.',['Dream Team builder with 200+ world stars and Icons','FC-style chemistry lines and swap suggestions','FUT-style search with filters, bench and pagination','Tactic Board with runs, passes and playback','Drag-and-drop pitch swaps, smooth formation animations']],
+ ['2.2','Oct 2','Club tools','Running the club beyond match day.',['Club expenses log (managers and admin only)','Feedback system (admin reads)','Renamed from Team Builder to Club App','Keeps typed data through background refreshes']],
+ ['2.3','Oct 2','HD cards & FC stats','The big visual upgrade.',['25 HD card designs by Raman’s friend, smooth outlines','FUTBIN-style player page: sub-stats, AcceleRATE, roles, best ratings','23 chemistry styles replace signature abilities','Square stats-board share image','Managers choose star-player cards; luxurious gradient backgrounds']],
+ ['2.4','Oct 2','Smarter & faster','Polish, speed and smarter match days.',['Fast team balancing using attributes, chemistry styles and PlayStyles','Chemistry tips and best positions on the manager pitch','Pitch cards never overlap; real card shapes everywhere','Dream Team lag removed; star photos prepared once for everyone','Readable card picker; consistent headings and form fields']]];
+const ROADMAP=['Star photos: HD cut-outs for all 200+ stars','Season awards ceremony and end-of-season story','Push notifications to players’ phones'];
+function changelogPanel(){if(!isAdmin)return '';const L=CHANGELOG.slice().reverse();
+  return `<h2>Changelog &amp; roadmap <span class="small muted">only you can see this</span></h2><div class="panel clog">
+    <div class="clnext"><b>Next up</b><ul>${ROADMAP.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <ol class="cltl">${L.map(([v,d,t,sub,items],i)=>`<li${i===0?' class="now"':''}><span class="cldot"></span><details${i===0?' open':''}><summary><span class="clv">v${v}</span><b>${esc(t)}</b><span class="cld">${d}, 2026${i===0?' · current':''}</span></summary><p class="small muted">${esc(sub)}</p><ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details></li>`).join('')}</ol>
+    <p class="small muted" style="margin:6px 0 0">${CHANGELOG.length} versions from Sep 29 to today.</p></div>`}
 function appVerPanel(){if(!isAdmin||BUILDN==='0')return '';const fmt=b=>/^\d{12}$/.test(String(b||''))?`${b.slice(0,4)}-${b.slice(4,6)}-${b.slice(6,8)} ${b.slice(8,10)}:${b.slice(10,12)} UTC`:'none';
   return `<h2>App version</h2><div class="panel stack"><p style="margin:0">This copy: <b>${fmt(BUILDN)}</b> · Required for everyone: <b>${fmt(buildMin)}</b></p>
     <p class="small muted" style="margin:0">After an update, press this so managers and players on an older copy get a <b>Reload</b> screen and can’t save anything until they reload.</p>
