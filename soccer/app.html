@@ -684,6 +684,8 @@ button,a,[data-a],summary,label,select,input,.ax-h{touch-action:manipulation;-we
 .snap .fshine{display:none!important}
 .dsum{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:10px 14px;border-radius:14px;background:var(--surface2,rgba(127,127,127,.1))}.dsum>div{display:flex;flex-direction:column;gap:2px;min-width:90px}.dsum i{font-style:normal;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.dsum b{font:900 26px/1 var(--f-display)}.dsum b small{font-size:14px;color:var(--muted)}.dsum .chemtot{display:block;position:relative;height:5px;margin:4px 0 0;padding:0}.dsum.img{background:rgba(255,255,255,.08);color:#fff}.dsum.img i{color:#A9B8D2}
 .pc-ovr.stv{filter:none!important}
+.dsug{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.dsug>b{width:100%}.dsug .btn{white-space:normal;text-align:left}
+.dpitch .cll{font-size:calc(1.4cqw);font-weight:800}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -2681,7 +2683,7 @@ function vpDream(){const L=PM.data.me.dreams||[];
       <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
     ${dreamPicker()}</div>
     <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or drag cards to swap.`:'Tap a card to pick a player for that spot. Drag cards to swap them.'}</div>
-      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>`:''}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
+      <div class="pitchwrap dpitch">${(wikiLoad(d.order.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2))),'')}${(DSUG=dreamSuggest(d,dreamSel),'')}${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,dream:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null,sugK:DSUG.forSel[0]?(DSUG.forSel[0].i===dreamSel?DSUG.forSel[0].j:DSUG.forSel[0].i):null})}${lastDreamChem?`<div class="dsum"><div><i>Rating</i><b>${lastDreamChem.ovr??'–'}</b></div><div><i>Chemistry</i><b>${lastDreamChem.tot}<small>/${lastDreamChem.max}</small></b><span class="chemtot"><i style="--w:${Math.round(lastDreamChem.tot/lastDreamChem.max*100)}%"></i></span></div>${lastDreamChem.off?`<div class="small" style="color:#E5484D">${lastDreamChem.off} out of position (0 chem)</div>`:''}</div>${dreamSugHTML(d,DSUG)}`:''}${d.order.some(x=>x&&x.startsWith('x:'))?'<div class="small muted" style="text-align:right;margin-top:4px;font-size:11px">Star photos: Wikipedia / Wikimedia Commons</div>':''}</div></div></div>`}
 function dreamPicker(){const d=DE.d,q=dreamQ.trim().toLowerCase(),used=new Set(d.order.filter(Boolean)),hit=n=>!q||n.toLowerCase().includes(q);
   const club=S.players.filter(p=>!p.guest&&p.active!==false&&hit(p.name)).sort((a,b)=>a.name.localeCompare(b.name));
   const grp=(t,items)=>items.length?`<div class="dgrp"><b>${esc(t)}</b><div class="chips">${items.join('')}</div></div>`:'';
@@ -2700,6 +2702,8 @@ async function dreamAction(a,el){
   if(a==='dopen'){const L=PM.data.me.dreams||[];DE={i:+el.dataset.i,d:dreamFit(JSON.parse(JSON.stringify(L[+el.dataset.i])))};dreamSel=null;render();return}
   if(a==='dback'){DE=null;dreamSel=null;render();return}
   if(!DE)return;const d=DE.d;
+  if(a==='dsw'){const i=+el.dataset.i,j=+el.dataset.j;[d.order[i],d.order[j]]=[d.order[j],d.order[i]];dreamSel=null;render();toast('Swapped for better chemistry');return}
+  if(a==='dbest'){d.f=el.dataset.f;d.order=JSON.parse(el.dataset.o);dreamSel=null;render();toast('Formation and positions set for best chemistry');return}
   if(a==='dslot'){const k=+el.dataset.k;dreamSel=dreamSel===k?null:k;render();return}
   if(a==='dpick'){const v=el.dataset.v;let k=dreamSel;if(k==null)k=d.order.indexOf('');if(k<0){toast('All spots are full. Tap a card first to replace that player');return}const was=d.order.indexOf(v);if(was>=0)d.order[was]=d.order[k];d.order[k]=v;
     dreamSel=null;const nx=d.order.indexOf('');if(nx>=0)dreamSel=nx;render();return}
@@ -2837,7 +2841,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
       toast(r==='ok'?'Vote saved 🗳️':r==='closed'?'Voting has closed for this match':'Could not save your vote');await loadPlayer()}catch(err){toast('Could not save your vote');el.disabled=false}return}
-  if(['dnew','dopen','dback','dslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel'].includes(a)){await dreamAction(a,el);return}
+  if(['dnew','dopen','dback','dslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel','dsw','dbest'].includes(a)){await dreamAction(a,el);return}
   if(a==='pboard'){const fx=(S.fixtures||[]).find(f=>f.date===el.dataset.v),me=PM.data.me.id,t=fx&&fx.teams.find(x=>x.players.includes(me));if(!t)return;const lu=getLU(t.players.filter(id=>pById(id)),t.lu);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.cap),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='ptboard'){const t=S.tourns.find(x=>x.id===el.dataset.id);if(!t)return;const lu=tLU(t);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.captain),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='pub'){pubPage(el.dataset.id);return}
@@ -3406,7 +3410,7 @@ function chemPanel(SLids,CH,selIdx,ti,A){if(!CH)return '';const pct=Math.round(C
     <div class="small muted">${selIdx!=null?`${CH.pts[selIdx]} of 3 for this player. Lines show how they rate each teammate.`:'Tap a player to see their links. Green = great (4–5), yellow = OK (3), red = poor (1–2), dashed = not rated.'}</div>
     ${b?`<button class="btn small primary chemgo" data-a="chemswap" data-i="${ti}" data-act="${A}" data-k1="${selIdx}" data-k2="${b.k}">Move to ${esc(b.role)} (swap with ${esc(shortName(pById(b.with)?.name))}) · +${b.d} chem</button>`:selIdx!=null?'<div class="small" style="margin-top:6px">Already in the best spot for chemistry.</div>':''}</div>`}
 /* FC-style Dream Team chemistry: players in their position earn up to 3 from shared club, nation and league (Icons boost every league and count double for nation) */
-let lastDreamChem=null;
+let lastDreamChem=null,DSUG=null;
 const POSGRP={GK:'GK',CB:'CB',LB:'LB',LWB:'LB',RB:'RB',RWB:'RB',CDM:'DM',CM:'CM',CAM:'AM',LM:'LW',LW:'LW',RM:'RW',RW:'RW',ST:'ST',CF:'ST'};
 const posFits=(pp,slot)=>{const a=POSGRP[pp],b=POSGRP[slot];if(!a||!b)return false;return a===b||(b==='CM'&&(a==='DM'||a==='AM'))||(a==='CM'&&(b==='DM'||b==='AM'))||(b==='ST'&&a==='AM'&&pp==='CF')};
 function dreamChem(SL,res){const P=SL.map(q=>{const p=res(q.id);if(!p||p.empty)return null;const st=p.st;
@@ -3414,7 +3418,34 @@ function dreamChem(SL,res){const P=SL.map(q=>{const p=res(q.id);if(!p||p.empty)r
   const on=P.filter(x=>x.fit),cnt=(k,v)=>on.filter(x=>x[k]===v).length,icons=on.filter(x=>x.icon).length;const pts={};let tot=0;
   P.forEach(x=>{let v=0;if(x.fit){if(x.icon)v=3;else{const c=cnt('club',x.club),n=cnt('nat',x.nat)+on.filter(y=>y.icon&&y.nat===x.nat).length,l=cnt('league',x.league)+icons;
       v=(c>=8?3:c>=5?2:c>=2?1:0)+(n>=8?3:n>=5?2:n>=2?1:0)+(l>=8?3:l>=5?2:l>=3?1:0)}}pts[x.idx]=Math.min(3,v);tot+=pts[x.idx]});
-  const rs=P.map(x=>x.ovr).filter(v=>v!=null);return {pts,tot,max:SL.length*3,ovr:rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length):null,off:P.filter(x=>!x.fit).length}}
+  const rs=P.map(x=>x.ovr).filter(v=>v!=null);return {pts,tot,max:SL.length*3,ovr:rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length):null,off:P.filter(x=>!x.fit).length,P}}
+function slotsOf(lu){const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21},SL=[];let idx=0;
+  for(const row of ['GK','DEF','MID','FWD']){const ids=g[row],k=ids.length;if(!k)continue;const v=rows[row]||.5;
+    ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);const [x,y]=p3pt(u,v);SL.push({id,row,role:roleOf(row,k,i),idx:idx++,x:Math.min(93,Math.max(7,x/P3.W*100)),y:y/P3.H*100})})}return SL}
+const dchemOf=(d,order,f)=>dreamChem(slotsOf({f:f||d.f,gk:d.gk,order,n:order.length}),dreamRes).tot;
+// link strength between two Dream Team players: shared club counts most, then nation and league (Icons link to every league)
+function dreamLink(a,b){if(!a||!b)return null;let v=0;if(a.club===b.club&&a.club!=='ICON')v+=2;if(a.nat===b.nat||(a.icon&&b.icon&&a.nat===b.nat))v+=1;if(a.league===b.league||a.icon||b.icon)v+=1;return v}
+function dreamLines(SL,DC,sq){const at={};DC.P.forEach(x=>at[x.idx]=x);const col=v=>v==null?'rgba(255,255,255,.4)':v>=2?'#2FD07A':v===1?'#F2C94C':'#FF5A5F',L=[];
+  const why=(a,b)=>[a.club===b.club&&a.club!=='ICON'?'Club':'',a.nat===b.nat?'Nation':'',a.league===b.league||a.icon||b.icon?(a.icon||b.icon?'Icon':'League'):''].filter(Boolean).join(' · ')||'No link';
+  if(sq&&at[sq.idx]){SL.forEach(b=>{if(b===sq||!at[b.idx])return;const v=dreamLink(at[sq.idx],at[b.idx]);L.push(`<line x1="${sq.x}" y1="${sq.y}" x2="${b.x}" y2="${b.y}" stroke="${col(v)}" stroke-width="${1.6+v}" vector-effect="non-scaling-stroke" class="cl"/>`)});
+    const lbl=SL.filter(b=>b!==sq&&at[b.idx]).map(b=>{const v=dreamLink(at[sq.idx],at[b.idx]);return v?`<span class="cll" style="left:${(sq.x+b.x)/2}%;top:${(sq.y+b.y)/2}%;background:${col(v)}">${why(at[sq.idx],at[b.idx])}</span>`:''}).join('');
+    return `<svg class="chemsvg on" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${L.join('')}</svg>${lbl}`}
+  const NB=chemNeighbours(SL),seen=new Set();SL.forEach((a,i)=>NB[i].forEach(j=>{const k=[a.idx,j].sort().join('-');if(seen.has(k))return;seen.add(k);const b=SL.find(q=>q.idx===j);if(!at[a.idx]||!at[b.idx])return;const v=dreamLink(at[a.idx],at[b.idx]);
+    L.push(`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${col(v)}" stroke-width="${v?1.4+v*.6:1}" ${v?'':'stroke-dasharray="3 4"'} opacity=".8" vector-effect="non-scaling-stroke"/>`)}));
+  return `<svg class="chemsvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${L.join('')}</svg>`}
+// best moves: single swaps that raise chemistry, plus the best formation after rearranging (hill-climb on swaps)
+function dreamSuggest(d,selIdx){const base=dchemOf(d,d.order),n=d.order.length,sw=[];
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){if(!d.order[i]&&!d.order[j])continue;const o=d.order.slice();[o[i],o[j]]=[o[j],o[i]];const t=dchemOf(d,o);if(t>base)sw.push({i,j,d:t-base})}
+  sw.sort((a,b)=>b.d-a.d);const forSel=selIdx!=null?sw.filter(x=>x.i===selIdx||x.j===selIdx).slice(0,1):[];
+  const climb=f=>{let o=d.order.slice(),t=dchemOf(d,o,f);for(let pass=0;pass<4;pass++){let imp=false;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const o2=o.slice();[o2[i],o2[j]]=[o2[j],o2[i]];const t2=dchemOf(d,o2,f);if(t2>t){o=o2;t=t2;imp=true}}if(!imp)break}return {f,o,t}};
+  let best={f:d.f,...climb(d.f)};tbFormOpts(n,d.gk).forEach(f=>{if(f===d.f)return;const r=climb(f);if(r.t>best.t)best=r});
+  return {base,swaps:sw.slice(0,3),forSel,best:best.t>base?best:null}}
+function dreamSugHTML(d,S){if(!S||(!S.swaps.length&&!S.best))return d.order.filter(Boolean).length>1?'<div class="small muted dsug">Chemistry is as high as it gets with these players and formation.</div>':'';
+  const nm=i=>esc(shortName(dreamName(d.order[i])||'empty slot'));
+  return `<div class="dsug"><b class="small">Suggestions</b>${S.forSel.map(x=>`<button class="btn small primary" data-a="dsw" data-i="${x.i}" data-j="${x.j}">Swap ${nm(x.i)} ↔ ${nm(x.j)} · +${x.d} chem</button>`).join('')}
+    ${S.swaps.filter(x=>!S.forSel.some(y=>y.i===x.i&&y.j===x.j)).map(x=>`<button class="btn small" data-a="dsw" data-i="${x.i}" data-j="${x.j}">Swap ${nm(x.i)} ↔ ${nm(x.j)} · +${x.d}</button>`).join('')}
+    ${S.best?`<button class="btn small" data-a="dbest" data-f="${S.best.f}" data-o="${esc(JSON.stringify(S.best.o))}">${S.best.f===d.f?'Rearrange for best chemistry':'Switch to '+S.best.f+' and rearrange'} · ${S.best.t}/${d.order.length*3}</button>`:''}</div>`}
+
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr0=interactive&&!PM,showOvr=showOvr0,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
@@ -3432,6 +3463,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);const [x,y]=p3pt(u,v);SL.push({id,row,role:roleOf(row,k,i),u,v,idx:idx++,x:Math.min(93,Math.max(7,x/P3.W*100)),y:y/P3.H*100})})}
   const CH=interactive&&!PM&&chemS.rows&&SL.length>1?chemModel(SL):null,DC=opt?.dream?dreamChem(SL,res):null;if(DC)lastDreamChem=DC;
   SL.forEach(q=>{const CP=CH||DC;html+=card(q.id,q.role,q.u,q.v,q.idx).replace('<span class="pc-role">',CP&&res(q.id)&&!res(q.id).empty?`<span class="pcchem c${CP.pts[q.idx]}" title="Chemistry ${CP.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:CH?`<span class="pcchem c${CH.pts[q.idx]}" title="Chemistry ${CH.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:'<span class="pc-role">')});
+  if(DC&&SL.length>1){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=dreamLines(SL,DC,sq)+html;if(opt.sugK!=null)html=html.replace(`data-k="${opt.sugK}"`,`data-k="${opt.sugK}" data-chemsug="1"`)}
   if(CH){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=chemLines(SL,CH,sq)+html;if(sq&&CH.best[sq.idx])html=html.replace(`data-k="${CH.best[sq.idx].k}"`,`data-k="${CH.best[sq.idx].k}" data-chemsug="1"`)}
   const subIds=g.SUB,subs=subIds.map(id=>{const p=res(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="${A}" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
