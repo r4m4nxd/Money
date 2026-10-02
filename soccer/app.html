@@ -664,6 +664,15 @@ button.pc{cursor:pointer}
 .pc .pcpip{position:absolute;right:5%;top:5%;z-index:3;width:calc(2.4cqw*var(--s));height:calc(2.4cqw*var(--s));border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.25)}.pcpip.gold{background:#E2B13C}.pcpip.silver{background:#C4CCD5}.pcpip.bronze{background:#C98C57}.pcpip.special{background:#111;box-shadow:0 0 0 1px #F4D98A}
 .fut.nonum .ovr,.fut.nonum .fs,.fut.nonum .no{visibility:hidden}
 .abil{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-size:13px}.abil .ei{color:var(--accent);width:18px;height:18px}.abil i{font-style:normal;color:var(--muted);font-size:12px}.abil.sm{padding:2px 8px;font-size:12px}.abil.sm .ei{width:14px;height:14px}
+.tbmodal{max-width:1100px!important}.tb2{display:flex;flex-direction:column;gap:8px}.tbbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.tbsteps{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}.tbmodes{display:inline-flex;flex-wrap:nowrap}.tbmodes button{white-space:nowrap}.tbsteps .btn{min-height:36px;padding:6px 10px}
+#tbsvg{display:block;margin:0 auto;width:min(100%,calc((100vh - 230px)*.654));height:auto;aspect-ratio:680/1040;border-radius:14px;background:#2f7d43;user-select:none;-webkit-user-select:none;touch-action:none}#tbsvg .tbt,#tbsvg #tbball{cursor:grab}
+@media(max-width:560px){.tbsteps{margin-left:0}#tbsvg{width:100%}}
+.capbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,#F2C418 18%,var(--surface2))}.capbar .ei-crown{color:#E2B13C}.capbar .btn{margin-left:auto}
+.dlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}.dcard{display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;color:var(--ink);font:inherit}.dcard b{font:800 17px var(--f-display);text-transform:uppercase}.dnew{border-style:dashed;justify-content:center;align-items:center;text-align:center}
+.dedit{display:grid;gap:14px;margin-top:10px}@media(min-width:960px){.dedit{grid-template-columns:minmax(320px,420px) minmax(0,1fr);align-items:start}.dright{position:sticky;top:calc(var(--hdrh,96px) + 10px)}}
+.dright .dpitch{max-width:640px}.dhint{text-align:center;margin-bottom:6px}.dgrps{max-height:340px;overflow:auto;display:flex;flex-direction:column;gap:10px}.dgrp b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}.dpick{font-size:13px;min-height:32px;padding:4px 10px}.dpick[aria-pressed=true]{opacity:.55}
+.pc.empty .pc-card{background:rgba(255,255,255,.14)!important;border:2px dashed rgba(255,255,255,.85);box-shadow:none}.pc.empty .pc-ph,.pc.empty .pc-nm,.pc.empty .pc-ic{display:none}.pc.empty .pc-card::after{content:'+';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font:900 calc(5cqw*var(--s))/1 var(--f-display)}
+.dshare{padding:16px;border-radius:16px;background:radial-gradient(120% 80% at 50% 0%,#1d3f7a 0%,#0b1a33 55%,#060d1b 100%);color:#F2F5F8}
 /* ---------- player profile, squad, compare, chemistry, story ---------- */
 .phreq .phr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--line)}.phimgs{display:flex;gap:8px}.phimgs span{display:flex;flex-direction:column;align-items:center;gap:2px}.phimgs img,.phimgs .noimg{width:72px;height:72px;border-radius:12px;object-fit:cover;display:grid;place-items:center;background:var(--surface2);font-size:11px;font-style:normal;color:var(--muted)}.phw{display:flex;flex-direction:column;gap:4px}
 .chem{white-space:nowrap}.chem b{font-family:var(--f-display)}.chem.c1,.chem.c2{color:var(--bad,#E5484D)}.chem.c3{color:var(--warn,#E0A526)}.chem.c4,.chem.c5{color:var(--ok,#2FB36B)}
@@ -1092,7 +1101,7 @@ addEventListener('popstate',e=>{
   const st=e.state||{};
   if(modalDepth>0){modalDepth--;const prev=modalStack.pop();if(modalDepth>0&&prev){navReplaying=true;navReplay(prev)}else{modalDepth=0;modalStack=[];closeModalRaw()}return}
   if(typeof PM!=='undefined'&&PM&&PM.preview&&!st.pv){exitPreview();return}
-  if(st.v&&st.v!==view){view=st.v;if(typeof PM!=='undefined'&&PM&&!PM.preview&&!['me','team','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';render();window.scrollTo(0,0)}});
+  if(st.v&&st.v!==view){view=st.v;if(typeof PM!=='undefined'&&PM&&!PM.preview&&!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';render();window.scrollTo(0,0)}});
 
 const persistLocal=()=>ls('atb_state',S);
 /* Short "what changed" text for the admin's activity feed */
@@ -1353,7 +1362,7 @@ const cx=(k,title,info,body,def=true)=>`<details class="cx" data-cx="${esc(k)}" 
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.cx){cxOpen[d.dataset.cx]=d.open;ls('atb_cx',cxOpen)}},true);
 function vMatch(){
   chemNeed();
-  if(!draft.teams&&!draft.editing){const fx=fxFor(draft.date);if(fx&&fx.teams?.length){Object.assign(draft,{n:fx.teams.length,kits:fx.teams.map(t=>t.kit),names:fx.teams.map(t=>t.name),teams:fx.teams.map(t=>t.players.filter(id=>pById(id))),lu:fx.teams.map(t=>t.lu||null),avail:fx.teams.flatMap(t=>t.players),locks:{},alts:[]});draft.alts=[draft.teams];saveDraft()}}
+  if(!draft.teams&&!draft.editing){const fx=fxFor(draft.date);if(fx&&fx.teams?.length){Object.assign(draft,{n:fx.teams.length,kits:fx.teams.map(t=>t.kit),names:fx.teams.map(t=>t.name),teams:fx.teams.map(t=>t.players.filter(id=>pById(id))),lu:fx.teams.map(t=>t.lu||null),caps:Object.fromEntries(fx.teams.map((t,i)=>[i,t.cap||''])),avail:fx.teams.flatMap(t=>t.players),locks:{},alts:[]});draft.alts=[draft.teams];saveDraft()}}
   const act=S.players.filter(p=>p.active!==false&&!p.guest);const guests=S.players.filter(p=>p.guest);
   const av=new Set(draft.avail.filter(id=>pById(id)));
   const grp=POS.map(pos=>{
@@ -1837,6 +1846,7 @@ function vGuide(){
     <li><b>Finalize teams</b> publishes the teams to players as their <b>next match</b> (their team on the pitch, on Me and Matches). Change anything and press <b>Update finalized teams</b>, or <b>Unpublish</b>. The match itself is saved only after it’s played (<b>Match played: save it</b>, from match day), so nobody sees a match as played before it happens. Other managers opening that date get the finalized teams loaded.</li>
     <li>The <b>pitch</b> is an angled FC-style pitch with mini player cards (rating, position, photo, name, flag, club, shirt number, captain/★). Editable line-ups open in <b>Team Management</b>: Tactics (team ratings), Formation, Squad Selector (subs), Kit Numbers (show or hide numbers) and Player Stats (tap a card; bars are green 75+, orange 60–74, red below 60). The ratings toggle (eye) hides every number here too. Shared images and the player portal never show ratings.</li>
     <li><b>Back</b> (phone or browser) walks back through every screen and pop-up you opened, e.g. player page → player card → Squad. The app always opens on Match Day.</li>
+    <li><b>Tactic Board</b> (Team Management menu): drag players and ball, passes, runs, opponents, chemistry links (green good, amber ok, red poor) and step-by-step playback; save it as an image. Pick a <b>Captain</b> for each team in Formation; captains get the board on their Next match card.</li>
     <li><b>Show pitches</b> (Teams header) turns the line-up card on or off for every team at once. Kits: blue, green, <b>yellow</b>, orange, red, purple, black.</li>
     <li>Next match, Who’s playing, Teams and each match on Matches &amp; Ratings <b>fold away</b>; the header keeps the key facts (date, count, balance gap, scores, POTM). The app remembers what you folded.</li>
     <li>On a wide screen (desktop, 1440p, 4K) Match Day shows setup and Who’s playing on the left and all teams side by side on the right; other pages spread into columns.</li>
@@ -1940,7 +1950,8 @@ function vGuide(){
 }
 function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details class="gsec" ${open?'open':''}><summary>${t}</summary><div class="gbody">${body}</div></details>`;
   return `<h2>Your player guide</h2><p class="gintro">Everything about your Airdrie United profile in two minutes.</p>
-  ${sec('mine','Make your profile yours',`<ul><li><b>Account → My profile</b>: nickname, best position, card colour (your gold/silver/bronze/★ level still shows as a small badge), one signature ability, up to <b>5 PlayStyles</b> of your own (managers award the rest), favourite player, favourite teammate, dream boots, stadium and shirt number.</li>
+  ${sec('mine','Make your profile yours',`<ul><li><b>Dream Team</b> tab: build up to 5 private teams from the club and the world’s top players (Icons to today). Pick any size (5–11), formation, tactic and captain, tap two cards to swap, then <b>Save as image</b> or open it on the <b>Tactic board</b>.</li>
+    <li><b>Tactic board</b>: drag players and the ball, drop the ball on a player, switch to <b>Pass</b> and tap a teammate, <b>Draw run</b> for arrows, add opponents, save steps and press <b>Play</b> to watch the move. Captains get it on their Next match and tournament cards.</li><li><b>Account → My profile</b>: nickname, best position, card colour (your gold/silver/bronze/★ level still shows as a small badge), one signature ability, up to <b>5 PlayStyles</b> of your own (managers award the rest), favourite player, favourite teammate, dream boots, stadium and shirt number.</li>
     <li><b>Photo</b>: send a new one; it shows after a manager approves it. Your old photo stays until then.</li>
     <li><b>Squad</b> tab: every teammate’s card and page. Tap <b>Compare with me</b> to go head to head.</li>
     <li><b>Team chemistry</b> (Squad tab): rate 1–5 how well you play with each teammate. Only managers see it; it helps build better teams.</li>
@@ -2045,7 +2056,7 @@ function vSettings(){
 
 /* ---------- Player accounts: a player signs in with their name + 4–6 digit PIN and sees only their own profile ---------- */
 let PM=null;// {tok,team,id,name,data,loading,err,season}
-const PTABS=[['me','Me'],['team','Squad'],['games','Matches'],['tourn','Tournaments'],['avail','Availability'],['leaders','Leaders'],['club','Club'],['acct','Account'],['pguide','Guide']];
+const PTABS=[['me','Me'],['team','Squad'],['dream','Dream Team'],['games','Matches'],['tourn','Tournaments'],['avail','Availability'],['leaders','Leaders'],['club','Club'],['acct','Account'],['pguide','Guide']];
 /* Device for sign-in alerts: phone/computer, model where the browser tells us (Android, Chromebook), iPhone model estimated from its screen */
 const IPHONES={'375x667':'iPhone SE/8','375x812':'iPhone X/11 Pro/12-13 mini','414x896':'iPhone XR/11/11 Pro Max','390x844':'iPhone 12/13/14','428x926':'iPhone 12-13 Pro Max/14 Plus','393x852':'iPhone 14 Pro/15/16','430x932':'iPhone 14 Pro Max/15 Plus/15 Pro Max/16 Plus','402x874':'iPhone 16 Pro/17','440x956':'iPhone 16-17 Pro Max','420x912':'iPhone Air'};
 async function deviceStr(){const ua=navigator.userAgent||'';let os='',model='';
@@ -2069,7 +2080,7 @@ function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
 function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
-  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','team','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
+  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   await loadPlayer();
@@ -2285,7 +2296,8 @@ function fixtureCard(fx){const me=PM.data.me.id,ti=fx.teams.findIndex(t=>t.playe
   const days=Math.round((new Date(fx.date+'T12:00')-new Date(todayISO()+'T12:00'))/864e5);
   return `<div class="panel game fxcard" style="--k:${KITHEX[t.kit]||'#555'}"><div class="gh"><div><div class="small muted">Your next match · teams are set</div><b>${fmtDate(fx.date)}</b><div class="small muted">${esc(timeFor(fx.date))}${venueFor(fx.date)?' · '+esc(venueFor(fx.date)):''}</div></div><span class="pill ok">${days<=0?'Today':days===1?'Tomorrow':'In '+days+' days'}</span></div>
     <div class="myteam${kitLt(t.kit)?' lt':''}" style="--k:${KITHEX[t.kit]||'#555'}"><span class="small">You’re in</span><b>${esc(t.name)}</b>${lu.order.slice(0,(lu.n||lu.order.length)).includes(me)?'':'<span class="small">· starting on the bench</span>'}</div>
-    <div class="pitchwrap">${pitchHTML(t,lu,ti,false,t.name)}</div>
+    ${t.cap===me?`<div class="capbar">${ICO('crown')} <b>You’re the captain.</b> Plan your moves on the tactic board.<button class="btn primary" data-a="pboard" data-v="${fx.date}">${ICO('target')} Tactic board</button></div>`:''}
+    <div class="pitchwrap">${pitchHTML(t,lu,ti,false,t.name,{captain:t.cap})}</div>
     ${otherTeams(fx.teams,ti,'fx'+fx.date)}</div>`}
 /* Other teams: tap one to see its line-up on a small pitch and its player list */
 let otherSel={};
@@ -2395,6 +2407,62 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
     <div class="sty-sig">Developed by Raman · AUFC App</div></div>
   <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button></div>
   <p class="small muted" style="text-align:center">Post it on your WhatsApp status, Instagram story or Facebook.</p>`);prepImg((p.name||'player').toLowerCase().replace(/\W+/g,'-')+'-aufc.png')}
+/* ---------- Dream Team builder (each player's private teams: club players + the top-200 list) ---------- */
+let DE=null,dreamSel=null,dreamQ='';
+const TACTICS=['Balanced','Attacking','Defensive','Counter-attack','Possession','High press','Park the bus','Wing play'];
+const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}return {id,name:id.slice(2),ext:true}};
+const dreamName=id=>id?dreamRes(id).name:'';
+function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill('')}}
+function dreamFit(d){const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
+function vpDream(){const L=PM.data.me.dreams||[];
+  if(!DE)return `<h2>Dream Team</h2><p class="small muted" style="margin-top:-4px">Build your all-time team from the club and the world’s best (Icons to today). Only you see it; save it as an image to share.</p>
+    <div class="dlist">${L.map((d,i)=>`<button class="panel dcard" data-a="dopen" data-i="${i}"><b>${esc(d.name||'Dream team')}</b><span class="small muted">${d.f}${d.gk?' + GK':''} · ${esc(d.tactic||'')} · ${(d.order||[]).filter(Boolean).length}/${(d.order||[]).length} picked</span><span class="small">${(d.order||[]).filter(Boolean).slice(0,4).map(dreamName).map(esc).join(', ')}${(d.order||[]).filter(Boolean).length>4?'…':''}</span></button>`).join('')}
+      ${L.length<5?`<button class="panel dcard dnew" data-a="dnew"><b>+ New dream team</b><span class="small muted">Up to 5 teams</span></button>`:''}</div>`;
+  const d=DE.d,k=d.order.length,lu={f:d.f,gk:d.gk,order:d.order,n:k},picked=d.order.filter(Boolean).length;
+  return `<div class="row" style="justify-content:space-between;align-items:center"><button class="btn ghost small" data-a="dback">← My dream teams</button><span class="small muted">${picked}/${k} picked</span></div>
+  <div class="dedit"><div class="dleft"><div class="panel stack">
+      <label class="f">Team name<input id="dname" maxlength="30" value="${esc(d.name)}"></label>
+      <div class="fgrid g2"><label class="f">Players<select data-a="dsize">${[5,6,7,8,9,10,11].map(n=>`<option ${n===k?'selected':''}>${n}</option>`).join('')}</select></label>
+        <label class="f">Formation<select data-a="dform">${tbFormOpts(k,d.gk).map(x=>`<option ${x===d.f?'selected':''}>${x}</option>`).join('')}</select></label>
+        <label class="f">Tactic<select data-a="dtac">${TACTICS.map(x=>`<option ${x===d.tactic?'selected':''}>${x}</option>`).join('')}</select></label>
+        <label class="f">Captain<select data-a="dcapt"><option value="">None</option>${d.order.filter(Boolean).map(x=>`<option value="${esc(x)}" ${x===d.cap?'selected':''}>${esc(dreamName(x))}</option>`).join('')}</select></label></div>
+      <label class="small row chk"><input type="checkbox" data-a="dgk" ${d.gk?'checked':''}> Goalkeeper</label>
+      <div class="row"><button class="btn primary" data-a="dsave">Save</button><button class="btn" data-a="dimg">Save as image</button><button class="btn" data-a="dboard">${ICO('target')} Tactic board</button>${DE.i>=0?'<button class="btn ghost danger" data-a="ddel">Delete</button>':''}</div></div>
+    ${dreamPicker()}</div>
+    <div class="dright"><div class="small muted dhint">${dreamSel!=null?`Slot ${dreamSel+1} selected: pick a player below, or tap another card to swap.`:'Tap a card to pick a player for that spot. Tap two cards to swap them.'}</div>
+      <div class="pitchwrap dpitch">${pitchHTML({kit:''},lu,0,true,d.name,{a:'dslot',res:dreamRes,nostudio:true,captain:d.cap,sel:dreamSel!=null?{t:0,k:dreamSel}:null})}</div></div></div>`}
+function dreamPicker(){const d=DE.d,q=dreamQ.trim().toLowerCase(),used=new Set(d.order.filter(Boolean)),hit=n=>!q||n.toLowerCase().includes(q);
+  const club=S.players.filter(p=>!p.guest&&p.active!==false&&hit(p.name)).sort((a,b)=>a.name.localeCompare(b.name));
+  const grp=(t,items)=>items.length?`<div class="dgrp"><b>${esc(t)}</b><div class="chips">${items.join('')}</div></div>`:'';
+  const chip=(id,label)=>`<button class="chip dpick" data-a="dpick" data-v="${esc(id)}" ${used.has(id)?'aria-pressed="true"':''}>${esc(label)}</button>`;
+  return `<div class="panel stack dpk"><div class="row" style="justify-content:space-between"><b>Pick players</b>${dreamSel!=null?`<button class="btn ghost small" data-a="dclear">Empty slot ${dreamSel+1}</button>`:''}</div>
+    <input id="dq" placeholder="Search a player…" value="${esc(dreamQ)}" autocomplete="off">
+    <div class="dgrps">${grp('Our club',club.map(p=>chip('c:'+p.id,p.name)))}${FAVPLAYERS.map(([g,l])=>grp(g,l.filter(hit).map(n=>chip('x:'+n,n)))).join('')}</div></div>`}
+async function dreamSaveAll(list){const r=await prpc('atb_player_dreams',{p_token:PM.tok,p_dreams:list});if(r!=='ok')throw new Error(r);PM.data.me.dreams=list;const me=pById(PM.data.me.id);if(me)me.dreams=list}
+function dreamImage(){const d=DE.d,lu={f:d.f,gk:d.gk,order:d.order,n:d.order.length};
+  openModal(`<div class="mh"><h2>Share dream team</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div id="sharecard" class="sharecard dshare"><div class="sty-h"><img src="icons/crest-640.jpg" alt=""><div><b>${esc(d.name)}</b><span>${esc(PM.data.me.name)}’s dream team · ${d.f}${d.gk?' + GK':''} · ${esc(d.tactic)}${d.cap?' · Captain '+esc(dreamName(d.cap)):''}</span></div></div>
+    <div style="margin-top:10px">${pitchHTML({kit:''},lu,0,false,'',{res:dreamRes,captain:d.cap})}</div><div class="sty-sig" style="position:static;text-align:right;margin-top:8px">Developed by Raman · AUFC App</div></div>
+  <div class="row" style="margin-top:12px;justify-content:center"><button class="btn primary" data-a="saveimg">Save as image</button></div>`);prepImg('dream-team.png')}
+async function dreamAction(a,el){
+  if(a==='dnew'){DE={i:-1,d:dreamNew()};dreamSel=null;render();return}
+  if(a==='dopen'){const L=PM.data.me.dreams||[];DE={i:+el.dataset.i,d:dreamFit(JSON.parse(JSON.stringify(L[+el.dataset.i])))};dreamSel=null;render();return}
+  if(a==='dback'){DE=null;dreamSel=null;render();return}
+  if(!DE)return;const d=DE.d;
+  if(a==='dslot'){const k=+el.dataset.k;if(dreamSel==null){dreamSel=k}else if(dreamSel===k){dreamSel=null}else{[d.order[dreamSel],d.order[k]]=[d.order[k],d.order[dreamSel]];dreamSel=null}render();return}
+  if(a==='dpick'){const v=el.dataset.v;let k=dreamSel;if(k==null)k=d.order.indexOf('');if(k<0){toast('All spots are full. Tap a card first to replace that player');return}const was=d.order.indexOf(v);if(was>=0)d.order[was]=d.order[k];d.order[k]=v;
+    dreamSel=null;const nx=d.order.indexOf('');if(nx>=0)dreamSel=nx;render();return}
+  if(a==='dclear'){if(dreamSel!=null){if(d.cap===d.order[dreamSel])d.cap='';d.order[dreamSel]=''}render();return}
+  if(a==='dgk'){d.gk=el.checked;d.f=tbFormOpts(d.order.length,d.gk)[0];dreamFit(d);render();return}
+  if(a==='dimg'){d.name=$('#dname').value.trim()||'Dream team';dreamImage();return}
+  if(a==='dboard'){const ids=d.order;openTacticBoard({title:d.name,players:ids.map(id=>{const p=dreamRes(id);return {id:'',label:p.empty?'':shortName(p.name),num:p.number||'',cap:id&&id===d.cap}}),f:d.f,gk:d.gk,color:'#C9A227'});return}
+  if(a==='dsave'||a==='ddel'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}d.name=($('#dname')?.value||d.name).trim().slice(0,30)||'Dream team';
+    const L=(PM.data.me.dreams||[]).slice();if(a==='ddel'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Tap again to delete';return}L.splice(DE.i,1)}else if(DE.i>=0)L[DE.i]=d;else{L.push(d);DE.i=L.length-1}
+    el.disabled=true;try{await dreamSaveAll(L);toast(a==='ddel'?'Dream team deleted':'Dream team saved');if(a==='ddel')DE=null;render()}catch(err){toast('Could not save');el.disabled=false}return}}
+function dreamChange(a,el){if(!DE)return;const d=DE.d;
+  if(a==='dsize'){const n=+el.value;d.order=d.order.slice(0,n);d.f=tbFormOpts(n,d.gk)[0];dreamFit(d)}
+  else if(a==='dform')d.f=el.value;else if(a==='dtac')d.tactic=el.value;else if(a==='dcapt')d.cap=el.value;else return;
+  d.name=($('#dname')?.value||d.name);dreamSel=null;render()}
 function vpAcct(){const me=PM.data.me;
   return profEditor()+`${PM.data.canDob&&!PM.data.canEdit?`<h2>My details</h2><div class="panel stack"><label class="f" style="max-width:240px">Date of birth <span class="small muted">(only managers see it; used for age-group tournaments)</span><input id="mdob" type="date" value="${esc(me.dob||'')}" max="${todayISO()}"></label><div class="row"><button class="btn primary" data-a="pedit">Save</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
     <div class="fgrid g2"><label class="f">Shirt no.<input id="mno" inputmode="numeric" maxlength="2" value="${esc(me.number||'')}"></label>
@@ -2412,7 +2480,7 @@ function renderPlayer(){outSync();document.querySelectorAll('#tabs button').forE
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
   const keep=keepDetails(m);
-  m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small ghost" data-a="exitprev">Exit</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='team'?vpTeam():view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():view==='tourn'?vpTourn():view==='club'?vClub():vpMe());keep()}
+  m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small ghost" data-a="exitprev">Exit</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='team'?vpTeam():view==='dream'?vpDream():view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():view==='tourn'?vpTourn():view==='club'?vClub():vpMe());keep()}
 
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
   <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back.</p>
@@ -2471,6 +2539,9 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
       toast(r==='ok'?'Vote saved 🗳️':r==='closed'?'Voting has closed for this match':'Could not save your vote');await loadPlayer()}catch(err){toast('Could not save your vote');el.disabled=false}return}
+  if(['dnew','dopen','dback','dslot','dpick','dclear','dgk','dimg','dboard','dsave','ddel'].includes(a)){await dreamAction(a,el);return}
+  if(a==='pboard'){const fx=(S.fixtures||[]).find(f=>f.date===el.dataset.v),me=PM.data.me.id,t=fx&&fx.teams.find(x=>x.players.includes(me));if(!t)return;const lu=getLU(t.players.filter(id=>pById(id)),t.lu);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.cap),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
+  if(a==='ptboard'){const t=S.tourns.find(x=>x.id===el.dataset.id);if(!t)return;const lu=tLU(t);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.captain),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='pub'){pubPage(el.dataset.id);return}
   if(a==='cmp'){cmpPage(el.dataset.id);return}
   if(a==='story'){storyCard(el.dataset.id);return}
@@ -2489,6 +2560,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
 document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open&&!d.hasAttribute('data-auto'))plog('Opened match',d.querySelector('b')?.textContent)},true);
 document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;const f=e.target.files&&e.target.files[0];if(!f)return;
   try{const img=await resizeImg(f,640);const r=await prpc('atb_player_photo',{p_token:PM.tok,p_img:img});if(r==='ok'){toast('Photo sent. A manager will approve it');await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-a]');if(el&&PM&&['dsize','dform','dtac','dcapt'].includes(el.dataset.a))dreamChange(el.dataset.a,el)});
+document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;const box=document.querySelector('.dpk');if(box){const pos=e.target.selectionStart;box.outerHTML=dreamPicker();const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- Tournaments, date of birth, club and equipment ---------- */
@@ -2684,6 +2757,7 @@ function vpTourn(){const me=pById(PM.data.me.id),t0=todayISO(),up=S.tourns.filte
   const poll=t=>PM.data.polls.find(p=>p.id===t.poll&&p.open);
   const card=t=>{const e=eligible(t,me),inSq=(t.squad||[]).includes(me.id),pl=poll(t);
     return `<div class="panel tcard"><div class="row" style="justify-content:space-between"><div><b>🏆 ${esc(t.name)}</b><div class="small muted">${fmtDate(t.date)}${t.time?' · '+esc(t.time):''}${t.venue?' · '+esc(t.venue):''}${t.format?' · '+esc(t.format):''}</div>${staffTxt(t)?`<div class="small">${esc(staffTxt(t))}</div>`:''}</div><span class="pill">${ruleTxt(t)}</span></div>
+      ${inSq&&t.captain===me.id?`<div class="capbar">${ICO('crown')} <b>You’re the captain.</b><button class="btn primary" data-a="ptboard" data-id="${t.id}">${ICO('target')} Tactic board</button></div>`:''}
       <div style="margin-top:8px">${inSq?`<span class="pill ok">✅ You’re in the squad${t.captain===me.id?' · Captain (C)':''}</span>`:e===false?'<span class="pill bad">Not eligible by age</span>':e===null?'<span class="pill meh">Add your date of birth in Account to check eligibility</span>':'<span class="pill ok">You’re eligible</span>'}</div>
       ${pl?`<div class="row nmb" style="margin-top:8px"><span class="small muted" style="flex-basis:100%">Can you play? ${pl.mine?`You said <b>${pl.mine.toUpperCase()}</b>.`:''}</span><button class="btn primary${pl.mine==='in'?' on':''}" data-a="pvote" data-id="${pl.id}" data-s="in">I’m in</button><button class="btn${pl.mine==='out'?' on':''}" data-a="pvote" data-id="${pl.id}" data-s="out">Can’t make it</button></div>`:''}
       ${(t.squad||[]).length>=3?`<div class="small muted" style="margin-top:10px">Squad · ${Math.min(tLU(t).n,t.squad.length)} on the pitch, ${Math.max(0,t.squad.length-tLU(t).n)} subs</div><div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:t.squad},tLU(t),0,false,t.name,{captain:t.captain})}</div>`:''}</div>`};
@@ -2851,6 +2925,82 @@ const PITCH2=(()=>{const T=84,B=330,xl=y=>36-44*(y-T)/(B-T),xr=y=>300-xl(y);cons
   let bands='';const n=8,h=(B-T)/n;for(let k=0;k<n;k++)bands+=band(T+k*h,T+(k+1)*h,k%2?'#2C7A36':'#338A3E');
   return `<svg class="mk" viewBox="0 0 300 330" preserveAspectRatio="none" aria-hidden="true"><rect width="300" height="330" fill="#FFFFFF"/>${bands}
   <g fill="none" stroke="#FFFFFF" stroke-opacity=".38" stroke-width="1.3"><path d="M${xl(T)} ${T}H${xr(T)}L${xr(B)} ${B}H${xl(B)}Z"/><path d="M92 ${T}L89 116H211L208 ${T}"/><path d="M${xl(206)} 206H${xr(206)}"/><ellipse cx="150" cy="206" rx="44" ry="20"/><path d="M60 ${B}L68 268H232L240 ${B}"/></g></svg>`})();
+/* ---------- Tactic board: top-down pitch, draggable players and ball, passes, runs, opponents, chemistry links, step playback.
+   Pure SVG updated in place (no re-render while dragging) and requestAnimationFrame for motion, so it stays light and smooth. ---------- */
+let TB=null;
+const TBW=680,TBH=1040;
+function tbLayout(n,f,gk){const rows=f.split('-').map(Number),pts=[];if(gk)pts.push([TBW/2,TBH-70]);const ys=rows.length===3?[TBH-230,TBH-470,TBH-720]:rows.map((_,i)=>TBH-230-i*(500/Math.max(1,rows.length-1)));
+  rows.forEach((k,r)=>{for(let i=0;i<k;i++)pts.push([k===1?TBW/2:90+i*(TBW-180)/(k-1),ys[r]])});return pts.slice(0,n)}
+function tbFormOpts(n,gk){const k=n-(gk?1:0),out=[];for(let d=1;d<=5;d++)for(let m=1;m<=5;m++){const fw=k-d-m;if(fw>=1&&fw<=3)out.push(d+'-'+m+'-'+fw)}const pop=['4-4-2','4-3-3','3-5-2','4-5-1','3-4-3','5-3-2','3-3-2','2-3-2','3-2-2','2-3-1','3-2-1','2-2-2','2-2-1','3-1-1','2-1-1'];return out.sort((a,b)=>(pop.indexOf(a)+1||99)-(pop.indexOf(b)+1||99))}
+function openTacticBoard(cfg){const n=cfg.players.length,f=cfg.f||tbFormOpts(n,cfg.gk)[0];
+  TB={...cfg,f,mode:'move',showOpp:false,showChem:!!cfg.chem,arrows:[],steps:[],playing:false,
+    me:tbLayout(n,f,cfg.gk).map(([x,y],i)=>({...cfg.players[i],x,y})),opp:tbLayout(n,f,cfg.gk).map(([x,y])=>({x:TBW-x,y:TBH-y})),ball:{x:TBW/2,y:TBH/2,own:-1}};
+  openModal(`<div class="mh"><h2>Tactic board · ${esc(cfg.title||'Team')}</h2><button class="btn ghost x" data-a="close">Close</button></div>
+  <div class="tb2"><div class="tbbar">
+    <div class="lseg sm tbmodes" role="group">${[['move','Move'],['pass','Pass'],['draw','Draw run']].map(([k,l])=>`<button type="button" data-a="tbmode" data-v="${k}" aria-selected="${k==='move'}">${l}</button>`).join('')}</div>
+    <label class="small">Shape <select id="tbform" data-a="tbform">${tbFormOpts(n,cfg.gk).map(x=>`<option ${x===f?'selected':''}>${x}</option>`).join('')}</select></label>
+    <label class="small row chk"><input type="checkbox" data-a="tbopp"> Opponents</label>${cfg.chem?`<label class="small row chk"><input type="checkbox" data-a="tbchem" checked> Chemistry links</label>`:''}
+    <span class="tbsteps"><button class="btn" data-a="tbstep">+ Step <b id="tbn">0</b></button><button class="btn primary" data-a="tbplay">▶ Play</button><button class="btn ghost" data-a="tbclear">Clear</button><button class="btn ghost" data-a="tbimg">Save image</button></span></div>
+    <div class="tbhint small muted" id="tbhint">Drag players and the ball. Drop the ball on a player to give them possession.</div>
+    <svg id="tbsvg" viewBox="0 0 ${TBW} ${TBH}" preserveAspectRatio="xMidYMid meet" style="touch-action:none">${tbPitch()}<g id="tbchem"></g><g id="tbarrows"></g><g id="tbtrail"></g><g id="tbopp" style="display:none">${TB.opp.map((p,i)=>tbTok(p,i,true)).join('')}</g><g id="tbme">${TB.me.map((p,i)=>tbTok(p,i,false)).join('')}</g>
+      <g id="tbball" transform="translate(${TB.ball.x},${TB.ball.y})"><circle r="13" fill="#fff" stroke="#111" stroke-width="2"/><path d="M0-6 5.7-1.9 3.5 4.9h-7l-2.2-6.8Z" fill="#111"/></g></svg></div>`);
+  document.querySelector('.modal').classList.add('wide','tbmodal');tbBind();tbChem()}
+function tbPitch(){const L='stroke="rgba(255,255,255,.85)" stroke-width="3" fill="none"';let s=`<rect width="${TBW}" height="${TBH}" fill="#2f7d43"/>`;for(let i=0;i<13;i++)if(i%2)s+=`<rect y="${i*TBH/13}" width="${TBW}" height="${TBH/13}" fill="#2a7240"/>`;
+  return s+`<rect x="20" y="20" width="${TBW-40}" height="${TBH-40}" ${L}/><line x1="20" y1="${TBH/2}" x2="${TBW-20}" y2="${TBH/2}" ${L}/><circle cx="${TBW/2}" cy="${TBH/2}" r="91" ${L}/><circle cx="${TBW/2}" cy="${TBH/2}" r="4" fill="#fff"/>
+  <rect x="${TBW/2-201}" y="20" width="402" height="165" ${L}/><rect x="${TBW/2-92}" y="20" width="184" height="55" ${L}/><rect x="${TBW/2-201}" y="${TBH-185}" width="402" height="165" ${L}/><rect x="${TBW/2-92}" y="${TBH-75}" width="184" height="55" ${L}/>
+  <rect x="${TBW/2-37}" y="6" width="74" height="14" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="2"/><rect x="${TBW/2-37}" y="${TBH-20}" width="74" height="14" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="2"/>
+  <defs><marker id="tbarr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#FFD54A"/></marker></defs>`}
+function tbTok(p,i,opp){const col=opp?'#D23B3B':(TB.color||'#2F6FD6'),lab=opp?'':esc(String(p.label||'').slice(0,11)),num=opp?(i+1):esc(p.num||'');
+  return `<g class="tbt" data-i="${i}" data-o="${opp?1:0}" transform="translate(${p.x},${p.y})"><circle r="24" fill="${col}" stroke="#fff" stroke-width="3"/>${p.cap?'<circle cx="18" cy="-18" r="9" fill="#F2C418"/><text x="18" y="-14" text-anchor="middle" font-size="11" font-weight="800" fill="#111" font-family="system-ui,sans-serif">C</text>':''}
+    <text y="6" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" font-family="system-ui,sans-serif">${num}</text>${lab?`<text y="44" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" stroke="rgba(0,0,0,.55)" stroke-width="3" paint-order="stroke" font-family="system-ui,sans-serif">${lab}</text>`:''}</g>`}
+function tbPt(e){const svg=$('#tbsvg'),p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());return {x:Math.max(10,Math.min(TBW-10,q.x)),y:Math.max(10,Math.min(TBH-10,q.y))}}
+function tbPlace(){const g=$('#tbme'),o=$('#tbopp');if(!g)return;TB.me.forEach((p,i)=>g.children[i].setAttribute('transform',`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`));TB.opp.forEach((p,i)=>o.children[i].setAttribute('transform',`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`));
+  const b=TB.ball;if(b.own>=0){const q=TB.me[b.own];b.x=q.x+20;b.y=q.y+18}$('#tbball').setAttribute('transform',`translate(${b.x.toFixed(1)},${b.y.toFixed(1)})`);tbChem()}
+function tbChem(){const g=$('#tbchem');if(!g)return;if(!TB.showChem||!TB.chem){g.innerHTML='';return}let s='';const M=TB.me;
+  for(let i=0;i<M.length;i++)for(let j=i+1;j<M.length;j++){const a=M[i],b=M[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d>300||!a.id||!b.id)continue;const v=TB.chem(a.id,b.id);if(v==null)continue;
+    s+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${v>=4?'#4be07f':v>=3?'#F2C418':'#ff5a5a'}" stroke-width="${v>=4?5:3}" stroke-opacity=".8" stroke-linecap="round"/>`}g.innerHTML=s}
+function tbBind(){const svg=$('#tbsvg');let drag=null,draw=null,raf=0;
+  svg.addEventListener('pointerdown',e=>{if(TB.playing)return;const t=e.target.closest('.tbt'),ball=e.target.closest('#tbball'),pt=tbPt(e);
+    if(TB.mode==='pass'&&t&&t.dataset.o==='0'){tbPass(+t.dataset.i);return}
+    if(TB.mode==='draw'&&!t&&!ball){draw={pts:[pt]};const pl=document.createElementNS('http://www.w3.org/2000/svg','polyline');pl.setAttribute('fill','none');pl.setAttribute('stroke','#FFD54A');pl.setAttribute('stroke-width','5');pl.setAttribute('stroke-dasharray','12 9');pl.setAttribute('stroke-linecap','round');pl.setAttribute('marker-end','url(#tbarr)');$('#tbarrows').appendChild(pl);draw.el=pl;svg.setPointerCapture(e.pointerId);return}
+    if(ball){drag={ball:true};TB.ball.own=-1}else if(t){drag={o:t.dataset.o==='1',i:+t.dataset.i}}else return;
+    svg.setPointerCapture(e.pointerId);e.preventDefault()});
+  svg.addEventListener('pointermove',e=>{if(!drag&&!draw)return;const pt=tbPt(e);
+    if(draw){const l=draw.pts[draw.pts.length-1];if(Math.hypot(pt.x-l.x,pt.y-l.y)>10){draw.pts.push(pt);draw.el.setAttribute('points',draw.pts.map(p=>p.x.toFixed(0)+','+p.y.toFixed(0)).join(' '))}return}
+    if(drag.ball){TB.ball.x=pt.x;TB.ball.y=pt.y}else{const a=drag.o?TB.opp:TB.me;a[drag.i].x=pt.x;a[drag.i].y=pt.y}
+    if(!raf)raf=requestAnimationFrame(()=>{raf=0;tbPlace()})});
+  const end=()=>{if(draw){if(draw.pts.length>2)TB.arrows.push(draw.pts);else draw.el.remove();draw=null}
+    if(drag&&drag.ball){let best=-1,bd=40;TB.me.forEach((p,i)=>{const d=Math.hypot(p.x-TB.ball.x,p.y-TB.ball.y);if(d<bd){bd=d;best=i}});TB.ball.own=best;tbPlace();if(best>=0)$('#tbhint').textContent=(TB.me[best].label||'Player')+' has the ball. Switch to Pass and tap a teammate.'}drag=null};
+  svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end)}
+const tbEase=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function tbAnim(dur,step,done){const t0=performance.now();const fr=now=>{const k=Math.min(1,(now-t0)/dur);step(tbEase(k));if(k<1)requestAnimationFrame(fr);else done&&done()};requestAnimationFrame(fr)}
+function tbPass(to){const b=TB.ball;if(b.own<0){$('#tbhint').textContent='Give someone the ball first: drag it onto a player.';return}if(b.own===to)return;
+  const from={x:b.x,y:b.y},tgt=TB.me[to],line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',from.x);line.setAttribute('y1',from.y);line.setAttribute('x2',tgt.x+20);line.setAttribute('y2',tgt.y+18);line.setAttribute('stroke','#fff');line.setAttribute('stroke-width','3');line.setAttribute('stroke-dasharray','6 8');line.setAttribute('opacity','.9');$('#tbtrail').appendChild(line);
+  b.own=-1;TB.playing=true;tbAnim(Math.min(900,300+Math.hypot(tgt.x-from.x,tgt.y-from.y)*.8),k=>{b.x=from.x+(tgt.x+20-from.x)*k;b.y=from.y+(tgt.y+18-from.y)*k;$('#tbball').setAttribute('transform',`translate(${b.x.toFixed(1)},${b.y.toFixed(1)})`)},()=>{b.own=to;TB.playing=false;tbPlace();setTimeout(()=>{line.style.transition='opacity .8s';line.setAttribute('opacity','0');setTimeout(()=>line.remove(),850)},600)})}
+const tbSnap=()=>({me:TB.me.map(p=>({x:p.x,y:p.y})),opp:TB.opp.map(p=>({x:p.x,y:p.y})),ball:{...TB.ball}});
+function tbGoto(snap,dur,done){const a=tbSnap();TB.ball.own=-1;tbAnim(dur,k=>{TB.me.forEach((p,i)=>{p.x=a.me[i].x+(snap.me[i].x-a.me[i].x)*k;p.y=a.me[i].y+(snap.me[i].y-a.me[i].y)*k});TB.opp.forEach((p,i)=>{p.x=a.opp[i].x+(snap.opp[i].x-a.opp[i].x)*k;p.y=a.opp[i].y+(snap.opp[i].y-a.opp[i].y)*k});
+    if(snap.ball.own<0){TB.ball.x=a.ball.x+(snap.ball.x-a.ball.x)*k;TB.ball.y=a.ball.y+(snap.ball.y-a.ball.y)*k}else{const q=snap.ball.own;const tx=TB.me[q].x+20,ty=TB.me[q].y+18;TB.ball.x=a.ball.x+(tx-a.ball.x)*k;TB.ball.y=a.ball.y+(ty-a.ball.y)*k}
+    const g=$('#tbme'),o=$('#tbopp');TB.me.forEach((p,i)=>g.children[i].setAttribute('transform',`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`));TB.opp.forEach((p,i)=>o.children[i].setAttribute('transform',`translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`));$('#tbball').setAttribute('transform',`translate(${TB.ball.x.toFixed(1)},${TB.ball.y.toFixed(1)})`)},
+    ()=>{TB.ball.own=snap.ball.own;tbPlace();done&&done()})}
+async function tbImage(){const svg=$('#tbsvg').cloneNode(true);svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('width',TBW);svg.setAttribute('height',TBH);
+  const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=src});
+  const c=document.createElement('canvas'),k=1.5;c.width=TBW*k;c.height=(TBH+150)*k;const g=c.getContext('2d');g.scale(k,k);g.fillStyle='#0b1a33';g.fillRect(0,0,TBW,TBH+150);g.fillStyle='#fff';g.font='900 34px system-ui,sans-serif';g.fillText((TB.title||'Tactic board').toUpperCase(),24,52);g.font='600 18px system-ui,sans-serif';g.fillStyle='#A9B8D2';g.fillText(`${TB.f} · Airdrie United tactic board`,24,82);
+  g.drawImage(img,0,104,TBW,TBH);g.font='700 13px system-ui,sans-serif';g.fillStyle='rgba(255,255,255,.65)';g.textAlign='right';g.fillText('Developed by Raman · AUFC App',TBW-16,TBH+138);
+  c.toBlob(b=>saveImage(b,'tactic-board.png'),'image/png')}
+async function tbAction(a,el){if(!TB)return;
+  if(a==='tbmode'){TB.mode=el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b===el));$('#tbhint').textContent=TB.mode==='pass'?'Tap a teammate to pass the ball to them.':TB.mode==='draw'?'Drag on the pitch to draw a run or movement arrow.':'Drag players and the ball. Drop the ball on a player to give them possession.';return}
+  if(a==='tbopp'){TB.showOpp=el.checked;$('#tbopp').style.display=el.checked?'':'none';return}
+  if(a==='tbchem'){TB.showChem=el.checked;tbChem();return}
+  if(a==='tbclear'){TB.arrows=[];$('#tbarrows').innerHTML='';$('#tbtrail').innerHTML='';TB.steps=[];$('#tbn').textContent='0';return}
+  if(a==='tbstep'){if(TB.steps.length>=12){toast('Up to 12 steps');return}TB.steps.push(tbSnap());$('#tbn').textContent=TB.steps.length;toast('Step '+TB.steps.length+' saved. Move players, then add the next step');return}
+  if(a==='tbplay'){if(TB.steps.length<2){toast('Add at least 2 steps: position, + Step, move, + Step');return}if(TB.playing)return;TB.playing=true;let i=0;const nx=()=>{if(i>=TB.steps.length){TB.playing=false;return}tbGoto(TB.steps[i++],i===1?350:750,()=>setTimeout(nx,120))};nx();return}
+  if(a==='tbimg'){try{await tbImage()}catch(e){toast('Could not make the image')}return}}
+const TBACTS=['tbmode','tbopp','tbchem','tbclear','tbstep','tbplay','tbimg'];
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(el&&TBACTS.includes(el.dataset.a))tbAction(el.dataset.a,el)});
+document.addEventListener('change',e=>{if(e.target.id==='tbform')tbForm(e.target.value)});
+function boardPlayers(ids,cap){return ids.map(id=>{const p=pById(id);return {id,label:shortName(p?.name||''),num:p?.number||'',cap:cap===id}})}
+function tbForm(f){if(!TB||TB.playing)return;TB.f=f;const pts=tbLayout(TB.me.length,f,TB.gk),from=TB.me.map(p=>({x:p.x,y:p.y}));TB.ball.own=-1;
+  tbAnim(500,k=>{TB.me.forEach((p,i)=>{p.x=from[i].x+(pts[i][0]-from[i].x)*k;p.y=from[i].y+(pts[i][1]-from[i].y)*k});tbPlace()})}
 /* ---------- Pitch v3: angled (perspective) SVG pitch with grid overlay, FC-style mini cards placed absolutely on it,
    and for editable line-ups a Team Management studio (sidebar menu + player stats panel). Built without CSS 3D so
    saved images (html2canvas) match the screen. ---------- */
@@ -2893,11 +3043,12 @@ function chemBlock(ids,sel){if(PM||!chemS.rows)return '';if(sel){const L=ids.fil
   const c=teamChem(ids);return `<div class="chemb"><div class="ps-sh">Team chemistry</div>${c?`<div class="chemr"><span>${c.n} rated pairs</span><span class="chem c${Math.round(c.v)}"><b>${c.v}</b>/5</span></div>`:'<div class="small muted">No ratings yet. Players rate teammates in their Squad tab.</div>'}</div>`}
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
-  const showOvr=interactive&&!PM,cap=opt?.captain;
-  const card=(id,role,u,v,idx)=>{const p=pById(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.thumb||p?.photo,r=R(id);
+  const showOvr=interactive&&!PM,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
+  const res=opt?.res||pById;
+  const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.thumb||p?.photo,r=R(id);
     const tr=!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
-    return `<${tag} class="pc t-${tr}${cc?' cc-'+cc:''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
+    return `<${tag} class="pc t-${tr}${cc?' cc-'+cc:''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>
       <span class="pc-card">${pip}<span class="pc-top">${showOvr?`<b class="pc-ovr player-ovr-stat num">${rv(r.ovr)}</b>`:''}<span class="pc-pos player-position-text">${role}</span></span>
       <span class="pc-ph${p?.photoCut?' cut':''}${ph?' hp':''}">${ph?`<img src="${ph}" alt="">`:`<img class="sil" src="${SILURI(tr==='special'?'rgba(255,255,255,.22)':'rgba(70,45,10,.28)')}" alt="">`}</span><span class="pc-nm">${esc(shortName(p?.name))}</span>
       <span class="pc-ic">${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
@@ -2906,11 +3057,11 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   let html='',idx=0;
   for(const row of ['GK','DEF','MID','FWD']){const ids=g[row],k=ids.length;if(!k)continue;const v=rows[row]||.5;
     ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);html+=card(id,roleOf(row,k,i),u,v,idx++)})}
-  const subIds=g.SUB,subs=subIds.map(id=>{const p=pById(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
+  const subIds=g.SUB,subs=subIds.map(id=>{const p=res(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="${A}" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   const pitch=`<div class="pitch p3${pNums?'':' nonum'}" style="--kc:${col}">${PITCH3}${title?`<div class="ptitle3">${esc(title)}</div>`:''}<div class="pform">${esc(lu.f)}</div>${html}</div>`;
   const subsHTML=subs?`<div class="subs"><span>Subs</span>${subs}</div>`:'';
-  if(!interactive)return pitch+subsHTML;
+  if(!interactive||opt?.nostudio)return pitch+subsHTML;
   // ----- Team Management studio -----
   const key=(opt?'t':'d')+ti,nav=pNav[key]||'formation',onp=[...g.GK,...g.DEF,...g.MID,...g.FWD],selId=sel&&sel.t===ti?lu.order[sel.k]:null,sp=selId&&pById(selId);
   const st=teamStats(onp),avg=k=>Math.round(avg0(onp.map(id=>(R(id).a||{})[k]||0))*10),avg0=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
@@ -2918,16 +3069,17 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const stars=n=>'<span class="ps-stars" aria-label="'+n+' of 5">'+[1,2,3,4,5].map(i=>`<i class="${i<=n?'on':''}">★</i>`).join('')+'</span>';
   const dyn=sp?`<div class="ps-dyn"><span class="ps-av">${sp.thumb||sp.photo?`<img src="${sp.thumb||sp.photo}" alt="">`:SIL}</span><div><b class="ps-name">${esc(sp.name)}</b>${stars(+sp.skills||0)}<div class="small"><span class="player-position-text">${posOf(selId)}</span> · Rating <b class="player-ovr-stat num">${rv(R(selId).ovr)}</b></div></div></div>`
     :`<div class="ps-dyn"><span class="ps-av ps-kit" style="background:${col}"></span><div><b class="ps-name">${esc(title||t.name||'Team')}</b><div class="small">${onp.length} on the pitch · ${subIds.length} subs</div><div class="small">Team rating <b class="player-ovr-stat num">${hideR?99:r1(st.tot)}</b></div></div></div>`;
-  const NAV=[['tactics','Tactics'],['formation','Formation'],['squad','Squad Selector'],['kit','Kit Numbers'],['stats','Player Stats']];
+  const NAV=[['tactics','Tactics'],['formation','Formation'],['squad','Squad Selector'],['kit','Kit Numbers'],['stats','Player Stats']];const capNow=opt?.tid?opt.captain:(draft.caps||{})[ti];
   const panel=nav==='tactics'?`<div class="ps-kv num"><span>Attack <b>${hideR?99:r1(st.atk)}</b></span><span>Midfield <b>${hideR?99:r1(st.mid)}</b></span><span>Defence <b>${hideR?99:r1(st.def)}</b></span><span>Pace <b>${hideR?99:r1(st.pace)}</b></span><span>Total <b>${hideR?99:r1(st.tot)}</b></span></div>`
     :nav==='formation'?`<div class="ps-form row">${opt?.tid?`<label class="small">On pitch <select data-a="tonp" data-id="${opt.tid}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n}</option>`).join('')}</select></label>`:''}
         <label class="small">Formation <select ${opt?.tid?`data-a="tform" data-id="${opt.tid}"`:`data-a="form" data-i="${ti}"`}>${formOpts(lu.order,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
-        <label class="small row chk"><input type="checkbox" ${opt?.tid?`data-a="tgk" data-id="${opt.tid}"`:`data-a="gk" data-i="${ti}"`} ${lu.gk?'checked':''}> Keeper</label><span class="small muted">Tap a card, then another card or a sub, to swap.</span></div>`
+        <label class="small row chk"><input type="checkbox" ${opt?.tid?`data-a="tgk" data-id="${opt.tid}"`:`data-a="gk" data-i="${ti}"`} ${lu.gk?'checked':''}> Keeper</label>
+        ${opt?.tid?'':`<label class="small">Captain <select data-a="dcap" data-i="${ti}"><option value="">None</option>${lu.order.map(x=>`<option value="${x}" ${capNow===x?'selected':''}>${esc(pById(x)?.name||'')}</option>`).join('')}</select></label>`}<span class="small muted">Tap a card, then another card or a sub, to swap.</span></div>`
     :nav==='squad'?(subs?`<div class="ps-subs">${subs}</div><div class="small muted">Tap a sub, then a card to bring them on.</div>`:'<div class="small muted">No subs: everyone is on the pitch.</div>')
     :nav==='kit'?`<label class="small row chk"><input type="checkbox" data-a="pnums" ${pNums?'checked':''}> Show shirt numbers on cards</label><div class="small muted">${onp.filter(id=>!pById(id)?.number).length?onp.filter(id=>!pById(id)?.number).map(id=>esc(shortName(pById(id)?.name))).join(', ')+' have no number yet.':'Everyone on the pitch has a number.'}</div>`
     :`<div class="small muted">${sp?'Stats for '+esc(sp.name):'Team averages. Tap a card for one player.'}</div>`;
   return `<div class="pstw"><div class="pstudio"><aside class="ps-side"><h2 class="ps-h">Team Management</h2>${dyn}
-    <nav class="ps-nav"><ul>${NAV.map(([k,l])=>`<li><a href="#" class="nav-${k}${nav===k?' nav-active':''}" data-a="pnav" data-k="${key}" data-v="${k}">${l}</a></li>`).join('')}</ul></nav><div class="ps-panel">${panel}</div></aside>
+    <nav class="ps-nav"><ul>${NAV.map(([k,l])=>`<li><a href="#" class="nav-${k}${nav===k?' nav-active':''}" data-a="pnav" data-k="${key}" data-v="${k}">${l}</a></li>`).join('')}<li><a href="#" class="nav-board" data-a="tboard" data-i="${ti}" ${opt?.tid?`data-id="${opt.tid}"`:''}>${ICO('target')} Tactic Board</a></li></ul></nav><div class="ps-panel">${panel}</div></aside>
     <div class="ps-main">${pitch}</div>
     <aside class="ps-stats"><div class="ps-sh">${sp?esc(shortName(sp.name)):'Team average'}</div>${statBars(sp?p3Stats(selId):teamRows,sp?R(selId).ovr:Math.round(st.tot))}${chemBlock(lu.order,selId)}</aside></div></div>${subsHTML}`;
 }
@@ -2937,12 +3089,12 @@ function shareData(m){return {date:m.date,teams:m.teams.map(t=>{const ids=t.play
   return {name:t.name,kit:t.kit,ids,lu,players:sortTeam(ids).map(id=>({name:pById(id).name,pos:posOf(id)}))}})}}
 /* Finalized teams: published to players as their upcoming match (S.fixtures, one per date); the match itself is saved after it's played */
 const fxFor=d=>(S.fixtures||[]).find(f=>f.date===d);
-const fxKey=t=>JSON.stringify((t||[]).map(x=>[x.name,x.kit,x.players,x.lu&&x.lu.f,x.lu&&x.lu.gk,x.lu&&x.lu.order]));
+const fxKey=t=>JSON.stringify((t||[]).map(x=>[x.name,x.kit,x.players,x.lu&&x.lu.f,x.lu&&x.lu.gk,x.lu&&x.lu.order,x.cap||'']));
 function finalBar(){const fx=fxFor(draft.date),cur=draftAsMatch(),same=fx&&fxKey(fx.teams)===fxKey(cur.teams),future=draft.date>todayISO();
   return `<div class="panel fxbar ${same?'ok':fx?'meh':''}"><div class="fxs">${same?`${ICO('check')} <b>Teams finalized</b> <span class="small muted">· players see their team on their Me page${fx.by?' · by '+esc(fx.by):''}</span>`:fx?`${ICO('warn')} <b>Changed since you finalized</b> <span class="small muted">· players still see the old teams</span>`:`<b>Not finalized yet</b> <span class="small muted">Players can’t see these teams.</span>`}</div>
     <div class="row">${same?`<button class="btn ghost" data-a="unfinal">Unpublish</button>`:`<button class="btn primary" data-a="finalize">${fx?'Update finalized teams':'Finalize teams'}</button>`}
     ${draft.editing?`<span class="small muted fxhint">This date already has a saved match; use Update match after the game.</span>`:future?`<span class="small muted fxhint">Save the match after it’s played (from ${new Date(draft.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}).</span>`:`<button class="btn${same?' primary':''}" data-a="savematch">Match played: save it</button>`}</div></div>`}
-function draftAsMatch(){return {date:draft.date,teams:draft.teams.map((t,i)=>({name:draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]],kit:draft.kits[i]||DEF_KITS[i],players:t,lu:{...teamLU(i),n:onPitch()}}))}}
+function draftAsMatch(){return {date:draft.date,teams:draft.teams.map((t,i)=>({name:draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]],kit:draft.kits[i]||DEF_KITS[i],players:t,lu:{...teamLU(i),n:onPitch()},cap:(draft.caps||{})[i]&&t.includes((draft.caps||{})[i])?draft.caps[i]:''}))}}
 let lastShare=null,shareSel='all',lastAwards=null;
 function shareModal(m,sel){
   const d=shareData(m);lastShare=d;shareSel=sel??'all';
@@ -3047,10 +3199,13 @@ document.addEventListener('click',async e=>{
     if(a==='phok'){q.photo=p.photoReq.img;q.photoCut=false;q.thumb=await makeThumb(q.photo,false)}delete q.photoReq;await putPlayer(q);logAct(a==='phok'?'Approved photo':'Denied photo',p.name);toast(a==='phok'?'Photo approved':'Photo request denied');return}
   if(a==='potmmsg'){potmShare(S.matches.find(x=>x.id===id));return}
   if(a==='potmcopy'){try{await navigator.clipboard.writeText(potmMsg(S.matches.find(x=>x.id===id)));toast('Copied. Paste it in WhatsApp')}catch(err){toast('Could not copy')}logAct('Copied POTM vote message');return}
-  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);draft.pt=0;draft.tfold=false;go('match',{force:true});return}
+  if(a==='editm'){const m=S.matches.find(x=>x.id===id);Object.assign(draft,{editing:m.id,date:m.date,n:m.teams.length,kits:m.teams.map(t=>t.kit),names:m.teams.map(t=>t.name),teams:m.teams.map(t=>t.players.filter(id=>pById(id))),lu:m.teams.map(t=>t.lu||null),caps:Object.fromEntries(m.teams.map((t,i)=>[i,t.cap||''])),avail:m.teams.flatMap(t=>t.players),locks:{},alts:[]});saveDraft();cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);draft.pt=0;draft.tfold=false;go('match',{force:true});return}
   if(a==='delm'){if(el.dataset.sure){delMatch(id);toast('Match deleted');}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000)}return}
   if(a==='rate'){rateModal(id);return}
   if(a==='delp'){if(el.dataset.sure){const snap=JSON.parse(JSON.stringify(pById(id)));await delPlayer(id);closeModal();toast('Deleted '+snap.name,()=>{putPlayer(snap);toast('Restored '+snap.name)})}else{el.dataset.sure=1;el.textContent='Tap again to delete';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete player'}},3000)}return}
+  if(a==='tboard'){e.preventDefault();const i=+el.dataset.i;let ids,lu,col,cap,title;
+    if(el.dataset.id){const t=S.tourns.find(x=>x.id===el.dataset.id);lu=tLU(t);col=KITHEX[t.kit]||'#2F6FD6';cap=t.captain;title=t.name}else{lu=teamLU(i);col=KITHEX[draft.kits[i]||DEF_KITS[i]];cap=(draft.caps||{})[i];title=draft.names[i]||'Team '+KITS[draft.kits[i]||DEF_KITS[i]]}
+    ids=lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0));openTacticBoard({title,players:boardPlayers(ids,cap),f:lu.f,gk:lu.gk,color:col,chem:chemS.rows?pairChem:null});return}
   if(a==='pnav'){e.preventDefault();pNav[el.dataset.k]=el.dataset.v;render();return}
   if(a==='pnums'){pNums=el.checked;ls('atb_pnums',pNums);render();return}
   if(a==='tsel'){const i=+el.dataset.i;if(i===(draft.pt||0))draft.tfold=!draft.tfold;else{draft.pt=i;draft.tfold=false}draft.sel=null;saveDraft();render();return}
@@ -3257,6 +3412,7 @@ document.addEventListener('change',async e=>{
   if(a==='goal'){const m=JSON.parse(JSON.stringify(S.matches.find(x=>x.id===el.dataset.id)));const v=el.value;m.teams[+el.dataset.i].goals=v===''?null:+v;await putMatch(m);return}
   if(a==='awpick'){S.settings.awardPick={...(S.settings.awardPick||{}),[el.dataset.k]:el.value||undefined};if(!el.value)delete S.settings.awardPick[el.dataset.k];await putSettings();return}
   if(a==='set'){const k=el.dataset.k;S.settings[k]=el.type==='checkbox'?el.checked:(k==='time'?el.value:+el.value);if(k==='autoLink'&&el.checked)S.settings.appUrl=location.origin+location.pathname.replace(/[^/]*$/,'');if(k==='maxPlayers')syncOpenPolls();await putSettings();return}
+  if(a==='dcap'){draft.caps={...(draft.caps||{}),[+el.dataset.i]:el.value};saveDraft();render();return}
   if(a==='tstaff'){const t={...S.tourns.find(x=>x.id===el.dataset.id)};t[el.dataset.k]=el.value.trim().slice(0,40);await putDoc('tournaments',t.id,t);return}
   if(a==='tcapt'||a==='tform'||a==='tgk'||a==='tonp'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===el.dataset.id)));const sq=(t.squad||[]).filter(pById);
     if(a==='tcapt')t.captain=el.value;const cur=tLU(t);if(a==='tform')t.lu={n:cur.n,f:el.value,gk:cur.gk};if(a==='tgk')t.lu={n:cur.n,gk:el.checked};if(a==='tonp')t.lu={n:+el.value,gk:cur.gk};if(a!=='tcapt'){t.lu=tLU(t);tSlot=null}await putDoc('tournaments',t.id,t);return}

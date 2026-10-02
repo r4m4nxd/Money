@@ -118,3 +118,5 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Player profile: public.atb_player_profile(token, jsonb) -> data.prof {nick,bestPos,card,ability,ps[<=5],favPlayer,favMate,boots,stadium,dreamNo}; settings.playerProfile (default on).
 -- Photo requests: public.atb_player_photo(token, dataURL|'') -> data.photoReq {img,at}; managers approve in Squad.
 -- Chemistry: public.atb_chem(team, rater, ratee, score 1-5), RLS read for the team; public.atb_player_chem(token, ratee, score 0-5). Payload adds players[].prof and chem (my ratings).
+
+-- Dream teams: public.atb_player_dreams(token, jsonb array <=5, <=30KB) -> data.dreams (only the player and managers see it). Weekly team captains: match/fixture team.cap.
