@@ -614,7 +614,12 @@ h3{line-height:1.2}
 .p3 .ptitle3{position:absolute;left:2.5%;top:2.5%;z-index:120;background:rgba(8,14,22,.72);color:#fff;font:800 clamp(10px,2.5cqw,17px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;padding:.7cqw 1.8cqw;border-radius:8px;border-left:4px solid var(--kc);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p3 .pform{position:absolute;left:2.5%;bottom:1.5%;z-index:1;font:900 clamp(20px,8cqw,64px)/1 var(--f-display);letter-spacing:.08em;color:rgba(255,255,255,.88);text-shadow:0 .5cqw 0 rgba(0,0,0,.28)}
 .pc{position:absolute;transform:translate(-50%,-62%);width:calc(12.6cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
-button.pc{cursor:pointer}
+button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
+.pc.swapt .pc-card,.subb.swapt{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,214,90,.55)}
+button.subb{touch-action:none;--dx:0px;--dy:0px}button.subb.drag{position:relative;z-index:500;transform:translate(var(--dx),var(--dy)) scale(1.06);box-shadow:0 8px 20px rgba(0,0,0,.35)}
+body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .pc-card{position:relative;display:block;width:100%;aspect-ratio:.76;overflow:visible;border-radius:calc(1.7cqw*var(--s)) calc(1.7cqw*var(--s)) calc(2.6cqw*var(--s)) calc(2.6cqw*var(--s));background:linear-gradient(180deg,#fff0b4 0%,#ebc96f 42%,#d6a948 78%,#b98a2f 100%);box-shadow:0 1cqw 2cqw rgba(0,0,0,.38);border:calc(.3cqw*var(--s)) solid rgba(255,255,255,.5);box-sizing:border-box}
 .t-silver .pc-card{background:linear-gradient(180deg,#ffffff 0%,#dfe4ea 42%,#bcc5cf 78%,#97a2ae 100%)}
 .t-bronze .pc-card{background:linear-gradient(180deg,#f8d6b0 0%,#dda774 42%,#c0834f 78%,#96602f 100%)}
@@ -637,7 +642,7 @@ button.pc{cursor:pointer}
 .p3.nonum .nb{display:none}
 .special-card-glow .pc-card{box-shadow:0 0 0 .45cqw #4be07f,0 0 2.6cqw .7cqw rgba(75,224,127,.6),0 1cqw 2cqw rgba(0,0,0,.38)}
 @media (prefers-reduced-motion:no-preference){.special-card-glow .pc-card{animation:pcglow 2.2s ease-in-out infinite}@keyframes pcglow{50%{box-shadow:0 0 0 .45cqw #4be07f,0 0 4cqw 1.2cqw rgba(75,224,127,.85),0 1cqw 2cqw rgba(0,0,0,.38)}}
-  button.pc{transition:transform .18s cubic-bezier(.2,.8,.2,1)}@media(hover:hover){button.pc:hover{transform:translate(-50%,-64%)}}}
+  button.pc{transition:transform .18s cubic-bezier(.2,.8,.2,1)}@media(hover:hover){button.pc:hover{transform:translate(calc(-50% + var(--dx)),calc(-64% + var(--dy)))}}}
 .pc.sel .pc-card{outline:.6cqw solid #FFD54A;outline-offset:.35cqw}.pc.sel .pc-role{background:#FFD54A;color:#111}
 .hide-r .pc-ovr,.hide-r .player-ovr-stat,.hide-r .psv,.hide-r .ps-kv b{filter:blur(5px);user-select:none;-webkit-user-select:none}
 .pitchwrap:has(.pstudio),.pwrap:has(.pstudio){max-width:none}
@@ -1159,7 +1164,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020028',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020056',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1242,9 +1247,9 @@ async function boot(){
       if(sched().length&&!draft.teams&&!draft.editing&&!schedAt(draft.date)&&nextGame()){draft.date=nextGame();saveDraft()}
       quietLog=false;loaded=true;render();watchExtra();
       if(cloud==='supa'&&isAdmin){(async()=>{quietLog=true;for(const p of S.players.filter(p=>p.photo&&!p.thumb)){const t=await makeThumb(p.photo,p.photoCut);if(t)await putPlayer({...p,thumb:t})}quietLog=false})()}if(cloud==='supa'){loadStats();syncOpenPolls();let ji=null;try{ji=sessionStorage.getItem('atb_justin');sessionStorage.removeItem('atb_justin')}catch(e){}deviceStr().then(dv=>logAct(ji?'Signed in':'Opened app',dv))}};
-    db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('p')},e=>{done('p')});
-    db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render();done('m')},e=>{done('m')});
-    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());lastSet=JSON.parse(JSON.stringify(S.settings));loaded&&render()}done('s')},()=>{done('s')});
+    db.collection('players').onSnapshot(s=>{S.players=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender();done('p')},e=>{done('p')});
+    db.collection('matches').onSnapshot(s=>{S.matches=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender();done('m')},e=>{done('m')});
+    db.doc('settings/main').onSnapshot(d=>{if(d.exists){Object.assign(S.settings,d.data());lastSet=JSON.parse(JSON.stringify(S.settings));loaded&&bgRender()}done('s')},()=>{done('s')});
   }else{
     mode='local';$('#sync').innerHTML=supa?'Saved on this device · <button class="btn ghost small" data-a="gosync" style="padding:0">Turn on sync</button>':'Saved on this device';
     const st=ls('atb_state');
@@ -1354,9 +1359,29 @@ function keepDetails(m){const key=d=>(d.dataset.cx||'')+'|'+(d.querySelector(':s
   const was=new Map(),v0=(PM?'p-':'')+view;if(m.dataset.rv===v0)m.querySelectorAll('details:not([data-cx])').forEach(d=>was.set(key(d),d.open));
   return ()=>{m.dataset.rv=v0;m.querySelectorAll('details:not([data-cx])').forEach(d=>{const k=key(d);if(was.has(k)&&d.open!==was.get(k))d.open=was.get(k)})}}
 function outSync(){const b=document.getElementById('outbtn');if(!b)return;const on=!!(supaUser||(PM&&PM.tok));b.hidden=!on;if(on&&!b.innerHTML)b.innerHTML=ICO('logout')}
-function render(){tipSync();outSync();
+/* Background refreshes (polls, realtime, coming back to the app) must never wipe what someone is typing.
+   Fields edited since the last full redraw are remembered (also across an unexpected page reload) and put back. */
+let fDirty={},filePick=0,bgRendering=false;
+try{const d=JSON.parse(sessionStorage.getItem('atb_dirty')||'null');if(d&&typeof d==='object')fDirty=d}catch(e){}
+const fKey=el=>el.id?'#'+el.id:[...el.attributes].filter(x=>/^(name|data-[\w-]+)$/.test(x.name)).map(x=>x.name+'='+x.value).join('|')||null;
+const fSave=()=>{try{sessionStorage.setItem('atb_dirty',JSON.stringify(fDirty))}catch(e){}};
+function fTrack(e){const el=e.target;if(!el.closest||!el.closest('#main')||!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.type==='file'||el.type==='password'||el.id==='plpin'||el.id==='plpin2')return;
+  const k=fKey(el),v=$('#main').dataset.v;if(!k||!v)return;(fDirty[v]=fDirty[v]||{})[k]=el.type==='checkbox'||el.type==='radio'?el.checked:el.value;fSave()}
+document.addEventListener('input',fTrack,true);document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('label[for="pfphoto"]'))filePick=Date.now()},true);document.addEventListener('change',fTrack,true);
+/* Player drafts stay until saved or signed out; manager screens keep them only through background refreshes. */
+function fClear(v){if(v)delete fDirty[v];else Object.keys(fDirty).forEach(k=>{if(!k.startsWith('p-'))delete fDirty[k]});fSave()}
+function fWipe(){fDirty={};pfD=null;try{sessionStorage.removeItem('atb_dirty');sessionStorage.removeItem('atb_pfd')}catch(e){}}
+function fRestore(){const m=$('#main'),f=fDirty[m.dataset.v];if(!f)return;
+  m.querySelectorAll('input,textarea,select').forEach(el=>{const k=fKey(el);if(!k||!(k in f))return;const v=f[k];
+    if(el.type==='checkbox'||el.type==='radio'){if(el.checked!==v)el.checked=v}else if(el.value!==v)el.value=v})}
+function bgRender(){if(Date.now()-filePick<12e4)return;
+  const a=document.activeElement,m=$('#main'),k=a&&m.contains(a)&&fKey(a),ss=k&&a.selectionStart!=null?[a.selectionStart,a.selectionEnd]:null,y=scrollY;
+  bgRendering=true;try{render()}finally{bgRendering=false}fRestore();
+  if(k){const n=[...m.querySelectorAll('input,textarea,select')].find(el=>fKey(el)===k);if(n){n.focus({preventScroll:true});if(ss)try{n.setSelectionRange(ss[0],ss[1])}catch(e){}}}
+  if(Math.abs(scrollY-y)>2)scrollTo(0,y)}
+function render(){tipSync();outSync();if(!bgRendering&&!PM)fClear();
   if(navRestore&&navRestore.m&&loaded&&!PM){const m=navRestore.m;navRestore=null;setTimeout(()=>navReplay(m,true),60)}
-  if(PM){renderPlayer();return}
+  if(PM){renderPlayer();fRestore();return}
   if(!loaded)return;
   CACHE=compute();commitCache=null;
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===view));
@@ -2091,19 +2116,19 @@ function plIdleOut(){if(!PM||PM.preview||!PM.tok)return false;const last=+ls('at
 setInterval(plIdleOut,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')plIdleOut()});
 function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
-function playerSignedOut(msg){try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
+function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
   PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   await loadPlayer();
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer()});
-  setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer()},90000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadPlayer(true)});
+  setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('.scrim'))loadPlayer(true)},90000);
 }
 function startPreview(id){const p=pById(id);if(!p)return;const from={v:view,m:modalCtx&&modalCtx.a!=='pview'?modalCtx:null};closeModal();PM={preview:true,from,id,name:p.name,data:null,season:'all'};view='me';navPush({v:'me',pv:true});
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+'<button role="tab" data-v="tomgr"><span>✕ Exit preview</span></button>';
   $('#rbtn').hidden=true;$('#sync').textContent='Preview · '+p.name;window.scrollTo(0,0);render();loadPlayer()}
-async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
+async function loadPlayer(bg){if(!PM||PM.loading)return;PM.loading=true;
   try{const d=PM.preview?await prpc('atb_admin_player_view',{p_player:PM.id}):await prpc('atb_player_data',{p_token:PM.tok});
     if(d.err&&PM.preview){toast('Could not open this profile');location.reload();return}
     if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='paused'?'⏸️ Your PIN is set, but the portal isn’t open for you yet. Hang tight; it opens soon!':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (1 hour without using the app, or your PIN changed). Enter your PIN to continue.');return}
@@ -2112,7 +2137,7 @@ async function loadPlayer(){if(!PM||PM.loading)return;PM.loading=true;
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
     $('#sub').textContent='Player profile';
     loaded=true}catch(e){PM.err=navigator.onLine?'Could not load your profile. Pull to refresh or try again.':'You’re offline.'}
-  PM.loading=false;render()}
+  PM.loading=false;bg?bgRender():render()}
 
 // Everything below is from this player's point of view.
 function pSeasons(){return [...new Set(S.matches.map(m=>m.date.slice(0,4)))].sort().reverse()}
@@ -2352,7 +2377,8 @@ function vpLeaders(){const ms=pMatches(),me=PM.data.me.id,o={};
     ${L.some(x=>x.g)?board('⚽ Top scorers',top(L.filter(x=>x.g).sort((a,b)=>b.g-a.g)),x=>x.g):''}${L.some(x=>x.a)?board('🅰️ Top assists',top(L.filter(x=>x.a).sort((a,b)=>b.a-a.a)),x=>x.a):''}
     ${board('Most appearances',top(apps),x=>x.n)}${board('Best win rate <span class="small muted">(3+ results)</span>',top(wins),x=>pct(x.w/x.r))}${board('🏆 Player of the match',top(potm),x=>x.potm)}`}
 /* ---------- Player-owned profile: editor, squad, public pages, compare, chemistry, story image ---------- */
-let pfD=null;
+let pfD=null;try{pfD=JSON.parse(sessionStorage.getItem('atb_pfd')||'null')}catch(e){}
+const pfKeep=()=>{try{sessionStorage.setItem('atb_pfd',JSON.stringify(pfD))}catch(e){}};
 const pubStats=id=>{const ms=S.matches.filter(m=>playedIn(m,id));let W=0,D=0,L=0,g=0,a=0;
   ms.forEach(m=>{const ti=m.teams.findIndex(t=>t.players.includes(id)),r=ti>=0?resultOf(m,ti):null;if(r==='W')W++;else if(r==='D')D++;else if(r==='L')L++;g+=+m.stats?.[id]?.g||0;a+=+m.stats?.[id]?.a||0});
   const tr=S.tourns.filter(x=>(x.squad||[]).includes(id)&&x.date<=todayISO());
@@ -2462,7 +2488,7 @@ async function dreamAction(a,el){
   if(a==='dopen'){const L=PM.data.me.dreams||[];DE={i:+el.dataset.i,d:dreamFit(JSON.parse(JSON.stringify(L[+el.dataset.i])))};dreamSel=null;render();return}
   if(a==='dback'){DE=null;dreamSel=null;render();return}
   if(!DE)return;const d=DE.d;
-  if(a==='dslot'){const k=+el.dataset.k;if(dreamSel==null){dreamSel=k}else if(dreamSel===k){dreamSel=null}else{[d.order[dreamSel],d.order[k]]=[d.order[k],d.order[dreamSel]];dreamSel=null}render();return}
+  if(a==='dslot'){const k=+el.dataset.k;dreamSel=dreamSel===k?null:k;render();return}
   if(a==='dpick'){const v=el.dataset.v;let k=dreamSel;if(k==null)k=d.order.indexOf('');if(k<0){toast('All spots are full. Tap a card first to replace that player');return}const was=d.order.indexOf(v);if(was>=0)d.order[was]=d.order[k];d.order[k]=v;
     dreamSel=null;const nx=d.order.indexOf('');if(nx>=0)dreamSel=nx;render();return}
   if(a==='dclear'){if(dreamSel!=null){if(d.cap===d.order[dreamSel])d.cap='';d.order[dreamSel]=''}render();return}
@@ -2547,7 +2573,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='gofocus'){document.getElementById('focus')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='goacct'){if(document.body.classList.contains('mopen'))closeModal();go('acct');return}
   if(a==='preload'){loadPlayer();return}
-  if(a==='psignout'){try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}if(supaUser){ls('atb_mode','mgr');ls('atb_view','match')}location.reload();return}
+  if(a==='psignout'){fWipe();try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}if(supaUser){ls('atb_mode','mgr');ls('atb_view','match')}location.reload();return}
   if(a==='pvote'){const s=el.dataset.s;el.disabled=true;try{const r=await prpc('atb_player_vote',{p_token:PM.tok,p_poll:el.dataset.id,p_status:s});
       if(r==='ok'){toast(s==='in'?'You’re in ✅':'Marked as out');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else{toast('This link is closed');await loadPlayer()}}catch(err){toast('Could not save. Check your connection');el.disabled=false}return}
   if(a==='ppotm'){const pick=$('#pvsel').value;if(!pick){toast('Choose a player');return}el.disabled=true;try{const r=await prpc('atb_player_potm',{p_token:PM.tok,p_match:el.dataset.id,p_pick:pick});
@@ -2558,11 +2584,11 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='pub'){pubPage(el.dataset.id);return}
   if(a==='cmp'){cmpPage(el.dataset.id);return}
   if(a==='story'){storyCard(el.dataset.id);return}
-  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));return}
-  if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';return}
+  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();return}
+  if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';pfKeep();return}
   if(a==='pfsave'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const msg=$('#pfmsg');el.disabled=true;
     const p={nick:$('#pfnick').value,bestPos:$('#pfpos').value,card:pfD.card,ability:pfD.ability,ps:pfD.ps,favPlayer:$('#pffav').value,favMate:$('#pfmate').value,boots:$('#pfboots').value,stadium:$('#pfstad').value,dreamNo:$('#pfno').value.trim()};
-    try{const r=await prpc('atb_player_profile',{p_token:PM.tok,p_prof:p});if(r==='ok'){toast('Profile saved');pfD=null;await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else msg.textContent=r==='disabled'?'Profile editing is turned off by the managers.':'Could not save'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
+    try{const r=await prpc('atb_player_profile',{p_token:PM.tok,p_prof:p});if(r==='ok'){toast('Profile saved');pfD=null;try{sessionStorage.removeItem('atb_pfd')}catch(e){}fClear('p-acct');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else msg.textContent=r==='disabled'?'Profile editing is turned off by the managers.':'Could not save'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
   if(a==='pfphotocancel'){if(PM.preview)return;try{await prpc('atb_player_photo',{p_token:PM.tok,p_img:''});toast('Photo request cancelled');await loadPlayer()}catch(err){toast('Could not cancel')}return}
   if(a==='chem'){const id=el.dataset.id;if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const v=+el.dataset.v;try{const r=await prpc('atb_player_chem',{p_token:PM.tok,p_ratee:id,p_score:v});if(r==='ok'){PM.data.chem=PM.data.chem||{};if(v)PM.data.chem[id]=v;else delete PM.data.chem[id];document.querySelectorAll(`.cst[data-id="${CSS.escape(id)}"]`).forEach((b,i)=>{const n=(i%5)+1;b.classList.toggle('on',n<=v);b.dataset.v=n===v?0:n})}else toast('Could not save')}catch(err){toast('Could not save')}return}
   if(a==='pedit'){const msg=$('#pemsg');el.disabled=true;try{const r=await prpc('atb_player_update',{p_token:PM.tok,p_number:$('#mno')?.value.trim()||'',p_club:$('#pclub')?.value||'',p_nation:$('#mnat')?.value||'',p_dob:$('#mdob')?$('#mdob').value:null});
@@ -2571,7 +2597,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
     try{const r=await prpc('atb_player_setpin',{p_token:PM.tok,p_old:o,p_new:n});msg.textContent=r==='ok'?'PIN changed. Other devices are signed out.':r==='wrong_pin'?'Current PIN is wrong.':'Could not change PIN.';if(r==='ok'){$('#po').value='';$('#pn2').value=''}}catch(err){msg.textContent='Could not change PIN.'}return}
 });
 document.addEventListener('toggle',e=>{const d=e.target;if(PM&&d.classList?.contains('game')&&d.open&&!d.hasAttribute('data-auto'))plog('Opened match',d.querySelector('b')?.textContent)},true);
-document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;const f=e.target.files&&e.target.files[0];if(!f)return;
+document.addEventListener('change',async e=>{if(e.target.id!=='pfphoto'||!PM||PM.preview)return;filePick=0;const f=e.target.files&&e.target.files[0];if(!f)return;
   try{const img=await resizeImg(f,640);const r=await prpc('atb_player_photo',{p_token:PM.tok,p_img:img});if(r==='ok'){toast('Photo sent. A manager will approve it');await loadPlayer()}else toast(r==='bad_image'?'That photo is too big or not supported':'Could not send')}catch(err){toast('Could not send the photo')}});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a]');if(el&&PM&&['dsize','dform','dtac','dcapt'].includes(el.dataset.a))dreamChange(el.dataset.a,el)});
 document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;const box=document.querySelector('.dpk');if(box){const pos=e.target.selectionStart;box.outerHTML=dreamPicker();const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
@@ -2592,9 +2618,9 @@ const DOCN={tournaments:'tournament',gear:'equipment',fixtures:'finalized teams'
 async function putDoc(col,id,data){if(mode!=='db'){toast('Needs sync');return}const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]){const nm=data.name||data.title||data.opp||(col==='fixtures'?fmtDate(id):id),d=old?diffTxt(old,data):'';const lab=docAct;docAct='';logAct(lab||(old?'Edited ':'Added ')+DOCN[col],nm+(d?' — '+d:''))}try{await db.doc(col+'/'+id).set(data);const k=localCol(col);if(k){S[k]=[...S[k].filter(x=>x.id!==id),{...data,id}];render()}}catch(e){toast('Could not save: '+(e.message||e.code))}}
 async function delDoc(col,id){const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]&&col!=='tournaments')logAct((col==='fixtures'?'Unpublished ':'Deleted ')+DOCN[col],old&&(old.name||old.title)||id);if(mode==='db'){try{await db.doc(col+'/'+id).delete();const k=localCol(col);if(k){S[k]=S[k].filter(x=>x.id!==id);render()}}catch(e){toast('Could not delete')}}}
 function watchExtra(){if(mode!=='db'||watchExtra.on)return;watchExtra.on=1;
-  db.collection('tournaments').onSnapshot(s=>{S.tourns=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render()},()=>{});
-  db.collection('fixtures').onSnapshot(s=>{S.fixtures=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&render()},()=>{});
-  db.collection('gear').onSnapshot(s=>{S.gear=s.docs.map(d=>({...d.data(),id:d.id}));if(!S.gear.length&&isAdmin&&cloud==='supa'&&!watchExtra.seeded){watchExtra.seeded=1;seedGear()}loaded&&render()},()=>{})}
+  db.collection('tournaments').onSnapshot(s=>{S.tourns=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
+  db.collection('fixtures').onSnapshot(s=>{S.fixtures=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
+  db.collection('gear').onSnapshot(s=>{S.gear=s.docs.map(d=>({...d.data(),id:d.id}));if(!S.gear.length&&isAdmin&&cloud==='supa'&&!watchExtra.seeded){watchExtra.seeded=1;seedGear()}loaded&&bgRender()},()=>{})}
 function seedGear(){[{cat:'kit',kit:'home',name:'Home kit',c1:'#16244A',c2:'#F28C28',desc:'Add a photo when the new kit arrives.'},{cat:'kit',kit:'away',name:'Away kit',c1:'#F4F4F4',c2:'#16244A',desc:'Add a photo when the new kit arrives.'},
   {cat:'ball',name:'Match balls',qty:4},{cat:'bibs',name:'Training bibs',colors:VIBGYOR.slice(0,7).map(x=>x[2]),qty:24},{cat:'nets',name:'Goal nets',qty:2}]
   .forEach((g,i)=>putDoc('gear','g'+(i+1)+uid().slice(-3),{...g,order:i}))}
@@ -2751,7 +2777,7 @@ function vTournOne(t){if(t.poll&&!tPoll[t.poll])setTimeout(()=>loadTPoll(t),0);c
       <label class="small">On pitch <select data-a="tonp" data-id="${t.id}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n} players</option>`).join('')}</select></label>
       <label class="small">Formation <select data-a="tform" data-id="${t.id}">${formOpts(squad,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
       <label class="small row chk"><input type="checkbox" data-a="tgk" data-id="${t.id}" ${lu.gk?'checked':''}> Keeper</label><button class="btn" data-a="tshare" data-id="${t.id}">Share squad</button></div>
-    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,true,t.name,{a:'tslot',tid:t.id,captain:t.captain,sel:tSlot&&tSlot.t===t.id?{t:0,k:tSlot.k}:null})}<p class="small muted" style="margin:6px 0 0;text-align:center">Tap two players to swap them, on the pitch or with a sub. Players see exactly this line-up.</p></div>`:''}
+    <div class="pitchwrap">${pitchHTML({kit:t.kit||'',players:squad},lu,0,true,t.name,{a:'tslot',tid:t.id,captain:t.captain,sel:tSlot&&tSlot.t===t.id?{t:0,k:tSlot.k}:null})}<p class="small muted" style="margin:6px 0 0;text-align:center">Drag a player onto another to swap them, on the pitch or with a sub. Players see exactly this line-up.</p></div>`:''}
   <h3 class="tsh">4 · Results</h3><div class="panel stack">
     ${g.map((x,i)=>`<div class="tg"><select id="tgs_${i}">${['Group','Round of 16','Quarter-final','Semi-final','Final','Friendly'].map(k=>`<option ${x.stage===k?'selected':''}>${k}</option>`).join('')}</select><input id="tgo_${i}" value="${esc(x.opp||'')}" placeholder="Opponent"><input id="tgf_${i}" class="num" type="number" min="0" value="${esc(x.gf??'')}" placeholder="Us"><span>–</span><input id="tga_${i}" class="num" type="number" min="0" value="${esc(x.ga??'')}" placeholder="Them"><button class="btn ghost small" data-a="tgdel" data-id="${t.id}" data-i="${i}">✕</button><div class="tgx"><input id="tgc_${i}" list="stafflist" maxlength="40" value="${esc(x.coach||'')}" placeholder="Coach: ${esc(t.coach||'same as tournament')}"><input id="tgm_${i}" list="stafflist" maxlength="40" value="${esc(x.manager||'')}" placeholder="Manager: ${esc(t.manager||'same as tournament')}"></div></div>`).join('')}
     <div class="row"><button class="btn" data-a="tgadd" data-id="${t.id}">＋ Add game</button><span class="small muted">${rec.n?`W${rec.W} D${rec.D} L${rec.L} · ${rec.GF}–${rec.GA}`:''}</span></div>
@@ -3054,6 +3080,34 @@ function statBars(rows,ovr){return `<dl class="pstats">${ovr!=null?`<div class="
 function chemBlock(ids,sel){if(PM||!chemS.rows)return '';if(sel){const L=ids.filter(x=>x!==sel).map(x=>[x,pairChem(sel,x)]).filter(x=>x[1]!=null).sort((a,b)=>b[1]-a[1]);
     return `<div class="chemb"><div class="ps-sh">Chemistry with teammates</div>${L.length?L.map(([x,v])=>`<div class="chemr"><span>${esc(shortName(pById(x)?.name))}</span><span class="chem c${Math.round(v)}"><b>${Math.round(v*10)/10}</b></span></div>`).join(''):'<div class="small muted">No ratings yet.</div>'}</div>`}
   const c=teamChem(ids);return `<div class="chemb"><div class="ps-sh">Team chemistry</div>${c?`<div class="chemr"><span>${c.n} rated pairs</span><span class="chem c${Math.round(c.v)}"><b>${c.v}</b>/5</span></div>`:'<div class="small muted">No ratings yet. Players rate teammates in their Squad tab.</div>'}</div>`}
+/* Drag a pitch card (or a sub) and drop it near another position: the nearest player there swaps in, like an FC squad screen. A quick tap still just selects. */
+const DRAGA=['slot','tslot','dslot'];let pdrag=null,pdragEat=0;
+async function pitchSwap(a,i,k1,k2){if(k1===k2)return;
+  if(a==='slot'){const lu=teamLU(i);[lu.order[k1],lu.order[k2]]=[lu.order[k2],lu.order[k1]];draft.sel=null;saveDraft();render();return}
+  if(a==='dslot'){if(!DE)return;const o=DE.d.order;[o[k1],o[k2]]=[o[k2],o[k1]];dreamSel=null;render();return}
+  if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const lu=tLU(t);[lu.order[k1],lu.order[k2]]=[lu.order[k2],lu.order[k1]];t.lu=lu;tSlot=null;await putDoc('tournaments',t.id,t)}}
+const pdCenter=el=>{const r=el.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]};
+document.addEventListener('pointerdown',e=>{if(e.button>0)return;const el=e.target.closest('button.pc[data-a],button.subb[data-a]');if(!el||!DRAGA.includes(el.dataset.a))return;
+  const root=el.closest('.pstw,.pitchwrap,.mpitch')||el.parentNode;
+  const grp=[...root.querySelectorAll('button.pc[data-a],button.subb[data-a]')].filter(b=>b!==el&&b.dataset.a===el.dataset.a&&b.dataset.i===el.dataset.i);
+  pdrag={el,grp,x0:e.clientX,y0:e.clientY,c0:pdCenter(el),on:false,tg:null,id:e.pointerId,raf:0,x:e.clientX,y:e.clientY}},true);
+function pdFrame(){pdrag.raf=0;const d=pdrag,dx=d.x-d.x0,dy=d.y-d.y0;d.el.style.setProperty('--dx',dx+'px');d.el.style.setProperty('--dy',dy+'px');
+  const pc=d.el.classList.contains('pc'),w=d.el.offsetWidth||60,cx=d.c0[0]+dx,cy=d.c0[1]+dy;let best=null,bd=Infinity;
+  d.grp.forEach(b=>{const [bx,by]=pdCenter(b),dist=Math.hypot(bx-cx,by-cy)-(b.classList.contains('subb')?Math.max(b.offsetWidth,b.offsetHeight)/2:0);if(dist<bd){bd=dist;best=b}});
+  const tg=best&&bd<Math.max(w*1.1,48)?best:null;
+  if(tg!==d.tg){if(d.tg){d.tg.classList.remove('swapt');d.tg.style.removeProperty('--dx');d.tg.style.removeProperty('--dy')}
+    if(tg){tg.classList.add('swapt');if(pc&&tg.classList.contains('pc')){const [tx,ty]=pdCenter(tg);tg.style.setProperty('--dx',(d.c0[0]-tx)*.35+'px');tg.style.setProperty('--dy',(d.c0[1]-ty)*.35+'px')}
+      try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
+    d.tg=tg}}
+document.addEventListener('pointermove',e=>{const d=pdrag;if(!d||e.pointerId!==d.id)return;d.x=e.clientX;d.y=e.clientY;
+  if(!d.on){if(Math.hypot(d.x-d.x0,d.y-d.y0)<7)return;d.on=true;d.el.classList.add('drag');document.body.classList.add('pdragging');try{d.el.setPointerCapture(d.id)}catch(err){}}
+  e.preventDefault();if(!d.raf)d.raf=requestAnimationFrame(pdFrame)},{passive:false});
+function pdEnd(e,cancel){const d=pdrag;if(!d||e.pointerId!==d.id)return;pdrag=null;if(d.raf)cancelAnimationFrame(d.raf);if(!d.on)return;
+  pdragEat=Date.now();document.body.classList.remove('pdragging');const tg=d.tg;
+  [d.el,tg].forEach(b=>{if(!b)return;b.classList.remove('drag','swapt');b.style.removeProperty('--dx');b.style.removeProperty('--dy')});
+  if(!cancel&&tg)pitchSwap(d.el.dataset.a,+d.el.dataset.i,+d.el.dataset.k,+tg.dataset.k)}
+document.addEventListener('pointerup',e=>pdEnd(e,false));document.addEventListener('pointercancel',e=>pdEnd(e,true));
+document.addEventListener('click',e=>{if(Date.now()-pdragEat<350&&e.target.closest('button.pc,button.subb')){e.stopPropagation();e.preventDefault()}},true);
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr=interactive&&!PM,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
@@ -3087,8 +3141,8 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     :nav==='formation'?`<div class="ps-form row">${opt?.tid?`<label class="small">On pitch <select data-a="tonp" data-id="${opt.tid}">${[5,6,7,8,9,10,11].map(n=>`<option value="${n}" ${n===lu.n?'selected':''}>${n}</option>`).join('')}</select></label>`:''}
         <label class="small">Formation <select ${opt?.tid?`data-a="tform" data-id="${opt.tid}"`:`data-a="form" data-i="${ti}"`}>${formOpts(lu.order,lu.gk,lu.n).map(f=>`<option ${f===lu.f?'selected':''}>${f}</option>`).join('')}</select></label>
         <label class="small row chk"><input type="checkbox" ${opt?.tid?`data-a="tgk" data-id="${opt.tid}"`:`data-a="gk" data-i="${ti}"`} ${lu.gk?'checked':''}> Keeper</label>
-        ${opt?.tid?'':`<label class="small">Captain <select data-a="dcap" data-i="${ti}"><option value="">None</option>${lu.order.map(x=>`<option value="${x}" ${capNow===x?'selected':''}>${esc(pById(x)?.name||'')}</option>`).join('')}</select></label>`}<span class="small muted">Tap a card, then another card or a sub, to swap.</span></div>`
-    :nav==='squad'?(subs?`<div class="ps-subs">${subs}</div><div class="small muted">Tap a sub, then a card to bring them on.</div>`:'<div class="small muted">No subs: everyone is on the pitch.</div>')
+        ${opt?.tid?'':`<label class="small">Captain <select data-a="dcap" data-i="${ti}"><option value="">None</option>${lu.order.map(x=>`<option value="${x}" ${capNow===x?'selected':''}>${esc(pById(x)?.name||'')}</option>`).join('')}</select></label>`}<span class="small muted">Drag a player onto another position or a sub to swap.</span></div>`
+    :nav==='squad'?(subs?`<div class="ps-subs">${subs}</div><div class="small muted">Drag a sub onto a card to bring them on.</div>`:'<div class="small muted">No subs: everyone is on the pitch.</div>')
     :nav==='kit'?`<label class="small row chk"><input type="checkbox" data-a="pnums" ${pNums?'checked':''}> Show shirt numbers on cards</label><div class="small muted">${onp.filter(id=>!pById(id)?.number).length?onp.filter(id=>!pById(id)?.number).map(id=>esc(shortName(pById(id)?.name))).join(', ')+' have no number yet.':'Everyone on the pitch has a number.'}</div>`
     :`<div class="small muted">${sp?'Stats for '+esc(sp.name):'Team averages. Tap a card for one player.'}</div>`;
   return `<div class="pstw"><div class="pstudio"><aside class="ps-side"><h2 class="ps-h">Team Management</h2>${dyn}
@@ -3228,10 +3282,9 @@ document.addEventListener('click',async e=>{
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
   if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const k=+el.dataset.k;
-    if(tSlot&&tSlot.t===t.id&&tSlot.k!==k){const lu=tLU(t);[lu.order[tSlot.k],lu.order[k]]=[lu.order[k],lu.order[tSlot.k]];t.lu=lu;tSlot=null;await putDoc('tournaments',t.id,t);return}
     tSlot=tSlot&&tSlot.t===t.id&&tSlot.k===k?null:{t:t.id,k};render();return}
   if(a==='slot'){const i=+el.dataset.i,k=+el.dataset.k;const s=draft.sel;
-    if(s&&s.t===i&&s.k!==k){const lu=teamLU(i);[lu.order[s.k],lu.order[k]]=[lu.order[k],lu.order[s.k]];draft.sel=null}else draft.sel=s&&s.t===i&&s.k===k?null:{t:i,k};saveDraft();render();return}
+    draft.sel=s&&s.t===i&&s.k===k?null:{t:i,k};saveDraft();render();return}
   if(a==='shareteam'){shareModal(draftAsMatch(),String(el.dataset.i));return}
   if(a==='sharesel'){shareModal(lastShareM,el.dataset.s);return}
   if(a==='gosync'){go('settings');setTimeout(()=>$('#syncsec')?.scrollIntoView(),50);return}
