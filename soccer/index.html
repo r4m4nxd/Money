@@ -1608,7 +1608,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022231',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022234',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -3616,20 +3616,22 @@ async function loadForSnap(src){let url=src,tmp=null;
   const im=new Image();if(!tmp&&!src.startsWith('data:'))im.crossOrigin='anonymous';
   try{await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;setTimeout(no,6000);im.src=url})}catch(e){if(tmp)URL.revokeObjectURL(tmp);return null}
   return {im,done:()=>tmp&&URL.revokeObjectURL(tmp)}}
-async function snapCard(el){const imgs=[...el.querySelectorAll('img')];
-  const list=await Promise.all(imgs.map(async i=>{const r=i.getBoundingClientRect(),src=i.currentSrc||i.src;if(!r.width||!r.height||!src)return null;
+// saved images: as sharp as the phone allows (up to 4x screen; iPhone canvases top out near 16.7M pixels)
+const snapScale=el=>{const r=el.getBoundingClientRect(),a=Math.max(1,r.width*r.height);return Math.max(1.5,Math.min(4,Math.floor(Math.sqrt(16e6/a)*4)/4))};
+async function snapCard(el){const imgs=[...el.querySelectorAll('img')],S=snapScale(el);
+  const list=await Promise.all(imgs.map(async i=>{const r=i.getBoundingClientRect(),src=(i.currentSrc||i.src).replace(/\/cards\/[mt]_/,'/cards/');if(!r.width||!r.height||!src)return null;
     // other sites' crests block canvas copies: retry through an image proxy that allows it, else draw our colour badge
     let L=await loadForSnap(src);if(!L&&!src.startsWith('data:')&&new URL(src,location.href).origin!==location.origin)L=await loadForSnap('https://wsrv.nl/?url='+encodeURIComponent(src)+'&output=png');
     if(!L&&i.dataset.club){const t=colourBadge(i.dataset.club,'x').replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" width="40" height="46"');L=await loadForSnap('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(t))}
     if(!L)return null;const {im}=L,cs=getComputedStyle(i),fit=cs.objectFit;
-    const w=Math.round(r.width*2),h=Math.round(r.height*2),iw=im.naturalWidth||im.width||640,ih=im.naturalHeight||im.height||480;
+    const w=Math.round(r.width*S),h=Math.round(r.height*S),iw=im.naturalWidth||im.width||640,ih=im.naturalHeight||im.height||480;
     const k=fit==='cover'?Math.max(w/iw,h/ih):fit==='contain'||fit==='scale-down'?Math.min(w/iw,h/ih):0;const pos=cs.objectPosition.split(' ').map(v=>parseFloat(v)/100);
     const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');if(i.closest('.cut')){g.shadowColor='rgba(0,0,0,.5)';g.shadowBlur=Math.round(w*.04);g.shadowOffsetX=Math.round(w*.025);g.shadowOffsetY=Math.round(w*.04)}
     try{if(k)g.drawImage(im,(w-iw*k)*(isNaN(pos[0])?.5:pos[0]),(h-ih*k)*(isNaN(pos[1])?.5:pos[1]),iw*k,ih*k);else g.drawImage(im,0,0,w,h);g.getImageData(0,0,1,1);return c}catch(e){return null}finally{L.done()}}));
   // iPhone Safari often leaves images blank inside html2canvas's hidden copy of the page, so each image goes in as a ready-drawn canvas (nothing left to load)
   const KEEP=['display','position','top','right','bottom','left','margin-top','margin-right','margin-bottom','margin-left','vertical-align','border-radius','z-index','opacity','flex-shrink','flex-grow','float','align-self','justify-self','grid-area','box-shadow','border'];
   const box=imgs.map(i=>{const cs=getComputedStyle(i);return {w:i.offsetWidth||i.getBoundingClientRect().width,h:i.offsetHeight||i.getBoundingClientRect().height,css:KEEP.map(k=>k+':'+cs.getPropertyValue(k)).join(';')}});
-  el.classList.add('snap');let out;try{out=await html2canvas(el,{backgroundColor:'#0F1B2B',scale:2,useCORS:true,imageTimeout:15000,onclone:doc=>{const cl=doc.getElementById(el.id)||doc.querySelector('#sharecard');cl.classList.add('snap');
+  el.classList.add('snap');let out;try{out=await html2canvas(el,{backgroundColor:'#0F1B2B',scale:S,useCORS:true,imageTimeout:15000,onclone:doc=>{const cl=doc.getElementById(el.id)||doc.querySelector('#sharecard');cl.classList.add('snap');
     [...cl.querySelectorAll('img')].forEach((i,k)=>{i.removeAttribute('loading');const src=list[k];if(!src)return;
       try{const c=doc.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);c.className=i.className;c.setAttribute('style',box[k].css+';width:'+box[k].w+'px;height:'+box[k].h+'px;max-width:none;max-height:none');i.replaceWith(c)}
       catch(e){i.src=src.toDataURL('image/png');i.removeAttribute('srcset');i.style.objectFit='fill'}})}});
@@ -4065,7 +4067,7 @@ function tbGoto(snap,dur,done){const a=tbSnap();TB.ball.own=-1;tbAnim(dur,k=>{TB
     ()=>{TB.ball.own=snap.ball.own;tbPlace();done&&done()})}
 async function tbImage(){const svg=$('#tbsvg').cloneNode(true);svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('width',TBW);svg.setAttribute('height',TBH);
   const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=src});
-  const c=document.createElement('canvas'),k=1.5;c.width=TBW*k;c.height=(TBH+150)*k;const g=c.getContext('2d');g.scale(k,k);g.fillStyle='#0b1a33';g.fillRect(0,0,TBW,TBH+150);g.fillStyle='#fff';g.font='900 34px system-ui,sans-serif';g.fillText((TB.title||'Tactic board').toUpperCase(),24,52);g.font='600 18px system-ui,sans-serif';g.fillStyle='#A9B8D2';g.fillText(`${TB.f} · Airdrie United tactic board`,24,82);
+  const c=document.createElement('canvas'),k=3;c.width=TBW*k;c.height=(TBH+150)*k;const g=c.getContext('2d');g.scale(k,k);g.fillStyle='#0b1a33';g.fillRect(0,0,TBW,TBH+150);g.fillStyle='#fff';g.font='900 34px system-ui,sans-serif';g.fillText((TB.title||'Tactic board').toUpperCase(),24,52);g.font='600 18px system-ui,sans-serif';g.fillStyle='#A9B8D2';g.fillText(`${TB.f} · Airdrie United tactic board`,24,82);
   g.drawImage(img,0,104,TBW,TBH);g.font='700 13px system-ui,sans-serif';g.fillStyle='rgba(255,255,255,.65)';g.textAlign='right';g.fillText('Developed by Raman · AUFC App',TBW-16,TBH+138);
   c.toBlob(b=>saveImage(b,'tactic-board.png'),'image/png')}
 async function tbAction(a,el){if(!TB)return;
@@ -4330,7 +4332,7 @@ const withTimeout=(pr,ms,msg)=>Promise.race([pr,new Promise((_,no)=>setTimeout((
 function canvasBlob(c){return withTimeout(new Promise(r=>{try{c.toBlob(b=>r(b),'image/png')}catch(e){r(null)}}),8000).catch(()=>null).then(async b=>{if(b)return b;try{return await (await fetch(c.toDataURL('image/png'))).blob()}catch(e){return null}})}
 async function makeImgBlob(el){let c=null;
   try{c=await withTimeout(snapCard(el),25000)}catch(e){c=null}
-  if(!c){try{c=await withTimeout(html2canvas(el,{backgroundColor:'#0F1B2B',scale:1.5,useCORS:true,imageTimeout:6000}),20000)}catch(e){c=null}}
+  if(!c){try{c=await withTimeout(html2canvas(el,{backgroundColor:'#0F1B2B',scale:snapScale(el),useCORS:true,imageTimeout:6000}),20000)}catch(e){c=null}}
   if(!c)return null;const b=await canvasBlob(c);try{c.width=c.height=0}catch(e){}return b}
 function prepImg(name){const tok={name};imgPrep=tok;const fin=()=>{tok.done=true;tok.wait?.()};if(!window.html2canvas){fin();return}
   setTimeout(async()=>{if(imgPrep!==tok){fin();return}try{const el=$('#sharecard');if(!el){fin();return}
