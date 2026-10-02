@@ -114,3 +114,7 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Version gate: private.atb_cfg(min_build); atb_docs insert/update/delete also need private.atb_build_ok() (build number sent in x-client-info as atb/yyyymmddHHMM).
 -- RPCs: atb_min_build(), atb_set_min_build(text) (admin). Player sessions end after 1 hour without use (private.atb_session).
 -- Player sign-in pushes come from 'Signed in on' (device) sent by the app right after a PIN sign-in.
+
+-- Player profile: public.atb_player_profile(token, jsonb) -> data.prof {nick,bestPos,card,ability,ps[<=5],favPlayer,favMate,boots,stadium,dreamNo}; settings.playerProfile (default on).
+-- Photo requests: public.atb_player_photo(token, dataURL|'') -> data.photoReq {img,at}; managers approve in Squad.
+-- Chemistry: public.atb_chem(team, rater, ratee, score 1-5), RLS read for the team; public.atb_player_chem(token, ratee, score 0-5). Payload adds players[].prof and chem (my ratings).
