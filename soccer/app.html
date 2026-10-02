@@ -665,6 +665,8 @@ header.top{view-transition-name:hdr}
 .pc-ic{bottom:4.5%}
 .badge-position.cap,.badge-position.star{top:4%!important;bottom:auto!important;right:4%!important}
 .pcpip{top:auto!important;bottom:6%!important;right:6%!important}
+.ccpick .ccsw{min-width:0;height:104px;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 5px 9px;border-radius:12px 12px 22px 22px;font:800 11px/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.02em;box-shadow:0 4px 12px rgba(0,0,0,.22);transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .2s}.ccpick .ccsw[aria-pressed=true]{outline:3px solid var(--accent);outline-offset:2px;transform:translateY(-3px)}.ccpick .ccsw:first-child{color:#3a2a06;text-shadow:none}
+.ccdot{width:18px!important;height:22px!important;border-radius:4px 4px 7px 7px!important}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -748,7 +750,7 @@ body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .chemb{margin-top:12px;padding-top:10px;border-top:1px solid rgba(127,140,155,.25)}.chemr{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:2px 0}
 
 .nick{font-weight:600;color:var(--muted);font-style:italic}
-.pfed .f>span{font-weight:700}.ccpick{display:flex;flex-wrap:wrap;gap:6px}.ccsw{min-width:74px;height:40px;border-radius:10px;border:2px solid var(--line);background:linear-gradient(160deg,#FFF0B4,#C99A3A);font:700 12px var(--f-body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);cursor:pointer;padding:0 8px}.ccsw[aria-pressed=true]{outline:3px solid var(--accent);outline-offset:2px}
+.pfed .f>span{font-weight:700}.ccpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}.ccsw{min-width:74px;height:40px;border-radius:10px;border:2px solid var(--line);background:linear-gradient(160deg,#FFF0B4,#C99A3A);font:700 12px var(--f-body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);cursor:pointer;padding:0 8px}.ccsw[aria-pressed=true]{outline:3px solid var(--accent);outline-offset:2px}
 .abgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}.abopt{background:none;border:0;padding:0;text-align:left;cursor:pointer}.abopt .abil{width:100%}.abopt[aria-pressed=true] .abil{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface2))}
 .pspick{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px}.psopt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);cursor:pointer;color:var(--ink)}.psopt small{font-size:10.5px;line-height:1.1;text-align:center}.psopt .psb img{filter:grayscale(1) brightness(.6);opacity:.5}.psopt[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.psopt[aria-pressed=true] .psb img{filter:none;opacity:1}
 .pfprev{width:64px;height:64px;border-radius:12px;object-fit:cover}
@@ -1055,7 +1057,38 @@ const STADIUMS=[
 const BOOTS=[['Nike',['Mercurial Superfly','Mercurial Vapor','Phantom GX','Phantom Luna','Tiempo Legend','Premier III']],['adidas',['Predator','F50','X Crazyfast','Copa Pure','Copa Mundial']],['Puma',['Future','Ultra','King']],['New Balance',['Furon','Tekela','442']],['Mizuno',['Morelia Neo','Morelia II','Alpha']],['Others',['Under Armour Magnetico','Skechers SKX_01','Skechers Razor','Umbro Speciali','Lotto Stadio','Diadora Brasil','Joma Aguila','Asics DS Light','Kipsta Viralto','Turf / indoor shoes']]];
 const BESTPOS=['GK','CB','LB','RB','LWB','RWB','CDM','CM','CAM','LM','RM','LW','RW','CF','ST'];
 /* card colours a player may pick (gold/silver/bronze/special stay earned) */
-const CARDCOL={red:['Red','#FF8A8A','#C8202B','#F25C5C','#fff'],blue:['Blue','#8DB8FF','#1E4FC2','#5C8EF0','#fff'],green:['Green','#8EE6A6','#178A43','#4CC274','#fff'],purple:['Purple','#C9A2FF','#5B2BB5','#9566E8','#fff'],pink:['Pink','#FFB3DA','#D63A8C','#F27BB8','#fff'],teal:['Teal','#8FF0E4','#0E8C80','#3CC4B4','#fff'],orange:['Orange','#FFC48A','#E06A0E','#FA9A3C','#2a1300'],navy:['Navy','#7F96C9','#14224A','#3A4F86','#fff'],carbon:['Carbon','#9AA3AE','#2B3038','#5F6873','#fff'],ice:['Ice','#FFFFFF','#9FD6F2','#DDF2FC','#0f2a3a'],lime:['Lime','#E6FF8F','#7DB31A','#B6E04A','#1c2600'],maroon:['Maroon','#D98C9A','#6E1424','#A33B4E','#fff']};
+const CARDCOL0={red:['Red','#FF8A8A','#C8202B','#F25C5C','#fff'],blue:['Blue','#8DB8FF','#1E4FC2','#5C8EF0','#fff'],green:['Green','#8EE6A6','#178A43','#4CC274','#fff'],purple:['Purple','#C9A2FF','#5B2BB5','#9566E8','#fff'],pink:['Pink','#FFB3DA','#D63A8C','#F27BB8','#fff'],teal:['Teal','#8FF0E4','#0E8C80','#3CC4B4','#fff'],orange:['Orange','#FFC48A','#E06A0E','#FA9A3C','#2a1300'],navy:['Navy','#7F96C9','#14224A','#3A4F86','#fff'],carbon:['Carbon','#9AA3AE','#2B3038','#5F6873','#fff'],ice:['Ice','#FFFFFF','#9FD6F2','#DDF2FC','#0f2a3a'],lime:['Lime','#E6FF8F','#7DB31A','#B6E04A','#1c2600'],maroon:['Maroon','#D98C9A','#6E1424','#A33B4E','#fff']};
+const CARDCOL={...CARDCOL0};
+/* Special card designs (inspired by FC promo cards; our own names and artwork, drawn with CSS so they work in saved images too).
+   [name, top, bottom, mid, ink, accent, rimLight, rimDark, art layers] */
+const SP=(x,y,a,r)=>`radial-gradient(circle at ${x}% ${y}%,rgba(255,255,255,${a}) 0 ${r}%,transparent ${r*2.2}%)`;
+const SPK=SP(18,14,.7,1.2)+','+SP(82,24,.55,.9)+','+SP(66,62,.45,.8)+','+SP(26,48,.4,.7)+','+SP(48,84,.4,.7);
+const GT=c=>`radial-gradient(120% 55% at 50% 0%,${c},transparent 62%)`,GC=c=>`radial-gradient(75% 55% at 68% 34%,${c},transparent 72%)`,GE=c=>`radial-gradient(140% 70% at 50% 112%,${c},transparent 58%)`;
+const CARDTHEMES={
+  legend:['Legend','#FFFDF5','#CDB98A','#EFE6CF','#3A2E14','#8A6A22','#F8EBBE','#A8822E',GT('rgba(255,255,255,.85)')+','+GE('rgba(186,150,70,.35)')],
+  hero:['Hero Storm','#C9A6FF','#2B0C6E','#7A3BEA','#FFFFFF','#FFD86B','#E6D2FF','#5B21C2',GC('rgba(255,90,220,.45)')+','+SPK+','+GE('rgba(40,200,255,.35)')],
+  galaxy:['Galaxy','#7FA0FF','#170936','#5B2CCB','#FFFFFF','#FFC6F4','#D8C8FF','#3B1C8E',GC('rgba(255,110,200,.42)')+','+SPK],
+  starball:['Starball','#6BB8FF','#081A5C','#1B46C4','#FFFFFF','#CFE6FF','#CFE6FF','#1B3A9E',SPK+','+GT('rgba(255,255,255,.35)')],
+  inferno:['Inferno','#FFC15A','#5E0B17','#F04A1C','#FFFFFF','#FFE6A3','#FFD27A','#B31E12',GC('rgba(255,230,120,.55)')+','+GE('rgba(120,0,60,.5)')],
+  crimson:['Crimson','#FF7A7A','#5C0010','#D51A2E','#FFFFFF','#FFE3A0','#FFC2C2','#8E0A1C',GT('rgba(255,255,255,.35)')],
+  copper:['Copper Storm','#FFD3A6','#3E1A0E','#B8683A','#FFFFFF','#FFE3C2','#FFD9B0','#7A3E1E',GC('rgba(255,200,120,.45)')+','+GE('rgba(40,10,0,.45)')],
+  heatwave:['Heatwave','#FFF06A','#2FA85A','#FF8A1E','#1D1300','#3A1E00','#FFF7A8','#C25A00',GC('rgba(255,255,255,.35)')],
+  golden:['Golden Glow','#FFF59A','#7A5A00','#F2B705','#241A00','#5A4000','#FFF7B8','#B88A00',GC('rgba(255,255,255,.5)')+','+SPK],
+  volt:['Volt','#E4FF4F','#0A1204','#4C7A00','#FFFFFF','#E4FF4F','#E4FF4F','#2E4A00',GC('rgba(200,255,60,.45)')+','+GE('rgba(0,0,0,.5)')],
+  emerald:['Emerald','#B9F5CF','#063D20','#1FA556','#FFFFFF','#E3FFD9','#D8FFE6','#0E6B35',GC('rgba(255,255,255,.3)')],
+  aqua:['Aqua Future','#9CF6E4','#05463F','#17A891','#FFFFFF','#D6FFF6','#C8FFF1','#0C7466',GT('rgba(255,255,255,.4)')+','+SPK],
+  pearl:['Pearl Mint','#FFFFFF','#56C6A8','#BDF2E2','#0B3A30','#0E6B55','#FFFFFF','#7FD9C0',GT('rgba(255,255,255,.8)')],
+  sky:['Sky','#F2FAFF','#2B86D9','#8ED0FF','#06294A','#0D4C86','#FFFFFF','#4AA3EC',GT('rgba(255,255,255,.7)')],
+  royal:['Royal Gold','#4F6BD0','#060E2C','#15276A','#FFFFFF','#F4D98A','#F4D98A','#9C7A2A',GT('rgba(244,217,138,.35)')+','+SPK],
+  rose:['Rose Holo','#FFD3EC','#7A1450','#F05BAE','#FFFFFF','#FFF0F8','#FFE4F3','#B02A78',SPK+','+GT('rgba(255,255,255,.4)')],
+  blackout:['Matchday Black','#5A606A','#0C0D10','#24272D','#FFFFFF','#E9EDF2','#D9DEE5','#3A3F47',GT('rgba(255,255,255,.18)')+','+SPK],
+  shadow:['Shadow Red','#70747D','#0E0F12','#2B2E35','#FFFFFF','#FF5A5A','#FF6B6B','#2B2E35',GE('rgba(255,40,40,.45)')+','+GT('rgba(255,255,255,.15)')]};
+Object.entries(CARDTHEMES).forEach(([k,[n,top,bot,mid,ink]])=>{CARDCOL[k]=[n,top,bot,mid,ink]});
+(()=>{const css=Object.entries(CARDTHEMES).map(([k,[n,top,bot,mid,ink,acc,rl,rd,art]])=>{const bg=`${art},linear-gradient(180deg,${top} 0%,${mid} 46%,${bot} 100%)`;
+  return `.fut.fut.cc-${k}{--c1:${top};--c2:${bot};--c3:${mid};--ink2:${ink};--lab:${acc};--glow:rgba(255,255,255,.32);--rim:linear-gradient(160deg,${rl} 0%,${rd} 40%,${rl} 66%,${rd} 100%)}
+.fut.fut.cc-${k} .fbody::before{background:${bg}}.fut.fut.cc-${k} .fn,.fut.fut.cc-${k} .fl,.fut.fut.cc-${k} .ovr,.fut.fut.cc-${k} .ps,.fut.fut.cc-${k} .fs b{color:${ink}}.fut.fut.cc-${k} .fs i{color:${acc}}.pc.pc.cc-${k} .pc-card{background:${bg};color:${ink};border-color:${rl}}.pc.cc-${k}{color:${ink};--cf:${mid};--cf0:${mid}00}
+.sty-card.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}.ccsw.cc-${k},.ccdot.cc-${k}{background:${bg}!important;color:${ink}!important;border-color:${rl}!important}`}).join('\n');
+  const st=document.createElement('style');st.id='cardthemes';st.textContent=css;(document.body||document.head).appendChild(st)})();
 /* one signature ability per player: icon + plain label so its meaning is obvious */
 const ABILITIES={speed:['zap','Speedster','rapid pace'],sniper:['target','Sniper','clinical finisher'],vision:['eye','Playmaker','sees the pass'],wall:['shield','Brick Wall','tough to beat'],engine:['battery','Engine','runs all game'],magic:['wand','Magician','dribbling skills'],captain:['crown','Captain','leads the team'],rocket:['rocket','Long Ranger','long shots'],gloves:['glove','Safe Hands','great keeper'],clutch:['flame','Clutch','big-game player'],tank:['dumb','Tank','strength'],fox:['ball','Fox in the Box','poacher'],thief:['swap','Ball Winner','wins it back'],flair:['spark','Showman','tricks and flair'],assist:['assist','Assist King','sets up goals']};
 const prof=p=>p&&p.prof||{};
@@ -2504,7 +2537,7 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
-    <div><div class="f"><span>Card colour</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDCOL).map(([k,v])=>[k,v[0]])).map(([k,l])=>`<button class="ccsw${k?' cc-'+k:''}" aria-pressed="${pfD.card===k}" data-a="pfcard" data-v="${k}" title="${l}" style="${k?`background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})`:''}"><span>${l}</span></button>`).join('')}</div>
+    <div><div class="f"><span>Card design</span></div><div class="ccpick">${[['','Earned colour']].concat(Object.entries(CARDTHEMES).map(([k,v])=>[k,v[0]])).concat(pfD.card&&!CARDTHEMES[pfD.card]&&CARDCOL[pfD.card]?[[pfD.card,CARDCOL[pfD.card][0]]]:[]).map(([k,l])=>`<button class="ccsw${k?' cc-'+k:''}" aria-pressed="${pfD.card===k}" data-a="pfcard" data-v="${k}" title="${l}" style="${k?`background:linear-gradient(160deg,${CARDCOL[k][1]},${CARDCOL[k][2]})`:''}"><span>${l}</span></button>`).join('')}</div>
       <div class="small muted">Your level still shows on your card as a small gold, silver, bronze or ★ badge.</div></div>
     <div><div class="f"><span>Signature ability <span class="muted">(pick one)</span></span></div><div class="abgrid">${Object.keys(ABILITIES).map(k=>`<button class="abopt" aria-pressed="${pfD.ability===k}" data-a="pfabil" data-v="${k}">${abilityChip(k)}</button>`).join('')}</div></div>
     <div><div class="f"><span>My PlayStyles <span class="muted">(pick up to 5 · managers award the rest)</span></span></div><div class="pspick">${PSTYLES.flatMap(([,l])=>l).map(x=>`<button class="psopt" aria-pressed="${pfD.ps.includes(x[1])}" data-a="pfps" data-v="${esc(x[1])}">${psBadge(x[1],'on')}<small>${esc(x[1])}</small></button>`).join('')}</div><div class="small muted" id="pfpsn">${pfD.ps.length} of 5 picked</div></div>
@@ -2549,7 +2582,7 @@ function storyCard(id){const p=pById(id);if(!p)return;const pr=prof(p),st=pubSta
   const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
   openModal(`<div class="mh"><h2>Share my player page</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div id="sharecard" class="story"><div class="sty-h"><img src="icons/crest-640.jpg" alt=""><div><b>${esc((S.settings.club||{}).name||'Airdrie United')}</b><span>Player card · ${esc(S.settings.season||new Date().getFullYear())}</span></div></div>
-    <div class="sty-card t-${tr}" style="${bg}">${cc&&known?`<span class="sty-pip ${t}">${t==='special'?'★ Special':t}</span>`:''}
+    <div class="sty-card t-${tr}${cc?' cc-'+cc:''}" style="${bg}">${cc&&known?`<span class="sty-pip ${t}">${t==='special'?'★ Special':t}</span>`:''}
       <div class="sty-top">${show?`<b>${r.ovr}</b>`:''}<span>${esc(pr.bestPos||p.pos)}</span></div>
       <div class="sty-ph${pic?' hp':''}${pic&&p.photoCut?' cut':''}" style="${col?`--cf:${col[2]};--cf0:${col[2]}00`:''}">${pic?`<img src="${pic}" alt="">`:`<img class="sil" src="${SILURI('rgba(70,45,10,.3)')}" alt="">`}</div>
       <div class="sty-nm">${esc(titleName(p.name))}</div><div class="sty-ic">${p.nation?`<img src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${club?clubBadge(p.club,'cb'):''}${p.number?`<span>#${esc(p.number)}</span>`:''}</div></div>
@@ -3001,7 +3034,7 @@ function posRatings(r){const f=r.fwd*100,m=r.mid*100,d=r.def*100,pc=r.pace*100,x
   return {ST:x(f),LW:x((f+pc)/2),RW:x((f+pc)/2),CAM:x((f+m)/2),LM:x((m+pc)/2),CM:x(m),RM:x((m+pc)/2),CDM:x((m+d)/2),LB:x((d+pc)/2),CB:x(d),RB:x((d+pc)/2)}}
 /* What a player chose for their own profile, shown to every player and manager */
 function profBlock(p,noPs){const pr=prof(p),mate=pr.favMate&&(!PM||p.id===PM.data.me.id)&&pById(pr.favMate),cc=ccOf(p);
-  const f=[['Nickname',pr.nick&&'“'+esc(pr.nick)+'”'],['Card colour',cc&&`<span class="ccdot cc-${cc}" style="background:linear-gradient(160deg,${CARDCOL[cc][1]},${CARDCOL[cc][2]})"></span>${esc(CARDCOL[cc][0])}`],['Best position',pr.bestPos&&esc(pr.bestPos)],['Dream number',pr.dreamNo&&'#'+esc(pr.dreamNo)],
+  const f=[['Nickname',pr.nick&&'“'+esc(pr.nick)+'”'],['Card design',cc&&`<span class="ccdot cc-${cc}" style="background:linear-gradient(160deg,${CARDCOL[cc][1]},${CARDCOL[cc][2]})"></span>${esc(CARDCOL[cc][0])}`],['Best position',pr.bestPos&&esc(pr.bestPos)],['Dream number',pr.dreamNo&&'#'+esc(pr.dreamNo)],
     ['Favourite player',pr.favPlayer&&esc(pr.favPlayer)],['Favourite teammate',mate&&esc(mate.name)],['Dream boots',pr.boots&&esc(pr.boots)],['Favourite stadium',pr.stadium&&esc(pr.stadium)]].filter(x=>x[1]);
   const ps=noPs?[]:(pr.ps||[]).filter(n=>PSTYLES.some(([,l])=>l.some(x=>x[1]===n)));
   if(!f.length&&!pr.ability&&!ps.length)return `<div class="profb"><div class="gh2"><b>Profile</b></div><div class="small muted">${PM&&p.id===PM.data.me.id?'You haven’t personalised your profile yet. Tap “Edit my profile”.':'Hasn’t personalised their profile yet.'}</div></div>`;

@@ -124,3 +124,4 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- settings.squadRatings (default off): payload sends other players' base/baseN/skills/wf/foot/height/ps and full match ratings, showRatings=true. prof.favMate is never sent for other players.
 -- Player photo v2: public.atb_player_photo2(token,img,cut,thumb) -> 'ok' (photoReq {img,cut,thumb,at}) or 'live' when settings.photoAuto. Payload settings adds announce {text,at}, photoAuto.
 -- Manager ↔ own player: private.atb_mgr_links(uid,owner,player_id); public.atb_mgr_link(token) (authenticated; set on PIN sign-in / player-mode boot); public.atb_mgr_player_token() issues a player session for the linked player (no PIN).
+-- atb_player_profile: card accepts any ^[a-z]{2,12}$ key (client renders known designs: 18 special designs + legacy colours).
