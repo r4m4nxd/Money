@@ -1562,7 +1562,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022006',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022111',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1854,7 +1854,7 @@ function vMatch(){
     const mean=k=>avg(st.map(s=>s[k]));
     const spread=Math.max(...st.map(s=>s.tot))-Math.min(...st.map(s=>s.tot));
     const arrow=(v,k)=>{const d=v-mean(k);return Math.abs(d)<0.5?'<span class="d muted">=</span>':d>0?`<span class="d up">▲${r1(d)}</span>`:`<span class="d dn">▼${r1(-d)}</span>`};
-    teamsHtml=`<div class="row tbar" style="justify-content:flex-end;align-items:center;gap:8px;margin-bottom:10px"><div class="lseg sm" role="group" aria-label="Badge on pitch">${[['nation','🏳️ Nation'],['club','🛡️ Club']].map(([k,l])=>`<button type="button" data-a="pbadge" data-v="${k}" aria-selected="${(S.settings.pitchBadge||'nation')===k}">${l}</button>`).join('')}</div></div>
+    teamsHtml=`
 <div class="mdx"><div class="mleft">    <div class="panel row mbal">
       <div class="balance"><span>Overall gap <b class="num">${hideR?'–':r1(spread)}</b> pts <span class="pill ${spread<1.5?'ok':'meh'}">${spread<1.5?'Balanced':'Check'}</span></span>
       <span class="muted">${S.settings.mix?'Mixing last week’s teammates':''}</span></div>
@@ -2709,7 +2709,6 @@ function vSettings(){
     <h3 class="sh3">Teams, balancing and links</h3>
     <label class="small row chk"><input type="checkbox" id="sl" data-a="set" data-k="spreadLate" ${s.spreadLate!==false?'checked':''}> Spread players with late drops across teams</label>
     <label class="small row chk"><input type="checkbox" id="mx" data-a="set" data-k="mix" ${s.mix?'checked':''}> Mix up last week’s teammates when balancing</label>
-    <label class="f" style="max-width:320px">Badge next to each player on the pitch<select id="pbsel" data-a="setpb"><option value="nation" ${(s.pitchBadge||'nation')==='nation'?'selected':''}>Nation flag</option><option value="club" ${s.pitchBadge==='club'?'selected':''}>Favourite club crest</option></select></label>
     <label class="small row chk"><input type="checkbox" id="psa" data-a="set" data-k="psAuto" ${s.psAuto!==false?'checked':''}> PlayStyles: also award automatically from match ratings (untick so only the ones you award by hand light up)</label>
     <details class="panel psup"><summary><b>PlayStyle icons</b> <span class="small muted">${Object.keys(s.psIcons||{}).length} of ${PSTYLES.flatMap(([,l])=>l).length} custom</span></summary>
       <p class="small muted">The EA FC 26 icons are built in. To swap any of them (e.g. when a new game comes out), upload PNGs: <b>Upload several</b> matches files by name (e.g. <i>finesse-shot.png</i>, <i>TikiTaka.png</i>), or tap one icon to replace just that one.</p>
@@ -4379,7 +4378,6 @@ document.addEventListener('click',async e=>{
     document.querySelectorAll('.attseg').forEach(g=>{const v=g.querySelector('[aria-pressed=true]')?.dataset.v;if(v==='a'){att[g.dataset.pid]='a';ns++}else if(v==='l'){att[g.dataset.pid]='l';lt++}});
     m.att=att;m.attDone=true;if(m.ratings)Object.keys(att).forEach(pid=>{if(att[pid]==='a')delete m.ratings[pid]});
     await putMatch(m);logAct('Took attendance',fmtDate(m.date)+(ns?` · ${ns} no-show`:'')+(lt?` · ${lt} late`:''));closeModal();toast(`Attendance saved${ns?` · ${ns} no-show${ns>1?'s':''}`:''}${lt?` · ${lt} late`:''}`);return}
-  if(a==='pbadge'){S.settings.pitchBadge=el.dataset.v;await putSettings();render();return}
   if(a==='tnew'){tDetailsModal(null);return}
   if(a==='tnewpast'){tDetailsModal({name:'',date:'',time:'',venue:'',format:'',size:10,rule:{type:'open'},status:'draft',see:'squad',past:true});return}
   if(a==='tpublish'||a==='tunpub'){const t={...S.tourns.find(x=>x.id===id)};t.status=a==='tpublish'?'live':'draft';if(t.see==='pick'&&!(t.seeIds||[]).length)t.seeIds=[...(t.squad||[])];await putDoc('tournaments',id,t);logAct(a==='tpublish'?'Published tournament':'Unpublished tournament',t.name);toast(a==='tpublish'?'Published. '+tSeeTxt(t):'Hidden from players');return}
@@ -4541,7 +4539,6 @@ document.addEventListener('change',async e=>{
   if(a==='settip'){if(!isAdmin)return;const u=$('#tipurl').value.trim();if(u&&!/^https:\/\/[^\s"'<>]+$/.test(u)){toast('Use a full https:// link');return}S.settings.tip={on:$('#tipon').checked,url:u||TIPURL};await putSettings();toast('Saved');return}
   if(a==='godset'){if(!isAdmin)return;const k=el.dataset.k;const {error}=await supa.from('atb_notify').update({[k]:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(error){toast('Could not save');el.checked=!el.checked;return}ntf[k]=el.checked;toast(el.checked?'Alerts on':'Alerts off');return}
   if(a==='setportal'){S.settings.playerLogin=el.value==='on';S.settings.playerSetup=el.value==='setup';await putSettings();toast(el.value==='on'?'Player portal is open':el.value==='setup'?'Players can now create their PIN. The portal stays closed':'Player sign-in is closed');render();return}
-  if(a==='setpb'){S.settings.pitchBadge=el.value;await putSettings();return}
   if(a==='showoff'){showOff=el.checked;render();return}
   if(a==='ntfen'){const {error}=await supa.from('atb_notify').update({enabled:el.checked}).eq('member',supaUser.id).eq('team',teamOwner);if(!error){ntf.enabled=el.checked;toast(el.checked?'Alerts resumed':'Alerts paused')}return}
   if(a==='clubprev'){$('#pcbadge').innerHTML=clubBadge(el.value)||'<span class="cb"></span>';return}
