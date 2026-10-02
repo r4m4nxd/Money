@@ -121,3 +121,4 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- Dream teams: public.atb_player_dreams(token, jsonb array <=5, <=30KB) -> data.dreams (only the player and managers see it). Weekly team captains: match/fixture team.cap.
 -- HD photos: payload players[].pv = left(md5(photo),10); public.atb_player_photos(token, ids[]) -> {id: photo} (max 40 ids). Client caches by pv in IndexedDB 'atb_hd'.
+-- settings.squadRatings (default off): payload sends other players' base/baseN/skills/wf/foot/height/ps and full match ratings, showRatings=true. prof.favMate is never sent for other players.

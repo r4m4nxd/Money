@@ -2058,6 +2058,7 @@ function vSettings(){
     ${cloud==='supa'?`<label class="small row chk"><input type="checkbox" id="al" data-a="set" data-k="autoLink" ${s.autoLink?'checked':''}> Every Saturday at 9 PM: close tonight’s link and open next Saturday’s</label>`:''}
     ${cloud==='supa'?`<h3 class="sh3">Player portal</h3><label class="f" style="max-width:420px">Player sign-in<select id="plg" data-a="setportal">${[['on','On: players can sign in to their portal'],['setup','PIN setup only: names listed, players create a PIN, portal stays closed'],['off','Off: sign-in screen closed']].map(([k,l])=>`<option value="${k}" ${portalMode()===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <label class="small row chk"><input type="checkbox" id="plr" data-a="set" data-k="playerRatings" ${s.playerRatings?'checked':''}> Players can see their own ratings (OVR and attributes)</label>
+    <label class="small row chk"><input type="checkbox" data-a="set" data-k="squadRatings" ${s.squadRatings?'checked':''}> Players can see <b>everyone’s</b> ratings in Squad (OVR, attributes, full player pages, compare). Chemistry and favourite teammates stay private.</label>
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="plprof" data-a="set" data-k="playerProfile" ${s.playerProfile!==false?'checked':''}> Players can edit their profile: nickname, card colour, signature ability, up to 5 PlayStyles, favourites, and send a photo for approval</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
@@ -2412,26 +2413,28 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <div class="row"><button class="btn primary" data-a="pfsave">Save my profile</button><span class="small muted" id="pfmsg" role="status"></span></div></div></details>`}
 function vpTeam(){const me=PM.data.me.id,L=S.players.filter(p=>!p.guest&&p.active!==false).sort((a,b)=>(a.id===me?-1:b.id===me?1:a.name.localeCompare(b.name)));const ch=PM.data.chem||{};
   return `<h2>Squad</h2><p class="small muted" style="margin-top:-4px">Tap a player to see their page and compare with yours.</p>
-  <div class="cards sqcards">${L.map(p=>`<button class="sqc" data-a="pub" data-id="${p.id}">${cardHTML(p,{btn:false,nonum:p.id!==me||!PM.data.showRatings,tier:p.id===me&&PM.data.growth?tier(R(me).ovr):undefined})}<span class="sqn">${dispName(p)}</span>${prof(p).ability?abilityChip(prof(p).ability,true):''}</button>`).join('')}</div>
+  <div class="cards sqcards">${L.map(p=>`<button class="sqc" data-a="pub" data-id="${p.id}">${cardHTML(p,{btn:false,nonum:!SQR()&&(p.id!==me||!PM.data.showRatings),tier:p.id===me&&PM.data.growth?tier(R(me).ovr):undefined})}<span class="sqn">${dispName(p)}</span>${prof(p).ability?abilityChip(prof(p).ability,true):''}</button>`).join('')}</div>
   <h2>Team chemistry</h2><div class="panel stack"><p class="small muted" style="margin:0">How well do you play with each teammate? 1 = we don’t click, 5 = perfect partner. <b>Only managers see this</b>; it helps them build better teams.</p>
     <div class="chemlist">${L.filter(p=>p.id!==me).map(p=>`<div class="chemrow"><span class="nm">${esc(p.name)}</span>${chemStars(p.id,ch[p.id]||0)}</div>`).join('')}</div></div>`}
 const chemStars=(id,v)=>`<span class="cstars" role="group" aria-label="Chemistry">${[1,2,3,4,5].map(n=>`<button class="cst${n<=v?' on':''}" data-a="chem" data-id="${id}" data-v="${n===v?0:n}" aria-label="${n} of 5">★</button>`).join('')}</span>`;
+const SQR=()=>!!(PM&&PM.data&&PM.data.settings&&PM.data.settings.squadRatings);
 function pubPage(id){const p=pById(id);if(!p)return;const me=PM?PM.data.me.id:null,pr=prof(p),st=pubStats(id),mine=id===me,mate=pr.favMate&&pById(pr.favMate);
   const nat=(NATIONS.find(n=>n[0]===p.nation)||[])[1],club=p.club&&CLUB[p.club];
   openModal(`<div class="mh"><h2>${esc(titleName(p.name))}</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <div class="pub"><div class="pubcard">${cardHTML(p,{btn:false,nonum:!mine||!PM?.data?.showRatings,tier:mine&&PM?.data?.growth?tier(R(id).ovr):undefined})}</div>
+  <div class="pub"><div class="pubcard">${cardHTML(p,{btn:false,nonum:!SQR()&&(!mine||!PM?.data?.showRatings),tier:mine&&PM?.data?.growth?tier(R(id).ovr):undefined})}</div>
     <div class="pubinfo"><div class="pubname">${dispName(p)}</div>
       <div class="ppchips">${nat?`<span>${flagImg(p.nation)} ${esc(nat)}</span>`:''}${club?`<span>${clubBadge(p.club,'cb')} ${esc(club.n)}</span>`:''}<span>${p.pos}${pr.bestPos?` · likes ${esc(pr.bestPos)}`:''}</span>${p.number?`<span>#${esc(p.number)}</span>`:''}${pr.dreamNo?`<span>Dream #${esc(pr.dreamNo)}</span>`:''}</div>
       <div class="ppnums"><div><b>${st.apps}</b><i>Apps</i></div><div><b>${st.W}</b><i>Wins</i></div><div><b>${st.g}</b><i>Goals</i></div><div><b>${st.a}</b><i>Assists</i></div><div><b>${st.potm}</b><i>POTM</i></div><div><b>${st.titles}</b><i>Titles</i></div></div>
       ${profBlock(p)}</div></div>
-  <div class="row" style="margin-top:12px">${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="pfedit">Edit my profile</button>`:''}</div>
+  <div class="row" style="margin-top:12px">${PM&&!mine&&SQR()?`<button class="btn" data-a="ppage2" data-id="${id}">Full ratings & stats</button>`:''}${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="pfedit">Edit my profile</button>`:''}</div>
   ${PM&&!mine?`<div class="chemrow" style="margin-top:12px"><span class="small">Your chemistry with ${esc(p.name.split(' ')[0])}</span>${chemStars(id,(PM.data.chem||{})[id]||0)}</div>`:''}`);document.querySelector('.modal').classList.add('wide')}
 function cmpPage(id){const me=PM.data.me.id,A=pById(me),B=pById(id),sa=pubStats(me),sb=pubStats(id),pa=prof(A),pb=prof(B);
   const pct=s=>s.res?Math.round(s.W/s.res*100):0,gpm=s=>s.apps?Math.round((s.g+s.a)/s.apps*10)/10:0;
   const rows=[['Apps',sa.apps,sb.apps],['Wins',sa.W,sb.W],['Win %',pct(sa),pct(sb)],['Goals',sa.g,sb.g],['Assists',sa.a,sb.a],['G+A per match',gpm(sa),gpm(sb)],['Player of the Match',sa.potm,sb.potm],['Tournaments',sa.tn,sb.tn],['Titles',sa.titles,sb.titles]];
+  if(SQR()){const ra=R(me),rb=R(id),g=(r,ks)=>Math.round(ks.reduce((n,k)=>n+(r.a[k]||0),0)/ks.length*10);rows.unshift(['OVR',Math.round(ra.ovr),Math.round(rb.ovr)],...FCGROUPS.map(([nm,ks])=>[nm,g(ra,ks),g(rb,ks)]))}
   const txt=[['Position',A.pos,B.pos],['Best position',pa.bestPos||'–',pb.bestPos||'–'],['Shirt',A.number?'#'+A.number:'–',B.number?'#'+B.number:'–'],['Ability',pa.ability?ABILITIES[pa.ability][1]:'–',pb.ability?ABILITIES[pb.ability][1]:'–'],['Favourite player',pa.favPlayer||'–',pb.favPlayer||'–']];
   openModal(`<div class="mh"><h2>You vs ${esc(B.name.split(' ')[0])}</h2><button class="btn ghost x" data-a="close">Close</button></div>
-  <div class="cmp"><div class="cmph"><div>${cardHTML(A,{btn:false,nonum:true})}<b>${dispName(A)}</b></div><div class="vs">VS</div><div>${cardHTML(B,{btn:false,nonum:true})}<b>${dispName(B)}</b></div></div>
+  <div class="cmp"><div class="cmph"><div>${cardHTML(A,{btn:false,nonum:!SQR()})}<b>${dispName(A)}</b></div><div class="vs">VS</div><div>${cardHTML(B,{btn:false,nonum:!SQR()})}<b>${dispName(B)}</b></div></div>
     <div class="cmpt">${rows.map(([l,x,y])=>{const mx=Math.max(x,y)||1;return `<div class="cmpr"><b class="num ${x>y?'win':''}">${x}${l==='Win %'?'%':''}</b><div class="cmpb"><i style="width:${x/mx*100}%"></i></div><span>${l}</span><div class="cmpb r"><i style="width:${y/mx*100}%"></i></div><b class="num ${y>x?'win':''}">${y}${l==='Win %'?'%':''}</b></div>`}).join('')}
     ${txt.map(([l,x,y])=>`<div class="cmpr t"><b>${esc(x)}</b><span>${l}</span><b>${esc(y)}</b></div>`).join('')}</div></div>`);document.querySelector('.modal').classList.add('wide')}
 /* story-size image of a player page (WhatsApp status, Instagram story, Facebook) with the developer's signature */
@@ -2589,6 +2592,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='ptboard'){const t=S.tourns.find(x=>x.id===el.dataset.id);if(!t)return;const lu=tLU(t);openTacticBoard({title:t.name,players:boardPlayers(lu.order.slice(0,fsum(lu.f)+(lu.gk?1:0)),t.captain),f:lu.f,gk:lu.gk,color:KITHEX[t.kit]||'#2F6FD6'});return}
   if(a==='pub'){pubPage(el.dataset.id);return}
   if(a==='cmp'){cmpPage(el.dataset.id);return}
+  if(a==='ppage2'){closeModal();setTimeout(()=>playerPage(el.dataset.id),60);return}
   if(a==='story'){storyCard(el.dataset.id);return}
   if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();const hc=document.querySelector('.phero .pcard');if(hc){const me=pById(PM.data.me.id)||PM.data.me,inf=hc.querySelector('.inform');hc.innerHTML=cardHTML({...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}},{btn:false,tier:PM.data.growth?tier(R(me.id).ovr):undefined})+(inf?inf.outerHTML:'')}return}
   if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';pfKeep();return}
@@ -2842,7 +2846,7 @@ const FCGROUPS=[['Pace',['spd']],['Shooting',['sho']],['Passing',['pas','tea']],
 function posRatings(r){const f=r.fwd*100,m=r.mid*100,d=r.def*100,pc=r.pace*100,x=v=>Math.round(v);
   return {ST:x(f),LW:x((f+pc)/2),RW:x((f+pc)/2),CAM:x((f+m)/2),LM:x((m+pc)/2),CM:x(m),RM:x((m+pc)/2),CDM:x((m+d)/2),LB:x((d+pc)/2),CB:x(d),RB:x((d+pc)/2)}}
 /* What a player chose for their own profile, shown to every player and manager */
-function profBlock(p,noPs){const pr=prof(p),mate=pr.favMate&&pById(pr.favMate),cc=ccOf(p);
+function profBlock(p,noPs){const pr=prof(p),mate=pr.favMate&&(!PM||p.id===PM.data.me.id)&&pById(pr.favMate),cc=ccOf(p);
   const f=[['Nickname',pr.nick&&'“'+esc(pr.nick)+'”'],['Card colour',cc&&`<span class="ccdot cc-${cc}" style="background:linear-gradient(160deg,${CARDCOL[cc][1]},${CARDCOL[cc][2]})"></span>${esc(CARDCOL[cc][0])}`],['Best position',pr.bestPos&&esc(pr.bestPos)],['Dream number',pr.dreamNo&&'#'+esc(pr.dreamNo)],
     ['Favourite player',pr.favPlayer&&esc(pr.favPlayer)],['Favourite teammate',mate&&esc(mate.name)],['Dream boots',pr.boots&&esc(pr.boots)],['Favourite stadium',pr.stadium&&esc(pr.stadium)]].filter(x=>x[1]);
   const ps=noPs?[]:(pr.ps||[]).filter(n=>PSTYLES.some(([,l])=>l.some(x=>x[1]===n)));
