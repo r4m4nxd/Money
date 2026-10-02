@@ -1611,35 +1611,34 @@ function cost(T,pairs){
   if(S.settings.mix&&pairs.size){for(const t of T)for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const a=t[i],b=t[j];if(pairs.has(a<b?a+'|'+b:b+'|'+a))c+=1.2}}
   return c;
 }
+// Team balancer: fast local search over precomputed player features (ratings by area, pace, chemistry-style type, PlayStyles,
+// star spread, last-minute droppers, last week's pairs, and how well teammates rate each other). Stops after ~150 ms.
 function balance(ids,n,locks){
-  const pairs=lastPairs();const results=[];riskyNow=riskySet();
-  const order={DEF:0,MID:1,FWD:2};
-  for(let run=0;run<80;run++){
-    const T=Array.from({length:n},()=>[]);
-    ids.filter(id=>locks[id]!=null&&locks[id]<n).forEach(id=>T[locks[id]].push(id));
-    const free=ids.filter(id=>!(locks[id]!=null&&locks[id]<n)).map(id=>({id,k:order[posOf(id)],o:R(id).ovr+Math.random()*6}))
-      .sort((a,b)=>a.k-b.k||b.o-a.o);
-    for(const x of free){
-      let best=0,bv=1e9;
-      T.forEach((t,i)=>{const v=t.length*1000+t.filter(id=>posOf(id)===posOf(x.id)).length*100+t.reduce((s,id)=>s+R(id).ovr,0)/50+Math.random();if(v<bv){bv=v;best=i}});
-      T[best].push(x.id);
-    }
-    let cur=cost(T,pairs),imp=true,guard=0;
+  const pairs=lastPairs();riskyNow=riskySet();const order={DEF:0,MID:1,FWD:2},t0=performance.now();
+  const CAT={att:'a',mid:'m',def:'d'},F={};ids.forEach(id=>{const r=R(id),p=pById(id),cs=ABILITIES[abKey(prof(p).ability)];const a=Object.fromEntries(K.map(k=>[k,(r.a[k]||7)*10]));
+    F[id]={fwd:r.fwd*100,mid:r.mid*100,def:r.def*100,pace:r.pace*100,ovr:r.ovr,pos:posOf(id),star:!!p?.star,risky:riskyNow.has(id),cat:cs?CAT[cs[3]]||'':'',ps:PSTYLES.flatMap(([,l])=>l).filter(x=>x[2]&&psAuto(a,x[2])).length}});
+  const PC={};if(chemS.rows)ids.forEach(x=>ids.forEach(y=>{if(x<y){const v=pairChem(x,y);if(v!=null)PC[x+'|'+y]=v}}));
+  const agg=t=>{const g={n:t.length,fwd:0,mid:0,def:0,pace:0,c:{DEF:0,MID:0,FWD:0},cat:{a:0,m:0,d:0},ps:0,sp:{},risky:0,mix:0,ch:0,chn:0};
+    for(const id of t){const f=F[id];g.fwd+=f.fwd;g.mid+=f.mid;g.def+=f.def;g.pace+=f.pace;g.c[f.pos]++;if(f.cat)g.cat[f.cat]++;g.ps+=f.ps;if(f.star)g.sp[f.pos]=(g.sp[f.pos]||0)+1;if(f.risky)g.risky++}
+    for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const k=t[i]<t[j]?t[i]+'|'+t[j]:t[j]+'|'+t[i];if(PC[k]!=null){g.ch+=PC[k];g.chn++}if(S.settings.mix&&pairs.has(k))g.mix++}
+    const m=v=>g.n?v/g.n:0;g.atk=m(g.fwd);g.md=m(g.mid);g.df=m(g.def);g.pc=m(g.pace);g.tot=(g.atk+g.md+g.df+g.pc)/4;g.chav=g.chn?g.ch/g.chn:3;return g};
+  const costA=A=>{const sp=f=>{let lo=1e9,hi=-1e9;for(const g of A){const v=f(g);if(v<lo)lo=v;if(v>hi)hi=v}return hi-lo};let c=0;
+    c+=Math.max(0,sp(g=>g.n)-1)*1000;for(const p of POS){const d=sp(g=>g.c[p]);c+=d*6+Math.max(0,d-1)*60}
+    c+=sp(g=>g.tot)*12+sp(g=>g.atk)*3+sp(g=>g.md)*3+sp(g=>g.df)*3+sp(g=>g.pc)*1.5;
+    for(const k of ['a','m','d'])c+=sp(g=>g.cat[k])*5;c+=sp(g=>g.ps)*1.2;
+    for(const g of A){for(const p in g.sp)if(g.sp[p]>1)c+=(g.sp[p]-1)*800;c+=g.mix*1.2;c-=g.chav*2}
+    c+=sp(g=>g.chav)*6;if(riskyNow.size){const d=sp(g=>g.risky);c+=d*4+Math.max(0,d-1)*40}return c};
+  const results=[];
+  for(let run=0;run<80&&(run<6||performance.now()-t0<150);run++){
+    const T=Array.from({length:n},()=>[]);ids.filter(id=>locks[id]!=null&&locks[id]<n).forEach(id=>T[locks[id]].push(id));
+    const free=ids.filter(id=>!(locks[id]!=null&&locks[id]<n)).map(id=>({id,k:order[F[id].pos],o:F[id].ovr+Math.random()*6})).sort((a,b)=>a.k-b.k||b.o-a.o);
+    for(const x of free){let best=0,bv=1e9;T.forEach((t,i)=>{let s=0,sm=0;for(const id of t){if(F[id].pos===F[x.id].pos)s++;sm+=F[id].ovr}const v=t.length*1000+s*100+sm/50+Math.random();if(v<bv){bv=v;best=i}});T[best].push(x.id)}
+    const A=T.map(agg);let cur=costA(A),imp=true,guard=0;
     while(imp&&guard++<40){imp=false;
-      for(let a=0;a<n;a++)for(let b=a+1;b<n;b++){
-        for(let i=0;i<T[a].length;i++)for(let j=0;j<T[b].length;j++){
-          const x=T[a][i],y=T[b][j];if(locks[x]!=null||locks[y]!=null)continue;
-          T[a][i]=y;T[b][j]=x;const c=cost(T,pairs);
-          if(c<cur-1e-9){cur=c;imp=true}else{T[a][i]=x;T[b][j]=y}
-        }
-      }
-    }
-    const sig=T.map(t=>t.slice().sort().join(',')).sort().join('/');
-    if(!results.some(r=>r.sig===sig))results.push({T:T.map(t=>t.slice()),c:cur,sig});
-  }
-  results.sort((a,b)=>a.c-b.c);
-  return results.slice(0,8);
-}
+      for(let a=0;a<n;a++)for(let b=a+1;b<n;b++)for(let i=0;i<T[a].length;i++)for(let j=0;j<T[b].length;j++){const x=T[a][i],y=T[b][j];if(locks[x]!=null||locks[y]!=null)continue;
+        T[a][i]=y;T[b][j]=x;const ga=A[a],gb=A[b];A[a]=agg(T[a]);A[b]=agg(T[b]);const c=costA(A);if(c<cur-1e-9){cur=c;imp=true}else{T[a][i]=x;T[b][j]=y;A[a]=ga;A[b]=gb}}}
+    const sig=T.map(t=>t.slice().sort().join(',')).sort().join('/');if(!results.some(r=>r.sig===sig))results.push({T:T.map(t=>t.slice()),c:cur,sig})}
+  results.sort((a,b)=>a.c-b.c);return results.slice(0,8)}
 function sortTeam(t){const o={DEF:0,MID:1,FWD:2};return t.slice().sort((a,b)=>o[posOf(a)]-o[posOf(b)]||(hideR?(pById(a)?.name||'').localeCompare(pById(b)?.name||''):R(b).ovr-R(a).ovr))}
 
 /* ---------- views ---------- */
@@ -3810,13 +3809,18 @@ document.addEventListener('pointerup',e=>pdEnd(e,false));document.addEventListen
 document.addEventListener('click',e=>{if(Date.now()-pdragEat<350&&e.target.closest('button.pc,button.subb')){e.stopPropagation();e.preventDefault()}},true);
 /* FC-style chemistry on the Team Management pitch (managers): each player earns 0-3 = right area of the pitch (1) + how well they rate the
    players next to them (0-2, from players' 1-5 chemistry ratings). Selecting a player draws lines to every teammate and suggests the best swap. */
-const chemFit=(id,row)=>{const p=pById(id);if(!p)return 0;if(row==='GK')return 1;const bp=(prof(p).bestPos||'').toUpperCase(),M={GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',LWB:'DEF',RWB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID',LW:'FWD',RW:'FWD',ST:'FWD',CF:'FWD'};return p.pos===row||M[bp]===row?1:0};
+const CSROW={att:'FWD',mid:'MID',def:'DEF'};
+const chemFit=(id,row)=>{const p=pById(id);if(!p)return 0;if(row==='GK')return 1;const cs=ABILITIES[abKey(prof(p).ability)];if(cs&&CSROW[cs[3]]===row&&p.pos!==row)return 1;const bp=(prof(p).bestPos||'').toUpperCase(),M={GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',LWB:'DEF',RWB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID',LW:'FWD',RW:'FWD',ST:'FWD',CF:'FWD'};return p.pos===row||M[bp]===row?1:0};
 function chemNeighbours(SL){return SL.map(a=>SL.filter(b=>b!==a).map(b=>[b,Math.hypot((a.x-b.x)*1.1,a.y-b.y)]).sort((p,q)=>p[1]-q[1]).slice(0,3).map(x=>x[0].idx))}
 function chemScore(SL,NB,ids){const pts={};let tot=0;SL.forEach((q,i)=>{const id=ids[q.idx],vals=NB[i].map(j=>pairChem(id,ids[j])).filter(v=>v!=null);const av=vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:null;
   const link=av==null?1:av>=4?2:av>=3?1:0;pts[q.idx]=Math.min(3,chemFit(id,q.row)+link);tot+=pts[q.idx]});return {pts,tot}}
 function chemModel(SL){const NB=chemNeighbours(SL),ids={};SL.forEach(q=>ids[q.idx]=q.id);const base=chemScore(SL,NB,ids),best={};
   SL.forEach(a=>{let b0=null;SL.forEach(b=>{if(a===b)return;const sw={...ids};sw[a.idx]=b.id;sw[b.idx]=a.id;const t=chemScore(SL,NB,sw).tot-base.tot;if(t>0&&(!b0||t>b0.d))b0={k:b.idx,d:t,role:b.role,with:b.id}});if(b0)best[a.idx]=b0});
   return {pts:base.pts,tot:base.tot,max:SL.length*3,NB,best}}
+const CHSL={};
+// best positions for one team: hill-climb over swaps on the chemistry score (about 1 ms)
+function chemBestOrder(SL){const NB=chemNeighbours(SL),ids={};SL.forEach(q=>ids[q.idx]=q.id);let t=chemScore(SL,NB,ids).tot;const t0=t;
+  for(let pass=0;pass<6;pass++){let imp=false;for(let i=0;i<SL.length;i++)for(let j=i+1;j<SL.length;j++){const a=SL[i].idx,b=SL[j].idx;const sw={...ids};sw[a]=ids[b];sw[b]=ids[a];const v=chemScore(SL,NB,sw).tot;if(v>t){Object.assign(ids,sw);t=v;imp=true}}if(!imp)break}return {ids,t,gain:t-t0}}
 const chemCol=v=>v==null?'rgba(255,255,255,.55)':v>=4?'#2FD07A':v>=3?'#F2C94C':'#FF5A5F';
 function chemLines(SL,CH,sq){const L=[];
   if(sq){SL.forEach(b=>{if(b===sq)return;const v=pairChem(sq.id,b.id);L.push(`<line x1="${sq.x}" y1="${sq.y}" x2="${b.x}" y2="${b.y}" stroke="${chemCol(v)}" stroke-width="${v==null?1.5:2+v*.5}" ${v==null?'stroke-dasharray="4 4"':''} vector-effect="non-scaling-stroke" class="cl"/>`)});}
@@ -3826,7 +3830,11 @@ function chemLines(SL,CH,sq){const L=[];
 function chemPanel(SLids,CH,selIdx,ti,A){if(!CH)return '';const pct=Math.round(CH.tot/CH.max*100),b=selIdx!=null&&CH.best[selIdx];
   return `<div class="chemp"><div class="ps-sh">Team chemistry</div><div class="chemtot"><b>${CH.tot}</b><span>/ ${CH.max}</span><i style="--w:${pct}%"></i></div>
     <div class="small muted">${selIdx!=null?`${CH.pts[selIdx]} of 3 for this player. Lines show how they rate each teammate.`:'Tap a player to see their links. Green = great (4–5), yellow = OK (3), red = poor (1–2), dashed = not rated.'}</div>
-    ${b?`<button class="btn small primary chemgo" data-a="chemswap" data-i="${ti}" data-act="${A}" data-k1="${selIdx}" data-k2="${b.k}">Move to ${esc(b.role)} (swap with ${esc(shortName(pById(b.with)?.name))}) · +${b.d} chem</button>`:selIdx!=null?'<div class="small" style="margin-top:6px">Already in the best spot for chemistry.</div>':''}</div>`}
+    ${b?`<button class="btn small primary chemgo" data-a="chemswap" data-i="${ti}" data-act="${A}" data-k1="${selIdx}" data-k2="${b.k}">Move to ${esc(b.role)} (swap with ${esc(shortName(pById(b.with)?.name))}) · +${b.d} chem</button>`:selIdx!=null?'<div class="small" style="margin-top:6px">Already in the best spot for chemistry.</div>':''}
+    ${selIdx==null?(()=>{const seen=new Set(),nm=k=>esc(shortName(pById((CHSL[ti]||[]).find(q=>q.idx===k)?.id)?.name));
+      const tips=Object.entries(CH.best).map(([k,v])=>({k1:+k,k2:v.k,d:v.d})).sort((x,y)=>y.d-x.d).filter(x=>{const key=[x.k1,x.k2].sort().join('-');if(seen.has(key))return false;seen.add(key);return true}).slice(0,3);
+      return tips.map(x=>`<button class="btn small chemgo" data-a="chemswap" data-i="${ti}" data-act="${A}" data-k1="${x.k1}" data-k2="${x.k2}">Swap ${nm(x.k1)} ↔ ${nm(x.k2)} · +${x.d}</button>`).join('')})():''}
+    ${A==='slot'?`<button class="btn small chemgo" data-a="chembest" data-i="${ti}">Best positions for chemistry</button>`:''}</div>`}
 /* FC-style Dream Team chemistry: players in their position earn up to 3 from shared club, nation and league (Icons boost every league and count double for nation) */
 let lastDreamChem=null,DSUG=null;
 const POSGRP={GK:'GK',CB:'CB',LB:'LB',LWB:'LB',RB:'RB',RWB:'RB',CDM:'DM',CM:'CM',CAM:'AM',LM:'LW',LW:'LW',RM:'RW',RW:'RW',ST:'ST',CF:'ST'};
@@ -3889,7 +3897,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
     for(let i=0;i+1<rws.length;i++){const lo=rws[i][0],hi=rws[i+1][0],need=.38*hh(sz(hi))+.62*hh(sz(lo));fit=Math.min(fit,(lo.y-hi.y)/need)}
     rws.forEach(r=>{const o=r.slice().sort((a,b)=>a.x-b.x);for(let i=0;i+1<o.length;i++){const need=(ww(sz(o[i]))+ww(sz(o[i+1])))/2+1.2;fit=Math.min(fit,(o[i+1].x-o[i].x)/need)}});
     PFIT=Math.max(.5,Math.min(1,fit))}
-  const CH=interactive&&!PM&&chemS.rows&&SL.length>1?chemModel(SL):null,DC=opt?.dream?dreamChem(SL,res):null;if(DC)lastDreamChem=DC;
+  const CH=interactive&&!PM&&chemS.rows&&SL.length>1?chemModel(SL):null;if(CH)CHSL[ti]=SL;const DC=opt?.dream?dreamChem(SL,res):null;if(DC)lastDreamChem=DC;
   SL.forEach(q=>{const CP=CH||DC;html+=card(q.id,q.role,q.u,q.v,q.idx).replace('<span class="pc-role">',CP&&res(q.id)&&!res(q.id).empty?`<span class="pcchem c${CP.pts[q.idx]}" title="Chemistry ${CP.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:CH?`<span class="pcchem c${CH.pts[q.idx]}" title="Chemistry ${CH.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:'<span class="pc-role">')});
   if(DC&&SL.length>1){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=dreamLines(SL,DC,sq)+html;if(opt.sugK!=null)html=html.replace(`data-k="${opt.sugK}"`,`data-k="${opt.sugK}" data-chemsug="1"`)}
   if(CH){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=chemLines(SL,CH,sq)+html;if(sq&&CH.best[sq.idx])html=html.replace(`data-k="${CH.best[sq.idx].k}"`,`data-k="${CH.best[sq.idx].k}" data-chemsug="1"`)}
@@ -4059,6 +4067,7 @@ document.addEventListener('click',async e=>{
   if(a==='pteam'){draft.tfold=false;draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
+  if(a==='chembest'){const i=+el.dataset.i,SL=CHSL[i];if(!SL)return;const r=chemBestOrder(SL);if(r.gain<=0){toast('Already the best chemistry for this team');return}const lu=teamLU(i);SL.forEach(q=>{lu.order[q.idx]=r.ids[q.idx]});draft.sel=null;saveDraft();render();toast(`Chemistry +${r.gain}`);return}
   if(a==='chemswap'){const act=el.dataset.act,i=+el.dataset.i,k1=+el.dataset.k1,k2=+el.dataset.k2;await pitchSwap(act,i,k1,k2);if(act==='slot'){draft.sel={t:i,k:k2};saveDraft();render()}toast('Swapped for better chemistry');return}
   if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const k=+el.dataset.k;
     tSlot=tSlot&&tSlot.t===t.id&&tSlot.k===k?null:{t:t.id,k};render();return}
