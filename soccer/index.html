@@ -221,6 +221,19 @@ button.tok{cursor:pointer}
 button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .sharecard .subs>span:first-child{color:#A9B6C6}.sharecard .subb{background:#172638;border-color:#2A3B52;color:#F2F5F8}
 .sharecard.one{max-width:440px}
+.perfp .pfrow{display:flex;gap:10px;align-items:flex-start}.perfp .pfrow>span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:900;flex:none;color:#fff}.perfp .ok{background:#2FB36B}.perfp .no{background:#8A94A3}
+.compbar{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin-bottom:10px;cursor:pointer;font:inherit;color:inherit;border:1.5px solid #F2803A;background:linear-gradient(90deg,rgba(242,128,58,.18),transparent)}.compbar .cbf{font-size:20px}.compbar .cbf b{font-size:22px}.compbar .small{flex:1}.compbar .cbgo{font-weight:800;color:#F2803A;white-space:nowrap}.compbar.risk{animation:cbpulse 2.4s ease-in-out infinite}@keyframes cbpulse{50%{box-shadow:0 0 0 4px rgba(242,128,58,.25)}}
+.streakhero{display:flex;gap:14px;align-items:center;padding:16px;border-radius:16px;background:linear-gradient(135deg,#FF8A3D,#E2452B);color:#fff;margin-bottom:6px}.streakhero.risk{background:linear-gradient(135deg,#6B7686,#3A4352)}.streakhero .sflame{font-size:46px;line-height:1}.streakhero .snum{font-family:var(--f-display);font-weight:900;font-size:40px;line-height:1}.streakhero .snum small{font-size:16px;margin-left:4px;opacity:.9}
+.chl .chi{display:flex;align-items:center;gap:10px}.chl .chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:900;flex:none}.chl .chi.done .chk{background:#2FB36B;border-color:#2FB36B;color:#fff}.chl .chi.done b{text-decoration:line-through;opacity:.7}.chl .pbar2{margin-top:4px}
+.rival{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;text-align:center;gap:8px}.rival .rvs{display:flex;flex-direction:column}.rival .rvx{font-family:var(--f-display);font-weight:900;font-size:30px}.rival .rvv{font-weight:900;color:#E2452B}.rival .rvt{grid-column:1/-1}
+.lgt{list-style:none;margin:0 0 8px;padding:0}.lgt li{display:flex;align-items:center;gap:8px;padding:7px 6px;border-bottom:1px solid var(--line)}.lgt li.me{background:rgba(242,128,58,.14);border-radius:8px;font-weight:700}.lgt .lgr{width:26px;text-align:center;font-weight:800}.lgt .lgn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lgt .lgs{font-size:12px;width:40px}.lgt .lgl{font-size:11px;color:var(--muted);width:38px}.lgt .lgx{width:46px;text-align:right}.rvtag{font-style:normal;font-size:10px;background:#E2452B;color:#fff;border-radius:6px;padding:1px 5px;margin-left:4px}
+.predp .chip[aria-pressed=true]{outline:2px solid #F2803A}.gch{min-width:38px;justify-content:center}
+.sttrack{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.stt{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:2px}.stt b{color:#F2803A}.stt small{color:var(--muted)}
+ul.tight{margin:0;padding-left:18px}
+.twrev{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 30%,#2a1a55,#07070f 70%);display:grid;place-items:center;overflow:auto;animation:twin .4s ease}.twrev.out{opacity:0;transition:opacity .3s}.twin{text-align:center;color:#fff;padding:20px;max-width:760px}.twh{font-family:var(--f-display);font-weight:900;font-size:30px;letter-spacing:.08em;background:linear-gradient(90deg,#FFD86B,#fff,#FFD86B);-webkit-background-clip:text;background-clip:text;color:transparent}
+.twgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0}.twc{width:96px;opacity:0;transform:rotateY(90deg) scale(.8);animation:twflip .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.35s + var(--i)*.28s)}.twc.mine{filter:drop-shadow(0 0 14px #FFD86B)}.twyou{font-family:var(--f-display);font-weight:900;font-size:22px;color:#FFD86B;margin:6px 0 12px;animation:twpop .5s 2.4s both}
+@keyframes twflip{to{opacity:1;transform:none}}@keyframes twin{from{opacity:0}}@keyframes twpop{from{transform:scale(.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.twc{animation:none;opacity:1;transform:none}.compbar.risk{animation:none}}
 .chemnag{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;border:1.5px solid #E8A33D;background:linear-gradient(90deg,rgba(232,163,61,.16),transparent);cursor:pointer;font:inherit;color:inherit}.chemnag .cnic{font-size:26px}.chemnag>div{flex:1;min-width:0}.chemnag .cnxp{flex:none;font-weight:800;color:#fff;background:#E8A33D;border-radius:999px;padding:4px 10px;font-size:13px}
 .cmrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.cmrow .cmn{display:flex;flex-direction:column;min-width:0}.cmrow .cmn small{color:var(--muted)}.cmrow.done .cmn b::after{content:' ✓';color:#2FB36B}.cmh{margin:14px 0 2px;font-size:14px}
 .rot{background:#172638;border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px;font-weight:600}
@@ -1565,7 +1578,7 @@ addEventListener('popstate',e=>{
   const st=e.state||{};
   if(modalDepth>0){modalDepth--;const prev=modalStack.pop();if(modalDepth>0&&prev){navReplaying=true;navReplay(prev)}else{modalDepth=0;modalStack=[];closeModalRaw()}return}
   if(typeof PM!=='undefined'&&PM&&PM.preview&&!st.pv){exitPreview();return}
-  if(st.v&&st.v!==view){view=st.v;if(typeof PM!=='undefined'&&PM&&!PM.preview&&!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';render();window.scrollTo(0,0)}});
+  if(st.v&&st.v!==view){view=st.v;if(typeof PM!=='undefined'&&PM&&!PM.preview&&!['me','compete','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';render();window.scrollTo(0,0)}});
 
 const persistLocal=()=>ls('atb_state',S);
 /* Short "what changed" text for the admin's activity feed */
@@ -1610,7 +1623,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022250',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022301',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2408,7 +2421,8 @@ const CHANGELOG=[
  ['2.2','Oct 2','Club tools','Running the club beyond match day.',['Club expenses log (managers and admin only)','Feedback system (admin reads)','Renamed from Team Builder to Club App','Keeps typed data through background refreshes']],
  ['2.3','Oct 2','HD cards & FC stats','The big visual upgrade.',['25 HD card designs by Raman’s friend, smooth outlines','FUTBIN-style player page: sub-stats, AcceleRATE, roles, best ratings','23 chemistry styles replace signature abilities','Square stats-board share image','Managers choose star-player cards; luxurious gradient backgrounds']],
  ['2.4','Oct 2','Smarter & faster','Polish, speed and smarter match days.',['Fast team balancing using attributes, chemistry styles and PlayStyles','Chemistry tips and best positions on the manager pitch','Pitch cards never overlap; real card shapes everywhere','Dream Team lag removed; star photos prepared once for everyone','Readable card picker; consistent headings and form fields']],
- ['2.5','Oct 2','Stats, sliders & unlocks','Analytics, full control and progression.',['Stats dashboards with spider charts, form lines and team vs team','Sliders for every number; − / + steppers for scores and goals','Managers set all 29 FC attributes per player','Card designs, chemistry styles and PlayStyles unlock with XP, with notifications','Admin-only exclusive cards and styles','Admin-only Changelog tab','Quick search (header button or Ctrl+K) for tabs, sections and players']]];
+ ['2.5','Oct 2','Stats, sliders & unlocks','Analytics, full control and progression.',['Stats dashboards with spider charts, form lines and team vs team','Sliders for every number; − / + steppers for scores and goals','Managers set all 29 FC attributes per player','Card designs, chemistry styles and PlayStyles unlock with XP, with notifications','Admin-only exclusive cards and styles','Admin-only Changelog tab','Quick search (header button or Ctrl+K) for tabs, sections and players']],
+ ['2.6','Oct 3','Compete','Players push to get better every week.',['Compete tab: performance vs your usual with XP for every improvement','Weekly challenges (2 on the pitch, 1 off), daily streaks','Weekly XP league with top-3 bonuses and weekly rivals','Match predictions: winner, POTM and goals','Team of the Week reveal and a season track','Chemistry ratings earn XP with a post-match prompt','Admin can sign out managers; HD saved images; detailed balancing guide']]];
 const ROADMAP=['Season awards ceremony and end-of-season story','Push notifications to players’ phones'];
 function changelogPanel(){if(!isAdmin)return '';const L=CHANGELOG.slice().reverse();
   return `<h2>Changelog &amp; roadmap <span class="small muted">only you can see this</span></h2><div class="panel clog">
@@ -2462,7 +2476,7 @@ function vGuide(){
   const s=S.settings,L=sched().map(x=>x.d).sort();
   return `<h2>Manager guide</h2>
   <p class="gintro">Everything the app does, in the order you use it each week. Numbers shown are your live settings; change them in Settings.</p>
-  <nav class="gtoc">${[['life','The weekly cycle'],['schedule','Seasons and schedule'],['tourn','Tournaments'],['club','Club, kits and equipment'],['ppage','Player pages and PlayStyles'],['security','Security'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link and PINs'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['chem','Chemistry and PlayStyles'],['attrs','FC attributes'],['analytics','Stats dashboards'],['unlocks','Unlocks'],['search','Search and changelog'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['attend','Attendance (after every game)'],['rate','Rating, goals and notes'],['results','Scores, wins and Player of the Match'],['stats','Stats and reliability'],['awards','Awards'],['cards','Player cards and photos'],['portal','The player portal'],['motiv','Growth, XP and badges'],['control','Controlling player access'],['managers','Managers and activity'],['settings','Every setting explained'],['data','Privacy, sync and devices'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
+  <nav class="gtoc">${[['life','The weekly cycle'],['schedule','Seasons and schedule'],['tourn','Tournaments'],['club','Club, kits and equipment'],['ppage','Player pages and PlayStyles'],['security','Security'],['squad','Squad and players'],['ratings','Ratings and scores'],['avail','Match Day: who’s in'],['link','Availability link and PINs'],['guests','Guest players'],['balance','How teams are balanced'],['stars','Star players'],['compete','Player competition'],['chem','Chemistry and PlayStyles'],['attrs','FC attributes'],['analytics','Stats dashboards'],['unlocks','Unlocks'],['search','Search and changelog'],['manual','Moving and locking'],['form','Formations and the pitch'],['share','Sharing to WhatsApp'],['rot','Match-night rotation'],['save','Saving a match'],['attend','Attendance (after every game)'],['rate','Rating, goals and notes'],['results','Scores, wins and Player of the Match'],['stats','Stats and reliability'],['awards','Awards'],['cards','Player cards and photos'],['portal','The player portal'],['motiv','Growth, XP and badges'],['control','Controlling player access'],['managers','Managers and activity'],['settings','Every setting explained'],['data','Privacy, sync and devices'],['backup','Backup, delete and reset']].map(([a,b])=>`<a href="#g-${a}" data-a="gjump" data-g="${a}">${b}</a>`).join('')}</nav>
 
   ${sec('life','The weekly cycle',`<ol>
     <li><b>Saturday 9 PM (automatic):</b> tonight’s link closes and the next game’s link opens. You get a phone alert with the link: forward it to WhatsApp.</li>
@@ -2602,6 +2616,11 @@ function vGuide(){
   ${sec('analytics','Stats dashboards',`<ul><li><b>Stats</b> tab: spider chart of a player’s attributes, a form line over their matches, and leaderboards.</li>
     <li><b>Team vs team</b>: pick a match, then compare any two of its teams on a spider chart.</li></ul>`)}
 
+  ${sec('compete','Player competition',`<ul><li>Players get a <b>Compete</b> tab: performance vs their usual, weekly challenges (2 on the pitch, 1 off), daily streak, weekly XP league with top-3 bonuses, a weekly rival, match predictions, Team of the Week reveal and a season track.</li>
+    <li>Performance is the core: beating their usual match rating +40, improving their focus area +30, best match yet +75, on top of turning up, winning, goals, assists, POTM and Team of the Week. Daily check-ins are only +5.</li>
+    <li>Only XP is ranked. Ratings stay private: players only see ticks for their own improvement.</li>
+    <li>Each player’s app works out their weekly XP and sends it to the league when they open it.</li>
+    <li>Turn it all off in Settings → <b>Competition for players</b>.</li></ul>`)}
   ${sec('unlocks','Unlocks and exclusives (admin)',`<ul><li>Card designs, chemistry styles and PlayStyles open up as players earn XP; they get a notification for each unlock. Set the XP needed with the sliders in Settings → <b>Unlocks &amp; exclusives</b> (far left = free).</li>
     <li><b>Only me</b> keeps a design or style for your own player profile; nobody else sees it, and the server refuses it for anyone else.</li></ul>`)}
 
@@ -2751,6 +2770,14 @@ function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details cl
     <li>From match day until the end of the 2nd day after it you can <b>vote for Player of the Match</b> (not yourself). Managers see the votes and make the final pick.</li></ul>`)}
   ${sec('tourns','Tournaments and your career',`<ul><li>The <b>Tournaments</b> tab shows upcoming tournaments against other clubs, the age rule and whether you’re eligible. Answer I’m in / Can’t make it right there.</li><li>Add your <b>date of birth</b> in Account so managers can check age groups (only managers see it).</li><li>Get picked and you’ll see the squad on the pitch, your captaincy, and a <b>tournament career</b>: tournaments, titles, results, goals and assists. Squads earn +200 XP, winners +500.</li></ul>`)}
   ${sec('page','Your player page and PlayStyles',`<ul><li>Me → <b>📄 My player page</b>: your FC-style page with your details, apps, goals and titles, your six stat groups, your rating in every position on a pitch, and your <b>PlayStyles</b>.</li><li>PlayStyles unlock when your match ratings reach a level (e.g. Rapid at Speed 82+), or when the managers award one. Awarded ones are coloured (gold = elite “+”); the grey ones are still to earn. Only managers set ratings, skills and PlayStyles.</li></ul>`)}
+  ${sec('compete','Compete: get better every week',`<ul><li><b>On the pitch comes first.</b> After every rated match you see if you beat your usual (+40 XP), improved your focus area (+30) and whether it was your best match yet (+75). Only ticks, never numbers.</li>
+    <li><b>Weekly challenges</b>: three new ones every Monday, two on the pitch (score, assist, win, beat your usual…) and one off it. +60 each, +100 for all three.</li>
+    <li><b>Daily streak 🔥</b>: open the app every day. +5 a day and bonuses at 3, 7, 14, 30, 60 and 100 days. Miss a day and it starts again.</li>
+    <li><b>Weekly league</b>: everyone ranked by XP earned since Monday. Top 3 win +150 / +100 / +50. Only XP is ranked, never ratings.</li>
+    <li><b>Rival</b>: each week you’re paired with the player next to you in last week’s league. Earn more XP than them by Sunday for +75.</li>
+    <li><b>Predictions</b>: when the teams are out, pick the winner (+30), Player of the Match (+50) and your team’s goals (+40 exact, +15 within 1). Change them until kick-off.</li>
+    <li><b>Team of the Week reveal</b>: when a new Team of the Week is out, the cards flip in the next time you open the app.</li>
+    <li><b>Season track</b>: your level and the next things you’ll unlock.</li></ul>`)}
   ${sec('styles','Chemistry styles and PlayStyles',`<ul><li><b>Chemistry style</b> (Edit my profile): pick one of 23, like Hunter (Pace + Shooting) or Anchor (Defending + Physical). It boosts those stats on your player page, and your page shows which styles suit you best.</li>
     <li><b>PlayStyles</b>: pick up to 5 of your own; managers award the rest. <b>Tap any PlayStyle</b> to read what it means, e.g. Quick Step = explosive first few steps to burst away.</li>
     <li>White icon = PlayStyle, gold icon = PlayStyle+ (elite).</li></ul>`)}
@@ -2845,6 +2872,7 @@ function vSettings(){
     <label class="small row chk"><input type="checkbox" id="pled" data-a="set" data-k="playerEdit" ${s.playerEdit?'checked':''}> Players can set their own shirt number, nation and favourite club</label>
     <label class="small row chk"><input type="checkbox" id="plprof" data-a="set" data-k="playerProfile" ${s.playerProfile!==false?'checked':''}> Players can edit their profile: nickname, card colour, chemistry style, up to 5 PlayStyles, favourites, and send a photo for approval</label>
     <label class="small row chk"><input type="checkbox" id="pldob" data-a="set" data-k="playerDob" ${s.playerDob!==false?'checked':''}> Players can enter their own date of birth (only managers see it)</label>
+    <label class="small row chk"><input type="checkbox" id="plcomp" data-a="set" data-k="compete" ${s.compete!==false?'checked':''}> Competition for players: daily streaks, weekly challenges, XP league, rivals, predictions, Team of the Week reveal</label>
     <label class="small row chk"><input type="checkbox" id="plgw" data-a="set" data-k="playerGrowth" ${s.playerGrowth!==false?'checked':''}> Players see their growth: trends, weekly focus, card upgrades and personal bests (no ratings shown unless the box above is ticked)</label>`:''}
     <p class="small muted" style="margin:0">Each player’s attributes are the average of every match rating you give, plus last season’s average counted as a few extra matches so returning players start where they left off. Scores use last season’s formulas: FWD leaves out Defending, MID leaves out Speed and Strength, DEF leaves out Ball Skill, PACE is Speed. OVR is the average of the four.</p>
   </div>
@@ -2868,7 +2896,7 @@ function vSettings(){
 
 /* ---------- Player accounts: a player signs in with their name + 4–6 digit PIN and sees only their own profile ---------- */
 let PM=null;// {tok,team,id,name,data,loading,err,season}
-const PTABS=[['me','Me'],['team','Squad'],['dream','Dream Team'],['games','Matches'],['tourn','Tournaments'],['avail','Availability'],['leaders','Stats'],['club','Club'],['acct','Account'],['pguide','Guide']];
+const PTABS=[['me','Me'],['compete','Compete'],['team','Squad'],['dream','Dream Team'],['games','Matches'],['tourn','Tournaments'],['avail','Availability'],['leaders','Stats'],['club','Club'],['acct','Account'],['pguide','Guide']];
 /* Device for sign-in alerts: phone/computer, model where the browser tells us (Android, Chromebook), iPhone model estimated from its screen */
 const IPHONES={'375x667':'iPhone SE/8','375x812':'iPhone X/11 Pro/12-13 mini','414x896':'iPhone XR/11/11 Pro Max','390x844':'iPhone 12/13/14','428x926':'iPhone 12-13 Pro Max/14 Plus','393x852':'iPhone 14 Pro/15/16','430x932':'iPhone 14 Pro Max/15 Plus/15 Pro Max/16 Plus','402x874':'iPhone 16 Pro/17','440x956':'iPhone 16-17 Pro Max','420x912':'iPhone Air'};
 async function deviceStr(){const ua=navigator.userAgent||'';let os='',model='';
@@ -2913,7 +2941,7 @@ function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}
   if(supaUser){let t=0;try{t=+sessionStorage.getItem('atb_relink')||0}catch(e){}if(Date.now()-t>60000){try{sessionStorage.setItem('atb_relink',Date.now())}catch(e){}mgrToPlayer().then(ok=>{if(!ok){ls('atb_mode','mgr');location.reload()}});return}
     ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
-  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
+  PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','compete','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
   if(supaUser&&saved.tok)supa.rpc('atb_mgr_link',{p_token:saved.tok}).then(()=>{},()=>{});
@@ -2933,7 +2961,7 @@ async function loadPlayer(bg){if(!PM||PM.loading)return;PM.loading=true;
     S.players=[{...d.me},...d.players];hdApply();setTimeout(hdLoad,50);S.matches=(d.matches||[]).filter(m=>m.date<=todayISO());S.fixtures=d.fixtures||[];S.tourns=d.tournaments||[];S.gear=d.gear||[];Object.assign(S.settings,d.settings);
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
     $('#sub').textContent='Player profile';
-    loaded=true}catch(e){PM.err=navigator.onLine?'Could not load your profile. Pull to refresh or try again.':'You’re offline.'}
+    loaded=true;if(!bg)setTimeout(compSync,600);setTimeout(()=>{if(PM&&PM.data&&view==='me')totwReveal()},1400)}catch(e){PM.err=navigator.onLine?'Could not load your profile. Pull to refresh or try again.':'You’re offline.'}
   PM.loading=false;bg?bgRender():render()}
 
 // Everything below is from this player's point of view.
@@ -3070,7 +3098,7 @@ function chemTodo(){const d=PM.data,me=d.me.id,t=todayISO(),L=chemLog(),mine=d.c
   const m=S.matches.filter(x=>x.date<=t&&x.date>=addDays(t,-7)&&x.myatt!=='a'&&x.teams.some(tm=>tm.players.includes(me))).sort((a,b)=>a.date<b.date?1:-1)[0];
   const mates=m?m.teams.find(tm=>tm.players.includes(me)).players.filter(id=>id!==me&&pById(id)&&!pById(id).guest&&!L.some(x=>x.r===id&&x.d>=m.date)):[];
   const never=chemMates().filter(p=>!mine[p.id]&&!mates.includes(p.id)).map(p=>p.id);return {m,mates,never,xp:mates.length*XP_CHM+never.length*XP_CH1+(never.length||mates.some(id=>!mine[id])?XP_CHSQ:0)}}
-const XPRULES=[['Play a match, on time',XP_ON],['Play but arrive late','+'+XP_LATE+' (half)'],['Say OUT on the link','0 (no penalty)'],['Win / draw','+50 / +20'],['Goal / assist','+40 / +25'],['Player of the Match',200],['Team of the Week',100],['Answer the link 2+ days early','+50 (else +20)'],['Tournament squad / winners / runners-up','+200 / +500 / +250'],['Earn a badge',100],['Rate a teammate’s chemistry (first time)','+'+XP_CH1+' each'],['Rate your teammates within 7 days of a match','+'+XP_CHM+' each'],['Every squad-mate rated (keep it complete)','+'+XP_CHSQ],['No-show (said IN, didn’t come)',XP_NOSHOW+' and no link points']];
+const XPRULES=[['Play a match, on time',XP_ON],['Play but arrive late','+'+XP_LATE+' (half)'],['Say OUT on the link','0 (no penalty)'],['Win / draw','+50 / +20'],['Goal / assist','+40 / +25'],['Player of the Match',200],['Team of the Week',100],['Answer the link 2+ days early','+50 (else +20)'],['Tournament squad / winners / runners-up','+200 / +500 / +250'],['Earn a badge',100],['Beat your usual match rating','+40'],['Improve your focus area','+30'],['Your best match yet','+75'],['Open the app each day','+5 a day'],['Streak of 3 / 7 / 14 / 30 / 60 / 100 days','+15 / +40 / +80 / +150 / +250 / +400'],['Weekly challenge done','+60 each, +100 for all 3'],['Weekly league top 3','+150 / +100 / +50'],['Beat your weekly rival','+75'],['Prediction right: winner / POTM / exact goals','+30 / +50 / +40 (+15 within 1)'],['Rate a teammate’s chemistry (first time)','+'+XP_CH1+' each'],['Rate your teammates within 7 days of a match','+'+XP_CHM+' each'],['Every squad-mate rated (keep it complete)','+'+XP_CHSQ],['No-show (said IN, didn’t come)',XP_NOSHOW+' and no link points']];
 function xpEvents(){const me=PM.data.me.id,ev=[],noshow=new Set();
   S.matches.forEach(m=>{if(!m.teams.some(t=>t.players.includes(me)))return;const d=m.date;
     if(m.myatt==='a'){noshow.add(d);ev.push({d,x:XP_NOSHOW,l:'No-show'});return}
@@ -3088,8 +3116,121 @@ function xpEvents(){const me=PM.data.me.id,ev=[],noshow=new Set();
       const n=tm.players.filter(id=>id!==me&&L.some(x=>x.r===id&&x.d>=m.date&&x.d<=end)).length;if(n)ev.push({d:m.date,x:n*XP_CHM,l:`Chemistry after the match (${n} teammate${n>1?'s':''})`})});
     const sq=chemMates();if(sq.length&&sq.every(p=>(PM.data.chem||{})[p.id]))ev.push({d:'',x:XP_CHSQ,l:'Full squad chemistry'})}
   badgeList().filter(b=>b.got).forEach(b=>ev.push({d:'',x:100,l:'Badge: '+b.n}));
+  compEvents(ev);
   return ev.sort((a,b)=>(b.d||'').localeCompare(a.d||''))}
 
+/* ---------- Compete: daily streak, weekly challenges, weekly XP league, rivals, match predictions, season track ----------
+   Streak days and predictions are stored on the server; each player's app works out its weekly XP from the player's own data
+   and reports it (atb_player_xp), so everyone sees the same league table. Ratings are never ranked, only XP. */
+const compOn=()=>!PM||(PM.data.settings||{}).compete!==false;
+const isoD=t=>new Date(t).toISOString().slice(0,10);
+const dAdd=(d,n)=>isoD(Date.parse(d+'T12:00:00Z')+n*864e5);
+const wkOf=d=>{const t=new Date(d+'T12:00:00Z'),w=(t.getUTCDay()+6)%7;return isoD(t.getTime()-w*864e5)};
+const wkNow=()=>wkOf(todayISO());
+const wkEnd=w=>{const e=dAdd(w,6),t=todayISO();return e<t?e:t};
+const STREAK_MS=[[3,15],[7,40],[14,80],[30,150],[60,250],[100,400]];
+const XP_FORM=40,XP_FOCUS=30,XP_PB=75;
+const CH_XP=60,CH_ALL=100,LG_XP=[150,100,50],RIVAL_XP=75,PR_W=30,PR_P=50,PR_G=40,PR_G1=15;
+function myDays(){return [...new Set((PM.data.days||[]).map(String))].sort()}
+function streakNow(){const ds=new Set(myDays()),t=todayISO();let d=ds.has(t)?t:dAdd(t,-1),n=0;while(ds.has(d)){n++;d=dAdd(d,-1)}return {n,today:ds.has(t)}}
+function bestStreak(){const ds=myDays();let b=0,run=0,prev='';ds.forEach(d=>{run=prev&&dAdd(prev,1)===d?run+1:1;b=Math.max(b,run);prev=d});return b}
+// prediction result for one day, or null while the match isn't saved yet
+function predResult(day){const pk=(PM.data.preds||{})[day];if(!pk)return null;const m=S.matches.find(x=>x.date===day);if(!m)return null;const gs=m.teams.map(t=>t.goals);if(gs.some(g=>g===''||g==null))return null;
+  const me=PM.data.me.id,best=Math.max(...gs.map(Number)),top=m.teams.filter(t=>+t.goals===best),r={w:false,p:false,g:0,x:0};
+  if(pk.w&&top.length===1&&top[0].name===pk.w){r.w=true;r.x+=PR_W}
+  if(pk.p&&m.potm&&m.potm===pk.p){r.p=true;r.x+=PR_P}
+  const mt=m.teams.find(t=>t.players.includes(me));if(mt&&pk.g!=null&&pk.g!==''){const d=Math.abs(+pk.g-+mt.goals);if(d===0){r.g=2;r.x+=PR_G}else if(d===1){r.g=1;r.x+=PR_G1}}
+  return r}
+// performance: each rated match vs the player's usual (their own position areas, starting level weighted in). Private: only ticks, never numbers.
+function perfHist(){if(!PM.data.growth&&!PM.data.showRatings)return [];const me=PM.data.me,keys=POSK[me.pos]||POSK.MID,rs=myRated();if(!rs.length)return [];const b=baseA(),w=+me.baseN>0?Math.min(+me.baseN,3):1;
+  const sc=r=>avg(keys.map(k=>+r[k]||7));let sum=sc(b)*w,n=w,best=-1;const f=focusInfo().hist;
+  return rs.map((x,i)=>{const v=sc(x.r),usual=sum/n,o={date:x.m.date,form:v>usual+0.01,pb:i>=2&&v>best+0.01,focus:!!f[i]?.ok,fk:f[i]?.k};sum+=v;n++;best=Math.max(best,v);return o})}
+// weekly challenges: three per player per week, picked from a pool so everyone gets a different mix
+const PERF_K=['goal','assist','ontime','win','form','focus','pb'];
+const CHPOOL=[['form','Beat your usual match rating',c=>[Math.min(1,c.form),1]],['focus','Beat your usual in your focus area',c=>[Math.min(1,c.focus),1]],['pb','Have your best match yet',c=>[Math.min(1,c.pb),1]],
+ ['goal','Score a goal',c=>[Math.min(1,c.g),1]],['assist','Get an assist',c=>[Math.min(1,c.a),1]],['ontime','Play a match and arrive on time',c=>[Math.min(1,c.on),1]],
+ ['win','Win your match',c=>[Math.min(1,c.w),1]],['early','Answer the availability link 2+ days early',c=>[Math.min(1,c.early),1]],['chem5','Rate chemistry with 5 teammates',c=>[Math.min(5,c.chem),5]],
+ ['streak5','Open the app on 5 days this week',c=>[Math.min(5,c.days),5]],['predict','Make a match prediction',c=>[Math.min(1,c.pred),1]],['predok','Get a prediction right',c=>[Math.min(1,c.predok),1]],
+ ['vote','Vote for Player of the Match',c=>[Math.min(1,c.vote),1]],['streak3','Keep a 3-day streak going',c=>[Math.min(3,c.run),3]]];
+const hashS=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+function weekChallenges(w){const me=PM.data.me.id,ph=perfHist(),perf=CHPOOL.filter(x=>PERF_K.includes(x[0])&&(ph.length||!['form','focus','pb'].includes(x[0]))),eng=CHPOOL.filter(x=>!PERF_K.includes(x[0])),out=[];let h=hashS(w+me);
+  // two on-pitch challenges and one off-pitch: performance comes first
+  for(const [pool,n] of [[perf,2],[eng,1]]){const P=pool.slice();for(let i=0;i<n&&P.length;i++){out.push(P.splice(h%P.length,1)[0]);h=hashS(h+'x')}}
+  const e=dAdd(w,6),inW=d=>d&&d>=w&&d<=e,c={form:0,focus:0,pb:0,g:0,a:0,on:0,w:0,early:0,chem:0,days:0,pred:0,predok:0,vote:0,run:0};
+  S.matches.filter(m=>inW(m.date)&&m.myatt!=='a').forEach(m=>{const ti=m.teams.findIndex(t=>t.players.includes(me));if(ti<0)return;c.on+=m.myatt==='l'?0:1;if(resultOf(m,ti)==='W')c.w++;const st=m.stats?.[me];c.g+=st?.g||0;c.a+=st?.a||0;if(m.myvote)c.vote++});
+  PM.data.polls.forEach(p=>{const f=(p.log||[]).find(l=>l.status!=='cleared');if(!f)return;const at=isoD(f.at);if(!inW(at))return;if((new Date(p.kickoff||kickoffISO(p.match_date))-new Date(f.at))/36e5>=48)c.early++});
+  perfHist().filter(x=>inW(x.date)).forEach(x=>{c.form+=x.form?1:0;c.focus+=x.focus?1:0;c.pb+=x.pb?1:0});
+  c.chem=new Set(chemLog().filter(x=>inW(x.d)).map(x=>x.r)).size;
+  const ds=myDays().filter(inW);c.days=ds.length;let run=0,prev='';ds.forEach(d=>{run=prev&&dAdd(prev,1)===d?run+1:1;c.run=Math.max(c.run,run);prev=d});
+  Object.entries(PM.data.preds||{}).forEach(([d,pk])=>{const at=pk.at?isoD(pk.at):d;if(inW(at)||inW(d))c.pred++;const r=predResult(d);if(r&&r.x>0&&inW(d))c.predok++});
+  return out.map(([k,t,f])=>{const [v,n]=f(c);return {k,t,v,n,done:v>=n}})}
+// XP from the competition (nb = not reported to the league, so league bonuses never feed back into the league)
+function compEvents(ev){perfHist().forEach(x=>{if(x.form)ev.push({d:x.date,x:XP_FORM,l:'Beat your usual rating'});if(x.focus)ev.push({d:x.date,x:XP_FOCUS,l:'Improved your focus area'});if(x.pb)ev.push({d:x.date,x:XP_PB,l:'Your best match yet'})});
+  if(!compOn())return;const ds=myDays(),byW={};ds.forEach(d=>{const w=wkOf(d);(byW[w]=byW[w]||[]).push(d)});
+  Object.entries(byW).forEach(([w,l])=>ev.push({d:l[l.length-1],x:5*l.length,l:`Daily check-ins (${l.length} day${l.length>1?'s':''})`}));
+  let run=0,prev='';ds.forEach(d=>{run=prev&&dAdd(prev,1)===d?run+1:1;prev=d;const ms=STREAK_MS.find(x=>x[0]===run);if(ms)ev.push({d,x:ms[1],l:`🔥 ${run}-day streak`})});
+  Object.keys(PM.data.preds||{}).forEach(d=>{const r=predResult(d);if(r&&r.x)ev.push({d,x:r.x,l:`Prediction${[r.w&&'winner',r.p&&'POTM',r.g===2&&'exact goals',r.g===1&&'goals within 1'].filter(Boolean).length>1?'s':''} right (${[r.w&&'winner',r.p&&'POTM',r.g===2&&'exact goals',r.g===1&&'goals ±1'].filter(Boolean).join(', ')})`})});
+  const first=ds[0]||todayISO();for(let w=wkOf(first);w<=wkNow();w=dAdd(w,7)){const ch=weekChallenges(w),n=ch.filter(c=>c.done).length;if(n)ev.push({d:wkEnd(w),x:n*CH_XP+(n===3?CH_ALL:0),l:`Weekly challenges: ${n}/3${n===3?' (all done!)':''}`})}
+  const me=PM.data.me.id;leagueWeeks().filter(w=>w<wkNow()).forEach(w=>{const t=leagueTable(w),i=t.findIndex(r=>r.id===me);if(i>=0&&i<3&&t[i].xp>0)ev.push({d:dAdd(w,6),x:LG_XP[i],l:`League week: ${['🥇 1st','🥈 2nd','🥉 3rd'][i]}`,nb:1});
+    const rv=rivalOf(w);if(rv&&t.find(r=>r.id===me)?.xp>(t.find(r=>r.id===rv)?.xp||0))ev.push({d:dAdd(w,6),x:RIVAL_XP,l:`Beat your rival ${shortName(pById(rv)?.name)}`,nb:1})})}
+function leagueRows(){return (PM.data.league||[]).map(([id,w,xp,tot,st])=>({id,w:String(w).slice(0,10),xp:+xp||0,tot:+tot||0,st:+st||0}))}
+function leagueWeeks(){return [...new Set(leagueRows().map(r=>r.w))].sort()}
+function leagueTable(w){const rows=leagueRows().filter(r=>r.w===w),cur=w===wkNow(),me=PM.data.me.id;
+  if(cur){const mine=rows.find(r=>r.id===me),x=myWeekXP(w);if(mine)mine.xp=x;else rows.push({id:me,w,xp:x,tot:myXP(),st:streakNow().n})}
+  const ids=new Set(rows.map(r=>r.id));if(cur)PM.data.players.filter(p=>!p.guest&&p.active!==false&&!ids.has(p.id)).forEach(p=>rows.push({id:p.id,w,xp:0,tot:0,st:0}));
+  return rows.filter(r=>pById(r.id)).sort((a,b)=>b.xp-a.xp||(pById(a.id)?.name||'').localeCompare(pById(b.id)?.name||''))}
+// rivals: pair players by last week's league order (1v2, 3v4…); nobody is left without one
+function rivalOf(w){const prev=leagueRows().filter(r=>r.w===dAdd(w,-7)&&r.xp>0).sort((a,b)=>b.xp-a.xp||a.id.localeCompare(b.id)).map(r=>r.id),me=PM.data.me.id,i=prev.indexOf(me);if(i<0||prev.length<2)return null;
+  const j=i%2===0?i+1:i-1;return prev[j<prev.length?j:i-1]}
+function myWeekXP(w){const e=dAdd(w,6);return Math.max(0,xpEvents().filter(x=>!x.nb&&x.d&&x.d>=w&&x.d<=e).reduce((n,x)=>n+x.x,0))}
+async function compSync(){if(!PM||PM.preview||!PM.tok||!compOn())return;try{if(!streakNow().today){const r=await prpc('atb_player_checkin',{p_token:PM.tok});if(r==='ok'){(PM.data.days=PM.data.days||[]).push(todayISO());bgRender()}}}catch(e){}
+  try{const ev=xpEvents(),rows=[];for(let i=0;i<8;i++){const w=dAdd(wkNow(),-7*i),e=dAdd(w,6);rows.push({w,x:Math.max(0,ev.filter(x=>!x.nb&&x.d&&x.d>=w&&x.d<=e).reduce((n,x)=>n+x.x,0))})}
+    await prpc('atb_player_xp',{p_token:PM.tok,p_rows:rows,p_tot:myXP(),p_streak:streakNow().n})}catch(e){}}
+// the next match you can predict: a published fixture, before kick-off
+function predFixture(){const t=todayISO();return (S.fixtures||[]).filter(f=>f.date>=t&&(f.teams||[]).length>1).sort((a,b)=>a.date<b.date?-1:1)[0]}
+function predPanel(){const fx=predFixture(),pk=fx?(PM.data.preds||{})[fx.date]||{}:{},me=PM.data.me.id;
+  const past=Object.keys(PM.data.preds||{}).filter(d=>predResult(d)).sort().reverse().slice(0,3);
+  if(!fx&&!past.length)return `<div class="panel small muted">Predictions open when the managers publish the next match’s teams.</div>`;
+  const agg=fx?(PM.data.predAgg||{})[fx.date]||{}:{},tot=Object.values(agg).reduce((n,v)=>n+ +v,0),mt=fx?fx.teams.find(t=>t.players.includes(me)):null,ko=PM.data.polls.find(p=>String(p.match_date)===fx?.date)?.kickoff;
+  const closed=fx&&new Date()>=new Date(ko||kickoffISO(fx.date));
+  return `${fx?`<div class="panel stack predp"><div class="small muted">${new Date(fx.date+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}${closed?' · <b>closed</b> (kicked off)':' · change your picks any time before kick-off'}</div>
+    <div><b>Who wins the night?</b> <span class="small muted">+${PR_W} XP</span><div class="chips" style="margin-top:6px">${fx.teams.map(t=>{const n=+agg[t.name]||0;return `<button class="chip" aria-pressed="${pk.w===t.name}" data-a="pred" data-k="w" data-v="${esc(t.name)}" ${closed?'disabled':''}><span class="kitsw sm" style="background:${KITHEX[t.kit]}"></span>${esc(t.name)}${tot?` <small class="muted">${Math.round(n/tot*100)}%</small>`:''}</button>`}).join('')}</div></div>
+    <label class="f"><span><b>Player of the Match</b> <span class="small muted">+${PR_P} XP</span></span><select data-a="pred" data-k="p" ${closed?'disabled':''}><option value="">Pick a player</option>${fx.teams.flatMap(t=>t.players).filter(id=>pById(id)).map(id=>`<option value="${id}" ${pk.p===id?'selected':''}>${esc(pById(id).name)}</option>`).join('')}</select></label>
+    ${mt?`<div><b>Goals for ${esc(mt.name)}</b> <span class="small muted">+${PR_G} exact · +${PR_G1} within 1</span><div class="row" style="margin-top:6px;gap:6px">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="chip gch" aria-pressed="${pk.g!=null&&+pk.g===n}" data-a="pred" data-k="g" data-v="${n}" ${closed?'disabled':''}>${n}${n===10?'+':''}</button>`).join('')}</div></div>`:''}</div>`:''}
+  ${past.length?`<div class="panel small stack"><b>Your results</b>${past.map(d=>{const r=predResult(d);return `<div class="row" style="justify-content:space-between"><span>${new Date(d+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}: ${r.w?'✅':'❌'} winner · ${r.p?'✅':'❌'} POTM · ${r.g===2?'✅':r.g===1?'🟡':'❌'} goals</span><b>+${r.x} XP</b></div>`}).join('')}</div>`:''}`}
+function vpCompete(){if(!PM.data)return '';if(!compOn())return '<div class="panel muted">The managers have turned the competition off.</div>';
+  const me=PM.data.me.id,sk=streakNow(),best=Math.max(bestStreak(),sk.n),w=wkNow(),ch=weekChallenges(w),t=leagueTable(w),i=t.findIndex(r=>r.id===me),rv=rivalOf(w),xp=myXP(),lv=levelOf(xp);
+  const nextMs=STREAK_MS.find(x=>x[0]>sk.n),daysLeft=Math.max(0,Math.round((Date.parse(dAdd(w,7)+'T00:00:00')-Date.now())/864e5));
+  const lw=dAdd(w,-7),lt=leagueTable(lw).filter(r=>r.xp>0).slice(0,3);
+  const ul=ulAll().filter(x=>x.v>xp).sort((a,b)=>a.v-b.v).slice(0,4);
+  const rvRow=rv&&t.find(r=>r.id===rv),myRow=t[i];
+  const ph=perfHist(),lp=ph[ph.length-1],fi=ph.length?focusInfo():null,formRun=(()=>{let n=0;for(let j=ph.length-1;j>=0&&ph[j].form;j--)n++;return n})();
+  const perf=lp?`<h2>On the pitch <span class="small muted">this is what counts most</span></h2><div class="panel stack perfp">
+    <div class="pfrow"><span class="${lp.form?'ok':'no'}">${lp.form?'✓':'✕'}</span><div><b>Last match vs your usual</b><div class="small muted">${lp.form?`Better than your usual. +${XP_FORM} XP`:'Below your usual. Next match is your chance.'}${formRun>1?` · <b>${formRun} in a row</b> 🔥`:''}</div></div></div>
+    <div class="pfrow"><span class="${lp.focus?'ok':'no'}">${lp.focus?'✓':'✕'}</span><div><b>Focus area: ${esc(KL[fi.k])}</b><div class="small muted">${esc(TIPS[fi.k]||'')} Beat your usual here for +${XP_FOCUS} XP.</div></div></div>
+    ${lp.pb?`<div class="pfrow"><span class="ok">★</span><div><b>Best match of your season!</b><div class="small muted">+${XP_PB} XP</div></div></div>`:''}
+    <div class="small muted">Every match: beat your usual (+${XP_FORM}), improve your focus area (+${XP_FOCUS}), have your best match yet (+${XP_PB}). Plus win, score, assist, POTM and Team of the Week.</div></div>`:`<h2>On the pitch</h2><div class="panel small muted">Once your first match is rated you’ll see how you did against your usual here, with XP for every improvement.</div>`;
+  return `${perf}<div class="streakhero${sk.today?'':' risk'}"><div class="sflame">🔥</div><div><div class="snum">${sk.n}<small>-day streak</small></div><div class="small">${sk.today?'Checked in today. Come back tomorrow to keep it alive.':'Open the app today to keep your streak!'}${nextMs?` <b>${nextMs[0]-sk.n} more day${nextMs[0]-sk.n>1?'s':''}</b> for +${nextMs[1]} XP.`:''} Best: ${best}.</div></div></div>
+  <h2>This week’s challenges <span class="small muted">${daysLeft} day${daysLeft===1?'':'s'} left</span></h2>
+  <div class="panel stack chl">${ch.map(c=>`<div class="chi${c.done?' done':''}"><span class="chk">${c.done?'✓':''}</span><div style="flex:1;min-width:0"><b>${esc(c.t)}</b><div class="pbar2"><i style="width:${Math.round(c.v/c.n*100)}%"></i></div></div><span class="small">${c.v}/${c.n} · <b>+${CH_XP}</b></span></div>`).join('')}
+    <div class="small muted">Two on the pitch, one off it. Finish all three for a <b>+${CH_ALL} XP</b> bonus. New challenges every Monday.</div></div>
+  ${rv?`<h2>Your rival this week</h2><div class="panel rival"><div class="rvs"><b>You</b><span class="rvx">${myRow?.xp||0}</span></div><span class="rvv">VS</span><div class="rvs"><b>${esc(shortName(pById(rv)?.name))}</b><span class="rvx">${rvRow?.xp||0}</span></div>
+    <div class="small muted rvt">${(myRow?.xp||0)>(rvRow?.xp||0)?'You’re ahead! Keep going.':(myRow?.xp||0)===(rvRow?.xp||0)?'Level. Who blinks first?':`Behind by ${(rvRow.xp-(myRow?.xp||0))} XP.`} Beat them by Sunday for <b>+${RIVAL_XP} XP</b>.</div></div>`:''}
+  <h2>Weekly league <span class="small muted">XP earned since Monday</span></h2>
+  <div class="panel league">${lt.length?`<div class="small muted" style="margin-bottom:6px">Last week: ${lt.map((r,k)=>`${['🥇','🥈','🥉'][k]} ${esc(r.id===me?'You':shortName(pById(r.id)?.name))} (${r.xp})`).join(' · ')}</div>`:''}
+    <ol class="lgt">${t.filter(r=>r.xp>0||r.id===me||r.id===rv).map((r,k)=>`<li class="${r.id===me?'me':''}${k<3&&r.xp>0?' top':''}"><span class="lgr">${k<3&&r.xp>0?['🥇','🥈','🥉'][k]:k+1}</span><span class="lgn">${esc(r.id===me?'You':shortName(pById(r.id)?.name))}${r.id===rv?' <em class="rvtag">rival</em>':''}</span><span class="lgs">${r.st>=2?'🔥'+r.st:''}</span><span class="lgl">LV ${levelOf(r.tot).L}</span><b class="lgx">${r.xp}</b></li>`).join('')}</ol>
+    ${t.filter(r=>!(r.xp>0||r.id===me||r.id===rv)).length?`<div class="small muted" style="margin-bottom:6px">+ ${t.filter(r=>!(r.xp>0||r.id===me||r.id===rv)).length} teammates still on 0 XP this week</div>`:''}<div class="small muted">Top 3 every week win <b>+${LG_XP.join(' / +')} XP</b>. Only XP is ranked, never ratings. Teammates’ numbers update when they open the app.</div></div>
+  <h2>Predictions</h2>${predPanel()}
+  <h2>Season track</h2><div class="panel stack"><div class="row" style="justify-content:space-between"><b>Level ${lv.L} · ${lv.name}</b><span class="small muted">${xp.toLocaleString()} XP</span></div><div class="pbar2"><i style="width:${Math.round(lv.into/lv.need*100)}%"></i></div>
+    ${ul.length?`<div class="sttrack">${ul.map(x=>`<div class="stt"><b>${x.v.toLocaleString()}</b><span>${esc(ulName(x.t,x.k))}</span><small>${(x.v-xp).toLocaleString()} to go</small></div>`).join('')}</div>`:'<div class="small muted">You’ve unlocked everything. Legend.</div>'}</div>
+  <h2>How to earn XP fast</h2><div class="panel small"><ul class="tight"><li><b>Play better than your usual</b> (+${XP_FORM}), improve your focus area (+${XP_FOCUS}), best match yet (+${XP_PB})</li><li>Turn up on time (+150), win (+50), score (+40), assist (+25), POTM (+200), Team of the Week (+100)</li><li>Finish weekly challenges (+${CH_XP} each, +${CH_ALL} for all 3)</li><li>Predict the winner, POTM and your goals</li><li>Rate your teammates’ chemistry after each match</li><li>Open the app every day (+5, streak bonuses)</li></ul></div>`}
+// Team of the Week reveal: once per new Team of the Week, cards flip in one by one
+function totwReveal(){const d=PM.data,tw=d.totw;if(!tw||!tw.order||PM.preview||!compOn())return;const k='atb_totw_'+d.me.id;try{if(localStorage.getItem(k)===tw.match)return;localStorage.setItem(k,tw.match)}catch(e){return}
+  const me=d.me.id,inIt=tw.order.includes(me),ids=tw.order.filter(id=>pById(id));if(!ids.length)return;
+  const o=document.createElement('div');o.className='twrev';o.innerHTML=`<div class="twin"><div class="twh">TEAM OF THE WEEK</div><div class="small" style="opacity:.8">${new Date((tw.date||todayISO())+'T12:00').toLocaleDateString(undefined,{month:'long',day:'numeric'})}</div>
+    <div class="twgrid">${ids.map((id,i)=>`<div class="twc${id===me?' mine':''}" style="--i:${i}">${cardHTML(pById(id),{btn:false,tier:'special'})}</div>`).join('')}</div>
+    ${inIt?'<div class="twyou">🎉 YOU MADE IT! +100 XP</div>':'<div class="small" style="opacity:.85;margin-top:10px">Play well this week to make the next one.</div>'}<button class="btn primary" data-tw="x">Continue</button></div>`;
+  document.body.appendChild(o);const close=()=>{o.classList.add('out');setTimeout(()=>o.remove(),300)};o.addEventListener('click',e=>{if(e.target.dataset.tw||e.target===o)close()})}
 /* ---------- Unlocks: card designs, chemistry styles and PlayStyles open up as players earn XP; the admin can keep some for themselves ----------
    value per item: 0 = free, N = unlocks at N XP, -1 = admin only (exclusive). Admin sets them in Settings; defaults below. */
 const UL_DEF={card:{cornerstones:300,foundation:600,sponsor:900,summer:1200,otw:1500,otwglow:1900,fiesta:2300,risingstar:2700,premier:3100,premlights:3500,destined:4000,hero:4500,knockout:5000,prime:5600,greats:6200,totw:6800,tots:7400,scream:8000,proicon:9000,halloffame:10000,icon:12000},
@@ -3137,7 +3278,8 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
   const tb=(()=>{const t=S.tourns.filter(x=>x.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1)[0];if(!t)return '';const pl=PM.data.polls.find(p=>p.id===t.poll&&p.open),inSq=(t.squad||[]).includes(me.id);
     return `<button class="panel tban" data-a="gotourn">🏆 <div><b>${esc(t.name)}</b><div class="small muted">${new Date(t.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${inSq?'You’re in the squad!':pl&&!pl.mine?'Are you available? Tap to answer':pl?`You said ${pl.mine.toUpperCase()}`:ruleTxt(t)}</div></div><span>›</span></button>`})();
   const ct=chemTodo();if((ct.mates.length)&&!PM.preview){try{if(sessionStorage.getItem('atb_chempop')!==(ct.m?.date||'')){sessionStorage.setItem('atb_chempop',ct.m?.date||'');setTimeout(chemModal,900)}}catch(e){}}
-  return `${(ct.mates.length||ct.never.length)&&!PM.preview?`<button class="panel chemnag" data-a="chemmodal"><span class="cnic">🤝</span><div><b>Chemistry needed</b><div class="small">${ct.mates.length?`Rate the ${ct.mates.length} teammate${ct.mates.length>1?'s':''} from ${new Date(ct.m.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}`:''}${ct.mates.length&&ct.never.length?' and ':''}${ct.never.length?`${ct.never.length} squad-mate${ct.never.length>1?'s':''} you haven’t rated`:''}. Managers use it to build the teams.</div></div><span class="cnxp">+${ct.xp} XP</span></button>`:''}<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(pfOpen&&pfD?{...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}}:me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
+  const sk=compOn()?streakNow():null,lgt=compOn()?leagueTable(wkNow()):[],lgi=lgt.findIndex(r=>r.id===me.id);
+  return `${sk?`<button class="panel compbar${sk.today?'':' risk'}" data-a="gocompete"><span class="cbf">🔥 <b>${sk.n}</b></span><span class="small">${sk.n?'day streak':'Start your streak'}${lgi>=0?` · <b>#${lgi+1}</b> this week`:''} · ${weekChallenges(wkNow()).filter(c=>c.done).length}/3 challenges</span><span class="cbgo">Compete ›</span></button>`:''}${(ct.mates.length||ct.never.length)&&!PM.preview?`<button class="panel chemnag" data-a="chemmodal"><span class="cnic">🤝</span><div><b>Chemistry needed</b><div class="small">${ct.mates.length?`Rate the ${ct.mates.length} teammate${ct.mates.length>1?'s':''} from ${new Date(ct.m.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}`:''}${ct.mates.length&&ct.never.length?' and ':''}${ct.never.length?`${ct.never.length} squad-mate${ct.never.length>1?'s':''} you haven’t rated`:''}. Managers use it to build the teams.</div></div><span class="cnxp">+${ct.xp} XP</span></button>`:''}<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(pfOpen&&pfD?{...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}}:me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
       <h2 style="margin:0">${esc(titleName(me.name))}</h2>
       <div class="small muted">${me.pos}${me.number?' · #'+esc(me.number):''}${me.nation?' · '+esc((NATIONS.find(n=>n[0]===me.nation)||[])[1]||''):''}${club?' · supports '+esc(club.n):''}</div>
       <div class="row" style="gap:6px"><button class="btn small" data-a="ppage" data-id="${me.id}">📄 My player page</button><button class="btn ghost small" data-a="pfedit">✏️ Edit my profile</button>${d.canEdit?'<button class="btn ghost small" data-a="goacct">Shirt & details</button>':''}</div>${d.canDob&&!d.me.dob?'<div class="small"><button class="linkb" data-a="goacct">Add your date of birth</button> <span class="muted">for age-group tournaments</span></div>':''}
@@ -3529,7 +3671,7 @@ function renderPlayer(){if(!helloDone&&PM&&PM.data&&!PM.preview){helloDone=true;
   if(!PM.data){m.innerHTML=PM.err?`<div class="panel stack"><p style="margin:0">${esc(PM.err)}</p><div class="row"><button class="btn" data-a="preload">Try again</button><button class="btn ghost" data-a="psignout">Sign out</button></div></div>`:'<p class="empty">Loading your profile…</p>';return}
   CACHE=compute();
   const keep=keepDetails(m);
-  m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small ghost" data-a="exitprev">Exit</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='team'?vpTeam():view==='dream'?vpDream():view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():view==='tourn'?vpTourn():view==='club'?vClub():vpMe());keep()}
+  m.innerHTML=(PM.preview?`<div class="prevbar"><span>👁 You’re seeing <b>${esc(PM.name)}</b>’s profile exactly as they do. Buttons here don’t change anything.</span><button class="btn small ghost" data-a="exitprev">Exit</button></div>`:'')+(PM.err?`<div class="panel small muted" style="margin-bottom:10px">${esc(PM.err)}</div>`:'')+(view==='team'?vpTeam():view==='dream'?vpDream():view==='games'?vpGames():view==='avail'?vpAvail():view==='leaders'?vpLeaders():view==='acct'?vpAcct():view==='pguide'?vpGuide():view==='compete'?vpCompete():view==='tourn'?vpTourn():view==='club'?vClub():vpMe());keep()}
 
 function vSwitchPlayer(){return `<div class="login panel stack"><h2 style="margin:0">Switch to your player profile</h2>
   <p class="small muted" style="margin:0">You stay signed in as a manager. Pick your name and enter your PIN (the same one as the availability link). Tap <b>↩ Manager</b> to come back. <b>You only do this once:</b> after that, My profile opens straight away on any device you’re signed in on as a manager.</p>
@@ -3580,6 +3722,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(PM.preview&&['pvote','ppotm','psetpin','psignout','pedit'].includes(a)){toast('Preview only: this works on the player’s own phone');return}
   if(a==='gotourn'){go('tourn');return}
   if(a==='chemmodal'){chemModal();return}
+  if(a==='pred'){if(el.tagName!=='SELECT')predSet(el.dataset.k,el.dataset.v);return}
+  if(a==='gocompete'){go('compete');return}
   if(a==='chemdone'){closeModal();render();return}
   if(a==='goguide'){go('pguide');return}
   if(a==='gofocus'){document.getElementById('focus')?.scrollIntoView({behavior:'smooth',block:'start'});return}
@@ -3620,6 +3764,10 @@ const dpkRefresh=()=>{const ov=document.querySelector('.dpkov');if(ov){const st=
 document.addEventListener('change',e=>{const el=e.target;if(!DE||!el.dataset)return;if(el.dataset.a==='dfilt'){DF[el.dataset.k]=el.value;DPK.page=0;dpkRefresh()}else if(el.dataset.a==='dfany'){DF.any=el.checked;dpkRefresh()}});
 document.addEventListener('click',e=>{const el=e.target.closest('[data-a="dfreset"],[data-a="dftag"],[data-a="dfanyon"]');if(!el||!DE)return;e.stopPropagation();const a=el.dataset.a;if(a==='dfreset')DF={pos:'',nat:'',lg:'',club:'',min:0,any:false};else if(a==='dftag')DF[el.dataset.k]=el.dataset.k==='min'?0:'';else DF.any=true;DPK.page=0;dpkRefresh()},true);
 document.addEventListener('input',e=>{if(e.target.id!=='dq'||!DE)return;dreamQ=e.target.value;DPK.page=0;const box=document.querySelector('.dpkov');if(box){const pos=e.target.selectionStart;const t=document.createElement('div');t.innerHTML=dreamPicker();box.replaceWith(t.firstElementChild);const i=$('#dq');if(i){i.focus();i.setSelectionRange(pos,pos)}}});
+async function predSet(k,v){if(!PM||PM.preview){toast('Preview only');return}const fx=predFixture();if(!fx)return;const P=PM.data.preds=PM.data.preds||{},old=P[fx.date]||{},{at:_at,...keep}=old,pk={...keep,[k]:k==='g'?(v===''?null:+v):v};
+  try{const r=await prpc('atb_player_predict',{p_token:PM.tok,p_day:fx.date,p_pick:pk});if(r==='ok'){const agg=(PM.data.predAgg=PM.data.predAgg||{})[fx.date]=(PM.data.predAgg[fx.date]||{});if(k==='w'){if(old.w)agg[old.w]=Math.max(0,(+agg[old.w]||1)-1);agg[v]=(+agg[v]||0)+1}P[fx.date]={...pk,at:new Date().toISOString()};toast('Prediction saved');render()}
+    else toast(r==='closed'?'Too late: the match has kicked off':'Could not save')}catch(e){toast('Could not save')}}
+document.addEventListener('change',e=>{const el=e.target.closest('select[data-a="pred"]');if(el&&PM)predSet(el.dataset.k,el.value)});
 document.addEventListener('change',e=>{const el=e.target.closest('[data-a="pseason"]');if(!el||!PM)return;PM.season=el.value;ls('atb_pseason',el.value);render()});
 
 /* ---------- Tournaments, date of birth, club and equipment ---------- */

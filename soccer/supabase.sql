@@ -147,3 +147,7 @@ grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
 -- Chemistry XP: every chemistry save is logged (private.atb_chem_log, backfilled from atb_chem); atb_player_chem inserts a log row;
 -- the player payload adds 'chemLog' = [[ratee, at], ...] (one per teammate per day) so the app can award +10 first rating,
 -- +15 per teammate re-rated within 7 days of a match, +150 for a fully rated squad.
+
+-- Compete (v2.6): private.atb_checkins (daily streak), private.atb_xp_week (weekly XP reported by each player's app, clamped),
+-- private.atb_preds (match predictions, only before kick-off). RPCs: atb_player_checkin, atb_player_xp, atb_player_predict.
+-- Payload adds days, league ([player, week, xp, tot, streak] last 120 days), preds (mine), predAgg (winner pick counts), settings.compete.
