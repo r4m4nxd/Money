@@ -132,3 +132,5 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- 2026-10-02: public Storage bucket 'stars' (ready star cut-outs + index.json); only the admin email can upload
 --   policies on storage.objects: stars_admin_insert / stars_admin_update / stars_admin_select
+
+-- 2026-10-02: player payload sends 'fc' (manager attribute overrides) with the shared squad ratings

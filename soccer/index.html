@@ -1023,6 +1023,22 @@ select{text-overflow:ellipsis}
 
 /* phones: no shine or glow animations on cards (they stutter on mobile GPUs) */
 @media (hover:none),(pointer:coarse){.fut .fshine{display:none!important}.pcard.glow .fut{filter:none}.fut.art{filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}}
+
+.fcedit{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.fceg{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.fcegh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.fcegh b{font:800 15px var(--f-display)}
+.fcrow{display:grid;grid-template-columns:96px 1fr 34px;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:2px 0}.fcrow.set span{color:var(--ink);font-weight:700}.fcrow.set span::after{content:' •';color:var(--accent)}
+.fcrow output{font:800 15px var(--f-display);text-align:right}
+
+/* number sliders */
+.sld{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;min-width:120px}
+.sld input[type=range],.fcrow input[type=range]{flex:1;min-width:0;width:100%;height:28px;margin:0;padding:0;background:none;border:0;accent-color:var(--accent);-webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y}
+.sld input[type=range]::-webkit-slider-runnable-track,.fcrow input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:color-mix(in srgb,var(--muted) 30%,transparent)}
+.sld input[type=range]::-webkit-slider-thumb,.fcrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.sld input[type=range]::-moz-range-track,.fcrow input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:color-mix(in srgb,var(--muted) 30%,transparent)}
+.sld input[type=range]::-moz-range-thumb,.fcrow input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid var(--surface)}
+.sld output{min-width:46px;text-align:center;font:800 16px var(--f-display);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:5px 6px;text-transform:none;letter-spacing:0}.sld output.off{color:var(--muted);font-weight:600}
+.gai label,.score .srow,.tga label{min-width:0}.gai .sld,.tga .sld{min-width:110px}
+label.f .muted,label.f .small{text-transform:none;letter-spacing:0;font-weight:500}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1212,7 +1228,7 @@ function cropPhoto(file){return new Promise(resolve=>{if(typeof pnClose==='funct
         let out=cut?cv.toDataURL('image/webp',.86):cv.toDataURL('image/jpeg',.82);if(cut&&!out.startsWith('data:image/webp'))out=cv.toDataURL('image/png');done({src:out,cut})}})};
   img.src=url})}
 const face=p=>p?.photo?`<img src="${p.photo}" alt="">`:esc(initials(p?.name));
-let pendPhoto,pendCut=false;
+let pendFC={};let pendPhoto,pendCut=false;
 /* Favourite clubs: colour badges (club colours + short code), not official crests, which are trademarks */
 const CLUBS={"Premier League":[["mun","Manchester United","MUN","#DA291C","#FBE122"],["mci","Manchester City","MCI","#6CABDD","#1C2C5B"],["liv","Liverpool","LIV","#C8102E","#F6EB61"],["ars","Arsenal","ARS","#EF0107","#FFFFFF"],["che","Chelsea","CHE","#034694","#FFFFFF"],["tot","Tottenham Hotspur","TOT","#FFFFFF","#132257"],["new","Newcastle United","NEW","#241F20","#FFFFFF"],["avl","Aston Villa","AVL","#670E36","#95BFE5"],["whu","West Ham United","WHU","#7A263A","#1BB1E7"],["eve","Everton","EVE","#003399","#FFFFFF"]],"La Liga":[["rma","Real Madrid","RMA","#FFFFFF","#FEBE10"],["bar","FC Barcelona","BAR","#A50044","#004D98"],["atm","Atlético Madrid","ATM","#CB3524","#272E61"],["sev","Sevilla","SEV","#FFFFFF","#D71920"],["rso","Real Sociedad","RSO","#0067B1","#FFFFFF"],["ath","Athletic Club","ATH","#EE2523","#FFFFFF"],["vil","Villarreal","VIL","#FFE667","#005187"],["bet","Real Betis","BET","#0BB363","#FFFFFF"],["val","Valencia","VAL","#FFFFFF","#EE3524"],["gir","Girona","GIR","#CD2534","#FFFFFF"]],"Serie A":[["juv","Juventus","JUV","#FFFFFF","#000000"],["int","Inter","INT","#010E80","#000000"],["mil","AC Milan","MIL","#FB090B","#000000"],["nap","Napoli","NAP","#12A0D7","#FFFFFF"],["rom","AS Roma","ROM","#8E1F2F","#F0BC42"],["laz","Lazio","LAZ","#87D8F7","#FFFFFF"],["ata","Atalanta","ATA","#1E71B8","#000000"],["fio","Fiorentina","FIO","#482E92","#FFFFFF"],["bol","Bologna","BOL","#A21C26","#1A2F48"],["tor","Torino","TOR","#8A1E03","#FFFFFF"]],"Bundesliga":[["fcb","Bayern Munich","FCB","#DC052D","#FFFFFF"],["bvb","Borussia Dortmund","BVB","#FDE100","#000000"],["b04","Bayer Leverkusen","B04","#E32221","#000000"],["rbl","RB Leipzig","RBL","#DD0741","#FFFFFF"],["vfb","VfB Stuttgart","VFB","#FFFFFF","#E32219"],["sge","Eintracht Frankfurt","SGE","#E1000F","#000000"],["wob","VfL Wolfsburg","WOB","#65B32E","#FFFFFF"],["bmg","Borussia Mönchengladbach","BMG","#FFFFFF","#00A74F"],["scf","SC Freiburg","SCF","#000000","#E2001A"],["fcu","Union Berlin","FCU","#EB1923","#FFFFFF"]],"Ligue 1":[["psg","Paris Saint-Germain","PSG","#004170","#DA291C"],["om","Olympique de Marseille","OM","#2FAEE0","#FFFFFF"],["ol","Olympique Lyonnais","OL","#FFFFFF","#DA0812"],["asm","AS Monaco","ASM","#E51B22","#FFFFFF"],["losc","Lille","LIL","#E01E13","#20325F"],["nic","OGC Nice","NIC","#C4161C","#000000"],["rcl","RC Lens","RCL","#FFD700","#E1001A"],["ren","Stade Rennais","REN","#E13327","#000000"],["fcn","FC Nantes","FCN","#FCD405","#008A4F"],["rcs","RC Strasbourg","RCS","#009FE3","#FFFFFF"]],"MLS":[["tfc","Toronto FC","TFC","#B81137","#455560"],["van","Vancouver Whitecaps","VAN","#00245E","#9DC2EA"],["mtl","CF Montréal","MTL","#0033A1","#000000"],["mia","Inter Miami","MIA","#F7B5CD","#231F20"],["lag","LA Galaxy","LAG","#00245D","#FFD200"],["lafc","LAFC","LAFC","#000000","#C39E6D"],["sea","Seattle Sounders","SEA","#5D9741","#005595"],["atl","Atlanta United","ATL","#80000A","#221F1F"],["nyc","New York City FC","NYC","#6CACE4","#041E42"],["clb","Columbus Crew","CLB","#FEDD00","#000000"]],"Portugal & Netherlands":[["slb","Benfica","SLB","#E83030","#FFFFFF"],["fcp","FC Porto","FCP","#003893","#FFFFFF"],["scp","Sporting CP","SCP","#008057","#FFFFFF"],["aja","Ajax","AJA","#D2122E","#FFFFFF"],["psv","PSV","PSV","#ED1C24","#FFFFFF"],["fey","Feyenoord","FEY","#E00012","#000000"]],"Scotland & Saudi":[["cel","Celtic","CEL","#018749","#FFFFFF"],["ran","Rangers","RAN","#1B458F","#FFFFFF"],["nas","Al Nassr","NAS","#FCE300","#0033A0"],["hil","Al Hilal","HIL","#1D4ED8","#FFFFFF"]],"South America":[["boc","Boca Juniors","BOC","#003C82","#F3B229"],["riv","River Plate","RIV","#FFFFFF","#E30613"],["fla","Flamengo","FLA","#C3281E","#000000"]],"India":[["mbsg","Mohun Bagan","MBG","#7A1F2B","#1B7F3B"],["ebfc","East Bengal","EBF","#E30613","#FDD000"],["mcfc","Mumbai City","MCI","#63B3E5","#F28C28"]]};
 const CLUB=Object.fromEntries(Object.entries(CLUBS).flatMap(([lg,a])=>a.map(([id,n,c,c1,c2])=>[id,{id,n,c,c1,c2,lg}])));
@@ -1346,6 +1362,7 @@ const optGroups=(groups,cur)=>groups.map(([g,l])=>`<optgroup label="${esc(g)}">$
 // FC card (EA FC layout): metal body by tier, OVR + position top-left, photo centre fading into the card, name, six stats, flag + crest.
 function cardHTML(p,{btn=true,tier:tv,nonum=false}={}){const r=R(p.id),t=tv||(p.star?'special':hideR?'gold':tier(r.ovr)),f=k=>rv(Math.round((r.a[k]||0)*10)),cc=ccOf(p),known=!!(tv||p.star||!hideR),pic=p.photo||p.thumb;
   const stats=[['PAC',f('spd')],['SHO',f('sho')],['PAS',f('pas')],['DRI',f('bal')],['DEF',f('def')],['PHY',rv(Math.round(((r.a.str||0)+(r.a.sta||0))*5))]];
+  if(p.fc&&Object.keys(p.fc).length&&!p.star){const g=fcModel(p,false,true).groups;g.forEach((x,i)=>{stats[i][1]=rv(x.base0??x.v)})}
   const tag=btn?'button':'div';
   const art=artOf(cc,t,p,known?r.ovr:null);
   return `<${tag} class="fut t-${t}${cc?' cc-'+cc:art&&t==='special'?' cc-'+art:''}${art?' art':''}${nonum?' nonum':''}${p.active===false?' off':''}" ${btn?`data-a="editp" data-id="${p.id}" aria-label="${esc(p.name)}, ${rv(r.ovr)} ${p.pos}"`:''}>${ARTIMG(art,'fart')}<div class="fbody">
@@ -1499,7 +1516,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021918',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021924',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -3561,10 +3578,10 @@ FCROLES.RW=FCROLES.LW;FCROLES.RM=FCROLES.LM;FCROLES.RB=FCROLES.LB;
 const GRPKEY={Pace:['spd'],Shooting:['sho'],Passing:['pas'],Dribbling:['bal'],Defending:['def'],Physical:['str','sta']};
 const hashN=t=>{let h=7;for(const c of String(t))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
 const vcls=n=>n>=80?'v80':n>=70?'v70':n>=60?'v60':n>=50?'v50':'v40';
-function fcModel(p){const r=R(p.id),A=Object.fromEntries(K.map(k=>[k,Math.round((r.a[k]||7)*10)])),cs=ABILITIES[abKey(prof(p).ability)];let added=0;
+function fcModel(p,raw){const ov=!raw&&p.fc||{};const r=R(p.id),A=Object.fromEntries(K.map(k=>[k,Math.round((r.a[k]||7)*10)])),cs=ABILITIES[abKey(prof(p).ability)];let added=0;
   const groups=FCSUBS.map(([nm,ab,gf,subs])=>{const G=gf(A),boost=cs&&cs[3]!=='gk'?(cs[0]==='BAS'?1:cs[2].includes(nm)?3:0):0;
-    const sub=subs.map(([l,k])=>{const j=hashN(p.id+l)%7-3,v=Math.max(20,Math.min(99,Math.round(G+.5*(A[k]-G)+j)));const b=Math.min(99,v+boost)-v;added+=b;return [l,v+b,b]});
-    return {nm,ab,v:Math.round(sub.reduce((n,x)=>n+x[1],0)/sub.length),base:Math.round(G),sub,boost}});
+    const sub=subs.map(([l,k])=>{const j=hashN(p.id+l)%7-3,v=ov[l]!=null?+ov[l]:Math.max(20,Math.min(99,Math.round(G+.5*(A[k]-G)+j)));const b=Math.min(99,v+boost)-v;added+=b;return [l,v+b,b]});
+    return {nm,ab,v:Math.round(sub.reduce((n,x)=>n+x[1],0)/sub.length),base0:Math.round(sub.reduce((n,x)=>n+x[1]-x[2],0)/sub.length),base:Math.round(G),sub,boost}});
   const gv=Object.fromEntries(groups.map(g=>[g.nm,g.v])),sv=Object.fromEntries(groups.flatMap(g=>g.sub.map(x=>[x[0],x[1]])));
   const h=+p.height||176,acc=sv.Acceleration,str=sv.Strength,d=acc-str;
   const ar=d>=10&&h<=182?'Explosive':d>=5&&h<=186?'Mostly Explosive':-d>=10&&h>=174?'Lengthy':-d>=5&&h>=172?'Mostly Lengthy':'Controlled';
@@ -3621,6 +3638,26 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
     ${!show?'<p class="small muted">Numbers are private. Your managers can turn on “Players can see their own ratings”.</p>':''}
   </div>`);psSelf=null;document.querySelector('.modal').classList.add('wide');walkout('.modal .ppcard')}
 
+
+document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||el.dataset.fco==null)return;const v=+el.value,o=el.nextElementSibling;pendFC[el.dataset.fco]=v;if(o){o.textContent=v;o.className=vcls(v)}el.closest('.fcrow')?.classList.add('set')});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a="fcauto"]');if(!b)return;e.stopPropagation();document.querySelectorAll(`.fcrow[data-g="${CSS.escape(b.dataset.g)}"]`).forEach(r=>{const i=r.querySelector('input'),o=r.querySelector('output');delete pendFC[i.dataset.fco];i.value=i.dataset.auto;o.textContent=i.dataset.auto;o.className=vcls(+i.dataset.auto);r.classList.remove('set')})},true);
+
+/* ---------- No keyboard for numbers: every number field becomes a slider (the original field stays hidden, so saving works unchanged) ---------- */
+const SLCFG=[[/^(pno|mno|pfno)$/,0,99,1,true],[/^pht$/,139,210,1,true,' cm'],[/^sm$/,30,240,5],[/^gm$/,3,30,1],[/^cm$/,0,10,1],[/^gyear$/,1949,2030,1,true],[/^gqty$/,0,100,1],[/^t(min|max)$/,4,80,1,true],[/^(gg|ga)_/,0,15,1],[/^(pb|r)_/,1,10,.5]];
+const VDESC=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+function sliderize(root){if(!root||!root.querySelectorAll)return;
+  root.querySelectorAll('input[type=number],input[inputmode=numeric],input.num').forEach(inp=>{if(inp.dataset.sl||inp.type==='password'||inp.type==='hidden'||inp.closest('[data-noslide]'))return;
+    const c=SLCFG.find(([re])=>re.test(inp.id||''));let [,mn,mx,st,emp,suf]=c||[];
+    mn=mn??(inp.min!==''?+inp.min:0);mx=mx??(inp.max!==''?+inp.max:99);st=st??(inp.step&&inp.step!=='any'?+inp.step:1);suf=suf||'';
+    inp.dataset.sl='1';const wrap=document.createElement('span');wrap.className='sld';const r=document.createElement('input');r.type='range';r.min=mn;r.max=mx;r.step=st;r.setAttribute('aria-label',inp.closest('label')?.firstChild?.textContent?.trim()||'value');
+    const o=document.createElement('output');wrap.append(r,o);inp.after(wrap);inp.type='hidden';
+    const show=v=>{const e=v===''||v==null;o.textContent=e?'–':v+suf;o.classList.toggle('off',e)};
+    const fromInp=()=>{const v=VDESC.get.call(inp);r.value=v===''?mn:v;show(v===''&&emp?'':v===''?String(mn):v)};
+    Object.defineProperty(inp,'value',{configurable:true,get(){return VDESC.get.call(this)},set(v){VDESC.set.call(this,v);fromInp()}});
+    if(VDESC.get.call(inp)===''&&!emp)VDESC.set.call(inp,'');fromInp();
+    r.addEventListener('input',()=>{const v=emp&&+r.value===mn?'':r.value;VDESC.set.call(inp,v);show(v);inp.dispatchEvent(new Event('input',{bubbles:true}))});
+    r.addEventListener('change',()=>inp.dispatchEvent(new Event('change',{bubbles:true})))})}
+new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1)sliderize(n)}).observe(document.documentElement,{childList:true,subtree:true});
 /* ---------- modals ---------- */
 function openModal(html){const ctx=lastAct;lastAct=null;
   if(navReplaying){navReplaying=false;modalCtx=ctx||modalCtx}
@@ -3652,6 +3689,9 @@ function playerModal(id){pendPhoto=undefined;
     <p class="small muted" style="margin:0">Auto-balance never puts two star players with the same position in one team. You can still move them by hand.</p>
     ${id?(()=>{const a=Object.fromEntries(K.map(k=>[k,Math.round((R(id).a[k]||7)*10)]));pendPS={...(p.ps||{})};return `<h3>PlayStyles</h3><p class="small muted" style="margin:0">${S.settings.psAuto!==false?'Tap to cycle: <b>Auto</b> (lit when earned from ratings) → <b>✓ Awarded</b> → <b>✕ Removed</b>.':'Tap to award (✓) or take away. Auto-awarding is off in Settings.'} Only coloured ones show as awarded. Players can’t change these.</p>
       <div class="psed">${PSTYLES.flatMap(([,l])=>l).map(x=>{const o=pendPS[x[1]],au=S.settings.psAuto!==false&&psAuto(a,x[2]);return psEdBtn(x[1],o,au)}).join('')}</div>`})():''}
+    ${id&&!hideR?(()=>{pendFC={...(p.fc||{})};const M=fcModel(p,true);return `<h3>FC attributes <span class="small muted">full control · slide to change</span></h3>
+      <p class="small muted" style="margin:0">Each attribute starts at the value worked out from the ratings. Slide to set it yourself; <b>Auto</b> hands it back to the ratings. Chemistry-style boosts are added on top.</p>
+      <div class="fcedit">${M.groups.map(g=>`<div class="fceg"><div class="fcegh"><b>${g.nm}</b><button type="button" class="btn ghost small" data-a="fcauto" data-g="${esc(g.nm)}">Auto</button></div>${g.sub.map(([l,v])=>{const cur=pendFC[l]!=null?+pendFC[l]:v;return `<label class="fcrow${pendFC[l]!=null?' set':''}" data-g="${esc(g.nm)}"><span>${l}</span><input type="range" min="1" max="99" step="1" value="${cur}" data-fco="${esc(l)}" data-auto="${v}"><output class="${vcls(cur)}">${cur}</output></label>`}).join('')}</div>`).join('')}</div>`})():''}
     <h3>${id?'Starting ratings':'Starting ratings (1–10)'}</h3>
     <p class="small muted" style="margin:0">${id&&p.baseN?`From ${p.baseN} matches last season. `:''}Match ratings you enter later are averaged on top of these.</p>
     ${id&&hideR?'<p class="small muted" style="margin:0">Ratings are hidden. Tap <b>🙈</b> in the header to see or edit them.</p>':`<div class="attrs">${K.map(k=>`<label class="f">${KL[k]}<input class="num" type="number" step="0.5" min="1" max="10" id="pb_${k}" value="${r1(p.base?.[k]??7)}"></label>`).join('')}</div>`}
@@ -4316,7 +4356,7 @@ document.addEventListener('click',async e=>{
   if(a==='savep'){const name=$('#pn').value.trim();if(!name){toast('Enter a name');return}
     const old=id?pById(id):null;const base={};K.forEach(k=>{const inp=$('#pb_'+k);base[k]=inp?Math.min(10,Math.max(1,+inp.value||7)):(old?.base?.[k]??7)});
     let nid=id||slug(name);if(!id&&pById(nid))nid+='-'+uid().slice(-3);
-    const acc=$('#pacc'),pport=$('#pport');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),...(pport?{portal:pport.checked===portalAll()?undefined:pport.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,starCard:$('#pstarcard')?.value||undefined,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
+    const acc=$('#pacc'),pport=$('#pport');const rec={...(old||{baseN:0}),...(acc?{noLogin:!acc.checked}:{}),...(pport?{portal:pport.checked===portalAll()?undefined:pport.checked}:{}),id:nid,name,pos:$('#pp').value,active:$('#pa').checked,star:$('#pstar').checked,starCard:$('#pstarcard')?.value||undefined,number:$('#pno').value.replace(/\D/g,'').slice(0,2),dob:$('#pdob')?.value||'',foot:$('#pfoot').value,height:$('#pht').value.replace(/\D/g,'').slice(0,3),skills:+$('#psk').value,wf:+$('#pwf').value,...(id?{ps:Object.keys(pendPS).length?{...pendPS}:undefined}:{}),...(id&&document.querySelector('.fcedit')?{fc:Object.keys(pendFC).length?{...pendFC}:undefined}:{}),nation:$('#pnat').value,club:$('#pclub').value,base};if(pendPhoto!==undefined){if(pendPhoto){rec.photo=pendPhoto;rec.photoCut=!!pendCut;rec.thumb=await makeThumb(pendPhoto,pendCut)||undefined}else{delete rec.photo;delete rec.photoCut;delete rec.thumb}}
     await putPlayer(rec);closeModal();toast('Saved '+name);return}
   if(a==='copytxt'){const t=shareText(lastShare);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it in WhatsApp')}catch(err){openModal(`<div class="mh"><h2>Copy text</h2><button class="btn ghost x" data-a="close">Close</button></div><textarea id="ctxt" style="width:100%;height:300px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px">${esc(t)}</textarea>`);$('#ctxt').select()}return}
   if(a==='imgshare'){if(!pendImg)return;const f=new File([pendImg.blob],pendImg.name,{type:'image/png'});
