@@ -42,9 +42,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:baseline;gap:10px;padding-block:12px 4px;flex-wrap:wrap}
 .brand{align-items:center}.crest{width:34px;height:34px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--club-orange)}
-#splash{position:fixed;inset:0;z-index:200;background:radial-gradient(120% 70% at 50% 45%,#16406F 0,#0E2E55 45%,#081B33 100%);display:grid;place-items:center;transition:opacity .6s ease,visibility .6s}
-#spv{width:100%;height:100%;object-fit:cover;display:block}
-@media (max-aspect-ratio:4/3){#splash{overflow:hidden}#spv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:178vw;max-width:none;height:auto;object-fit:contain;-webkit-mask-image:radial-gradient(closest-side,#000 72%,transparent 100%);mask-image:radial-gradient(closest-side,#000 72%,transparent 100%)}}
+#splash{position:fixed;inset:0;z-index:200;background:radial-gradient(circle at 50% 42%,#0E3F80 0,#072F63 45%,#041C3D 100%);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
 #splash.out{opacity:0;visibility:hidden}
 .sp-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px}
 .sp-crest{position:relative;width:min(56vw,260px);aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #E07B24,0 18px 50px rgba(0,0,0,.5)}
@@ -54,6 +52,12 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgroun
 .sp-ring circle{fill:none;stroke:#E07B24;stroke-width:2.5;stroke-dasharray:604;stroke-dashoffset:604;transform:rotate(-90deg);transform-origin:center}
 .sp-t{margin-top:18px;font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;color:#F2C46B}
 .sp-s{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:#E07B24}
+@media (prefers-reduced-motion:no-preference){
+  .sp-crest{animation:spIn .9s cubic-bezier(.2,.9,.25,1.2) both}
+  .sp-shine{animation:spShine .8s .75s ease-out both}
+  .sp-ring circle{animation:spRing 1s .2s ease-out forwards}
+  .sp-t{animation:spUp .5s .7s ease-out both}.sp-s{animation:spUp .5s .85s ease-out both}
+}
 @keyframes spIn{from{transform:scale(.55) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes spShine{to{transform:translateX(120%)}}
 @keyframes spRing{to{stroke-dashoffset:0}}
@@ -1105,7 +1109,10 @@ label.f .muted,label.f .small{text-transform:none;letter-spacing:0;font-weight:5
 #main h2,#main h3,#main summary,#main .ps-sh,#pfwrap{scroll-margin-top:calc(var(--hdrh,110px) + 14px)}
 </style>
 
-<div id="splash" aria-hidden="true"><video id="spv" poster="icons/intro.jpg" muted playsinline autoplay preload="auto" disablepictureinpicture><source src="icons/intro.mp4" type="video/mp4"><source src="icons/intro.webm" type="video/webm"></video></div>
+<div id="splash" aria-hidden="true"><div class="sp-in">
+  <svg class="sp-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/></svg>
+  <div class="sp-crest"><img src="icons/crest-640.jpg" alt=""><span class="sp-shine"></span></div>
+  <div class="sp-t">Airdrie United</div><div class="sp-s">Club App</div></div></div>
 <header class="top"><div class="wrap" style="padding-block:0">
   <div class="brand"><img class="crest" src="icons/crest-640.jpg" alt="Airdrie United crest" width="32" height="32"><div class="bt"><h1>Airdrie United</h1><div class="meta"><small id="sub">Club App</small><span class="sync" id="sync"></span></div></div><button class="themebtn" id="srchbtn" data-a="cmdk" aria-label="Search the app" title="Search (Ctrl+K)"></button><button class="themebtn godbtn" id="godbtn" data-a="godfeed" aria-label="Notifications" title="Everything managers and players did" hidden>🔔<i id="godn" hidden></i></button><button class="themebtn godbtn" id="pbell" data-a="pbell" aria-label="Notifications" title="Notifications" hidden>🔔<i id="pbn" hidden></i></button><button class="themebtn tipbtn" id="tipbtn" data-a="tip" data-src="header" aria-label="Support the builder" title="Support the builder ☕" hidden>☕</button><button class="themebtn" id="rbtn" data-a="hider" aria-label="Show or hide ratings"></button><button class="themebtn" id="themebtn" data-a="theme" aria-label="Change theme"></button><button class="themebtn outbtn" id="outbtn" data-a="hdrout" aria-label="Sign out" title="Sign out" hidden></button></div>
   <nav class="tabs" role="tablist" id="tabs">
@@ -1579,7 +1586,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022136',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022142',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -4603,12 +4610,8 @@ document.addEventListener('input',e=>{if(e.target.id!=='pactq')return;pactQ=e.ta
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#pphoto'))closeModal()});
 (function(){const sp=$('#splash');let seen=false;try{seen=sessionStorage.getItem('atb_splash')==='1';sessionStorage.setItem('atb_splash','1')}catch(e){}
   if(seen){sp.remove();return}
-  // intro clip (2 s), then a full fade into the app; a tap skips it; if the phone blocks autoplay the poster shows briefly instead
-  const v=$('#spv'),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let done=false;const hide=()=>{if(done)return;done=true;sp.classList.add('out');setTimeout(()=>{try{v.pause()}catch(e){}sp.remove()},650)};
-  sp.addEventListener('click',hide);if(reduce){setTimeout(hide,700);return}
-  v.addEventListener('ended',hide);v.addEventListener('error',()=>setTimeout(hide,900));
-  const p=v.play&&v.play();if(p&&p.catch)p.catch(()=>setTimeout(hide,1200));
-  setTimeout(hide,3200)})();
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const hide=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),500)};
+  sp.addEventListener('click',hide);setTimeout(hide,reduce?600:2100)})();
 /* hover/tap tooltip for chart marks */
 (()=>{const tip=document.createElement('div');tip.className='tip';tip.hidden=true;document.body.appendChild(tip);
   const show=e=>{const t=e.target.closest?.('[data-tip]');if(!t){tip.hidden=true;return}tip.textContent=t.dataset.tip;tip.hidden=false;
