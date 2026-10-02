@@ -143,3 +143,7 @@ create or replace function public.atb_kill_sessions(p_users uuid[]) returns int 
 declare n int; begin delete from auth.sessions where user_id = any(p_users); get diagnostics n = row_count; return n; end $$;
 revoke all on function public.atb_kill_sessions(uuid[]) from public, anon, authenticated;
 grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
+
+-- Chemistry XP: every chemistry save is logged (private.atb_chem_log, backfilled from atb_chem); atb_player_chem inserts a log row;
+-- the player payload adds 'chemLog' = [[ratee, at], ...] (one per teammate per day) so the app can award +10 first rating,
+-- +15 per teammate re-rated within 7 days of a match, +150 for a fully rated squad.

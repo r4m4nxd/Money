@@ -208,6 +208,8 @@ button.tok{cursor:pointer}
 button.subb{cursor:pointer}.subb.sel{outline:3px solid #FFD54A}
 .sharecard .subs>span:first-child{color:#A9B6C6}.sharecard .subb{background:#172638;border-color:#2A3B52;color:#F2F5F8}
 .sharecard.one{max-width:440px}
+.chemnag{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;border:1.5px solid #E8A33D;background:linear-gradient(90deg,rgba(232,163,61,.16),transparent);cursor:pointer;font:inherit;color:inherit}.chemnag .cnic{font-size:26px}.chemnag>div{flex:1;min-width:0}.chemnag .cnxp{flex:none;font-weight:800;color:#fff;background:#E8A33D;border-radius:999px;padding:4px 10px;font-size:13px}
+.cmrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.cmrow .cmn{display:flex;flex-direction:column;min-width:0}.cmrow .cmn small{color:var(--muted)}.cmrow.done .cmn b::after{content:' ✓';color:#2FB36B}.cmh{margin:14px 0 2px;font-size:14px}
 .rot{background:#172638;border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px;font-weight:600}
 .rot .kitsw.sm{vertical-align:-1px}.rot .rh{font-size:13px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #2A3B52}
 .rg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;gap:3px 16px}.rg li{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;white-space:nowrap;min-width:0}
@@ -2660,7 +2662,7 @@ function vGuide(){
     <li><b>Weekly focus</b>: their weakest area for their position, with a coaching tip; ✅ when they beat their usual in that area.</li>
     <li><b>Growth arrows</b>: each attribute, last 3 rated matches vs the 3 before (or their start).</li>
     <li><b>Team of the Week</b>: best match rating per position from the latest rated match. <b>Most improved</b>: recent form vs start, ranks only.</li>
-    <li><b>XP</b>: play on time +150, arrive late +75, say OUT 0, no-show −200 (and no link points), win +50, draw +20, goal +40, assist +25, POTM +200, Team of the Week +100, answer 2+ days early +50 (else +20), each badge +100. Levels: Rookie → Squad Player → Regular → Starter → Key Player → Fan Favourite → Captain Material → Club Legend → Icon. XP is personal, never ranked.</li>
+    <li><b>XP</b>: play on time +150, arrive late +75, say OUT 0, no-show −200 (and no link points), win +50, draw +20, goal +40, assist +25, POTM +200, Team of the Week +100, answer 2+ days early +50 (else +20), each badge +100, chemistry +10 per first rating of a teammate, +15 per teammate rated within 7 days of a match, +150 with the whole squad rated. Levels: Rookie → Squad Player → Regular → Starter → Key Player → Fan Favourite → Captain Material → Club Legend → Icon. XP is personal, never ranked.</li>
     <li><b>Badges</b>: First Goal, Hat-trick, Double Figures, Goal Machine, Playmaker, Provider, On Fire, Unstoppable, Iron Man, Regular, Veteran, Match Winner, Hat-trick Hero, Team of the Week, Early Bird, Rock Solid, Always On Time, Perfect Month, Winner, On the Rise.</li>
     <li>Turn growth features off with Settings → “Players see their growth”.</li></ul>`)}
 
@@ -2710,7 +2712,7 @@ function vpGuide(){const d=PM.data,g=d.growth,sec=(id,t,body,open)=>`<details cl
     <li><b>Tactic board</b>: drag players and the ball, drop the ball on a player, switch to <b>Pass</b> and tap a teammate, <b>Draw run</b> for arrows, add opponents, save steps and press <b>Play</b> to watch the move. Captains get it on their Next match and tournament cards.</li><li><b>Account → My profile</b>: nickname, best position, card colour (your gold/silver/bronze/★ level still shows as a small badge), one chemistry style, up to <b>5 PlayStyles</b> of your own (managers award the rest), favourite player, favourite teammate, dream boots, stadium and shirt number.</li>
     <li><b>Photo</b>: send a new one; it shows after a manager approves it. Your old photo stays until then.</li>
     <li><b>Squad</b> tab: every teammate’s card and page. Tap <b>Compare with me</b> to go head to head.</li>
-    <li><b>Team chemistry</b> (Squad tab): rate 1–5 how well you play with each teammate. Only managers see it; it helps build better teams.</li>
+    <li><b>Team chemistry</b> (Squad tab): rate 1–5 how well you play with each teammate. Only managers see it; it helps build better teams. <b>It earns XP</b>: +10 for each teammate’s first rating, +15 for each teammate you rate within 7 days after a match, +150 when every squad-mate is rated. After each match the app asks you to rate that night’s teammates.</li>
     <li>Open your page (Squad → you, or Me → My player page) and tap <b>Save as image</b> for a story-size picture to post on WhatsApp, Instagram or Facebook.</li></ul>`,true)}
   ${sec('in','Signing in and your PIN',`<ul><li>Open the team app link, tap <b>Player</b>, choose your name and type your PIN. You stay signed in on your phone.</li>
     <li>It’s the <b>same PIN</b> as the WhatsApp availability link. No PIN yet? Pick your name on the sign-in screen and it asks you to <b>create a PIN</b> (type it twice) right there. Avoid easy ones like 1111 or 1234.</li>
@@ -3044,8 +3046,18 @@ function potmVotePanel(){const me=PM.data.me.id;
 
 // ---- XP and levels (personal progress, not a ranking) ----
 const LEVELS=['Rookie','Squad Player','Regular','Starter','Key Player','Fan Favourite','Captain Material','Club Legend','Icon'];
-const XP_ON=150,XP_LATE=75,XP_NOSHOW=-200;
-const XPRULES=[['Play a match, on time',XP_ON],['Play but arrive late','+'+XP_LATE+' (half)'],['Say OUT on the link','0 (no penalty)'],['Win / draw','+50 / +20'],['Goal / assist','+40 / +25'],['Player of the Match',200],['Team of the Week',100],['Answer the link 2+ days early','+50 (else +20)'],['Tournament squad / winners / runners-up','+200 / +500 / +250'],['Earn a badge',100],['No-show (said IN, didn’t come)',XP_NOSHOW+' and no link points']];
+const XP_ON=150,XP_LATE=75,XP_NOSHOW=-200,XP_CH1=10,XP_CHM=15,XP_CHSQ=150;
+/* Chemistry XP: rating teammates is how managers build teams, so it pays. First rating of each teammate +10,
+   re-rating each teammate from your team within 7 days of a match +15, every squad-mate rated +150 (kept while it stays complete). */
+const chemLog=()=>(PM.data.chemLog||[]).map(([r,at])=>({r,d:new Date(at).toLocaleDateString('en-CA',{timeZone:'America/Edmonton'})}));
+const chemMates=()=>PM.data.players.filter(p=>!p.guest&&p.active!==false);
+const addDays=(d,n)=>new Date(Date.parse(d+'T12:00:00Z')+n*864e5).toISOString().slice(0,10);
+// teammates from your latest match (last 7 days) not yet rated since it, plus squad-mates never rated
+function chemTodo(){const d=PM.data,me=d.me.id,t=todayISO(),L=chemLog(),mine=d.chem||{};
+  const m=S.matches.filter(x=>x.date<=t&&x.date>=addDays(t,-7)&&x.myatt!=='a'&&x.teams.some(tm=>tm.players.includes(me))).sort((a,b)=>a.date<b.date?1:-1)[0];
+  const mates=m?m.teams.find(tm=>tm.players.includes(me)).players.filter(id=>id!==me&&pById(id)&&!pById(id).guest&&!L.some(x=>x.r===id&&x.d>=m.date)):[];
+  const never=chemMates().filter(p=>!mine[p.id]&&!mates.includes(p.id)).map(p=>p.id);return {m,mates,never,xp:mates.length*XP_CHM+never.length*XP_CH1+(never.length||mates.some(id=>!mine[id])?XP_CHSQ:0)}}
+const XPRULES=[['Play a match, on time',XP_ON],['Play but arrive late','+'+XP_LATE+' (half)'],['Say OUT on the link','0 (no penalty)'],['Win / draw','+50 / +20'],['Goal / assist','+40 / +25'],['Player of the Match',200],['Team of the Week',100],['Answer the link 2+ days early','+50 (else +20)'],['Tournament squad / winners / runners-up','+200 / +500 / +250'],['Earn a badge',100],['Rate a teammate’s chemistry (first time)','+'+XP_CH1+' each'],['Rate your teammates within 7 days of a match','+'+XP_CHM+' each'],['Every squad-mate rated (keep it complete)','+'+XP_CHSQ],['No-show (said IN, didn’t come)',XP_NOSHOW+' and no link points']];
 function xpEvents(){const me=PM.data.me.id,ev=[],noshow=new Set();
   S.matches.forEach(m=>{if(!m.teams.some(t=>t.players.includes(me)))return;const d=m.date;
     if(m.myatt==='a'){noshow.add(d);ev.push({d,x:XP_NOSHOW,l:'No-show'});return}
@@ -3057,6 +3069,11 @@ function xpEvents(){const me=PM.data.me.id,ev=[],noshow=new Set();
   PM.data.polls.forEach(p=>{const f=(p.log||[]).find(l=>l.status!=='cleared');if(!f||noshow.has(String(p.match_date)))return;const lead=(new Date(p.kickoff||kickoffISO(p.match_date))-new Date(f.at))/36e5;
     ev.push({d:String(p.match_date),x:lead>=48?50:20,l:lead>=48?'Answered early':'Answered the link'})});
   S.tourns.filter(t=>(t.squad||[]).includes(me)&&t.date<=todayISO()).forEach(t=>{ev.push({d:t.date,x:200,l:'Tournament squad: '+t.name});if(t.place==='champ')ev.push({d:t.date,x:500,l:'Tournament winners'});if(t.place==='runner')ev.push({d:t.date,x:250,l:'Tournament runners-up'});const st=t.stats?.[me];if(st?.g)ev.push({d:t.date,x:40*st.g,l:`${st.g} tournament goal${st.g>1?'s':''}`});if(st?.a)ev.push({d:t.date,x:25*st.a,l:`${st.a} tournament assist${st.a>1?'s':''}`})});
+  {const L=chemLog(),first={};L.forEach(x=>{if(!first[x.r]||x.d<first[x.r])first[x.r]=x.d});Object.keys(PM.data.chem||{}).forEach(r=>{if(!first[r])first[r]=''});
+    const by={};Object.values(first).forEach(dd=>by[dd]=(by[dd]||0)+1);Object.entries(by).forEach(([dd,n])=>ev.push({d:dd,x:n*XP_CH1,l:`Rated chemistry with ${n} teammate${n>1?'s':''}`}));
+    S.matches.forEach(m=>{if(m.myatt==='a')return;const tm=m.teams.find(t=>t.players.includes(me));if(!tm)return;const end=addDays(m.date,7);
+      const n=tm.players.filter(id=>id!==me&&L.some(x=>x.r===id&&x.d>=m.date&&x.d<=end)).length;if(n)ev.push({d:m.date,x:n*XP_CHM,l:`Chemistry after the match (${n} teammate${n>1?'s':''})`})});
+    const sq=chemMates();if(sq.length&&sq.every(p=>(PM.data.chem||{})[p.id]))ev.push({d:'',x:XP_CHSQ,l:'Full squad chemistry'})}
   badgeList().filter(b=>b.got).forEach(b=>ev.push({d:'',x:100,l:'Badge: '+b.n}));
   return ev.sort((a,b)=>(b.d||'').localeCompare(a.d||''))}
 
@@ -3106,7 +3123,8 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
   const form=allGames().slice(0,5).map(x=>resPill(x.res)).join('');
   const tb=(()=>{const t=S.tourns.filter(x=>x.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1)[0];if(!t)return '';const pl=PM.data.polls.find(p=>p.id===t.poll&&p.open),inSq=(t.squad||[]).includes(me.id);
     return `<button class="panel tban" data-a="gotourn">🏆 <div><b>${esc(t.name)}</b><div class="small muted">${new Date(t.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${inSq?'You’re in the squad!':pl&&!pl.mine?'Are you available? Tap to answer':pl?`You said ${pl.mine.toUpperCase()}`:ruleTxt(t)}</div></div><span>›</span></button>`})();
-  return `<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(pfOpen&&pfD?{...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}}:me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
+  const ct=chemTodo();if((ct.mates.length)&&!PM.preview){try{if(sessionStorage.getItem('atb_chempop')!==(ct.m?.date||'')){sessionStorage.setItem('atb_chempop',ct.m?.date||'');setTimeout(chemModal,900)}}catch(e){}}
+  return `${(ct.mates.length||ct.never.length)&&!PM.preview?`<button class="panel chemnag" data-a="chemmodal"><span class="cnic">🤝</span><div><b>Chemistry needed</b><div class="small">${ct.mates.length?`Rate the ${ct.mates.length} teammate${ct.mates.length>1?'s':''} from ${new Date(ct.m.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}`:''}${ct.mates.length&&ct.never.length?' and ':''}${ct.never.length?`${ct.never.length} squad-mate${ct.never.length>1?'s':''} you haven’t rated`:''}. Managers use it to build the teams.</div></div><span class="cnxp">+${ct.xp} XP</span></button>`:''}<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(pfOpen&&pfD?{...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}}:me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
       <h2 style="margin:0">${esc(titleName(me.name))}</h2>
       <div class="small muted">${me.pos}${me.number?' · #'+esc(me.number):''}${me.nation?' · '+esc((NATIONS.find(n=>n[0]===me.nation)||[])[1]||''):''}${club?' · supports '+esc(club.n):''}</div>
       <div class="row" style="gap:6px"><button class="btn small" data-a="ppage" data-id="${me.id}">📄 My player page</button><button class="btn ghost small" data-a="pfedit">✏️ Edit my profile</button>${d.canEdit?'<button class="btn ghost small" data-a="goacct">Shirt & details</button>':''}</div>${d.canDob&&!d.me.dob?'<div class="small"><button class="linkb" data-a="goacct">Add your date of birth</button> <span class="muted">for age-group tournaments</span></div>':''}
@@ -3210,7 +3228,7 @@ function vpTeam(){const me=PM.data.me.id,L=S.players.filter(p=>!p.guest&&p.activ
   <div class="cards sqcards">${L.map(p=>`<button class="sqc" data-a="pub" data-id="${p.id}">${cardHTML(p,{btn:false,nonum:!SQR()&&(p.id!==me||!PM.data.showRatings),tier:p.id===me&&PM.data.growth?tier(R(me).ovr):undefined})}<span class="sqn">${dispName(p)}</span>${prof(p).ability?abilityChip(prof(p).ability,true):''}</button>`).join('')}</div>
   <h2>Team chemistry</h2><div class="panel stack"><p class="small muted" style="margin:0">How well do you play with each teammate? 1 = we don’t click, 5 = perfect partner. <b>Only managers see this</b>; it helps them build better teams.</p>
     <div class="chemlist">${L.filter(p=>p.id!==me).map(p=>`<div class="chemrow"><span class="nm">${esc(p.name)}</span>${chemStars(p.id,ch[p.id]||0)}</div>`).join('')}</div></div>`}
-const chemStars=(id,v)=>`<span class="cstars" role="group" aria-label="Chemistry">${[1,2,3,4,5].map(n=>`<button class="cst${n<=v?' on':''}" data-a="chem" data-id="${id}" data-v="${n===v?0:n}" aria-label="${n} of 5">★</button>`).join('')}</span>`;
+const chemStars=(id,v,keep)=>`<span class="cstars" role="group" aria-label="Chemistry">${[1,2,3,4,5].map(n=>`<button class="cst${n<=v?' on':''}" data-a="chem" data-id="${id}" ${keep?'data-keep="1" ':''}data-v="${n===v&&!keep?0:n}" aria-label="${n} of 5">★</button>`).join('')}</span>`;
 
 /* walkout reveal when a player page opens, and gentle tilt that follows the finger/mouse */
 function walkout(sel){return;if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=document.querySelector(sel);if(!c)return;c.classList.add('wo');setTimeout(()=>c.classList.remove('wo'),1900)}
@@ -3435,6 +3453,15 @@ function vpAcct(){const me=PM.data.me;
     <p class="small muted" style="margin:0">Forgot your PIN? Ask a manager to reset it, then sign in with a new one.</p></div>
   <h2>Help</h2><div class="panel small">New here? Open the <button class="linkb" data-a="goguide">player guide</button> for everything about your profile, XP, badges and attendance.</div>
   <div class="row" style="margin-top:14px"><button class="btn" data-a="theme">Change theme</button><button class="btn danger" data-a="psignout">${supaUser?'Sign out of profile':'Sign out'}</button></div>`}
+// the post-match chemistry check: every teammate from the last match (and anyone never rated), stars pre-filled so a tap confirms or changes
+function chemModal(){if(!PM||!PM.data||PM.preview)return;const ct=chemTodo(),mine=PM.data.chem||{},ids=[...ct.mates,...ct.never];if(!ids.length){toast('All your chemistry is up to date');return}
+  const row=id=>{const p=pById(id);return p?`<div class="cmrow"><span class="cmn"><b>${esc(shortName(p.name))}</b><small>${p.pos}${ct.mates.includes(id)?'':' · never rated'}</small></span>${chemStars(id,mine[id]||0,true)}</div>`:''};
+  openModal(`<div class="mh"><h2>Rate chemistry</h2><button class="btn ghost x" data-a="chemdone">Later</button></div>
+  <p class="small muted" style="margin-top:0">How well did you click with each player? 1 = we don’t click, 5 = perfect partner. Tap a star (even the same one) to confirm. <b>Only managers see this</b>, and it decides the teams.</p>
+  <div class="panel small" style="display:flex;justify-content:space-between;gap:8px"><span><b>+${XP_CHM} XP</b> per teammate from ${ct.m?new Date(ct.m.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'the last match'} · <b>+${XP_CH1}</b> per first rating · <b>+${XP_CHSQ}</b> for the whole squad</span><b id="cmleft" style="white-space:nowrap">${ids.length} to go</b></div>
+  ${ct.mates.length?`<h3 class="cmh">Your team${ct.m?' on '+new Date(ct.m.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}):''}</h3>${ct.mates.map(row).join('')}`:''}
+  ${ct.never.length?`<h3 class="cmh">Not rated yet</h3>${ct.never.map(row).join('')}`:''}
+  <div class="row" style="margin-top:12px"><button class="btn primary" data-a="chemdone">Done</button></div>`);}
 /* ----- Player notifications: built from what the app already knows about this player, remembered per player on this phone ----- */
 const PN_KEY=()=>'atb_pn_'+PM.data.me.id;let pnPopped=false;
 function pnState(){const k=PN_KEY();let st=ls(k);if(!st||typeof st!=='object')st={seen:{},pop:{},first:true};st.seen=st.seen||{};st.pop=st.pop||{};return st}
@@ -3539,6 +3566,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='exitprev'){exitPreview();return}
   if(PM.preview&&['pvote','ppotm','psetpin','psignout','pedit'].includes(a)){toast('Preview only: this works on the player’s own phone');return}
   if(a==='gotourn'){go('tourn');return}
+  if(a==='chemmodal'){chemModal();return}
+  if(a==='chemdone'){closeModal();render();return}
   if(a==='goguide'){go('pguide');return}
   if(a==='gofocus'){document.getElementById('focus')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pfedit'){if(document.body.classList.contains('mopen'))closeModal();pfOpen=true;if(view!=='me')go('me');else render();setTimeout(()=>{const w=$('#pfwrap');if(w){w.open=true;w.scrollIntoView({behavior:'smooth',block:'start'})}},80);return}
@@ -3564,7 +3593,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
     const p={nick:$('#pfnick').value,bestPos:$('#pfpos').value,card:pfD.card,ability:pfD.ability,ps:pfD.ps,favPlayer:$('#pffav').value,favMate:$('#pfmate').value,boots:$('#pfboots').value,stadium:$('#pfstad').value,dreamNo:$('#pfno').value.trim()};
     try{const r=await prpc('atb_player_profile',{p_token:PM.tok,p_prof:p});if(r==='ok'){toast('Profile saved');pfD=null;try{sessionStorage.removeItem('atb_pfd')}catch(e){}pfOpen=false;fClear('p-me');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else msg.textContent=r==='disabled'?'Profile editing is turned off by the managers.':'Could not save'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
   if(a==='pfphotocancel'){if(PM.preview)return;try{await prpc('atb_player_photo',{p_token:PM.tok,p_img:''});toast('Photo request cancelled');await loadPlayer()}catch(err){toast('Could not cancel')}return}
-  if(a==='chem'){const id=el.dataset.id;if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const v=+el.dataset.v;try{const r=await prpc('atb_player_chem',{p_token:PM.tok,p_ratee:id,p_score:v});if(r==='ok'){PM.data.chem=PM.data.chem||{};if(v)PM.data.chem[id]=v;else delete PM.data.chem[id];document.querySelectorAll(`.cst[data-id="${CSS.escape(id)}"]`).forEach((b,i)=>{const n=(i%5)+1;b.classList.toggle('on',n<=v);b.dataset.v=n===v?0:n})}else toast('Could not save')}catch(err){toast('Could not save')}return}
+  if(a==='chem'){const id=el.dataset.id;if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const v=+el.dataset.v;try{const r=await prpc('atb_player_chem',{p_token:PM.tok,p_ratee:id,p_score:v});if(r==='ok'){PM.data.chem=PM.data.chem||{};if(v){PM.data.chem[id]=v;(PM.data.chemLog=PM.data.chemLog||[]).push([id,new Date().toISOString()])}else delete PM.data.chem[id];document.querySelectorAll(`.cst[data-id="${CSS.escape(id)}"]`).forEach((b,i)=>{const n=(i%5)+1;b.classList.toggle('on',n<=v);b.dataset.v=n===v&&!b.dataset.keep?0:n});const row=el.closest('.cmrow');if(row){row.classList.add('done');const left=document.querySelectorAll('.cmrow:not(.done)').length,h=$('#cmleft');if(h)h.textContent=left?left+' to go':'All done, thanks! XP added.'}}else toast('Could not save')}catch(err){toast('Could not save')}return}
   if(a==='pedit'){const msg=$('#pemsg');el.disabled=true;try{const r=await prpc('atb_player_update',{p_token:PM.tok,p_number:$('#mno')?.value.trim()||'',p_club:$('#pclub')?.value||'',p_nation:$('#mnat')?.value||'',p_dob:$('#mdob')?$('#mdob').value:null});
       if(r==='ok'){msg.textContent='Saved. Your card is updated.';toast('Card updated');await loadPlayer()}else msg.textContent=r.startsWith('taken:')?`#${$('#mno').value.trim()} is already ${r.slice(6)}’s number. Pick another.`:r==='disabled'?'Editing is turned off by the managers.':r==='bad_number'?'Shirt number must be 0–99.':r==='bad_dob'?'Check your date of birth.':'Could not save.'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
   if(a==='psetpin'){const o=$('#po').value.trim(),n=$('#pn2').value.trim(),msg=$('#pmsg');if(!/^\d{4,6}$/.test(n)){msg.textContent='New PIN must be 4 to 6 digits (6 is safer).';return}
