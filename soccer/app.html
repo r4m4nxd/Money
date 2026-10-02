@@ -2105,6 +2105,21 @@ const plTouch=()=>{if(!PM||PM.preview)return;const n=Date.now();if(n-plUseT>3e4)
 function plIdleOut(){if(!PM||PM.preview||!PM.tok)return false;const last=+ls('atb_pl_use')||0;if(last&&Date.now()-last>PL_IDLE){const t=PM.tok;prpc('atb_player_logout',{p_token:t}).catch(()=>{});playerSignedOut('You were signed out after 1 hour without using the app. Enter your PIN to continue.');return true}return false}
 setInterval(plIdleOut,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')plIdleOut()});
 function plog(action,detail){if(PM&&PM.tok)prpc('atb_player_log',{p_token:PM.tok,p_action:action,p_detail:detail||null}).catch(()=>{})}
+/* Teammates' photos arrive as small thumbnails in the player payload; the full-resolution photo is fetched once per
+   photo version and kept on the phone (IndexedDB), so cards are sharp without re-downloading on every refresh. */
+const HD={};let hdBusy=false;
+const hdDB=()=>new Promise((ok,no)=>{try{const r=indexedDB.open('atb_hd',1);r.onupgradeneeded=()=>r.result.createObjectStore('p');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}catch(e){no(e)}});
+async function hdGetAll(ids){try{const db=await hdDB();return await new Promise(ok=>{const t=db.transaction('p'),st=t.objectStore('p'),out={};let n=ids.length;if(!n)ok(out);ids.forEach(id=>{const q=st.get(id);q.onsuccess=()=>{if(q.result)out[id]=q.result;if(!--n)ok(out)};q.onerror=()=>{if(!--n)ok(out)}})})}catch(e){return {}}}
+async function hdPut(map){try{const db=await hdDB();const t=db.transaction('p','readwrite');Object.entries(map).forEach(([id,v])=>t.objectStore('p').put(v,id))}catch(e){}}
+function hdApply(){let n=0;S.players.forEach(p=>{const h=HD[p.id];if(p.pv&&h&&h.pv===p.pv&&p.photo!==h.photo){p.photo=h.photo;n++}});return n}
+async function hdLoad(){if(!PM||hdBusy)return;const need=S.players.filter(p=>p.pv&&!p.photo&&!(HD[p.id]&&HD[p.id].pv===p.pv));if(!need.length)return;hdBusy=true;
+  try{const got=await hdGetAll(need.map(p=>p.id));need.forEach(p=>{if(got[p.id]&&got[p.id].pv===p.pv)HD[p.id]=got[p.id]});
+    const miss=need.filter(p=>!(HD[p.id]&&HD[p.id].pv===p.pv));
+    for(let i=0;i<miss.length;i+=8){const ids=miss.slice(i,i+8).map(p=>p.id);let r={};
+      if(PM.preview){const q=await supa.from('atb_docs').select('id,photo:data->>photo').eq('col','players').in('id',ids);(q.data||[]).forEach(x=>{if(x.photo)r[x.id]=x.photo})}
+      else{r=await prpc('atb_player_photos',{p_token:PM.tok,p_ids:ids});if(!r||r.err)break}
+      const put={};ids.forEach(id=>{const p=miss.find(x=>x.id===id);if(r[id]&&p){HD[id]={pv:p.pv,photo:r[id]};put[id]=HD[id]}});hdPut(put)}
+  }catch(e){}hdBusy=false;if(PM&&hdApply())bgRender()}
 async function prpc(fn,args){const {data,error}=await supa.rpc(fn,args);if(error)throw error;return data}
 function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}catch(e){}if(supaUser){ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
 async function bootPlayer(saved){
@@ -2123,7 +2138,7 @@ async function loadPlayer(bg){if(!PM||PM.loading)return;PM.loading=true;
     if(d.err&&PM.preview){toast('Could not open this profile');location.reload();return}
     if(d.err){PM.loading=false;playerSignedOut(d.err==='disabled'?'Player sign-in is turned off for now.':d.err==='paused'?'⏸️ Your PIN is set, but the portal isn’t open for you yet. Hang tight; it opens soon!':d.err==='blocked'?'Your profile access is turned off. Ask a manager.':'You were signed out (1 hour without using the app, or your PIN changed). Enter your PIN to continue.');return}
     PM.data=d;PM.err='';
-    S.players=[{...d.me},...d.players];S.matches=(d.matches||[]).filter(m=>m.date<=todayISO());S.fixtures=d.fixtures||[];S.tourns=d.tournaments||[];S.gear=d.gear||[];Object.assign(S.settings,d.settings);
+    S.players=[{...d.me},...d.players];hdApply();setTimeout(hdLoad,50);S.matches=(d.matches||[]).filter(m=>m.date<=todayISO());S.fixtures=d.fixtures||[];S.tourns=d.tournaments||[];S.gear=d.gear||[];Object.assign(S.settings,d.settings);
     hideR=!d.showRatings;applyHide();$('#rbtn').hidden=true;
     $('#sub').textContent='Player profile';
     loaded=true}catch(e){PM.err=navigator.onLine?'Could not load your profile. Pull to refresh or try again.':'You’re offline.'}
@@ -3119,7 +3134,7 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr=interactive&&!PM,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
   const res=opt?.res||pById;
-  const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.thumb||p?.photo,r=R(id);
+  const card=(id,role,u,v,idx)=>{const p=res(id),[x,y,f]=p3pt(u,v),s=(.74+.3*f).toFixed(3),on=interactive&&sel&&sel.t===ti&&sel.k===idx,ph=p?.photo||p?.thumb,r=R(id);
     const tr=!showOvr||hideR?'gold':p?.star?'special':tier(r.ovr),glow=showOvr&&p?.star;const tag=interactive?'button':'div';
     const cc=ccOf(p),realT=p?.star?'special':tier(r.ovr),pip=cc&&(showOvr&&!hideR||p?.star)?`<span class="pcpip ${realT}" title="${realT} card"></span>`:'';
     return `<${tag} class="pc t-${tr}${cc?' cc-'+cc:''}${p?.empty?' empty':''}${on?' sel':''}${glow?' special-card-glow':''}" style="left:${Math.min(93,Math.max(7,x/P3.W*100)).toFixed(2)}%;top:${(y/P3.H*100).toFixed(2)}%;--s:${s};z-index:${Math.round(f*100)+2}" ${interactive?`data-a="${A}" data-i="${ti}" data-k="${idx}" aria-label="${esc(p?.name)} ${role}"`:''}>

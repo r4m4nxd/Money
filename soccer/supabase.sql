@@ -120,3 +120,4 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 -- Chemistry: public.atb_chem(team, rater, ratee, score 1-5), RLS read for the team; public.atb_player_chem(token, ratee, score 0-5). Payload adds players[].prof and chem (my ratings).
 
 -- Dream teams: public.atb_player_dreams(token, jsonb array <=5, <=30KB) -> data.dreams (only the player and managers see it). Weekly team captains: match/fixture team.cap.
+-- HD photos: payload players[].pv = left(md5(photo),10); public.atb_player_photos(token, ids[]) -> {id: photo} (max 40 ids). Client caches by pv in IndexedDB 'atb_hd'.
