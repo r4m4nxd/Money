@@ -1085,6 +1085,10 @@ label.f .muted,label.f .small{text-transform:none;letter-spacing:0;font-weight:5
 .ulr{display:grid;grid-template-columns:120px minmax(0,1fr) 72px 78px;align-items:center;gap:8px;font-size:13px;min-height:40px}.ulr .uln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.ulr output{font:800 13px var(--f-display);text-align:right}
 .ulr input[type=range]{accent-color:var(--accent);width:100%;min-width:0}.ulr.only output{color:#B88A2E}.ulr.only input[type=range]{opacity:.35}
 @media(max-width:520px){.ulr{grid-template-columns:96px minmax(0,1fr) 64px;}.ulr label{grid-column:2/4}}
+
+/* Team Management menu: every option visible, 3 per row, no sideways scrolling */
+.ps-nav ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible!important;gap:6px}
+.ps-nav li{min-width:0}.ps-nav a,.ps-nav button{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;min-height:36px;text-align:center;white-space:normal;line-height:1.15;box-sizing:border-box}
 </style>
 
 <div id="splash" aria-hidden="true"><div class="sp-in">
@@ -1562,7 +1566,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610022111',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610022114',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
