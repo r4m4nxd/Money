@@ -662,6 +662,16 @@ header.top{view-transition-name:hdr}
 @media (pointer:coarse){.scrim{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}}
 @media (prefers-reduced-motion:reduce){.ax-b,.ax-i,.ax-c{transition:none!important}.rip{display:none}::view-transition-old(root),::view-transition-new(root){animation:none}}
 @keyframes pcIn{from{opacity:0;transform:translate(-50%,-62%) scale(.6)}}.pc.pcin{animation:pcIn .45s cubic-bezier(.2,.9,.25,1.2)}
+.capb{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#F4C542;color:#1a1200;font:900 10px/1 var(--f-display);vertical-align:1px;margin-left:2px}
+.chemsvg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}.chemsvg line{stroke-linecap:round}
+.chemsvg.on line{animation:clIn .45s cubic-bezier(.2,.8,.2,1) both}@keyframes clIn{from{opacity:0}}
+.cll{position:absolute;z-index:1;transform:translate(-50%,-50%);font:800 calc(1.6cqw) var(--f-display);color:#0b1a10;padding:.3cqw .7cqw;border-radius:99px;box-shadow:0 1px 3px rgba(0,0,0,.4);pointer-events:none;animation:clIn .45s ease both}
+.pcchem{display:flex;gap:calc(.35cqw*var(--s));justify-content:center;margin-top:calc(.3cqw*var(--s))}.pcchem i{width:calc(1.15cqw*var(--s));height:calc(1.15cqw*var(--s));transform:rotate(45deg);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.5)}
+.pcchem.c1 i:nth-child(-n+1),.pcchem.c2 i:nth-child(-n+2),.pcchem.c3 i{background:#2FD07A;border-color:#E9FFF1}.pcchem.c1 i:nth-child(1){background:#FF8A3D}.pcchem.c2 i:nth-child(-n+2){background:#F2C94C}.pcchem.c3 i{background:#2FD07A}
+.pc[data-chemsug] .pc-card{outline:.5cqw dashed #2FD07A;outline-offset:.5cqw;animation:sugp 1.2s ease-in-out infinite}@keyframes sugp{50%{outline-color:rgba(47,208,122,.25)}}
+.chemp{margin:10px 0;padding:10px 0;border-top:1px solid var(--line)}.chemtot{display:flex;align-items:baseline;gap:6px;position:relative;padding-bottom:8px;margin:4px 0 6px}.chemtot b{font:900 26px/1 var(--f-display)}.chemtot span{color:var(--muted)}
+.chemtot i{position:absolute;left:0;right:0;bottom:0;height:5px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}.chemtot i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#FF5A5F,#F2C94C,#2FD07A);border-radius:9px;transition:width .5s}
+.chemgo{margin-top:8px;white-space:normal;text-align:left}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -1214,7 +1224,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020255',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020302',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -3284,6 +3294,25 @@ function pdEnd(e,cancel){const d=pdrag;if(!d||e.pointerId!==d.id)return;pdrag=nu
   if(!cancel&&tg)pitchSwap(d.el.dataset.a,+d.el.dataset.i,+d.el.dataset.k,+tg.dataset.k)}
 document.addEventListener('pointerup',e=>pdEnd(e,false));document.addEventListener('pointercancel',e=>pdEnd(e,true));
 document.addEventListener('click',e=>{if(Date.now()-pdragEat<350&&e.target.closest('button.pc,button.subb')){e.stopPropagation();e.preventDefault()}},true);
+/* FC-style chemistry on the Team Management pitch (managers): each player earns 0-3 = right area of the pitch (1) + how well they rate the
+   players next to them (0-2, from players' 1-5 chemistry ratings). Selecting a player draws lines to every teammate and suggests the best swap. */
+const chemFit=(id,row)=>{const p=pById(id);if(!p)return 0;if(row==='GK')return 1;const bp=(prof(p).bestPos||'').toUpperCase(),M={GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',LWB:'DEF',RWB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID',LW:'FWD',RW:'FWD',ST:'FWD',CF:'FWD'};return p.pos===row||M[bp]===row?1:0};
+function chemNeighbours(SL){return SL.map(a=>SL.filter(b=>b!==a).map(b=>[b,Math.hypot((a.x-b.x)*1.1,a.y-b.y)]).sort((p,q)=>p[1]-q[1]).slice(0,3).map(x=>x[0].idx))}
+function chemScore(SL,NB,ids){const pts={};let tot=0;SL.forEach((q,i)=>{const id=ids[q.idx],vals=NB[i].map(j=>pairChem(id,ids[j])).filter(v=>v!=null);const av=vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:null;
+  const link=av==null?1:av>=4?2:av>=3?1:0;pts[q.idx]=Math.min(3,chemFit(id,q.row)+link);tot+=pts[q.idx]});return {pts,tot}}
+function chemModel(SL){const NB=chemNeighbours(SL),ids={};SL.forEach(q=>ids[q.idx]=q.id);const base=chemScore(SL,NB,ids),best={};
+  SL.forEach(a=>{let b0=null;SL.forEach(b=>{if(a===b)return;const sw={...ids};sw[a.idx]=b.id;sw[b.idx]=a.id;const t=chemScore(SL,NB,sw).tot-base.tot;if(t>0&&(!b0||t>b0.d))b0={k:b.idx,d:t,role:b.role,with:b.id}});if(b0)best[a.idx]=b0});
+  return {pts:base.pts,tot:base.tot,max:SL.length*3,NB,best}}
+const chemCol=v=>v==null?'rgba(255,255,255,.55)':v>=4?'#2FD07A':v>=3?'#F2C94C':'#FF5A5F';
+function chemLines(SL,CH,sq){const L=[];
+  if(sq){SL.forEach(b=>{if(b===sq)return;const v=pairChem(sq.id,b.id);L.push(`<line x1="${sq.x}" y1="${sq.y}" x2="${b.x}" y2="${b.y}" stroke="${chemCol(v)}" stroke-width="${v==null?1.5:2+v*.5}" ${v==null?'stroke-dasharray="4 4"':''} vector-effect="non-scaling-stroke" class="cl"/>`)});}
+  else{const seen=new Set();SL.forEach((a,i)=>CH.NB[i].forEach(j=>{const k=[a.idx,j].sort().join('-');if(seen.has(k))return;seen.add(k);const b=SL.find(q=>q.idx===j),v=pairChem(a.id,b.id);L.push(`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${chemCol(v)}" stroke-width="${v==null?1:1.6}" ${v==null?'stroke-dasharray="3 4"':''} opacity=".7" vector-effect="non-scaling-stroke"/>`)}))}
+  const lbl=sq?SL.filter(b=>b!==sq&&pairChem(sq.id,b.id)!=null).map(b=>{const v=pairChem(sq.id,b.id),mx=(sq.x+b.x)/2,my=(sq.y+b.y)/2;return `<span class="cll" style="left:${mx}%;top:${my}%;background:${chemCol(v)}">${Math.round(v*10)/10}</span>`}).join(''):'';
+  return `<svg class="chemsvg${sq?' on':''}" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${L.join('')}</svg>${lbl}`}
+function chemPanel(SLids,CH,selIdx,ti,A){if(!CH)return '';const pct=Math.round(CH.tot/CH.max*100),b=selIdx!=null&&CH.best[selIdx];
+  return `<div class="chemp"><div class="ps-sh">Team chemistry</div><div class="chemtot"><b>${CH.tot}</b><span>/ ${CH.max}</span><i style="--w:${pct}%"></i></div>
+    <div class="small muted">${selIdx!=null?`${CH.pts[selIdx]} of 3 for this player. Lines show how they rate each teammate.`:'Tap a player to see their links. Green = great (4–5), yellow = OK (3), red = poor (1–2), dashed = not rated.'}</div>
+    ${b?`<button class="btn small primary chemgo" data-a="chemswap" data-i="${ti}" data-act="${A}" data-k1="${selIdx}" data-k2="${b.k}">Move to ${esc(b.role)} (swap with ${esc(shortName(pById(b.with)?.name))}) · +${b.d} chem</button>`:selIdx!=null?'<div class="small" style="margin-top:6px">Already in the best spot for chemistry.</div>':''}</div>`}
 function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   const g=splitLU(lu),rows=g.GK.length?{GK:.95,DEF:.73,MID:.47,FWD:.2}:{DEF:.84,MID:.53,FWD:.21};const col=KITHEX[t.kit]||'#C9A227';const sel=opt?opt.sel:draft.sel;
   const showOvr=interactive&&!PM,cap=opt?.captain??(interactive&&!opt?(draft.caps||{})[ti]:null);
@@ -3297,9 +3326,12 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
       <span class="pc-ic">${p?.nation?`<img class="pc-fl" src="icons/flags/${p.nation.toLowerCase()}.svg" alt="">`:''}${p?.club&&CLUB[p.club]?clubBadge(p.club,'cb'):''}</span>
       ${p?.number?`<span class="badge-position nb">${esc(p.number)}</span>`:''}${cap&&cap===id?'<span class="badge-position cap">C</span>':p?.star&&showOvr?'<span class="badge-position star">★</span>':''}</span>
       <span class="pc-role">${role}</span></${tag}>`};
-  let html='',idx=0;
+  let html='',idx=0;const SL=[];
   for(const row of ['GK','DEF','MID','FWD']){const ids=g[row],k=ids.length;if(!k)continue;const v=rows[row]||.5;
-    ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);html+=card(id,roleOf(row,k,i),u,v,idx++)})}
+    ids.forEach((id,i)=>{const u=k===1?.5:k>=4?.08+i*.84/(k-1):.5+(i-(k-1)/2)*(k===2?.36:.34);const [x,y]=p3pt(u,v);SL.push({id,row,role:roleOf(row,k,i),u,v,idx:idx++,x:Math.min(93,Math.max(7,x/P3.W*100)),y:y/P3.H*100})})}
+  const CH=interactive&&!PM&&chemS.rows&&SL.length>1?chemModel(SL):null;
+  SL.forEach(q=>{html+=card(q.id,q.role,q.u,q.v,q.idx).replace('<span class="pc-role">',CH?`<span class="pcchem c${CH.pts[q.idx]}" title="Chemistry ${CH.pts[q.idx]} of 3">${'<i></i>'.repeat(3)}</span><span class="pc-role">`:'<span class="pc-role">')});
+  if(CH){const sIdx=sel&&sel.t===ti?sel.k:null,sq=SL.find(q=>q.idx===sIdx);html=chemLines(SL,CH,sq)+html;if(sq&&CH.best[sq.idx])html=html.replace(`data-k="${CH.best[sq.idx].k}"`,`data-k="${CH.best[sq.idx].k}" data-chemsug="1"`)}
   const subIds=g.SUB,subs=subIds.map(id=>{const p=res(id);const i=idx++;const on=interactive&&sel&&sel.t===ti&&sel.k===i;
     return interactive?`<button class="subb${on?' sel':''}" data-a="${A}" data-i="${ti}" data-k="${i}">${esc(p?.name)}</button>`:`<span class="subb">${esc(p?.name)}</span>`}).join('');
   const pitch=`<div class="pitch p3${pNums?'':' nonum'}" style="--kc:${col}">${PITCH3}${title?`<div class="ptitle3">${esc(title)}</div>`:''}<div class="pform">${esc(lu.f)}</div>${html}</div>`;
@@ -3324,12 +3356,12 @@ function pitchHTML(t,lu,ti,interactive,title,opt){const A=opt?.a||'slot';
   return `<div class="pstw"><div class="pstudio"><aside class="ps-side"><h2 class="ps-h">Team Management</h2>${dyn}
     <nav class="ps-nav"><ul>${NAV.map(([k,l])=>`<li><a href="#" class="nav-${k}${nav===k?' nav-active':''}" data-a="pnav" data-k="${key}" data-v="${k}">${l}</a></li>`).join('')}<li><a href="#" class="nav-board" data-a="tboard" data-i="${ti}" ${opt?.tid?`data-id="${opt.tid}"`:''}>${ICO('target')} Tactic Board</a></li></ul></nav><div class="ps-panel">${panel}</div></aside>
     <div class="ps-main">${pitch}</div>
-    <aside class="ps-stats"><div class="ps-sh">${sp?esc(shortName(sp.name)):'Team average'}</div>${statBars(sp?p3Stats(selId):teamRows,sp?R(selId).ovr:Math.round(st.tot))}${chemBlock(lu.order,selId)}</aside></div></div>${subsHTML}`;
+    <aside class="ps-stats"><div class="ps-sh">${sp?esc(shortName(sp.name)):'Team average'}</div>${statBars(sp?p3Stats(selId):teamRows,sp?R(selId).ovr:Math.round(st.tot))}${chemPanel(null,CH,sel&&sel.t===ti?sel.k:null,ti,A)}${chemBlock(lu.order,selId)}</aside></div></div>${subsHTML}`;
 }
 function teamLU(i){const t=draft.teams[i];draft.lu=draft.lu||[];const lu=getLU(t,{...(draft.lu[i]||{}),n:onPitch()});draft.lu[i]=lu;return lu}
 
 function shareData(m){return {date:m.date,teams:m.teams.map(t=>{const ids=t.players.filter(id=>pById(id));const lu=getLU(ids,t.lu);
-  return {name:t.name,kit:t.kit,ids,lu,players:sortTeam(ids).map(id=>({name:pById(id).name,pos:posOf(id)}))}})}}
+  return {name:t.name,kit:t.kit,ids,lu,players:sortTeam(ids).map(id=>({id,name:pById(id).name,pos:posOf(id)}))}})}}
 /* Finalized teams: published to players as their upcoming match (S.fixtures, one per date); the match itself is saved after it's played */
 const fxFor=d=>(S.fixtures||[]).find(f=>f.date===d);
 const fxKey=t=>JSON.stringify((t||[]).map(x=>[x.name,x.kit,x.players,x.lu&&x.lu.f,x.lu&&x.lu.gk,x.lu&&x.lu.order,x.cap||'']));
@@ -3343,9 +3375,9 @@ function shareModal(m,sel){
   const d=shareData(m);lastShare=d;shareSel=sel??'all';
   const one=shareSel!=='all'?d.teams[+shareSel]:null;
   const card=one?`<div id="sharecard" class="sharecard one"><div style="display:flex;gap:10px;align-items:center"><span class="kitsw" style="background:${KITHEX[one.kit]}"></span><div style="min-width:0"><div class="sh">${esc(one.name)}</div><div class="sd" style="margin:2px 0 0">${fmtDate(d.date)} · ${esc(S.settings.time)}</div></div><span class="fbadge">${one.lu.gk?'GK · ':''}${one.lu.f}</span></div>
-      <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false,one.name)}</div></div>`
+      <div style="margin-top:12px">${pitchHTML(one,one.lu,+shareSel,false,one.name,{captain:(m.teams[+shareSel]||{}).cap||''})}</div></div>`
     :`<div id="sharecard" class="sharecard"><div class="sh">Saturday Soccer · Airdrie</div><div class="sd">${fmtDate(d.date)} · ${esc(timeFor(d.date))}</div>${rotLine(d,false)}
-    <div class="sg">${d.teams.map(t=>`<div class="st"><h4 class="${kitLt(t.kit)?'lt':''}" style="background:${KITHEX[t.kit]}">${esc(t.name)}<small>${t.lu.f}</small></h4><ol>${t.players.map(p=>`<li>${esc(p.name)}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>`;
+    <div class="sg">${d.teams.map((t,ti)=>`<div class="st"><h4 class="${kitLt(t.kit)?'lt':''}" style="background:${KITHEX[t.kit]}">${esc(t.name)}<small>${t.lu.f}</small></h4><ol>${t.players.map(p=>`<li>${esc(p.name)}${(m.teams[ti]||{}).cap&&(m.teams[ti].cap===p.id)?' <b class="capb">C</b>':''}<em>${p.pos}</em></li>`).join('')}</ol></div>`).join('')}</div></div>`;
   openModal(`<div class="mh"><h2>Share</h2><button class="btn ghost x" data-a="close">Close</button></div>
   <div class="small muted" style="text-align:center;margin-bottom:6px">Show all teams, or one team on the pitch</div><div class="chips" style="margin-bottom:12px;justify-content:center"><button class="chip" style="padding-left:12px" aria-pressed="${shareSel==='all'}" data-a="sharesel" data-s="all">All teams</button>${d.teams.map((t,i)=>`<button class="chip" style="padding-left:10px" aria-pressed="${shareSel==String(i)}" data-a="sharesel" data-s="${i}"><span class="kitsw sm" style="background:${KITHEX[t.kit]}"></span>${esc(t.name.replace(/^team\s+/i,''))}</button>`).join('')}</div>
   ${card}
@@ -3465,6 +3497,7 @@ document.addEventListener('click',async e=>{
   if(a==='pteam'){draft.tfold=false;draft.pt=+el.dataset.i;draft.sel=null;saveDraft();render();if(innerWidth<1000)$('.mpitch')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a==='pitchall'){pitchAll=el.checked;ls('atb_pitchall',pitchAll);draft.sel=null;render();return}
   if(a==='pitch'){const i=+el.dataset.i;draft.pitch=draft.pitch||{};draft.pitch[i]=!draft.pitch[i];draft.sel=null;saveDraft();render();return}
+  if(a==='chemswap'){const act=el.dataset.act,i=+el.dataset.i,k1=+el.dataset.k1,k2=+el.dataset.k2;await pitchSwap(act,i,k1,k2);if(act==='slot'){draft.sel={t:i,k:k2};saveDraft();render()}toast('Swapped for better chemistry');return}
   if(a==='tslot'){const t=JSON.parse(JSON.stringify(S.tourns.find(x=>x.id===tSel)));const k=+el.dataset.k;
     tSlot=tSlot&&tSlot.t===t.id&&tSlot.k===k?null:{t:t.id,k};render();return}
   if(a==='slot'){const i=+el.dataset.i,k=+el.dataset.k;const s=draft.sel;
