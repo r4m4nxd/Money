@@ -614,6 +614,7 @@ h3{line-height:1.2}
 .p3 .ptitle3{position:absolute;left:2.5%;top:2.5%;z-index:120;background:rgba(8,14,22,.72);color:#fff;font:800 clamp(10px,2.5cqw,17px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;padding:.7cqw 1.8cqw;border-radius:8px;border-left:4px solid var(--kc);max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p3 .pform{position:absolute;left:2.5%;bottom:1.5%;z-index:1;font:900 clamp(20px,8cqw,64px)/1 var(--f-display);letter-spacing:.08em;color:rgba(255,255,255,.88);text-shadow:0 .5cqw 0 rgba(0,0,0,.28)}
 .pc{position:absolute;transform:translate(-50%,-62%);width:calc(12.6cqw*var(--s));display:flex;flex-direction:column;align-items:center;gap:calc(.7cqw*var(--s));background:none;border:0;padding:0;margin:0;font:inherit;color:#2a1d07;-webkit-tap-highlight-color:transparent}
+.pfwrap{margin:14px 0}.pfwrap>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px 16px}.pfwrap>summary::-webkit-details-marker{display:none}.pfsum>span:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}.pfsi{font-size:1.3em}.pfchev{font-size:1.5em;transition:transform .25s;opacity:.6}.pfwrap[open] .pfchev{transform:rotate(90deg)}.pfwrap[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}.pfwrap[open]>.pfed{border-top-left-radius:0;border-top-right-radius:0;border-top:1px solid var(--line,rgba(127,127,127,.2));animation:pfin .28s ease}@keyframes pfin{from{opacity:0;transform:translateY(-6px)}}
 button.pc{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pc{--dx:0px;--dy:0px;transform:translate(calc(-50% + var(--dx)),calc(-62% + var(--dy)));transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .pc.drag{transition:none;z-index:500!important;cursor:grabbing;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}.pc.drag .pc-card{transform:scale(1.08)}
@@ -1164,7 +1165,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610020056',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610020137',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1397,6 +1398,7 @@ function render(){tipSync();outSync();if(!bgRendering&&!PM)fClear();
 /* Collapsible sections: header keeps the key facts, open/closed is remembered per section */
 let cxOpen=ls('atb_cx')||{};
 const cx=(k,title,info,body,def=true)=>`<details class="cx" data-cx="${esc(k)}" ${(cxOpen[k]??def)?'open':''}><summary><h2>${title}</h2><span class="cxi">${info}</span><span class="cxc" aria-hidden="true"></span></summary><div class="cxb">${body}</div></details>`;
+document.addEventListener('toggle',e=>{if(e.target.id==='pfwrap')pfOpen=e.target.open},true);
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.cx){cxOpen[d.dataset.cx]=d.open;ls('atb_cx',cxOpen)}},true);
 function vMatch(){
   chemNeed();
@@ -2306,14 +2308,15 @@ function vpMe(){const d=PM.data,me=pById(d.me.id),s=pSummary(),a=pAvail(),r=R(me
   const form=allGames().slice(0,5).map(x=>resPill(x.res)).join('');
   const tb=(()=>{const t=S.tourns.filter(x=>x.date>=todayISO()).sort((a,b)=>a.date<b.date?-1:1)[0];if(!t)return '';const pl=PM.data.polls.find(p=>p.id===t.poll&&p.open),inSq=(t.squad||[]).includes(me.id);
     return `<button class="panel tban" data-a="gotourn">🏆 <div><b>${esc(t.name)}</b><div class="small muted">${new Date(t.date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${inSq?'You’re in the squad!':pl&&!pl.mine?'Are you available? Tap to answer':pl?`You said ${pl.mine.toUpperCase()}`:ruleTxt(t)}</div></div><span>›</span></button>`})();
-  return `<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
+  return `<div class="mtop"><div class="phero"><div class="pcard${inform?' glow':''}">${cardHTML(pfOpen&&pfD?{...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}}:me,{btn:false,tier:tv})}${inform?'<div class="inform">IN-FORM</div>':''}</div><div class="stack" style="flex:1 1 220px;min-width:0">
       <h2 style="margin:0">${esc(titleName(me.name))}</h2>
       <div class="small muted">${me.pos}${me.number?' · #'+esc(me.number):''}${me.nation?' · '+esc((NATIONS.find(n=>n[0]===me.nation)||[])[1]||''):''}${club?' · supports '+esc(club.n):''}</div>
-      <div class="row" style="gap:6px"><button class="btn small" data-a="ppage" data-id="${me.id}">📄 My player page</button>${d.canEdit?'<button class="btn ghost small" data-a="goacct">✏️ Edit my card</button>':''}</div>${d.canDob&&!d.me.dob?'<div class="small"><button class="linkb" data-a="goacct">Add your date of birth</button> <span class="muted">for age-group tournaments</span></div>':''}
+      <div class="row" style="gap:6px"><button class="btn small" data-a="ppage" data-id="${me.id}">📄 My player page</button><button class="btn ghost small" data-a="pfedit">✏️ Edit my profile</button>${d.canEdit?'<button class="btn ghost small" data-a="goacct">Shirt & details</button>':''}</div>${d.canDob&&!d.me.dob?'<div class="small"><button class="linkb" data-a="goacct">Add your date of birth</button> <span class="muted">for age-group tournaments</span></div>':''}
       ${form?`<div class="row form" aria-label="Last five results"><span class="small muted">Form</span>${form}</div>`:''}
       ${tierPanel(me,r)}
       ${!d.showRatings?'<p class="small muted" style="margin:0">Ratings are private. Your card colour and arrows show how you’re growing.</p>':''}
     </div></div><div class="mcol">${homeCard()}${tb}${levelPanel()}${tipLine()}</div></div>
+  ${profEditor()}
   ${myFixture()?`<h2>Next match</h2>${fixtureCard(myFixture())}`:''}
   ${potmVotePanel()}
   ${lastAll&&lastAll.m.myfb?`<div class="panel fbk">💬 <b>From the managers</b> <span class="small muted">· ${new Date(lastAll.m.date+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span><p style="margin:6px 0 0">${esc(lastAll.m.myfb)}</p></div>`:''}
@@ -2377,7 +2380,7 @@ function vpLeaders(){const ms=pMatches(),me=PM.data.me.id,o={};
     ${L.some(x=>x.g)?board('⚽ Top scorers',top(L.filter(x=>x.g).sort((a,b)=>b.g-a.g)),x=>x.g):''}${L.some(x=>x.a)?board('🅰️ Top assists',top(L.filter(x=>x.a).sort((a,b)=>b.a-a.a)),x=>x.a):''}
     ${board('Most appearances',top(apps),x=>x.n)}${board('Best win rate <span class="small muted">(3+ results)</span>',top(wins),x=>pct(x.w/x.r))}${board('🏆 Player of the match',top(potm),x=>x.potm)}`}
 /* ---------- Player-owned profile: editor, squad, public pages, compare, chemistry, story image ---------- */
-let pfD=null;try{pfD=JSON.parse(sessionStorage.getItem('atb_pfd')||'null')}catch(e){}
+let pfD=null,pfOpen=false;try{pfD=JSON.parse(sessionStorage.getItem('atb_pfd')||'null')}catch(e){}
 const pfKeep=()=>{try{sessionStorage.setItem('atb_pfd',JSON.stringify(pfD))}catch(e){}};
 const pubStats=id=>{const ms=S.matches.filter(m=>playedIn(m,id));let W=0,D=0,L=0,g=0,a=0;
   ms.forEach(m=>{const ti=m.teams.findIndex(t=>t.players.includes(id)),r=ti>=0?resultOf(m,ti):null;if(r==='W')W++;else if(r==='D')D++;else if(r==='L')L++;g+=+m.stats?.[id]?.g||0;a+=+m.stats?.[id]?.a||0});
@@ -2387,7 +2390,7 @@ const dispName=p=>esc(titleName(p?.name||''))+(prof(p).nick?` <span class="nick"
 function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!pfD)pfD={card:pr.card||'',ability:pr.ability||'',ps:(pr.ps||[]).slice()};
   if(PM.data.settings?.playerProfile===false)return '';
   const req=me.photoReq,mates=S.players.filter(p=>p.id!==me.id&&!p.guest&&p.active!==false).sort((a,b)=>a.name.localeCompare(b.name));
-  return `<h2>My profile</h2><div class="panel stack pfed">
+  return `<details class="pfwrap" id="pfwrap"${pfOpen?' open':''}><summary class="panel pfsum"><span class="pfsi">✏️</span><span><b>Edit my profile</b><span class="small muted">Nickname, card colour, ability, PlayStyles, favourites, photo</span></span><span class="pfchev">›</span></summary><div class="panel stack pfed">
     <p class="small muted" style="margin:0">Make it yours. Ratings and the gold/silver/bronze/special level are still set by your managers.</p>
     <div class="fgrid g2"><label class="f">Nickname<input id="pfnick" maxlength="20" value="${esc(pr.nick||'')}" placeholder="e.g. The Wall"></label>
       <label class="f">Best position<select id="pfpos"><option value="">–</option>${BESTPOS.map(x=>`<option ${x===pr.bestPos?'selected':''}>${x}</option>`).join('')}</select></label></div>
@@ -2403,7 +2406,7 @@ function profEditor(){const me=pById(PM.data.me.id)||PM.data.me,pr=prof(me);if(!
     <div class="pfphoto"><div class="f"><span>Profile photo</span></div>
       ${req?`<div class="row"><img class="pfprev" src="${req.img}" alt=""><div class="small"><b>Waiting for a manager to approve.</b><br>Your current photo stays until then.</div><button class="btn ghost" data-a="pfphotocancel">Cancel request</button></div>`
         :`<div class="row"><label class="btn" for="pfphoto">Send a new photo</label><input type="file" id="pfphoto" accept="image/*" hidden><span class="small muted">A manager approves it before it shows.</span></div>`}</div>
-    <div class="row"><button class="btn primary" data-a="pfsave">Save my profile</button><span class="small muted" id="pfmsg" role="status"></span></div></div>`}
+    <div class="row"><button class="btn primary" data-a="pfsave">Save my profile</button><span class="small muted" id="pfmsg" role="status"></span></div></div></details>`}
 function vpTeam(){const me=PM.data.me.id,L=S.players.filter(p=>!p.guest&&p.active!==false).sort((a,b)=>(a.id===me?-1:b.id===me?1:a.name.localeCompare(b.name)));const ch=PM.data.chem||{};
   return `<h2>Squad</h2><p class="small muted" style="margin-top:-4px">Tap a player to see their page and compare with yours.</p>
   <div class="cards sqcards">${L.map(p=>`<button class="sqc" data-a="pub" data-id="${p.id}">${cardHTML(p,{btn:false,nonum:p.id!==me||!PM.data.showRatings,tier:p.id===me&&PM.data.growth?tier(R(me).ovr):undefined})}<span class="sqn">${dispName(p)}</span>${prof(p).ability?abilityChip(prof(p).ability,true):''}</button>`).join('')}</div>
@@ -2419,7 +2422,7 @@ function pubPage(id){const p=pById(id);if(!p)return;const me=PM?PM.data.me.id:nu
       <div class="ppnums"><div><b>${st.apps}</b><i>Apps</i></div><div><b>${st.W}</b><i>Wins</i></div><div><b>${st.g}</b><i>Goals</i></div><div><b>${st.a}</b><i>Assists</i></div><div><b>${st.potm}</b><i>POTM</i></div><div><b>${st.titles}</b><i>Titles</i></div></div>
       <dl class="favs">${pr.favPlayer?`<div><dt>Favourite player</dt><dd>${esc(pr.favPlayer)}</dd></div>`:''}${mate?`<div><dt>Favourite teammate</dt><dd>${esc(mate.name)}</dd></div>`:''}${pr.boots?`<div><dt>Boots</dt><dd>${esc(pr.boots)}</dd></div>`:''}${pr.stadium?`<div><dt>Stadium</dt><dd>${esc(pr.stadium)}</dd></div>`:''}</dl>
       ${(pr.ps||[]).length?`<div class="pubps">${pr.ps.map(n=>`<span class="psx on">${psBadge(n,'on')}<small>${esc(n)}</small></span>`).join('')}</div>`:''}</div></div>
-  <div class="row" style="margin-top:12px">${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="goacct">Edit my profile</button>`:''}</div>
+  <div class="row" style="margin-top:12px">${PM&&!mine?`<button class="btn primary" data-a="cmp" data-id="${id}">Compare with me</button>`:''}${mine?`<button class="btn primary" data-a="story" data-id="${id}">Save as image</button><button class="btn" data-a="pfedit">Edit my profile</button>`:''}</div>
   ${PM&&!mine?`<div class="chemrow" style="margin-top:12px"><span class="small">Your chemistry with ${esc(p.name.split(' ')[0])}</span>${chemStars(id,(PM.data.chem||{})[id]||0)}</div>`:''}`);document.querySelector('.modal').classList.add('wide')}
 function cmpPage(id){const me=PM.data.me.id,A=pById(me),B=pById(id),sa=pubStats(me),sb=pubStats(id),pa=prof(A),pb=prof(B);
   const pct=s=>s.res?Math.round(s.W/s.res*100):0,gpm=s=>s.apps?Math.round((s.g+s.a)/s.apps*10)/10:0;
@@ -2503,7 +2506,7 @@ function dreamChange(a,el){if(!DE)return;const d=DE.d;
   else if(a==='dform')d.f=el.value;else if(a==='dtac')d.tactic=el.value;else if(a==='dcapt')d.cap=el.value;else return;
   d.name=($('#dname')?.value||d.name);dreamSel=null;render()}
 function vpAcct(){const me=PM.data.me;
-  return profEditor()+`${PM.data.canDob&&!PM.data.canEdit?`<h2>My details</h2><div class="panel stack"><label class="f" style="max-width:240px">Date of birth <span class="small muted">(only managers see it; used for age-group tournaments)</span><input id="mdob" type="date" value="${esc(me.dob||'')}" max="${todayISO()}"></label><div class="row"><button class="btn primary" data-a="pedit">Save</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
+  return `${PM.data.canDob&&!PM.data.canEdit?`<h2>My details</h2><div class="panel stack"><label class="f" style="max-width:240px">Date of birth <span class="small muted">(only managers see it; used for age-group tournaments)</span><input id="mdob" type="date" value="${esc(me.dob||'')}" max="${todayISO()}"></label><div class="row"><button class="btn primary" data-a="pedit">Save</button><span class="small muted" id="pemsg" role="status"></span></div></div>`:''}${PM.data.canEdit?`<h2>My card</h2><div class="panel stack"><p class="small muted" style="margin:0">Pick your shirt number, nation and favourite club. Numbers are one per player.</p>
     <div class="fgrid g2"><label class="f">Shirt no.<input id="mno" inputmode="numeric" maxlength="2" value="${esc(me.number||'')}"></label>
     <label class="f">Nation<select id="mnat">${NATIONS.map(([c,n])=>`<option value="${c}" ${c===(me.nation||'')?'selected':''}>${n}</option>`).join('')}</select></label></div>
     <div class="fgrid"><label class="f">Favourite club<span class="clubsel"><span id="pcbadge">${clubBadge(me.club)||'<span class="cb"></span>'}</span><select id="pclub" data-a="clubprev"><option value="">None</option>${Object.entries(CLUBS).map(([lg,a])=>`<optgroup label="${lg}">${a.map(([cid,n])=>`<option value="${cid}" ${cid===me.club?'selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('')}</select></span></label></div>
@@ -2571,6 +2574,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='gotourn'){go('tourn');return}
   if(a==='goguide'){go('pguide');return}
   if(a==='gofocus'){document.getElementById('focus')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='pfedit'){if(document.body.classList.contains('mopen'))closeModal();pfOpen=true;if(view!=='me')go('me');else render();setTimeout(()=>{const w=$('#pfwrap');if(w){w.open=true;w.scrollIntoView({behavior:'smooth',block:'start'})}},80);return}
   if(a==='goacct'){if(document.body.classList.contains('mopen'))closeModal();go('acct');return}
   if(a==='preload'){loadPlayer();return}
   if(a==='psignout'){fWipe();try{await prpc('atb_player_logout',{p_token:PM.tok})}catch(err){}try{localStorage.removeItem('atb_player')}catch(err){}if(supaUser){ls('atb_mode','mgr');ls('atb_view','match')}location.reload();return}
@@ -2584,11 +2588,11 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
   if(a==='pub'){pubPage(el.dataset.id);return}
   if(a==='cmp'){cmpPage(el.dataset.id);return}
   if(a==='story'){storyCard(el.dataset.id);return}
-  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();return}
+  if(a==='pfcard'||a==='pfabil'){if(!pfD)return;const k=a==='pfcard'?'card':'ability';pfD[k]=a==='pfabil'&&pfD[k]===el.dataset.v?'':el.dataset.v;el.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===pfD[k]));pfKeep();const hc=document.querySelector('.phero .pcard');if(hc){const me=pById(PM.data.me.id)||PM.data.me,inf=hc.querySelector('.inform');hc.innerHTML=cardHTML({...me,prof:{...prof(me),card:pfD.card,ability:pfD.ability}},{btn:false,tier:PM.data.growth?tier(R(me.id).ovr):undefined})+(inf?inf.outerHTML:'')}return}
   if(a==='pfps'){if(!pfD)return;const v=el.dataset.v,i=pfD.ps.indexOf(v);if(i>=0)pfD.ps.splice(i,1);else{if(pfD.ps.length>=5){toast('Pick up to 5. Tap one to remove it first');return}pfD.ps.push(v)}el.setAttribute('aria-pressed',pfD.ps.includes(v));const n=$('#pfpsn');if(n)n.textContent=pfD.ps.length+' of 5 picked';pfKeep();return}
   if(a==='pfsave'){if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const msg=$('#pfmsg');el.disabled=true;
     const p={nick:$('#pfnick').value,bestPos:$('#pfpos').value,card:pfD.card,ability:pfD.ability,ps:pfD.ps,favPlayer:$('#pffav').value,favMate:$('#pfmate').value,boots:$('#pfboots').value,stadium:$('#pfstad').value,dreamNo:$('#pfno').value.trim()};
-    try{const r=await prpc('atb_player_profile',{p_token:PM.tok,p_prof:p});if(r==='ok'){toast('Profile saved');pfD=null;try{sessionStorage.removeItem('atb_pfd')}catch(e){}fClear('p-acct');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else msg.textContent=r==='disabled'?'Profile editing is turned off by the managers.':'Could not save'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
+    try{const r=await prpc('atb_player_profile',{p_token:PM.tok,p_prof:p});if(r==='ok'){toast('Profile saved');pfD=null;try{sessionStorage.removeItem('atb_pfd')}catch(e){}pfOpen=false;fClear('p-me');await loadPlayer()}else if(r==='signed_out')playerSignedOut('Sign in again.');else msg.textContent=r==='disabled'?'Profile editing is turned off by the managers.':'Could not save'}catch(err){msg.textContent='Could not save. Check your connection.'}el.disabled=false;return}
   if(a==='pfphotocancel'){if(PM.preview)return;try{await prpc('atb_player_photo',{p_token:PM.tok,p_img:''});toast('Photo request cancelled');await loadPlayer()}catch(err){toast('Could not cancel')}return}
   if(a==='chem'){const id=el.dataset.id;if(PM.preview){toast('Preview only: this works on the player’s own phone');return}const v=+el.dataset.v;try{const r=await prpc('atb_player_chem',{p_token:PM.tok,p_ratee:id,p_score:v});if(r==='ok'){PM.data.chem=PM.data.chem||{};if(v)PM.data.chem[id]=v;else delete PM.data.chem[id];document.querySelectorAll(`.cst[data-id="${CSS.escape(id)}"]`).forEach((b,i)=>{const n=(i%5)+1;b.classList.toggle('on',n<=v);b.dataset.v=n===v?0:n})}else toast('Could not save')}catch(err){toast('Could not save')}return}
   if(a==='pedit'){const msg=$('#pemsg');el.disabled=true;try{const r=await prpc('atb_player_update',{p_token:PM.tok,p_number:$('#mno')?.value.trim()||'',p_club:$('#pclub')?.value||'',p_nation:$('#mnat')?.value||'',p_dob:$('#mdob')?$('#mdob').value:null});
@@ -2851,7 +2855,7 @@ function playerPage(id){const p=pById(id);if(!p)return;const r=R(id),show=!PM||P
       <div class="ppstats">${FCGROUPS.map(([nm,ks])=>{const gv=Math.round(ks.reduce((n,k)=>n+a[k],0)/ks.length);return `<div class="fcg"><div class="gh2"><b>${nm}</b><b class="num ${gv>=80?'hi':gv>=70?'md':'lo'}">${v(gv)}</b></div><div class="pbar"><i style="width:${show?gv:50}%"></i></div>${ks.map(k=>`<div class="sub"><span>${esc(KL[k])}</span><b class="num ${a[k]>=80?'hi':a[k]>=70?'md':'lo'}">${v(a[k])}</b></div>`).join('')}</div>`}).join('')}</div>
       <div class="pprpp"><b>Rating per position</b><div class="rpp">${PITCHFULL}${Object.entries(PP).map(([pos,[x,y]])=>`<span class="rp${pos===best&&show?' best':''}" style="left:${x}%;top:${y}%"><small>${pos}</small>${v(PR[pos])}</span>`).join('')}</div></div>
     </div>
-    ${!PM||id===PM.data.me.id?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" data-a="story" data-id="${id}">Save as image (story)</button></div>`:''}
+    ${!PM||id===PM.data.me.id?`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn primary" data-a="story" data-id="${id}">Save as image (story)</button>${PM&&!PM.preview&&id===PM.data.me.id?'<button class="btn" data-a="pfedit">✏️ Edit my profile</button>':''}</div>`:''}
     ${!show?'<p class="small muted">Numbers are private. Your managers can turn on “Players can see their own ratings”.</p>':''}
   </div>`);psSelf=null;document.querySelector('.modal').classList.add('wide')}
 
