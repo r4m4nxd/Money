@@ -129,3 +129,6 @@ create policy "atb rsvp log team read" on public.atb_rsvp_log for select to auth
 
 -- 2026-10-02: player payload also sends 'starCard' (manager-chosen card design for star players)
 --   patched in private.atb_player_payload: 'star', x.data->'star', 'starCard', x.data->'starCard',
+
+-- 2026-10-02: public Storage bucket 'stars' (ready star cut-outs + index.json); only the admin email can upload
+--   policies on storage.objects: stars_admin_insert / stars_admin_update / stars_admin_select

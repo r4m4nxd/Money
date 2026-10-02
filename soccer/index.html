@@ -1465,7 +1465,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610021803',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610021808',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -2482,9 +2482,25 @@ function notifyPanel(){if(!ntf){setTimeout(loadNtf,0);return `<h2>Vote alerts</h
     <label class="small row chk"><input type="checkbox" id="ntfen" data-a="ntfen" ${ntf.enabled!==false?'checked':''}> Alerts on (untick to pause)</label>
     <label class="f">Also email me (optional)<span class="row" style="flex-wrap:nowrap"><input id="ntfem" type="email" value="${esc(ntf.email||'')}" placeholder="you@example.com" style="flex:1"><button class="btn" data-a="ntfemail">Save</button></span></label>
     <p class="small muted" style="margin:0">Email alerts are sent by ntfy.sh’s free service, which limits how many emails it sends per day. Phone alerts are more reliable.</p></div>`}
+
+// admin only: cut out every star photo once and publish them for all phones
+let starJob=null;
+async function starJobRun(){if(starJob)return;const names=Object.keys(STARS).filter(n=>!STARIX.has(starSlug(n)));starJob={done:0,tot:names.length,ok:0,fail:0};const out=()=>{const e=document.getElementById('starjob');if(e)e.textContent=`Working… ${starJob.done}/${starJob.tot} · ${starJob.ok} ready${starJob.fail?` · ${starJob.fail} skipped`:''}. Keep this page open.`};out();
+  for(let i=0;i<names.length;i+=40){const ch=names.slice(i,i+40).filter(n=>!(WIKI[n]&&WIKI[n].u));if(!ch.length)continue;try{const m=await wikiBatch(ch),miss=ch.filter(n=>!m[n]);let m2={};if(miss.length)try{m2=await wikiBatch(miss.map(n=>n+' (footballer)'))}catch(e){}ch.forEach(n=>{WIKI[n]={u:m[n]||m2[n+' (footballer)']||'',t:Date.now()}})}catch(e){}}
+  try{ls('atb_wiki2',WIKI)}catch(e){}
+  let lib=null;const cut=async u=>{const w=cutWorker();if(w){const id=Math.random().toString(36).slice(2);const r=await new Promise(res=>{cutWait[id]=res;w.postMessage({id,url:u});setTimeout(()=>{if(cutWait[id]){delete cutWait[id];res({err:'timeout'})}},120000)});if(r.blob)return r.blob}
+    lib=lib||await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');return await lib.removeBackground(u,{model:'isnet_quint8',output:{format:'image/png'}})};
+  const pubIx=async()=>{const v=Date.now();await supa.storage.from('stars').upload('index.json',new Blob([JSON.stringify({l:[...STARIX],v})],{type:'application/json'}),{upsert:true,contentType:'application/json',cacheControl:'60'});STARIXV=String(v)};
+  for(const n of names){const u=WIKI[n]&&WIKI[n].u;if(!u){starJob.fail++;starJob.done++;out();continue}
+    try{const raw=await cut(u),b=await cutTrim(raw);if(!b)throw 0;const {error}=await supa.storage.from('stars').upload(starSlug(n)+'.webp',b,{upsert:true,contentType:'image/webp',cacheControl:'31536000'});if(error)throw error;STARIX.add(starSlug(n));starJob.ok++;if(starJob.ok%10===0)await pubIx()}catch(e){starJob.fail++}
+    starJob.done++;out()}
+  try{await pubIx()}catch(e){}const r=starJob;starJob=null;toast(`Star photos ready: ${r.ok}${r.fail?` (${r.fail} had no usable photo)`:''}`);render()}
+function starJobPanel(){if(!isAdmin)return '';const tot=Object.keys(STARS).length,have=Object.keys(STARS).filter(n=>STARIX.has(starSlug(n))).length;
+  return `<h2>Dream Team star photos</h2><div class="panel stack"><div class="small muted">Cut out every star’s photo once (background removed) and publish it, so players’ phones never do this work. Takes about 10–20 minutes; keep this page open.</div>
+    <div><b>${have}</b> of ${tot} ready</div><div id="starjob" class="small">${starJob?'Working…':''}</div><div class="row"><button class="btn primary" data-a="starjob" ${starJob||have>=tot?'disabled':''}>${have?'Prepare the missing ones':'Prepare all star photos'}</button></div></div>`}
 function vSettings(){
   const s=S.settings;
-  return (supaUser?mfbPanel():'')+`<h2>Rating model</h2><div class="panel stack">
+  return (supaUser?mfbPanel():'')+starJobPanel()+`<h2>Rating model</h2><div class="panel stack">
     <div class="fgrid">
       <label class="f">Last season counts as<select id="bw" data-a="set" data-k="baseW">${[0,1,2,3,5,8].map(n=>`<option value="${n}" ${n==s.baseW?'selected':''}>${n} match${n==1?'':'es'}</option>`).join('')}</select></label>
       <label class="f">Average over<select id="rn" data-a="set" data-k="recentN">${[0,3,5,8,12].map(n=>`<option value="${n}" ${n==s.recentN?'selected':''}>${n?'last '+n+' matches':'all matches'}</option>`).join('')}</select></label>
@@ -2943,6 +2959,11 @@ function wikiLoad(names){const need=[...new Set(names)].filter(n=>n&&!wikiFail.h
   (async()=>{try{const m=await wikiBatch(need);const miss=need.filter(n=>!m[n]);let m2={};if(miss.length)try{m2=await wikiBatch(miss.map(n=>n+' (footballer)'))}catch(e){}
       need.forEach(n=>{const u=m[n]||m2[n+' (footballer)']||'';WIKI[n]={u,t:Date.now()}});try{ls('atb_wiki2',WIKI)}catch(e){}}catch(e){need.forEach(n=>wikiFail.add(n))}
     need.forEach(n=>wikiBusy.delete(n));if(PM&&view==='dream')bgRender()})()}
+/* Ready-made star cut-outs: prepared once by the admin and stored in Supabase Storage, so phones do no photo processing */
+const STARBASE=SUPA_URL+'/storage/v1/object/public/stars/';let STARIX=new Set(),STARIXV='';
+const starSlug=n=>n.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const starPic=n=>STARIX.has(starSlug(n))?STARBASE+starSlug(n)+'.webp?v='+STARIXV:'';
+(async()=>{try{const c=ls('atb_starix');if(c&&c.l){STARIX=new Set(c.l);STARIXV=c.v||''}const r=await fetch(STARBASE+'index.json?t='+Math.floor(Date.now()/36e5));if(r.ok){const j=await r.json();STARIX=new Set(j.l||[]);STARIXV=String(j.v||'');try{ls('atb_starix',{l:j.l||[],v:j.v||''})}catch(e){}if(PM&&view==='dream')bgRender()}}catch(e){}})();
 /* Star photos with the background removed (on the phone, once per star, kept in this device's storage) */
 const CUT={},cutQ=[],cutTried=new Set();let cutBusy=false,cutDB=null;
 const cutStore=()=>cutDB||(cutDB=new Promise(res=>{try{const r=indexedDB.open('aufc-cuts',1);r.onupgradeneeded=()=>r.result.createObjectStore('c');r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}}));
@@ -2952,7 +2973,7 @@ async function cutTrim(blob){const bm=await createImageBitmap(blob),c=document.c
   const d=g.getImageData(0,0,c.width,c.height).data;let x0=c.width,y0=c.height,x1=0,y1=0;for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2)if(d[(y*c.width+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<=x0||y1<=y0)return null;const w=x1-x0,side=Math.min(Math.max(w,(y1-y0)*.55),y1-y0),cx=(x0+x1)/2,o=document.createElement('canvas');o.width=o.height=420;
   o.getContext('2d').drawImage(c,cx-side/2,y0-side*.04,side,side,0,0,420,420);return await new Promise(r=>o.toBlob(r,'image/webp',.88))}
-function cutQueue(names){names.forEach(n=>{const u=WIKI[n]?.u;if(u&&!CUT[n]&&!cutTried.has(n)&&!cutQ.includes(n))cutQ.push(n)});cutRun()}
+function cutQueue(names){return;names.forEach(n=>{const u=WIKI[n]?.u;if(u&&!CUT[n]&&!cutTried.has(n)&&!cutQ.includes(n))cutQ.push(n)});cutRun()}
 // runs in a background worker so the app never freezes; if the worker can't run it, photos simply stay as they are
 let cutW=null,cutDead=false,cutRT=0;const cutWait={};
 function cutWorker(){if(cutW||cutDead)return cutW;try{const src=`let lib;self.onmessage=async e=>{const {id,url}=e.data;try{lib=lib||await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');const b=await lib.removeBackground(url,{model:'isnet_quint8',device:'cpu',output:{format:'image/png'}});self.postMessage({id,blob:b})}catch(err){self.postMessage({id,err:String(err&&err.message||err)})}}`;
@@ -2963,7 +2984,7 @@ async function cutRun(){if(cutBusy||!cutQ.length||cutDead)return;cutBusy=true;aw
     const r=await new Promise(res=>{cutWait[id]=res;w.postMessage({id,url:WIKI[n].u});setTimeout(()=>{if(cutWait[id]){delete cutWait[id];res({err:'timeout'})}},90000)});
     if(r.blob)try{const b=await cutTrim(r.blob);if(b){CUT[n]=URL.createObjectURL(b);const db=await cutStore();if(db)try{db.transaction('c','readwrite').objectStore('c').put(b,n)}catch(e){}cutRepaint()}}catch(e){}
     await new Promise(r=>(window.requestIdleCallback||setTimeout)(r,{timeout:1500}))}cutBusy=false}
-const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:CUT[n]||w&&w.u||undefined,photoCut:!!CUT[n],st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
+const dreamRes=id=>{if(!id)return {id:'',name:'',empty:true};if(id.startsWith('c:')){const p=pById(id.slice(2));return p?{...p,id}:{id,name:'?'}}const n=id.slice(2),w=WIKI[n],st=STARS[n];return {id,name:n,ext:true,photo:starPic(n)||CUT[n]||w&&w.u||undefined,photoCut:!!(starPic(n)||CUT[n]),st,nation:st?st[8]:undefined,pos:st?({GK:'GK',CB:'DEF',LB:'DEF',RB:'DEF',CDM:'MID',CM:'MID',CAM:'MID',LM:'MID',RM:'MID'}[st[0]]||'FWD'):undefined}};
 const dreamName=id=>id?dreamRes(id).name:'';
 function dreamNew(){const n=11;return {name:'My Dream XI',n,gk:true,f:'4-3-3',tactic:'Balanced',cap:'',order:Array(n).fill(''),bench:Array(7).fill('')}}
 function dreamFit(d){if(!Array.isArray(d.bench))d.bench=Array(7).fill('');while(d.bench.length<7)d.bench.push('');const k=fsum(d.f)+(d.gk?1:0);d.order=d.order.slice(0,k);while(d.order.length<k)d.order.push('');if(d.cap&&!d.order.includes(d.cap))d.cap='';return d}
@@ -3007,8 +3028,8 @@ function dpkSync(){const want=DE&&DPK.open&&view==='dream'&&PM;let ov=document.q
   const st=ov?ov.scrollTop:0,t=document.createElement('div');t.innerHTML=dreamPicker();const n=t.firstElementChild;if(ov)ov.replaceWith(n);else{n.classList.add('in');document.body.appendChild(n)}n.scrollTop=st;document.documentElement.classList.add('dpkopen')}
 // FC card for a Dream Team search result (club players use their own card)
 function dreamFut(x){if(x.mine){const p=pById(x.id.slice(2));if(p)return cardHTML(p,{btn:false,nonum:x.ovr==null})}
-  const st=STARS[x.name]||[x.pos,x.ovr,0,0,0,0,0,0],t=x.icon?'special':tier(st[1]),art=x.icon?'icon':tier(st[1]),ph=CUT[x.name]||(WIKI[x.name]||{}).u,nm=x.name.length>13?x.name.split(' ').slice(-1)[0]:x.name;
-  return `<div class="fut t-${t} art cc-${art}">${ARTIMG(art,'fart')}<div class="fbody"><div class="ph${CUT[x.name]?' cut':' wk'}">${ph?`<img src="${ph}" alt="" loading="lazy">`:SIL}</div>
+  const st=STARS[x.name]||[x.pos,x.ovr,0,0,0,0,0,0],t=x.icon?'special':tier(st[1]),art=x.icon?'icon':tier(st[1]),ph=starPic(x.name)||CUT[x.name]||(WIKI[x.name]||{}).u,cutp=!!(starPic(x.name)||CUT[x.name]),nm=x.name.length>13?x.name.split(' ').slice(-1)[0]:x.name;
+  return `<div class="fut t-${t} art cc-${art}">${ARTIMG(art,'fart')}<div class="fbody"><div class="ph${cutp?' cut':' wk'}">${ph?`<img src="${ph}" alt="" loading="lazy">`:SIL}</div>
     <div class="fl"><b class="ovr num">${st[1]}</b><span class="ps">${esc(st[0])}</span></div><div class="fn${nm.length>12?' l':''}">${esc(nm)}</div>
     <div class="fs num">${['PAC','SHO','PAS','DRI','DEF','PHY'].map((l,i)=>`<span><i>${l}</i><b>${st[2+i]}</b></span>`).join('')}</div>
     <div class="fb">${x.nat?`<img class="flag" src="icons/flags/${x.nat}.svg" alt="" onerror="this.remove()">`:''}<span class="fbt">${esc(x.club==='ICON'?'ICON':LGN[x.lg]||x.club||'')}</span></div></div></div>`}
@@ -3017,7 +3038,7 @@ const LGN={ENG:'Premier League',ESP:'LALIGA',ITA:'Serie A',GER:'Bundesliga',FRA:
 const NATN={ar:'Argentina',be:'Belgium',bg:'Bulgaria',br:'Brazil',ca:'Canada',ci:'Côte d’Ivoire',cm:'Cameroon',cz:'Czechia',de:'Germany',dk:'Denmark',dz:'Algeria',eg:'Egypt',es:'Spain',fr:'France','gb-eng':'England','gb-nir':'Northern Ireland','gb-sct':'Scotland','gb-wls':'Wales',ge:'Georgia',hr:'Croatia',hu:'Hungary',ie:'Ireland',in:'India',it:'Italy',kr:'Korea Republic',lr:'Liberia',ma:'Morocco',ng:'Nigeria',nl:'Netherlands',no:'Norway',pl:'Poland',pt:'Portugal',ro:'Romania',ru:'Russia',se:'Sweden',si:'Slovenia',tr:'Türkiye',ua:'Ukraine',us:'USA',uy:'Uruguay',pk:'Pakistan'};
 const ROWPOS={GK:'GK',DEF:'CB',MID:'CM',FWD:'ST'};
 function dreamPool(){const vis=PM&&(PM.data.showRatings||SQR());const club=S.players.filter(p=>!p.guest&&p.active!==false).map(p=>({id:'c:'+p.id,name:p.name,pos:ROWPOS[p.pos]||'CM',row:p.pos,ovr:vis?Math.round(R(p.id).ovr):null,nat:String(p.nation||'').toLowerCase(),club:'AUFC',lg:'AUFC',ph:p.photo||p.thumb,mine:true}));
-  const st=Object.entries(STARS).map(([n,x])=>({id:'x:'+n,name:n,pos:x[0],ovr:x[1],nat:x[8],club:x[9],lg:x[10],icon:x[9]==='ICON',ph:WIKI[n]&&WIKI[n].u}));return club.concat(st)}
+  const st=Object.entries(STARS).map(([n,x])=>({id:'x:'+n,name:n,pos:x[0],ovr:x[1],nat:x[8],club:x[9],lg:x[10],icon:x[9]==='ICON',ph:starPic(n)||WIKI[n]&&WIKI[n].u}));return club.concat(st)}
 const rowOfRole=r=>{const g=POSGRP[r];return g==='GK'?'GK':['CB','LB','RB'].includes(g)?'DEF':['ST','LW','RW'].includes(g)?'FWD':'MID'};
 function dreamBench(d){dreamFit(d);wikiLoad(d.bench.filter(x=>x&&x.startsWith('x:')).map(x=>x.slice(2)));
   return `<div class="dbench"><b class="small">Substitutes</b><div class="dbrow">${d.bench.map((x,i)=>{const p=x?dreamRes(x):null,st=p&&p.st;return `<button class="dbs${dreamBSel===i?' sel':''}${x?'':' empty'}" data-a="dbslot" data-k="${i}">${x?`<b>${st?st[1]:''}</b><span class="dmph">${p.photo||p.thumb?`<img src="${p.photo||p.thumb}" alt="">`:SIL}</span><span class="dmn">${esc(shortName(p.name))}</span><i>${esc(st?st[0]:p.pos||'')}</i>`:'<span class="plus">+</span>'}</button>`}).join('')}</div><div class="small muted">Tap a bench spot, then a pitch card to swap them.</div></div>`}
@@ -4021,6 +4042,7 @@ document.addEventListener('click',async e=>{
     while(draft.names.length<draft.n)draft.names.push('');saveDraft();render();return}
   if(a==='reroll'){draft.altI=((draft.altI||0)+1)%draft.alts.length;draft.teams=draft.alts[draft.altI];saveDraft();render();toast('Option '+(draft.altI+1)+' of '+draft.alts.length);return}
   if(a==='lock'){const i=+el.dataset.i;draft.locks[id]!=null?delete draft.locks[id]:draft.locks[id]=i;saveDraft();render();return}
+  if(a==='starjob'){if(!isAdmin)return;el.disabled=true;starJobRun();return}
   if(a==='finalize'){const mm=draftAsMatch();await putDoc('fixtures',draft.date,{date:mm.date,teams:mm.teams,at:Date.now(),by:myName||(isAdmin?'admin':'')});toast('Teams finalized. Players can see them now');render();return}
   if(a==='unfinal'){await delDoc('fixtures',draft.date);toast('Finalized teams removed from players');render();return}
   if(a==='savematch'&&!draft.editing&&draft.date>todayISO()){toast('Save the match after it’s played. Use Finalize teams now');return}
