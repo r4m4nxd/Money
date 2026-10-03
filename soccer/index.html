@@ -238,6 +238,7 @@ ul.tight{margin:0;padding-left:18px}
 .peerrow{padding:8px 0;border-bottom:1px solid var(--line)}.pchips{display:flex;gap:3px;flex-wrap:nowrap;min-width:0}.pchips button{flex:1 1 0;min-width:0;height:30px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:0}.pchips button.on{background:#F2803A;border-color:#F2803A;color:#fff}.cmrow{flex-direction:column;align-items:stretch!important}.cmrow .cmn{flex-direction:row!important;gap:8px;align-items:baseline}.cmrow .cmr{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}.cmrow .cmr>small{color:var(--muted);font-size:12px}
 .fxsteps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.fxst{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px}.fxst i{font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--ink);font-size:11px}.fxst.on{color:var(--ink);border-color:var(--accent)}.fxst.on i{background:var(--accent);color:#fff}.fxst.done{color:#2FB36B;border-color:#2FB36B}.fxst.done i{background:#2FB36B;color:#fff}
 .tfb{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);text-align:center;display:flex;flex-direction:column;gap:8px}.tfb h3{margin:0}.tfb p{margin:0}.tfstars{display:flex;justify-content:center;gap:6px}.tfs{font-size:34px;line-height:1;background:none;border:0;color:var(--line);cursor:pointer;padding:2px;transition:transform .15s,color .15s}.tfs.on{color:#F2B33D}.tfs:active{transform:scale(.85)}#tfbody{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.mdp{margin-bottom:12px}.mdl{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px}.mdc{border:1px solid var(--line);border-radius:12px;padding:10px}.mdc.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.mdh{display:flex;gap:8px;align-items:center;justify-content:space-between}.mdcm{margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--surface2,rgba(127,127,127,.08))}
 .chemnag{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;border:1.5px solid #E8A33D;background:linear-gradient(90deg,rgba(232,163,61,.16),transparent);cursor:pointer;font:inherit;color:inherit}.chemnag .cnic{font-size:26px}.chemnag>div{flex:1;min-width:0}.chemnag .cnxp{flex:none;font-weight:800;color:#fff;background:#E8A33D;border-radius:999px;padding:4px 10px;font-size:13px}
 .cmrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.cmrow .cmn{display:flex;flex-direction:column;min-width:0}.cmrow .cmn small{color:var(--muted)}.cmrow.done .cmn b::after{content:' ✓';color:#2FB36B}.cmh{margin:14px 0 2px;font-size:14px}
 .rot{background:#172638;border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px;font-weight:600}
@@ -1573,7 +1574,7 @@ function nextSat(){const d=new Date();d.setHours(12);d.setDate(d.getDate()+((6-d
 function fmtDate(s){const d=new Date(s+'T12:00');return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
 
 /* ---------- state + storage ---------- */
-const S={players:[],matches:[],fixtures:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8,sessionMin:120,gameMin:9,changeMin:1,lateHours:24}};
+const S={players:[],matches:[],fixtures:[],mdrafts:[],settings:{baseW:3,recentN:0,mix:true,time:'7:00 – 9:00 PM',onPitch:8,sessionMin:120,gameMin:9,changeMin:1,lateHours:24}};
 let db=null, mode='local', cloud=null, loaded=false;
 const draft=Object.assign({date:nextSat(),n:3,kits:DEF_KITS.slice(),names:[],avail:[],teams:null,locks:{},editing:null,alts:[]},ls('atb_draft')||{});
 if(draft.date<new Date().toISOString().slice(0,10)&&!draft.editing){draft.date=nextSat()}
@@ -1646,7 +1647,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610031759',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610031829',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
@@ -1992,7 +1993,7 @@ function vMatch(){
     <div class="row" style="margin-top:10px"><button class="btn" data-a="allin">Everyone</button><button class="btn" data-a="nonein">Clear</button>
     <button class="btn primary" data-a="balance" style="margin-left:auto" ${av.size<draft.n*2?'disabled':''}>Balance ${draft.n} teams</button></div>
     <p class="small muted" style="margin:8px 0 0">Tap a name to mark them in. Balancing evens out overall rating, attack, midfield, defence and pace, and gives each team a similar DEF / MID / FWD mix. Locked players stay in their team. Star players (★) with the same position go to different teams. After balancing, tapping a late arrival in or a dropout out only changes that one player’s team.</p>
-  </div>`,!draft.teams)+teamsHtml;
+  </div>`,!draft.teams)+draftsPanel()+teamsHtml;
 }
 
 /* ---------- availability link (Supabase only) ---------- */
@@ -2697,6 +2698,7 @@ function vGuide(){
 
   ${sec('form','Formations and the pitch',`<ul>
     <li>On pitch per team = starters incl. keeper (now ${onPitch()}); the rest are subs. Tick <b>Keeper</b> to reserve a goalkeeper. Pick any DEF-MID-FWD shape.</li>
+    <li><b>Draft options</b> (Match Day, above Teams): try different setups for the same match, e.g. 27 players as <b>4 teams (7·7·7·6)</b> or <b>3 teams of 9</b>. Balance, then <b>＋ Save current teams as an option</b>. Every manager sees the options live and can <b>Open</b>, 👍 vote and 💬 comment. Press <b>Publish this</b> on the one you agree on; the app then asks before deleting the unused drafts. All drafts are deleted automatically at kick-off.</li>
     <li><b>Match day in 3 steps</b> (shown at the top of Teams):
       <ol><li><b>Build teams</b>: balance, move players, pick formations. Only managers see them.</li>
       <li><b>Publish teams to players</b>: everyone sees their team on Me. Late drop? Change anything and press <b>Update players’ teams</b>; nothing is locked until kick-off. <b>Unpublish</b> hides them again.</li>
@@ -3862,7 +3864,7 @@ function ruleTxt(t){const r=t.rule||{};return r.type==='min'?`${r.min}+ years`:r
 function eligible(t,p){const r=t.rule||{};if(!r.type||r.type==='open')return true;const a=ageAt(p.dob,r.asOf||t.date);if(a==null)return null;
   return (r.type==='max'||+r.min<=a||r.min==null||r.min==='')&&(r.type==='min'||+r.max>=a||r.max==null||r.max==='')}
 const tRecord=t=>{const g=(t.games||[]).filter(x=>x.gf!==''&&x.gf!=null&&x.ga!==''&&x.ga!=null);return {W:g.filter(x=>+x.gf>+x.ga).length,D:g.filter(x=>+x.gf===+x.ga).length,L:g.filter(x=>+x.gf<+x.ga).length,GF:g.reduce((n,x)=>n+ +x.gf,0),GA:g.reduce((n,x)=>n+ +x.ga,0),n:g.length}};
-const localCol=col=>col==='tournaments'?'tourns':col==='gear'?'gear':col==='fixtures'?'fixtures':col==='expenses'?'exp':null;
+const localCol=col=>col==='mdrafts'?'mdrafts':col==='tournaments'?'tourns':col==='gear'?'gear':col==='fixtures'?'fixtures':col==='expenses'?'exp':null;
 const DOCN={tournaments:'tournament',gear:'equipment',fixtures:'teams for players',expenses:'money entry'};let docAct='';
 async function putDoc(col,id,data){if(mode!=='db'){toast('Needs sync');return}const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]){const nm=data.name||data.title||data.opp||(col==='fixtures'?fmtDate(id):id),d=old?diffTxt(old,data):'';const lab=docAct;docAct='';logAct(lab||(old?'Edited ':'Added ')+DOCN[col],nm+(d?' — '+d:''))}try{await db.doc(col+'/'+id).set(data);const k=localCol(col);if(k){S[k]=[...S[k].filter(x=>x.id!==id),{...data,id}];render()}}catch(e){toast('Could not save: '+(e.message||e.code))}}
 async function delDoc(col,id){const k0=localCol(col),old=k0&&S[k0].find(x=>x.id===id);if(DOCN[col]&&col!=='tournaments')logAct((col==='fixtures'?'Unpublished ':'Deleted ')+DOCN[col],old&&(old.name||old.title)||id);if(mode==='db'){try{await db.doc(col+'/'+id).delete();const k=localCol(col);if(k){S[k]=S[k].filter(x=>x.id!==id);render()}}catch(e){toast('Could not delete')}}}
@@ -3870,6 +3872,7 @@ function watchExtra(){if(mode!=='db'||watchExtra.on)return;watchExtra.on=1;
   db.collection('tournaments').onSnapshot(s=>{S.tourns=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
   db.collection('expenses').onSnapshot(s=>{S.exp=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
   db.collection('fixtures').onSnapshot(s=>{S.fixtures=s.docs.map(d=>({...d.data(),id:d.id}));loaded&&bgRender()},()=>{});
+  db.collection('mdrafts').onSnapshot(s=>{S.mdrafts=s.docs.map(d=>({...d.data(),id:d.id}));mdClean();loaded&&bgRender()},()=>{});
   db.collection('gear').onSnapshot(s=>{S.gear=s.docs.map(d=>({...d.data(),id:d.id}));if(!S.gear.length&&isAdmin&&cloud==='supa'&&!watchExtra.seeded){watchExtra.seeded=1;seedGear()}loaded&&bgRender()},()=>{})}
 function seedGear(){[{cat:'kit',kit:'home',name:'Home kit',c1:'#16244A',c2:'#F28C28',desc:'Add a photo when the new kit arrives.'},{cat:'kit',kit:'away',name:'Away kit',c1:'#F4F4F4',c2:'#16244A',desc:'Add a photo when the new kit arrives.'},
   {cat:'ball',name:'Match balls',qty:4},{cat:'bibs',name:'Training bibs',colors:VIBGYOR.slice(0,7).map(x=>x[2]),qty:24},{cat:'nets',name:'Goal nets',qty:2}]
@@ -4612,6 +4615,30 @@ function shareData(m){return {date:m.date,teams:m.teams.map(t=>{const ids=t.play
 /* Finalized teams: published to players as their upcoming match (S.fixtures, one per date); the match itself is saved after it's played */
 const fxFor=d=>(S.fixtures||[]).find(f=>f.date===d);
 const fxKey=t=>JSON.stringify((t||[]).map(x=>[x.name,x.kit,x.players,x.lu&&x.lu.f,x.lu&&x.lu.gk,x.lu&&x.lu.order,x.cap||'']));
+/* ---------- Draft options: managers save several team setups for one match (e.g. 4 teams of 7 vs 3 of 9), vote and comment,
+   then publish one. Shared by all managers; the others are deleted on publish (after a confirm) and all drafts go at kick-off. ---------- */
+const mdFor=d=>(S.mdrafts||[]).filter(x=>x.date===d).sort((a,b)=>(a.at||0)-(b.at||0));
+const meId=()=>supaUser?supaUser.id:'local',meName=()=>myName||(isAdmin?'admin':'manager');
+function mdClean(){if(mode!=='db')return;(S.mdrafts||[]).forEach(x=>{if(x.date<todayISO()||(x.date===todayISO()&&Date.now()>=Date.parse(kickoffISO(x.date))))db.doc('mdrafts/'+x.id).delete().catch(()=>{})})}
+const mdSizes=t=>t.map(x=>x.length).join(' · ');
+const mdGap=t=>{const v=t.map(x=>teamStats(x).tot);return Math.round((Math.max(...v)-Math.min(...v))*10)/10};
+function draftsPanel(){if(mode!=='db')return '';const L=mdFor(draft.date),cur=draft.teams?JSON.stringify(draft.teams):'';if(!L.length&&!draft.teams)return '';
+  const letter=i=>String.fromCharCode(65+i);
+  return `<div class="panel mdp"><div class="row" style="justify-content:space-between;align-items:center"><div><b>Draft options</b> <span class="small muted">· shared with all managers until kick-off</span></div>
+    ${draft.teams?`<button class="btn small primary" data-a="mdsave">＋ Save current teams as an option</button>`:''}</div>
+    ${L.length?`<div class="mdl">${L.map((x,i)=>{const on=cur&&JSON.stringify(x.teams)===cur,v=Object.keys(x.votes||{}),mine=!!(x.votes||{})[meId()];
+      return `<div class="mdc${on?' on':''}"><div class="mdh"><b>${esc(x.name||'Option '+letter(i))}</b>${on?'<span class="pill ok">open now</span>':''}</div>
+        <div class="small muted">${x.teams.length} teams (${mdSizes(x.teams)}) · gap ${hideR?'–':mdGap(x.teams)} · by ${esc(x.by||'?')}</div>
+        ${(x.comments||[]).length?`<div class="mdcm">${x.comments.slice(-3).map(c=>`<div class="small"><b>${esc(c.by)}:</b> ${esc(c.t)}</div>`).join('')}</div>`:''}
+        <div class="row" style="gap:6px;margin-top:6px"><button class="btn small" data-a="mdload" data-id="${x.id}" ${on?'disabled':''}>Open</button><button class="btn small${mine?' primary':''}" data-a="mdvote" data-id="${x.id}">👍 ${v.length}</button><button class="btn small" data-a="mdnote" data-id="${x.id}">💬 Comment</button><button class="btn small primary" data-a="mdpub" data-id="${x.id}">Publish this</button><button class="btn small ghost danger" data-a="mddel" data-id="${x.id}">Delete</button></div></div>`}).join('')}</div>`
+      :'<div class="small muted" style="margin-top:6px">Try a few setups (e.g. 4 teams of 7 and 3 teams of 9): balance, save each as an option, then decide together and publish one.</div>'}</div>`}
+async function mdPublish(x){mdLoad(x);const mm=draftAsMatch();await putDoc('fixtures',x.date,{date:mm.date,teams:mm.teams,at:Date.now(),by:meName()});logAct('Published draft option',(x.name||'')+' · '+fmtDate(x.date));mdAskClean(x)}
+function mdAskClean(x){const cur=JSON.stringify(draft.teams),others=mdFor(draft.date).filter(y=>JSON.stringify(y.teams)!==cur);x=x||{name:'Your teams'};
+  if(!others.length){toast('Published. Players can see these teams now');render();return}
+  openModal(`<div class="mh"><h2>Delete the other drafts?</h2><button class="btn ghost x" data-a="close">Keep them</button></div><p><b>${esc(x.name)}</b> is published to players.</p>
+    <p class="small muted">${others.length} other draft option${others.length>1?'s':''} for this match: ${others.map(o=>esc(o.name)).join(', ')}. All drafts are deleted at kick-off anyway.</p>
+    <div class="row"><button class="btn danger" data-a="mddelothers" data-ids="${others.map(o=>o.id).join(',')}">Delete ${others.length} other draft${others.length>1?'s':''}</button><button class="btn ghost" data-a="close">Keep for now</button></div>`)}
+function mdLoad(x){Object.assign(draft,{n:x.teams.length,kits:x.kits||draft.kits,names:x.names||[],teams:JSON.parse(JSON.stringify(x.teams)),lu:x.lu?JSON.parse(JSON.stringify(x.lu)):[],caps:x.caps||{},avail:x.teams.flat(),locks:{},alts:[],editing:null});saveDraft();render()}
 function finalBar(){const fx=fxFor(draft.date),cur=draftAsMatch(),same=fx&&fxKey(fx.teams)===fxKey(cur.teams),future=draft.date>todayISO();
   const ko=Date.parse(kickoffISO(draft.date)),started=Date.now()>=ko||draft.date<todayISO(),opens=Math.max(Date.now(),Date.parse(endISO(draft.date))+36e5);
   const step=(n,t,on,done)=>`<span class="fxst${done?' done':on?' on':''}"><i>${done?'✓':n}</i>${t}</span>`;
@@ -4720,12 +4747,21 @@ document.addEventListener('click',async e=>{
   if(a==='lock'){const i=+el.dataset.i;draft.locks[id]!=null?delete draft.locks[id]:draft.locks[id]=i;saveDraft();render();return}
   if(a==='ulreset'){if(!isAdmin)return;const own=(S.settings.unlocks||{}).owner;S.settings.unlocks=own?{owner:own}:{};await putSettings();render();toast('Default unlock ladder restored');return}
   if(a==='starjob'){if(!isAdmin)return;el.disabled=true;starJobRun();return}
-  if(a==='finalize'){const mm=draftAsMatch(),had=!!fxFor(draft.date);await putDoc('fixtures',draft.date,{date:mm.date,teams:mm.teams,at:Date.now(),by:myName||(isAdmin?'admin':'')});toast(had?'Players’ teams updated':'Teams published. Players can see them now');render();return}
+  if(a==='mdsave'){if(!draft.teams)return;const L=mdFor(draft.date),def=`Option ${String.fromCharCode(65+L.length)}: ${draft.teams.length} teams of ${mdSizes(draft.teams).replace(/ · /g,'/')}`;
+    const nm=(prompt('Name this option',def)||'').trim();if(!nm)return;const id=draft.date+'-'+uid();
+    await putDoc('mdrafts',id,{date:draft.date,name:nm.slice(0,60),n:draft.n,kits:draft.kits.slice(0,draft.teams.length),names:draft.names.slice(0,draft.teams.length),teams:draft.teams,lu:draft.lu||[],caps:draft.caps||{},by:meName(),at:Date.now(),votes:{},comments:[]});logAct('Saved draft option',nm+' · '+fmtDate(draft.date));toast('Saved. Other managers can see it now');return}
+  if(a==='mdload'){const x=S.mdrafts.find(y=>y.id===id);if(x){mdLoad(x);toast('Opened '+x.name)}return}
+  if(a==='mdvote'){const x=S.mdrafts.find(y=>y.id===id);if(!x)return;const v={...(x.votes||{})};if(v[meId()])delete v[meId()];else v[meId()]=meName();await putDoc('mdrafts',id,{...x,votes:v});return}
+  if(a==='mdnote'){const x=S.mdrafts.find(y=>y.id===id);if(!x)return;const t=(prompt('Comment on '+x.name)||'').trim();if(!t)return;await putDoc('mdrafts',id,{...x,comments:[...(x.comments||[]),{by:meName(),t:t.slice(0,200),at:Date.now()}]});logAct('Commented on draft',x.name+': '+t.slice(0,80));return}
+  if(a==='mdpub'){const x=S.mdrafts.find(y=>y.id===id);if(x)await mdPublish(x);return}
+  if(a==='mddel'){if(!el.dataset.sure){el.dataset.sure=1;el.textContent='Tap again';setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent='Delete'}},3000);return}await delDoc('mdrafts',id);toast('Draft deleted');return}
+  if(a==='mddelothers'){const others=(el.dataset.ids||'').split(',').filter(Boolean).map(i=>({id:i}));for(const o of others)await delDoc('mdrafts',o.id);closeModal();toast(`Deleted ${others.length} other draft${others.length>1?'s':''}`);return}
+  if(a==='finalize'){const mm=draftAsMatch(),had=!!fxFor(draft.date);await putDoc('fixtures',draft.date,{date:mm.date,teams:mm.teams,at:Date.now(),by:myName||(isAdmin?'admin':'')});if(mdFor(draft.date).length){const cur=JSON.stringify(draft.teams);mdAskClean(mdFor(draft.date).find(y=>JSON.stringify(y.teams)===cur));return}toast(had?'Players’ teams updated':'Teams published. Players can see them now');render();return}
   if(a==='unfinal'){await delDoc('fixtures',draft.date);toast('Finalized teams removed from players');render();return}
   if(a==='savematch'&&!draft.editing&&draft.date>=todayISO()&&Date.now()<Date.parse(kickoffISO(draft.date))){toast('Match finished is available from kick-off. Publish the teams for now');return}
   if(a==='savematch'){const mm=draftAsMatch();const old=draft.editing&&S.matches.find(x=>x.id===draft.editing);
     const m={id:old?old.id:draft.date+'-'+uid(),date:mm.date,openAt:old?.openAt||new Date(Math.max(Date.now(),Date.parse(endISO(mm.date))+36e5)).toISOString(),finishedAt:old?.finishedAt||new Date().toISOString(),teams:mm.teams.map((t,i)=>({...t,goals:old?.teams[i]?.goals??null})),ratings:old?.ratings||{},createdAt:old?.createdAt||Date.now(),gap:(()=>{const t=mm.teams.map(x=>teamStats(x.players).tot);return Math.round((Math.max(...t)-Math.min(...t))*10)/10})()};
-    await putMatch(m);if(fxFor(m.date))await delDoc('fixtures',m.date);draft.editing=m.id;saveDraft();toast(old?'Match updated':isOpen(m)?'Match finished. Voting and ratings are open':`Match finished. Voting and ratings open at ${hm(openOf(m))}`);if(!old)logAct('Match finished',fmtDate(m.date));render();return}
+    await putMatch(m);if(fxFor(m.date))await delDoc('fixtures',m.date);for(const o of mdFor(m.date))await delDoc('mdrafts',o.id);draft.editing=m.id;saveDraft();toast(old?'Match updated':isOpen(m)?'Match finished. Voting and ratings are open':`Match finished. Voting and ratings open at ${hm(openOf(m))}`);if(!old)logAct('Match finished',fmtDate(m.date));render();return}
   if(a==='newmatch'){Object.assign(draft,{editing:null,teams:null,avail:[],locks:{},alts:[],date:nextGame()||nextSat(),names:[],lu:[],pitch:{},sel:null,pt:0,tfold:false,autoFor:null});cxOpen.m_setup=true;cxOpen.m_who=true;ls('atb_cx',cxOpen);poll.date=null;saveDraft();render();window.scrollTo(0,0);toast('New match: pick who’s playing, then balance');return}
   if(a==='share'){logAct('Opened share card',fmtDate(draft.date));shareModal(draftAsMatch());return}
   if(a==='sharem'){shareModal(S.matches.find(x=>x.id===id));return}
