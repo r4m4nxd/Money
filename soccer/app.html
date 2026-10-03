@@ -1493,7 +1493,7 @@ const tipUrl=()=>{const u=String((S.settings.tip||{}).url||TIPURL);return /^http
 const tipCard=(small)=>tipOn()?`<button class="tipcard${small?' sm':''}" data-a="tip" data-src="${small?'guide':'club'}"><span class="tipcup">☕</span><span><b>Support the builder</b><small>Like the app? Buy Raman a coffee for building it. Totally optional ❤️</small></span><span class="tipgo">Ko-fi ›</span></button>`:'';
 /* ---------- admin feed: every major manager / player action (admin only) ---------- */
 let god={items:null,loading:false,at:0},godMem={};
-const GOD_MGR_SKIP=['Tapped','Changed'],GOD_PL_SKIP=['Opened app','Opened match','Said IN','Said OUT'];
+const GOD_MGR_SKIP=['Tapped','Changed','Opened player'],GOD_PL_SKIP=['Opened app','Opened match','Said IN','Said OUT'];
 const godMajor=x=>x.k==='mgr'?!GOD_MGR_SKIP.includes(x.action):!/^Viewed /.test(x.action)&&!GOD_PL_SKIP.includes(x.action);
 const godRead=()=>{try{return +localStorage.getItem('atb_godread')||0}catch(e){return 0}};
 async function godLoad(){if(!isAdmin||cloud!=='supa'||god.loading)return;god.loading=true;const since=new Date(Date.now()-14*864e5).toISOString();
@@ -1595,7 +1595,7 @@ function diffTxt(a,b){if(!a)return '';const out=[],v=x=>x==null||x===''?'—':ty
     if(x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)){const sub=[];for(const j of new Set([...Object.keys(x),...Object.keys(y)]))if(JSON.stringify(x[j])!==JSON.stringify(y[j]))sub.push(`${j} ${v(x[j])}→${v(y[j])}`);out.push(k+': '+sub.join(', '))}
     else out.push(`${k} ${v(x)}→${v(y)}`)}
   if(a.photo!==b.photo)out.push(b.photo?'photo changed':'photo removed');return out.join(' · ')}
-async function putPlayer(p){const old=pById(p.id);logAct(old?'Edited player':'Added player',old?p.name+(diffTxt(old,p)?' — '+diffTxt(old,p):''):p.name);const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
+async function putPlayer(p){const old=pById(p.id);logAct(old?'Saved player':'Added player',p.name);const i=S.players.findIndex(x=>x.id===p.id);i<0?S.players.push(p):S.players[i]=p;
   if(mode==='db'){try{await db.doc('players/'+p.id).set(p)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();syncOpenPolls()}
 async function delPlayer(id){logAct('Deleted player',pById(id)?.name);S.players=S.players.filter(p=>p.id!==id);
   draft.avail=draft.avail.filter(x=>x!==id);if(draft.teams)draft.teams=draft.teams.map(t=>t.filter(x=>x!==id));delete draft.locks[id];draft.alts=draft.teams?[draft.teams]:[];saveDraft();
@@ -1615,9 +1615,8 @@ function logAct(action,detail){if(cloud!=='supa'||!supaUser||quietLog)return;con
 const TRACK_UNTIL='2026-11-03';const trackOn=()=>cloud==='supa'&&!!supaUser&&!isAdmin&&!PM&&todayISO()<TRACK_UNTIL;
 function trackLog(action,detail){if(!trackOn())return;supa.from('atb_activity').insert({team:teamOwner,member:supaUser.id,action,detail:String(detail||'').slice(0,200)}).then(()=>{},()=>{})}
 const trackLabel=el=>{const t=(el.getAttribute('aria-label')||el.title||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,60);return (el.dataset&&el.dataset.a?el.dataset.a+(t?' · ':''):'')+t||el.tagName.toLowerCase()};
-document.addEventListener('click',e=>{if(!trackOn())return;const el=e.target.closest('button,a,summary,[data-a],.ax-h,[role=tab]');if(!el)return;trackLog('Tapped',`${view}: ${trackLabel(el)}`)},true);
-document.addEventListener('change',e=>{if(!trackOn())return;const el=e.target;if(!el||!el.tagName||el.type==='password')return;const lab=(el.closest('label')?.textContent||el.dataset?.a||el.id||el.name||'field').replace(/\s+/g,' ').trim().slice(0,50);
-  trackLog('Changed',`${view}: ${lab}${el.type==='checkbox'?' → '+(el.checked?'on':'off'):el.tagName==='SELECT'?' → '+(el.options[el.selectedIndex]?.text||'').slice(0,40):''}`)},true);
+document.addEventListener('click',e=>{if(!trackOn())return;const el=e.target.closest('button,a,summary,[data-a],.ax-h,[role=tab]');if(!el)return;
+  if(el.dataset.a==='editp'){trackLog('Opened player',pById(el.dataset.id)?.name||'');return}if(el.dataset.a==='savep')return;trackLog('Tapped',`${view}: ${trackLabel(el)}`)},true);
 async function putMatch(m){const i=S.matches.findIndex(x=>x.id===m.id);const dd=i<0?'new':diffTxt(S.matches[i],m);i<0?S.matches.push(m):S.matches[i]=m;
   if(mode==='db'){try{await db.doc('matches/'+m.id).set(m)}catch(e){toast('Could not save: '+(e.message||e.code))}}else persistLocal();render();logAct('Updated match',fmtDate(m.date)+(dd?' — '+dd:''))}
 async function delMatch(id){const dm=S.matches.find(m=>m.id===id);logAct('Deleted match',dm&&fmtDate(dm.date));S.matches=S.matches.filter(m=>m.id!==id);if(mode==='db'){try{await db.doc('matches/'+id).delete()}catch(e){toast('Could not delete')}}else persistLocal();render()}
@@ -2444,7 +2443,7 @@ function vManagers(){
   <h2>Current managers</h2>
   ${mgrs.err?`<div class="panel"><span style="color:var(--bad)">${esc(mgrs.err)}</span> <button class="btn" data-a="mreload">Try again</button></div>`:
     !mgrs.list?'<div class="panel muted">Loading…</div>':!mgrs.list.length?'<div class="panel muted">No managers yet. Add one above, then send them the app link, their username and password.</div>':
-    `<div class="mlist">${mgrs.list.map(m=>{const acts=(mgrs.act||[]).filter(x=>x.member===m.member),last=acts[0];
+    `<div class="mlist">${mgrs.list.map(m=>{const acts=(mgrs.act||[]).filter(x=>x.member===m.member&&x.action!=='Changed'),last=acts[0];
       return `<div class="panel stack"><div class="mgrh"><div><b>${esc(m.username)}</b><div class="small muted">Added ${when(m.created_at)} · last sign-in ${when(m.last_sign_in_at)}</div></div>
         <span class="pill ${last&&Date.now()-new Date(last.at)<864e5?'ok':'meh'}">${last?'Active '+ago(last.at):'No activity yet'}</span></div>
       ${acts.length?`<details class="act"><summary><b>Activity</b> · ${acts.length}${acts.length>=4000?'+':''} <span class="small muted">(${acts.filter(x=>x.action==='Tapped'||x.action==='Changed').length} taps &amp; changes, recorded until Nov 3)</span></summary><ol class="alog">${acts.slice(0,300).map(x=>`<li><span class="at num">${when(x.at)}</span><span class="who">${esc(x.action)}${x.detail?` <span class="muted">· ${esc(x.detail)}</span>`:''}</span></li>`).join('')}</ol></details>`:''}
