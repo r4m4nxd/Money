@@ -164,3 +164,7 @@ grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
 -- Vote link teaser: atb_vote_teaser(poll, player, pin) checks the PIN, then private.atb_teaser returns streak, league rank, teammates who
 -- rated them, teammates still to rate, their team for the night, prediction status, Team of the Week, level XP and a profile session token
 -- (same rules as a PIN sign-in) so "Open my profile" opens straight in.
+
+-- Match flow: managers Publish teams (fixture) -> Update players' teams (late drops) -> "Match finished" (from kick-off) saves the match with
+-- openAt = max(now, session end + 1 h). private.atb_match_open(m) = openAt, or 10 PM on the match day for older matches. Players only get a
+-- match (and POTM vote 48 h, teammates' ratings 7 days) once it's open; until then the saved match is served as tonight's fixture.
