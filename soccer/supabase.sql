@@ -160,3 +160,7 @@ grant execute on function public.atb_kill_sessions(uuid[]) to service_role;
 -- marks outliers (3+ from the median of the other teammates), bias (2.5+ away from everyone on the same player in 3+ matches) and
 -- manager exclusions (private.atb_peer_excl; match_id '*' = mute a rater for a player). atb_peer_agg uses only 'ok' rows.
 -- Managers: atb_mgr_peer_detail (with status), atb_mgr_peer_bias, atb_mgr_peer_excl.
+
+-- Vote link teaser: atb_vote_teaser(poll, player, pin) checks the PIN, then private.atb_teaser returns streak, league rank, teammates who
+-- rated them, teammates still to rate, their team for the night, prediction status, Team of the Week, level XP and a profile session token
+-- (same rules as a PIN sign-in) so "Open my profile" opens straight in.
