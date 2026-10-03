@@ -1843,6 +1843,8 @@ function bgRender(){if(Date.now()-filePick<12e4)return;
   if(Math.abs(scrollY-y)>2)scrollTo(0,y)}
 /* ---------- Every section collapsible: each h2 and what follows it becomes a section with an animated header (state kept per screen) ---------- */
 let axState=ls('atb_ax')||{};
+// players: every section starts folded each time the app opens or they sign in, so nothing is overwhelming; what they open stays open until then
+let axP={};const axPl=()=>typeof PM!=='undefined'&&!!PM;
 const AXSKIP='.ax-h,.panel,.modal,summary,details,.login,.phero,.pfed,.pcard,.empty,.pub,.tban,.updb,.prevbar,.cx,.mdx,.dteam,.dpk,.tstudio,.pstw';
 function axify(){const m=$('#main');if(!m||!m.dataset.v||m.dataset.v==='match'||m.querySelector(':scope>.login'))return;const v=m.dataset.v;
   const heads=new Set();
@@ -1850,11 +1852,11 @@ function axify(){const m=$('#main');if(!m||!m.dataset.v||m.dataset.v==='match'||
     if(par!==m&&!par.classList.contains('ms')&&!par.classList.contains('mgc')&&par.firstElementChild===h&&par.children.length<=3&&/\brow\b/.test(par.className))hd=par;heads.add(hd)});
   const HL=[...heads];
   heads.forEach(hd=>{const body=[];let n=hd.nextElementSibling;while(n&&!heads.has(n)&&!HL.some(x=>n.contains(x))){body.push(n);n=n.nextElementSibling}if(!body.length)return;
-    const h2=hd.matches('h2')?hd:hd.querySelector('h2');const title=(h2.textContent||'').trim().slice(0,40);if(!title)return;const k=v+':'+title,closed=!!axState[k];
+    const h2=hd.matches('h2')?hd:hd.querySelector('h2');const title=(h2.textContent||'').trim().slice(0,40);if(!title)return;const k=v+':'+title,closed=axPl()?axP[k]!==0:!!axState[k];
     const sec=document.createElement('section');sec.className='ax'+(closed?' closed':'');sec.dataset.k=k;hd.before(sec);
     const hw=document.createElement('div');hw.className='ax-h';hw.setAttribute('role','button');hw.tabIndex=0;hw.setAttribute('aria-expanded',String(!closed));hw.appendChild(hd);hw.insertAdjacentHTML('beforeend','<span class="ax-c" aria-hidden="true"></span>');
     const b=document.createElement('div');b.className='ax-b';const bi=document.createElement('div');bi.className='ax-i';body.forEach(x=>bi.appendChild(x));b.appendChild(bi);sec.append(hw,b);if(closed)bi.inert=true})}
-function axToggle(sec){const c=!sec.classList.contains('closed');sec.classList.add('anim');sec.classList.toggle('closed',c);axState[sec.dataset.k]=c?1:0;if(!c)delete axState[sec.dataset.k];ls('atb_ax',axState);
+function axToggle(sec){const c=!sec.classList.contains('closed');sec.classList.add('anim');sec.classList.toggle('closed',c);if(axPl()){axP[sec.dataset.k]=c?1:0}else{axState[sec.dataset.k]=c?1:0;if(!c)delete axState[sec.dataset.k];ls('atb_ax',axState)}
   const h=sec.querySelector(':scope>.ax-h'),bi=sec.querySelector(':scope>.ax-b>.ax-i');h.setAttribute('aria-expanded',String(!c));bi.inert=c;
   clearTimeout(sec._t);sec._t=setTimeout(()=>sec.classList.remove('anim'),380)}
 document.addEventListener('click',e=>{const h=e.target.closest('.ax-h');if(!h||e.target.closest('select,input,textarea,a,button:not(.ax-h),label,[data-a]'))return;axToggle(h.parentElement)});
@@ -2965,7 +2967,7 @@ async function mgrToPlayer(){if(!supaUser||!supa)return false;try{const {data}=a
 function playerSignedOut(msg){fWipe();try{localStorage.removeItem('atb_player')}catch(e){}
   if(supaUser){let t=0;try{t=+sessionStorage.getItem('atb_relink')||0}catch(e){}if(Date.now()-t>60000){try{sessionStorage.setItem('atb_relink',Date.now())}catch(e){}mgrToPlayer().then(ok=>{if(!ok){ls('atb_mode','mgr');location.reload()}});return}
     ls('atb_mode','mgr');location.reload();return}PM=null;showLogin('',msg,'player')}
-async function bootPlayer(saved){
+async function bootPlayer(saved){axP={};
   PM={...saved,data:null,season:ls('atb_pseason')||'all'};if(plIdleOut())return;useTheme(ls('atb_theme_p_'+saved.id)||'light');plUseT=0;plTouch();if(!['me','compete','team','dream','games','tourn','avail','leaders','club','acct','pguide'].includes(view))view='me';
   $('#tabs').innerHTML=PTABS.map(([v,l])=>`<button role="tab" data-v="${v}"><span>${l}</span></button>`).join('')+(supaUser?'<button role="tab" data-v="tomgr"><span>↩ Manager</span></button>':'');$('#tabs').hidden=false;
   $('#rbtn').hidden=true;$('#sync').textContent=saved.name;
