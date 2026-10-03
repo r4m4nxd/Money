@@ -194,7 +194,7 @@ button.tok{cursor:pointer}
 .p2 .tok{gap:4px;color:#fff}.p2 .dw{position:relative;display:block}
 .p2 .tok .dot{position:relative;width:clamp(30px,11cqw,50px);height:clamp(30px,11cqw,50px);border:2.5px solid var(--kc);background:#fff;color:#fff;font-size:clamp(11px,3.6cqw,17px);box-shadow:0 3px 8px rgba(0,0,0,.3)}
 .p2 .tok .dot.ini{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.3),rgba(255,255,255,0) 70%),var(--kc);border-color:#fff;box-shadow:0 0 0 2.5px var(--kc),0 3px 8px rgba(0,0,0,.3)}
-.p2 .dot.ini .sil{position:absolute;inset:18% 12% 0;width:76%;height:82%;fill:rgba(255,255,255,.28)}
+.p2 .dot.ini .sil{position:absolute;inset:18% 12% 0;width:76%;height:82%;}
 .p2 .dot.ini b{position:relative;font-family:var(--f-display);font-weight:900;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .p2 .tok .dot img{object-position:50% 18%}
 .p2 .nb{position:absolute;top:-4px;left:-7px;min-width:17px;height:17px;padding:0 3px;border-radius:99px;background:#fff;color:#111;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
@@ -227,6 +227,7 @@ ul.tight{margin:0;padding-left:18px}
 .tfb{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);text-align:center;display:flex;flex-direction:column;gap:8px}.tfb h3{margin:0}.tfb p{margin:0}.tfstars{display:flex;justify-content:center;gap:6px}.tfs{font-size:34px;line-height:1;background:none;border:0;color:var(--line);cursor:pointer;padding:2px;transition:transform .15s,color .15s}.tfs.on{color:#F2B33D}.tfs:active{transform:scale(.85)}#tfbody{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .mdp{margin-bottom:12px}.mdl{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px}.mdc{border:1px solid var(--line);border-radius:12px;padding:10px}.mdc.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}.mdh{display:flex;gap:8px;align-items:center;justify-content:space-between}.mdcm{margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--surface2,rgba(127,127,127,.08))}
 .sharecard .borrow{margin:0 10px 10px;padding:5px 8px;border:1px dashed #5B6E88;border-radius:8px;font-size:12px;color:#C9D4E5}.sharecard .borrow small{opacity:.7}
+svg.sil{fill:#1B222E;fill-opacity:.72!important;opacity:1!important;filter:drop-shadow(0 5px 8px rgba(0,0,0,.35))}img.sil{opacity:1;filter:drop-shadow(0 5px 8px rgba(0,0,0,.35))}
 .chemnag{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:12px;border:1.5px solid #E8A33D;background:linear-gradient(90deg,rgba(232,163,61,.16),transparent);cursor:pointer;font:inherit;color:inherit}.chemnag .cnic{font-size:26px}.chemnag>div{flex:1;min-width:0}.chemnag .cnxp{flex:none;font-weight:800;color:#fff;background:#E8A33D;border-radius:999px;padding:4px 10px;font-size:13px}
 .cmrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line)}.cmrow .cmn{display:flex;flex-direction:column;min-width:0}.cmrow .cmn small{color:var(--muted)}.cmrow.done .cmn b::after{content:' ✓';color:#2FB36B}.cmh{margin:14px 0 2px;font-size:14px}
 .rot{background:#172638;border-radius:10px;padding:10px 12px;margin:10px 0 0;font-size:14px;font-weight:600}
@@ -366,7 +367,7 @@ h2::before{content:"";display:inline-block;width:6px;height:.8em;background:var(
 .fut .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
 .fut .ph.cut{-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent 97%);mask-image:linear-gradient(to bottom,#000 70%,transparent 97%)}
 .fut .ph.cut img{filter:drop-shadow(0 1cqw 1.5cqw rgba(0,0,0,.25))}
-.fut .ph .sil{width:78%;fill:var(--ink2);opacity:.16;margin-bottom:4cqw}
+.fut .ph .sil{width:78%;margin-bottom:4cqw}
 .fut .fl{position:absolute;left:9cqw;top:15cqw;display:flex;flex-direction:column;align-items:center;min-width:20cqw;z-index:1}
 .fut .ovr{font:800 19cqw/.9 var(--f-display);letter-spacing:-.02em}
 .fut .ps{font:700 8cqw/1.1 var(--f-display);letter-spacing:.02em}
@@ -767,7 +768,7 @@ body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .ps-side,.ps-stats{min-width:0}
 .ps-h{margin:0 0 8px;font:800 18px/1.1 var(--f-body,sans-serif);letter-spacing:.04em;text-transform:uppercase;color:inherit}.ps-h::before{display:none}
 .ps-dyn{display:flex;gap:10px;align-items:center;background:rgba(127,140,155,.16);border-radius:12px;padding:8px 10px;margin-bottom:8px}
-.ps-av{width:44px;height:44px;border-radius:10px;overflow:hidden;flex:none;background:rgba(127,140,155,.25);display:grid;place-items:end center}.ps-av img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}.ps-av .sil{width:80%;height:85%;fill:rgba(127,140,155,.6)}.ps-kit{border-radius:50%}
+.ps-av{width:44px;height:44px;border-radius:10px;overflow:hidden;flex:none;background:rgba(127,140,155,.25);display:grid;place-items:end center}.ps-av img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}.ps-av .sil{width:80%;height:85%;}.ps-kit{border-radius:50%}
 .ps-name{display:block;font-weight:800}.ps-stars i{font-style:normal;color:rgba(127,140,155,.55);font-size:13px}.ps-stars i.on{color:#E2B13C}
 .ps-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ps-nav ul::-webkit-scrollbar{display:none}
 .ps-nav a{display:block;white-space:nowrap;text-decoration:none;color:inherit;font-size:13px;font-weight:700;padding:7px 10px;border-radius:8px;background:rgba(127,140,155,.18);border:1px solid transparent}
@@ -1347,7 +1348,8 @@ function colourBadge(id,cls='cb'){const c=CLUB[id];if(!c)return '';const ink=lum
   return `<svg class="${cls}" viewBox="0 0 40 46" role="img" aria-label="${esc(c.n)}"><title>${esc(c.n)}</title><path d="M20 1 L38 6 V22 C38 34 30 41 20 45 C10 41 2 34 2 22 V6 Z" fill="${c.c1}" stroke="${c.c2}" stroke-width="3"/><path d="M8 30 H32" stroke="${c.c2}" stroke-width="3"/><text x="20" y="${c.c.length>3?23:24}" text-anchor="middle" font-family="Saira Condensed,Arial Narrow,sans-serif" font-weight="800" font-size="${c.c.length>3?10:12}" fill="${ink}">${c.c}</text></svg>`}
 const NATIONS=[['','None'],['IN','India'],['CA','Canada'],['PK','Pakistan'],['GB-ENG','England'],['GB-SCT','Scotland'],['GB','United Kingdom'],['IE','Ireland'],['US','USA'],['AF','Afghanistan'],['BD','Bangladesh'],['LK','Sri Lanka'],['NP','Nepal'],['PH','Philippines'],['NG','Nigeria'],['GH','Ghana'],['KE','Kenya'],['SO','Somalia'],['ET','Ethiopia'],['ER','Eritrea'],['JM','Jamaica'],['MX','Mexico'],['BR','Brazil'],['AR','Argentina'],['CO','Colombia'],['PT','Portugal'],['ES','Spain'],['IT','Italy'],['DE','Germany'],['FR','France'],['NL','Netherlands'],['PL','Poland'],['UA','Ukraine'],['VN','Vietnam'],['CN','China'],['KR','South Korea'],['LB','Lebanon'],['SY','Syria'],['IR','Iran'],['IQ','Iraq'],['EG','Egypt'],['MA','Morocco']];
 const flag=c=>!c?'':c==='GB-ENG'?'🏴\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}':c==='GB-SCT'?'🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}':String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));
-const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></svg>`;
+// no photo: a plain shadowed figure (head, neck, shoulders), like a blank FC card
+const SIL=`<svg viewBox="0 0 100 110" class="sil" aria-hidden="true"><ellipse cx="50" cy="40" rx="19" ry="22.5"/><path d="M4 110 C5 91 18 80 37 75 C42 73.5 43 70 43 58 L57 58 C57 70 58 73.5 63 75 C82 80 95 91 96 110 Z"/><ellipse cx="43" cy="32" rx="8.5" ry="11" fill="rgba(255,255,255,.07)"/><path d="M14 104 C17 88 27 79 40 74 L44 78 C32 83 23 92 20 106 Z" fill="rgba(255,255,255,.05)"/></svg>`;
 const flagImg=c=>c?`<img class="flag" src="icons/flags/${c.toLowerCase()}.svg" alt="${esc((NATIONS.find(n=>n[0]===c)||[])[1]||'')}">`:'';
 const titleName=n=>String(n||'').replace(/\S+/g,w=>w.length<=3&&w===w.toUpperCase()?w:w[0].toUpperCase()+w.slice(1));
 /* ---------- Player profile choices (players pick these themselves; ratings stay manager-only) ---------- */
@@ -4439,7 +4441,7 @@ const PITCH3=(()=>{const P=(u,v)=>p3pt(u,v).slice(0,2).map(n=>n.toFixed(1)).join
     <rect width="${P3.W}" height="${P3.H}" fill="url(#p3sky)"/><rect width="${P3.W}" height="40" fill="#16351f"/>
     <g class="str">${stripes}</g><g class="grd">${grid}</g><g class="mks">${marks}</g><g class="spt">${dot(.5,.5,4)}${dot(.5,spot,3.5)}${dot(.5,1-spot,4)}</g>${goal(0,-1)}${goal(1,1)}
     <rect width="${P3.W}" height="${P3.H}" fill="url(#p3vig)"/></svg>`})();
-const SILURI=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110"><g fill="${c}"><circle cx="50" cy="36" r="22"/><path d="M8 110 C10 78 28 66 50 66 C72 66 90 78 92 110 Z"/></g></svg>`);
+const SILURI=c=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110"><g fill="#1B222E" fill-opacity=".72"><ellipse cx="50" cy="40" rx="19" ry="22.5"/><path d="M4 110 C5 91 18 80 37 75 C42 73.5 43 70 43 58 L57 58 C57 70 58 73.5 63 75 C82 80 95 91 96 110 Z"/></g><ellipse cx="43" cy="32" rx="8.5" ry="11" fill="rgba(255,255,255,.07)"/><path d="M14 104 C17 88 27 79 40 74 L44 78 C32 83 23 92 20 106 Z" fill="rgba(255,255,255,.05)"/></svg>`);
 const ROLES={GK:['GK'],DEF:[['CB'],['CB','CB'],['CB','CB','CB'],['LB','CB','CB','RB'],['LWB','CB','CB','CB','RWB']],MID:[['CM'],['CM','CM'],['LM','CM','RM'],['LM','CM','CM','RM'],['LM','CM','CAM','CM','RM']],FWD:[['ST'],['ST','ST'],['LW','ST','RW'],['LW','ST','ST','RW']]};
 const roleOf=(row,k,i)=>row==='GK'?'GK':(ROLES[row][k-1]||[])[i]||row;
 let pNums=ls('atb_pnums')!==false,pNav={};
