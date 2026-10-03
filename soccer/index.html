@@ -829,7 +829,9 @@ body.pdragging{-webkit-user-select:none;user-select:none;cursor:grabbing}
 .psdesc{margin:8px 0 4px;padding:9px 12px;border-radius:10px;background:var(--surface2,rgba(127,127,127,.1));font-size:.86rem;line-height:1.35;min-height:2.6em}.psdesc b{font-weight:700}
 .pspick{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px}.psopt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);cursor:pointer;color:var(--ink)}.psopt small{font-size:10.5px;line-height:1.1;text-align:center}.psopt .psb img{filter:grayscale(1) brightness(.6);opacity:.5}.psopt[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.psopt[aria-pressed=true] .psb img{filter:none;opacity:1}
 .pfprev{width:64px;height:64px;border-radius:12px;object-fit:cover}
-.sqcards{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}.sqc{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font:inherit}.sqc .fut{pointer-events:none}.sqn{font-size:13px;font-weight:700;text-align:center;line-height:1.2}.sqn .nick{display:block;font-size:12px}
+.sqcards{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+/* card art (frames, sparkles) reaches past the card edge: give every card grid breathing room so neighbours never touch */
+.cards{row-gap:26px!important;column-gap:18px!important}.cards>.sqc>.fut,.cards>.fut,.cards>*>.fut{width:88%!important;margin-inline:auto}.sqc{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font:inherit}.sqc .fut{pointer-events:none}.sqn{font-size:13px;font-weight:700;text-align:center;line-height:1.2}.sqn .nick{display:block;font-size:12px}
 .chemlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px 18px}.chemrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}.chemrow .nm{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cstars{display:inline-flex;gap:2px;flex:none}.cst{background:none;border:0;font-size:22px;line-height:1;color:var(--line);cursor:pointer;padding:2px}.cst.on{color:#E2B13C}
 .pub{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:16px;align-items:start}@media(max-width:560px){.pub{grid-template-columns:1fr}.pubcard{width:200px;max-width:100%;margin:0 auto}}.pubcard{width:100%}
@@ -1644,7 +1646,7 @@ async function syncRoster(){quietLog=true;try{const j=await (await fetch('seed.j
 let supa=null, supaUser=null, teamOwner=null, myName='', isAdmin=false;
 const ADMIN_EMAIL='rsramansingh96@gmail.com';
 /* App version gate: build.sh stamps APP_BUILD; the admin can require a minimum build. Older copies can't save (server rule) and get a reload screen. */
-const APP_BUILD='202610031734',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
+const APP_BUILD='202610031755',BUILDN=/^\d{12}$/.test(APP_BUILD)?APP_BUILD:'0';
 let buildMin=null;
 async function checkBuild(){if(!supa||BUILDN==='0')return;try{const r=await supa.rpc('atb_min_build');buildMin=r.data;if(r.data&&+r.data>+BUILDN)showUpdate();else if(isAdmin&&view==='managers'&&!PM)render()}catch(e){}}
 function showUpdate(){if(document.getElementById('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
